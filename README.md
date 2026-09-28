@@ -1,18 +1,20 @@
 # Localizador de Estacas — BR-277 B2+B3
 
-Aplicativo web de mapa para acompanhamento do projeto de restauração da BR-277/PR (Blocos 2 e 3) em campo.
+Aplicativo web para acompanhamento em campo do projeto de restauração da BR-277/PR (Blocos 2 e 3). Tem três páginas, acessíveis pelo menu lateral:
 
-- **Estaqueamento:** a posição do GPS é projetada sobre o eixo e interpolada entre as estacas de 20 m, para estimar a estaca atual (ex.: 181+037). O painel também mostra a precisão do GPS e a distância ao eixo.
-- **Soluções:** mostra as soluções do R08 por sentido e faixa (Faixa 1, Faixa 2/3 e acostamento), além dos drenos DR/DP. Blocos de 20 m seguidos com a mesma solução formam um pano, que é dividido quando muda o marco km.
-- **Filtros:** por sentido, faixa e solução.
-- **Offline:** instalável no iPhone pelo Safari ("Adicionar à Tela de Início"). Funciona sem sinal para os dados e para os trechos de mapa já visualizados.
+1. **Localização estaca**: tela cheia com a estaca atual pelo GPS, no formato "estaca + deslocamento" (ex.: 181+020 + 13 m). A posição é projetada sobre o eixo e interpolada entre as estacas de 20 m. Mostra a precisão do GPS, a distância ao eixo, o status do acompanhamento e avisos de permissão negada, falta de sinal, precisão baixa ou posição fora do trecho.
+2. **Estacas BR-277 B2+B3**: mapa com os painéis ESTAQUEAMENTO e SOLUÇÕES, os panos do R08 por sentido e faixa, os drenos DR/DP e filtros.
+3. **Calculadora de programação**: quantidade de CBUQ dos panos que cruzam um intervalo de km (ex.: 236+300 a 237+100), filtrada por pista e sentido. Fórmula: comprimento × largura × espessura ÷ 100 × densidade.
+
+## Dados
+- Estacas e coordenadas: `B2B3_KMZ_Estaca.kmz`, com 6.961 estacas de 164+700 a 303+800 e hodômetro contínuo a cada 20 m. O comprimento de cada km varia de 900 a 1.120 m.
+- Soluções: R08 Unifilar de Soluções B2+B3 BR-277.
+- A largura das faixas não consta na base. Ela é informada na calculadora, no cadastro de larguras e espessuras, e fica salva no aparelho.
 
 ## Uso
-Abra o endereço do GitHub Pages no Safari e permita o acesso à localização.
+Abra o endereço do GitHub Pages no Safari e permita a localização. Para instalar no iPhone: Compartilhar → Adicionar à Tela de Início. Depois de instalado, funciona offline para os dados e para os trechos de mapa já visualizados.
 
 ## Estrutura
 - `index.html`: aplicativo completo, com os dados embutidos
 - `sw.js`, `manifest.webmanifest`, `icon-*.png`: instalação e cache offline
 - `fonte/`: modelo do app, scripts de preparo dos dados e lista de panos (`panos_R08_B2B3.csv`)
-
-Fonte dos dados: R08 Unifilar de Soluções B2+B3 BR-277 e KMZ de estacas (6.961 estacas, 164+700 a 303+800).

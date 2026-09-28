@@ -1,4 +1,4 @@
-<title>Estacas BR-277 B2+B3</title>
+<title>Localizador de Estacas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <style>
@@ -6,8 +6,9 @@
 :root{
   --ground:#E8EBE6; --surface:#FFFFFF; --surface-2:#F2F4F0; --ink:#161A18; --muted:#56605A; --line:#CFD6CF;
   --accent:#E3A008; --accent-ink:#161A18; --axis:#262B28; --axis-casing:#FFFFFF;
-  --plate:#111412; --plate-ink:#FFFFFF; --plate-muted:#A9B3AD;
-  --ok:#1E8E4E; --me:#1A73E8;
+  --plate:#111412; --plate-2:#1D221F; --plate-ink:#FFFFFF; --plate-muted:#A9B3AD; --plate-line:#2D3430;
+  --ok:#1E8E4E; --warn:#B7791F; --bad:#C0392B; --me:#1A73E8;
+  --zebra:#F6F8F5; --warn-bg:#FFF4DB; --bad-bg:#FDE8E6;
   --shadow:0 6px 22px rgba(20,26,22,.18);
   --cond:"Barlow Condensed","Arial Narrow",system-ui,sans-serif; --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -15,46 +16,106 @@
   :root:not([data-theme="light"]){ color-scheme:dark;
     --ground:#121614; --surface:#1A1F1C; --surface-2:#222825; --ink:#EAEEEA; --muted:#9CA69F; --line:#313934;
     --accent:#F2B705; --accent-ink:#141715; --axis:#EAEEEA; --axis-casing:#121614;
-    --plate:#050706; --plate-ink:#FFFFFF; --plate-muted:#9CA69F; --shadow:0 6px 22px rgba(0,0,0,.55);}
+    --plate:#050706; --plate-2:#161B18; --zebra:#1E2320; --warn-bg:#3A2E10; --bad-bg:#3D1916; --shadow:0 6px 22px rgba(0,0,0,.55);}
 }
 :root[data-theme="dark"]{ color-scheme:dark;
   --ground:#121614; --surface:#1A1F1C; --surface-2:#222825; --ink:#EAEEEA; --muted:#9CA69F; --line:#313934;
   --accent:#F2B705; --accent-ink:#141715; --axis:#EAEEEA; --axis-casing:#121614;
-  --plate:#050706; --plate-ink:#FFFFFF; --plate-muted:#9CA69F; --shadow:0 6px 22px rgba(0,0,0,.55);}
+  --plate:#050706; --plate-2:#161B18; --zebra:#1E2320; --warn-bg:#3A2E10; --bad-bg:#3D1916; --shadow:0 6px 22px rgba(0,0,0,.55);}
 html,body{height:100%}
 body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;margin:0;overflow:hidden}
-#app{position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px);display:grid;grid-template-columns:1fr 410px}
+button{font-family:inherit}
+.page{position:fixed;inset:0;top:env(safe-area-inset-top,0px);bottom:env(safe-area-inset-bottom,0px)}
+:focus-visible{outline:3px solid var(--me);outline-offset:2px}
+
+/* ===== menu lateral ===== */
+.menuBtn{width:48px;height:48px;flex:none;border-radius:12px;border:1px solid var(--plate-line);background:var(--plate-2);color:var(--plate-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.menuBtn svg{width:24px;height:24px}
+#scrim{position:fixed;inset:0;z-index:2000;background:rgba(8,10,9,.5);opacity:0;pointer-events:none;transition:opacity .2s}
+#scrim.open{opacity:1;pointer-events:auto}
+#drawer{position:fixed;z-index:2001;top:0;bottom:0;left:0;width:min(320px,86vw);background:var(--plate);color:var(--plate-ink);transform:translateX(-102%);transition:transform .22s ease;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);box-shadow:8px 0 30px rgba(0,0,0,.35);box-sizing:border-box}
+#drawer.open{transform:none}
+.dh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 14px;border-bottom:1px solid var(--plate-line)}
+.dh b{font:700 22px var(--cond);letter-spacing:.02em;display:block}
+.dh small{display:block;color:var(--plate-muted);font-size:12.5px;margin-top:1px}
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.nav a{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 12px;border-radius:12px;color:var(--plate-ink);text-decoration:none;border:1px solid transparent}
+.nav a svg{width:24px;height:24px;flex:none;color:var(--plate-muted)}
+.nav a span{display:flex;flex-direction:column;font:600 16px var(--body)}
+.nav a small{font:500 12.5px var(--body);color:var(--plate-muted)}
+.nav a[aria-current="page"]{background:var(--plate-2);border-color:var(--plate-line)}
+.nav a[aria-current="page"] svg{color:var(--accent)}
+.dfoot{margin-top:auto;color:var(--plate-muted);font-size:12px;line-height:1.45;border-top:1px solid var(--plate-line);padding-top:12px}
+
+/* ===== página 1: localização estaca (visual escuro fixo, para campo) ===== */
+#pLoc{background:#0A0C0B;color:#fff;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 14px}
+.topbar h1{margin:0;font:700 14px var(--body);letter-spacing:.12em;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status{display:inline-flex;align-items:center;gap:7px;font:700 12px var(--body);letter-spacing:.06em;text-transform:uppercase;color:#C9D1CC;background:#1A1F1C;border:1px solid #2D3430;border-radius:999px;padding:6px 10px;white-space:nowrap}
+.status i{width:9px;height:9px;border-radius:50%;background:#7B857F}
+.status.on i{background:#34D17A;box-shadow:0 0 0 3px rgba(52,209,122,.3)}
+.status.wait i{background:#F2B705}
+.status.err i{background:#F0625A}
+.msg{margin:0 14px;border-radius:12px;padding:11px 14px;font:500 15px/1.35 var(--body);display:flex;gap:10px;align-items:flex-start}
+.msg b{display:block;font-weight:700}
+.msg.bad{background:#3D1512;color:#FFD9D5;border:1px solid #6B2620}
+.msg.warn{background:#3A2C08;color:#FFE9B0;border:1px solid #6A5212}
+.msg.info{background:#10263F;color:#CFE3FF;border:1px solid #1F4670}
+.locMain{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px 14px;min-height:0}
+.lbl{font:700 clamp(13px,3.6vw,18px) var(--body);letter-spacing:.3em;text-transform:uppercase;color:#F2B705}
+.st{font:700 min(25vw,26vh)/0.9 var(--cond);max-width:100%;letter-spacing:.005em;font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:.08em}
+.st.out{font-size:min(14vw,12vh);line-height:1}
+.plus{font:700 min(14vw,12vh)/1 var(--cond);color:#F2B705;font-variant-numeric:tabular-nums;margin-top:.1em;white-space:nowrap}
+.track{width:min(560px,92%);margin-top:clamp(14px,3vh,28px)}
+.track .bar{height:10px;border-radius:5px;background:#232925;position:relative;overflow:visible}
+.track .fill{position:absolute;left:0;top:0;bottom:0;background:#F2B705;border-radius:5px}
+.track .knob{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid #1A73E8;transform:translate(-50%,-50%);box-sizing:border-box}
+.track .ends{display:flex;justify-content:space-between;margin-top:8px;font:600 clamp(15px,4vw,19px) var(--cond);color:#A9B3AD;font-variant-numeric:tabular-nums}
+.next{margin-top:8px;font:500 clamp(14px,3.8vw,17px) var(--body);color:#C9D1CC}
+.next b{color:#fff}
+.locMeta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 14px}
+.locMeta div{background:#141816;border:1px solid #242A26;border-radius:10px;padding:8px 10px;min-width:0}
+.locMeta span{display:block;font:700 10.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#7F8A84}
+.locMeta b{display:block;font:600 15px var(--body);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.locMeta .good b{color:#5BE39A}.locMeta .mid b{color:#F7C948}.locMeta .poor b{color:#FF8A80}
+.locBtns{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px 14px 14px}
+.bigBtn{min-height:58px;border-radius:14px;border:0;background:#F2B705;color:#141715;font:700 17px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
+.bigBtn.stop{background:#262C28;color:#fff;border:1px solid #3A423D}
+.bigBtn svg{width:22px;height:22px}
+.ghostBtn{min-height:58px;border-radius:14px;border:1px solid #3A423D;background:transparent;color:#fff;font:600 15px var(--body);padding:0 16px;cursor:pointer}
+@media (orientation:landscape) and (max-height:500px){
+  .locMain{flex-direction:row;flex-wrap:wrap;gap:0 24px}.lbl{width:100%}.track{width:100%;max-width:640px;margin-top:6px}
+  .st{font-size:min(17vw,34vh)}.plus{font-size:min(9vw,20vh)}
+}
+
+/* ===== página 2: mapa (Estacas BR-277 B2+B3) ===== */
+#pMap{display:grid;grid-template-columns:1fr 410px}
 #map{position:relative;background:var(--ground);min-height:0}
 .leaflet-container{background:var(--ground);font-family:var(--body)}
-
-/* ===== ESTAQUEAMENTO ===== */
-#estaq{position:absolute;z-index:850;top:12px;left:12px;width:min(360px,calc(100% - 96px));background:var(--plate);color:var(--plate-ink);border-radius:14px;box-shadow:var(--shadow);padding:10px 14px 12px;border:2px solid #2B312D}
-.eh{display:flex;justify-content:space-between;align-items:center;gap:8px;font:700 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+#estaq{position:absolute;z-index:850;top:12px;left:12px;width:min(380px,calc(100% - 96px));background:var(--plate);color:var(--plate-ink);border-radius:14px;box-shadow:var(--shadow);padding:8px 14px 12px 8px;border:2px solid #2B312D;display:grid;grid-template-columns:auto 1fr;gap:0 10px;box-sizing:border-box}
+#estaq .menuBtn{width:44px;height:44px}
+.eh{display:flex;justify-content:space-between;align-items:center;gap:8px;font:700 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);min-height:44px}
+.ebody{grid-column:1 / -1;padding-left:6px}
 .mode{display:inline-flex;align-items:center;gap:6px;font:700 11px var(--body);letter-spacing:.08em;color:var(--plate-muted)}
 .mode i{width:9px;height:9px;border-radius:50%;background:var(--plate-muted)}
 .mode.live i{background:#34D17A;box-shadow:0 0 0 3px rgba(52,209,122,.3)}
 .mode.sim i{background:var(--accent)}
-.big{font:700 72px/0.92 var(--cond);letter-spacing:.01em;font-variant-numeric:tabular-nums;margin-top:4px;white-space:nowrap}
-.big small{font-size:40px;color:var(--plate-muted);margin:0 1px}
-.big.out{font-size:40px;line-height:1.05}
+.big{font:700 64px/0.92 var(--cond);letter-spacing:.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.big small{font-size:36px;color:var(--plate-muted);margin:0 1px}
+.big.out{font-size:36px;line-height:1.05}
 .esub{font:500 13.5px var(--body);color:var(--plate-muted);margin-top:4px;font-variant-numeric:tabular-nums}
 .esub b{color:var(--plate-ink);font-weight:600}
 .emeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .emeta span{font:600 12.5px var(--body);background:#232925;color:var(--plate-ink);border-radius:6px;padding:3px 7px;font-variant-numeric:tabular-nums}
 .emeta span.acc-good{background:#1D4D31}.emeta span.acc-mid{background:#5A4610}.emeta span.acc-bad{background:#5E1D1D}
-
-/* ===== map controls ===== */
 #ctrls{position:absolute;z-index:840;top:12px;right:12px;display:flex;flex-direction:column;gap:10px}
 .cbtn{width:56px;height:56px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;font:700 10px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:0}
 .cbtn svg{width:22px;height:22px}
 .cbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.cbtn:focus-visible,.pill:focus-visible,.tab:focus-visible,.segb:focus-visible{outline:3px solid var(--me);outline-offset:2px}
 #searchBox{position:absolute;z-index:860;top:12px;left:12px;right:80px;max-width:420px;display:flex;background:var(--surface);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
 #searchBox input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:600 20px var(--cond);padding:12px 14px;outline:none}
 #searchBox button{border:0;background:var(--ink);color:var(--surface);font:700 15px var(--body);padding:0 18px;cursor:pointer}
 #toast{position:absolute;z-index:900;left:12px;right:80px;bottom:14px;max-width:520px;background:var(--ink);color:var(--surface);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.4;box-shadow:var(--shadow)}
-
-/* map labels */
 #map{--ls:1}
 .kml{background:var(--axis);color:var(--ground);font:700 calc(12px*var(--ls)) var(--cond);padding:1px 6px;border-radius:4px;white-space:nowrap;letter-spacing:.03em;position:absolute;transform:translate(-50%,-50%)}
 .stl{position:absolute;top:calc(-7px*var(--ls));white-space:nowrap;color:var(--ink);font:600 calc(12px*var(--ls))/1 var(--cond);text-shadow:0 0 3px var(--ground),0 0 3px var(--ground),0 0 2px var(--ground);pointer-events:none;padding:0 3px}
@@ -64,14 +125,12 @@ body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size
 .leaflet-popup-content{font:14px/1.4 var(--body);margin:12px 14px;min-width:220px}
 .leaflet-container a.leaflet-popup-close-button{width:32px;height:32px;font-size:24px;line-height:30px}
 .leaflet-control-attribution{font-size:10px}
-.pp h3{margin:0 0 2px;font:700 22px var(--cond);display:flex;align-items:center;gap:8px}
+.pp h3{margin:0 0 2px;font:700 22px var(--cond);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pp dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:8px 0 0;font-size:13.5px}
 .pp dt{color:var(--muted)} .pp dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums}
 .pp table{border-collapse:collapse;width:100%;margin-top:8px;font-size:13px}
 .pp td{padding:3px 4px;border-top:1px solid var(--line)}
 .pp .go{margin-top:10px;width:100%;min-height:40px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);font:700 14px var(--body);cursor:pointer}
-
-/* ===== SOLUÇÕES ===== */
 #panel{background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
 #grab{display:none}
 .ph{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
@@ -100,6 +159,7 @@ body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size
 .item{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);cursor:pointer}
 .item.off{opacity:.45}
 .tag{display:inline-flex;align-items:center;justify-content:center;min-width:58px;border-radius:6px;padding:5px 4px;font:700 16px var(--cond);letter-spacing:.02em}
+.tag.sm{min-width:0;padding:2px 6px;font-size:14px}
 .item .t{font:600 14.5px var(--body)}
 .item .d{font-size:13px;color:var(--muted);line-height:1.4;font-variant-numeric:tabular-nums}
 .item .bar{height:5px;background:var(--surface-2);border-radius:3px;margin-top:5px;position:relative}
@@ -107,7 +167,6 @@ body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size
 .none{font-size:13.5px;color:var(--muted);padding:8px 0;border-top:1px solid var(--line)}
 canvas#reti{width:100%;height:190px;display:block;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
 .note{font-size:12.5px;color:var(--muted);line-height:1.45;margin:8px 0 0}
-/* filters */
 .fsec{padding:14px 16px;border-bottom:1px solid var(--line)}
 .fsec h3{margin:0 0 10px;font:700 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
 .fsec h3 button{border:0;background:none;color:var(--me);font:700 13px var(--body);cursor:pointer;padding:4px 0;text-transform:none;letter-spacing:0}
@@ -123,51 +182,161 @@ canvas#reti{width:100%;height:190px;display:block;border-radius:8px;background:v
 .pill[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
 .sim{display:flex;align-items:center;gap:10px;font-size:13.5px}
 .sim input{flex:1;accent-color:var(--accent)}
+
+/* ===== página 3: calculadora ===== */
+#pCalc{display:flex;flex-direction:column;background:var(--ground)}
+#pCalc .topbar{background:var(--plate);color:var(--plate-ink)}
+.cscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.cwrap{max-width:1180px;margin:0 auto;padding:16px 16px 40px;display:grid;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.card > h2{margin:0;padding:14px 16px 0;font:700 12.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.form{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;padding:12px 16px 16px}
+.fld{display:flex;flex-direction:column;gap:5px;grid-column:span 2;min-width:0}
+.fld.s1{grid-column:span 1}.fld.s3{grid-column:span 3}
+.fld label{font:600 13px var(--body);color:var(--muted)}
+.fld label em{font-style:normal;color:var(--muted);font-weight:500}
+.fld input,.fld select{min-height:50px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 18px var(--body);padding:0 12px;min-width:0;width:100%;box-sizing:border-box}
+.fld input.km{font:700 22px var(--cond);letter-spacing:.02em}
+.fld input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 25%,transparent)}
+.fld .err{font-size:12.5px;color:var(--bad);font-weight:600}
+.actions{grid-column:1 / -1;display:flex;gap:10px;flex-wrap:wrap}
+.primary{min-height:52px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:700 16px var(--body);padding:0 24px;cursor:pointer}
+.secondary{min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--body);padding:0 18px;cursor:pointer}
+details.card > summary{list-style:none;cursor:pointer;padding:14px 16px;font:700 12.5px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:10px;align-items:center}
+details.card > summary::-webkit-details-marker{display:none}
+details.card > summary::after{content:"+";font-size:20px;color:var(--ink)}
+details.card[open] > summary::after{content:"–"}
+details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:700;color:var(--warn);font-size:13px;margin-left:auto}
+.cad{padding:0 16px 16px;display:grid;gap:16px}
+.cad h3{margin:0 0 8px;font:700 14px var(--body)}
+.wgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
+.erow{display:grid;grid-template-columns:70px 1fr 88px;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--surface)}
+.erow .dsc{font-size:12.5px;line-height:1.25;color:var(--muted);min-width:0}
+.erow .dsc b{display:block;color:var(--ink);font-size:13px}
+.erow input[type=number]{min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 8px;width:100%;box-sizing:border-box;text-align:right}
+.erow label.no{grid-column:2 / -1;font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
+.erow.miss{border-color:var(--warn);background:var(--warn-bg)}
+.erow.excl{opacity:.6}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.kpi > span{display:block;font:700 11.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kpi > b{display:block;font:700 clamp(24px,7vw,34px)/1.05 var(--cond);font-variant-numeric:tabular-nums;margin-top:4px;overflow-wrap:anywhere}
+.kpi > b small{font-size:18px;color:var(--muted);margin-left:3px}
+.kpi.main{background:var(--plate);color:var(--plate-ink);border-color:var(--plate)}
+.kpi.main > span{color:var(--accent)}.kpi.main > b small{color:var(--plate-muted)}
+.kpi .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.kpi.main .sub{color:var(--plate-muted)}
+.badge{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-radius:5px;padding:2px 6px;vertical-align:middle}
+.badge.warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn)}
+.badge.muted{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.alert{border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
+.alert.warn{background:var(--warn-bg);border:1px solid var(--warn)}
+.alert.info{background:var(--surface);border:1px solid var(--line)}
+.alert b{display:block}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+table.q{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+table.q th{background:var(--surface-2);text-align:right;font:700 12px var(--body);letter-spacing:.03em;color:var(--muted);padding:10px 10px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom}
+table.q th small{display:block;font-weight:600;color:var(--muted);opacity:.8}
+table.q td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
+table.q tbody tr:nth-child(even) td{background:var(--zebra)}
+table.q .l{text-align:left}
+table.q .sticky{position:sticky;left:0;z-index:1}
+table.q th.sticky{z-index:2}
+table.q td.pano{font:700 15px var(--cond);letter-spacing:.02em}
+table.q td.pano small{display:block;font:500 11.5px var(--body);color:var(--muted);letter-spacing:0}
+table.q tr.inc td{background:var(--warn-bg)!important}
+table.q tr.inc td:first-child{box-shadow:inset 4px 0 0 var(--warn)}
+table.q tr.exc td{color:var(--muted)}
+table.q td.miss{color:var(--warn);font-weight:700}
+table.q tfoot td{background:var(--plate)!important;color:var(--plate-ink);font-weight:700;border-bottom:0}
+table.q tfoot td.big2{font:700 18px var(--cond)}
+.tnote{padding:10px 16px 14px;font-size:12.5px;color:var(--muted);line-height:1.45}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:15px;line-height:1.5}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+
 @media (max-width:900px){
-  #app{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  #pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #panel{border-left:0;border-top:1px solid var(--line);height:44vh;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);transition:height .2s}
   #panel.min{height:118px}
   #panel.max{height:78vh}
   #grab{display:block;border:0;background:transparent;padding:8px 0 2px;cursor:pointer;width:100%}
   #grab span{display:block;width:48px;height:5px;border-radius:3px;background:var(--line);margin:auto}
   .ph{padding-top:4px}
-  #estaq{top:10px;left:10px;width:calc(100% - 88px);padding:8px 12px 10px}
-  .big{font-size:58px}.big small{font-size:32px}
+  #estaq{top:10px;left:10px;width:calc(100% - 88px);padding:6px 10px 10px 6px}
+  .big{font-size:54px}.big small{font-size:30px}
   #ctrls{top:10px;right:10px;gap:8px}
   .cbtn{width:54px;height:54px}
   #searchBox{top:10px;left:10px;right:76px}
   #toast{left:10px;right:76px}
+  .form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fld,.fld.s3{grid-column:span 2}.fld.s1{grid-column:span 1}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wgrid{grid-template-columns:1fr}
+  table.q{font-size:13px}
+  table.q td,table.q th{padding:8px 8px}
 }
+@media (max-width:420px){ .locMeta b{font-size:13.5px} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
-<div id="app">
+<!-- ===== menu lateral ===== -->
+<div id="scrim"></div>
+<nav id="drawer" aria-label="Menu" aria-hidden="true">
+  <div class="dh"><div><b>Localizador de Estacas</b><small>BR-277/PR · Blocos 2 e 3 · R08</small></div>
+    <button class="menuBtn" type="button" data-close aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="nav">
+    <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
+    <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
+    <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
+  </div>
+  <div class="dfoot">6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+</nav>
+<template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
+
+<!-- ===== 1. Localização estaca ===== -->
+<section class="page" id="pLoc" data-page="localizacao" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Localização estaca</h1><span class="status" id="lStatus"><i></i><span id="lStatusTxt">Parado</span></span></div>
+  <div class="msg" id="lMsg" hidden></div>
+  <div class="locMain" aria-live="polite">
+    <div class="lbl">Estaca</div>
+    <div class="st" id="lSt">—</div>
+    <div class="plus" id="lPlus"></div>
+    <div class="track" id="lTrack" hidden><div class="bar"><div class="fill" id="lFill"></div><div class="knob" id="lKnob"></div></div><div class="ends"><span id="lA"></span><span id="lB"></span></div></div>
+    <div class="next" id="lNext"></div>
+  </div>
+  <div class="locMeta">
+    <div id="lAccBox"><span>Precisão GPS</span><b id="lAcc">—</b></div>
+    <div><span>Distância ao eixo</span><b id="lEixo">—</b></div>
+    <div><span>Status</span><b id="lTrk">—</b></div>
+  </div>
+  <div class="locBtns">
+    <button class="bigBtn" type="button" id="lGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span id="lGoTxt">Iniciar acompanhamento</span></button>
+    <button class="ghostBtn" type="button" id="lSol">Soluções</button>
+  </div>
+</section>
+
+<!-- ===== 2. Estacas BR-277 B2+B3 (mapa) ===== -->
+<section class="page" id="pMap" data-page="mapa" hidden>
   <div id="map">
     <div id="estaq" aria-live="polite">
+      <button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button>
       <div class="eh"><span>Estaqueamento</span><span class="mode" id="mode"><i></i><span id="modeTxt">Exemplo</span></span></div>
-      <div class="big" id="big">—</div>
-      <div class="esub" id="esub"></div>
-      <div class="emeta" id="emeta"></div>
+      <div class="ebody"><div class="big" id="big">—</div><div class="esub" id="esub"></div><div class="emeta" id="emeta"></div></div>
     </div>
     <form id="searchBox" hidden role="search">
       <input id="q" type="search" autocomplete="off" placeholder="Estaca, ex. 181+040 ou 181" aria-label="Buscar estaca">
       <button type="submit">Ir</button>
     </form>
     <div id="ctrls">
-      <button class="cbtn" id="gpsBtn" type="button" aria-pressed="false" title="Ligar GPS">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="8.5" opacity=".5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg><span>GPS</span></button>
-      <button class="cbtn" id="followBtn" type="button" aria-pressed="true" title="Acompanhar deslocamento">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l7.5 19L12 16.8 4.5 21z"/></svg><span>Seguir</span></button>
-      <button class="cbtn" id="centerBtn" type="button" title="Centralizar na minha localização">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg><span>Centro</span></button>
-      <button class="cbtn" id="searchBtn" type="button" aria-pressed="false" title="Buscar estaca">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg><span>Estaca</span></button>
-      <button class="cbtn" id="baseBtn" type="button" title="Trocar fundo do mapa">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5" opacity=".6"/></svg><span id="baseTxt">Satélite</span></button>
+      <button class="cbtn" id="gpsBtn" type="button" aria-pressed="false" title="Ligar GPS"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="8.5" opacity=".5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg><span>GPS</span></button>
+      <button class="cbtn" id="followBtn" type="button" aria-pressed="true" title="Acompanhar deslocamento"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l7.5 19L12 16.8 4.5 21z"/></svg><span>Seguir</span></button>
+      <button class="cbtn" id="centerBtn" type="button" title="Centralizar na minha localização"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg><span>Centro</span></button>
+      <button class="cbtn" id="searchBtn" type="button" aria-pressed="false" title="Buscar estaca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg><span>Estaca</span></button>
+      <button class="cbtn" id="baseBtn" type="button" title="Trocar fundo do mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5" opacity=".6"/></svg><span id="baseTxt">Satélite</span></button>
     </div>
     <div id="toast" hidden></div>
   </div>
-
   <aside id="panel" aria-label="Soluções">
     <button id="grab" type="button" aria-label="Expandir ou recolher o painel de soluções"><span></span></button>
     <div class="ph"><h2>Soluções</h2><span class="note" id="filterSummary" style="margin:0"></span></div>
@@ -199,81 +368,130 @@ canvas#reti{width:100%;height:190px;display:block;border-radius:8px;background:v
         </div>
         <div class="fsec" style="border-bottom:0">
           <h3>Convenções</h3>
-          <p class="note" style="margin-top:0">Cada linha do unifilar é um bloco de 20 m, da estaca até a seguinte. Blocos consecutivos com a mesma solução na mesma faixa formam um pano, dividido quando muda o marco km. Faixas desenhadas na posição do unifilar (faixa 1 junto ao eixo), com largura real de 3,6 m a partir do zoom 18 e ampliadas nos zooms menores. Sentido crescente à direita do eixo. Drenos ficam por fora do acostamento; ● marca saída de dreno.</p>
+          <p class="note" style="margin-top:0">Cada linha do unifilar é um bloco de 20 m, da estaca até a seguinte. Blocos consecutivos com a mesma solução na mesma faixa formam um pano, dividido quando muda o marco km. Faixas desenhadas na posição do unifilar (faixa 1 junto ao eixo), com largura de 3,6 m só para desenho a partir do zoom 18 e ampliadas nos zooms menores. Sentido crescente à direita do eixo. Drenos ficam por fora do acostamento; ● marca saída de dreno.</p>
           <p class="note">Fonte: R08 Unifilar de Soluções B2+B3 BR-277 (6.961 estacas, 164+700 a 303+800) e KMZ de estacas com hodômetro contínuo.</p>
         </div>
       </div>
     </div>
   </aside>
-</div>
+</section>
+
+<!-- ===== 3. Calculadora de programação ===== -->
+<section class="page" id="pCalc" data-page="calculadora" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Calculadora de programação</h1></div>
+  <div class="cscroll">
+    <div class="cwrap">
+      <form class="card" id="cForm" novalidate>
+        <h2>Trecho e parâmetros</h2>
+        <div class="form">
+          <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000"><span class="err" id="eKmA"></span></div>
+          <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000"><span class="err" id="eKmB"></span></div>
+          <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option></select></div>
+          <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
+          <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="informe"><span class="err" id="eDens"></span></div>
+          <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
+        </div>
+      </form>
+
+      <details class="card" id="cCad">
+        <summary><span>Cadastro de larguras e espessuras</span><span class="flag" id="cCadFlag"></span></summary>
+        <div class="cad">
+          <div>
+            <h3>Largura por pista (m)</h3>
+            <p class="note" style="margin:0 0 10px">O R08 não traz largura das faixas. Informe a largura de projeto de cada pista; sem ela o pano fica sinalizado e não entra no total.</p>
+            <div class="wgrid">
+              <div class="fld"><label for="wF1">Faixa 1</label><input id="wF1" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
+              <div class="fld"><label for="wF23">Faixa 2/3</label><input id="wF23" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
+              <div class="fld"><label for="wAC">Acostamento</label><input id="wAC" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
+            </div>
+          </div>
+          <div>
+            <h3>Espessura de CBUQ por solução (cm)</h3>
+            <p class="note" style="margin:0 0 10px">FF, FE e FS vêm preenchidas com a espessura da solução (6, 10 e 3 cm), considerando recomposição em CBUQ na mesma espessura. As demais siglas não têm espessura de CBUQ na base: informe o valor ou marque "não leva CBUQ".</p>
+            <div class="egrid" id="cEsp"></div>
+          </div>
+        </div>
+      </details>
+
+      <div id="cOut" style="display:grid;gap:16px"></div>
+    </div>
+  </div>
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const PROJECT_DATA = /*__DATA__*/;
 /* =====================================================================
-   Estrutura
-   Data    → estacas, soluções, panos (base do projeto)
-   Geo     → projeção local, localização GPS → estaca
-   Layers  → desenho no mapa (eixo, panos, drenos, estacas, rótulos)
-   UI      → painéis ESTAQUEAMENTO e SOLUÇÕES, filtros
-   App.on(evento, fn) → ponto de extensão para registros de execução,
-   fotos, comentários e não conformidades (eventos: 'position', 'select').
+   Localizador de Estacas — estrutura
+   Data    → estacas, soluções e panos (base do projeto R08 + KMZ)
+   Geo     → projeção local; GPS → segmento → posição interpolada → estaca
+   Loc     → serviço de localização compartilhado (GPS, simulação, consulta)
+   Páginas → 1 Localização estaca · 2 Estacas BR-277 B2+B3 (mapa) · 3 Calculadora
+   App.on(evento, fn): pontos de extensão ('position', 'gps', 'select', 'page')
+   para registros de execução, fotos, comentários e não conformidades.
    ===================================================================== */
 const App = (function(){
 "use strict";
 const listeners={};const on=(e,f)=>(listeners[e]=listeners[e]||[]).push(f);const emit=(e,x)=>(listeners[e]||[]).forEach(f=>{try{f(x)}catch(err){console.error(err)}});
+const $=id=>document.getElementById(id);
+const store={get(k,d){try{const v=localStorage.getItem('br277.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('br277.'+k,JSON.stringify(v))}catch(e){}}};
+const nf=(v,d)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtM=v=>Math.round(v).toLocaleString('pt-BR')+' m';
+const fmtKm=s=>nf(s/1000,3)+' km';
 
 /* ------------------------------ Data ------------------------------ */
 const Data=(function(){
   const CODES=PROJECT_DATA.codes,R=PROJECT_DATA.rows,N=R.length;
   const FAM={
-    FF:{label:'FF',desc:'Fresagem Funcional',color:'#2E86C1'},
-    FE:{label:'FE',desc:'Fresagem Estrutural',color:'#1D3F8F'},
-    FS:{label:'FS',desc:'Fresagem Superficial',color:'#7FCBD9'},
-    REC:{label:'REC',desc:'Reciclagem',color:'#D62839'},
-    PA:{label:'PA',desc:'Preenchimento de Acostamento',color:'#F08A2C'},
-    RP:{label:'RP',desc:'Reparo Profundo',color:'#B0177A'},
-    DR:{label:'DR',desc:'Dreno Raso',color:'#23A26B'},
-    DP:{label:'DP',desc:'Dreno Profundo',color:'#0B5E43'},
-    RF:{label:'RF',desc:'Sigla do R08 sem descrição',color:'#8C7BC4'}};
+    FF:{desc:'Fresagem Funcional',color:'#2E86C1'},FE:{desc:'Fresagem Estrutural',color:'#1D3F8F'},FS:{desc:'Fresagem Superficial',color:'#7FCBD9'},
+    REC:{desc:'Reciclagem',color:'#D62839'},PA:{desc:'Preenchimento de Acostamento',color:'#F08A2C'},RP:{desc:'Reparo Profundo',color:'#B0177A'},
+    DR:{desc:'Dreno Raso',color:'#23A26B'},DP:{desc:'Dreno Profundo',color:'#0B5E43'},RF:{desc:'Sigla do R08 sem descrição',color:'#8C7BC4'}};
   const FAM_ORDER=['FF','FE','FS','REC','PA','RP','DR','DP','RF'];
   const PA_SHADES={'1,5':'#FFD6A0','2,0':'#FDBA66','2,5':'#F79C3E','3,0':'#E47A2A','3,5':'#C95A1E','4,0':'#A64416','4,5':'#833310','5,0':'#5C240A'};
-  function info(code){
-    let fam,param=null,esp=null;
-    if(code==='FF'){fam='FF';esp='6 cm'} else if(code==='FE'){fam='FE';esp='10 cm'} else if(code==='FS'){fam='FS';esp='3 cm'}
-    else if(code==='DR'){fam='DR';esp='0,60 m'} else if(code==='DP'){fam='DP';esp='1,50 m'}
-    else if(/^REC/.test(code)){fam='REC';param=code.slice(3)} else if(/^PA/.test(code)){fam='PA';param=code.slice(2)}
-    else if(/^RP/.test(code)){fam='RP';param=code.slice(2)} else fam='RF';
-    let color=FAM[fam].color; if(fam==='PA'&&PA_SHADES[param])color=PA_SHADES[param];
-    if(code==='RECe24')color='#F2707F'; if(code==='RPc30')color='#86136A'; if(code==='RPc35')color='#5E1450';
-    return {code,fam,param,esp,color,desc:FAM[fam].desc,ink:inkOn(color)};
-  }
   function inkOn(hex){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>150?'#141715':'#FFFFFF'}
-  // pistas: índices 0..5 = colunas do unifilar; 6,7 = drenos
+  function info(code){let fam,param=null,esp=null;
+    if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}
+    else if(code==='DR'){fam='DR';esp='0,60 m'}else if(code==='DP'){fam='DP';esp='1,50 m'}
+    else if(/^REC/.test(code)){fam='REC';param=code.slice(3)}else if(/^PA/.test(code)){fam='PA';param=code.slice(2)}
+    else if(/^RP/.test(code)){fam='RP';param=code.slice(2)}else fam='RF';
+    let color=FAM[fam].color;if(fam==='PA'&&PA_SHADES[param])color=PA_SHADES[param];
+    if(code==='RECe24')color='#F2707F';if(code==='RPc30')color='#86136A';if(code==='RPc35')color='#5E1450';
+    return {code,fam,param,esp,color,desc:FAM[fam].desc,ink:inkOn(color)}}
   const LANES=[
-    {i:0,name:'Acostamento',grp:'AC',side:'C',off:8.45,w:2.5},
-    {i:1,name:'Faixa 2/3',grp:'F23',side:'C',off:5.4,w:3.6},
-    {i:2,name:'Faixa 1',grp:'F1',side:'C',off:1.8,w:3.6},
-    {i:3,name:'Faixa 1',grp:'F1',side:'D',off:-1.8,w:3.6},
-    {i:4,name:'Faixa 2/3',grp:'F23',side:'D',off:-5.4,w:3.6},
-    {i:5,name:'Acostamento',grp:'AC',side:'D',off:-8.45,w:2.5},
-    {i:6,name:'Dreno',grp:'DRN',side:'C',off:11.2,w:1.2},
-    {i:7,name:'Dreno',grp:'DRN',side:'D',off:-11.2,w:1.2}];
-  const SIDE={C:'Crescente',D:'Decrescente'};
+    {i:0,name:'Acostamento',grp:'AC',side:'C',off:8.45,w:2.5,id:'AC-C'},
+    {i:1,name:'Faixa 2/3',grp:'F23',side:'C',off:5.4,w:3.6,id:'F23-C'},
+    {i:2,name:'Faixa 1',grp:'F1',side:'C',off:1.8,w:3.6,id:'F1-C'},
+    {i:3,name:'Faixa 1',grp:'F1',side:'D',off:-1.8,w:3.6,id:'F1-D'},
+    {i:4,name:'Faixa 2/3',grp:'F23',side:'D',off:-5.4,w:3.6,id:'F23-D'},
+    {i:5,name:'Acostamento',grp:'AC',side:'D',off:-8.45,w:2.5,id:'AC-D'},
+    {i:6,name:'Dreno',grp:'DRN',side:'C',off:11.2,w:1.2,id:'DR-C'},
+    {i:7,name:'Dreno',grp:'DRN',side:'D',off:-11.2,w:1.2,id:'DR-D'}];
+  const SIDE={C:'Crescente',D:'Decrescente'};const GRP={F1:'Faixa 1',F23:'Faixa 2/3',AC:'Acostamento'};
   const DREN_CODE={R:'DR',P:'DP'};
-  // código por estaca e pista (inclui drenos)
-  function codeAt(L,i){if(L<6){const c=R[i][6][L];return c?CODES[c-1]:null}const ch=R[i][7][L===6?2:1];return DREN_CODE[ch]||null}
-  function saidaAt(side,i){return R[i][7][side==='C'?3:0]==='o'}
+  function codeAt(L,i){if(L<6){const c=R[i][6][L];return c?CODES[c-1]:null}return DREN_CODE[R[i][7][L===6?2:1]]||null}
+  const saidaAt=(side,i)=>R[i][7][side==='C'?3:0]==='o';
   const PANOS=[];const PANO_AT=LANES.map(()=>new Int32Array(N).fill(-1));
-  for(let L=0;L<8;L++){let i=0;while(i<N){const c=codeAt(L,i);if(!c){i++;continue}let j=i;while(j+1<N&&codeAt(L,j+1)===c&&R[j+1][5]===R[i][5])j++;
-    const id=PANOS.length;PANOS.push({id,L,code:c,i0:i,i1:j,info:info(c)});for(let k=i;k<=j;k++)PANO_AT[L][k]=id;i=j+1}}
+  for(let L=0;L<8;L++){let i=0,seq=0,km=null;while(i<N){const c=codeAt(L,i);if(!c){i++;continue}let j=i;while(j+1<N&&codeAt(L,j+1)===c&&R[j+1][5]===R[i][5])j++;
+    if(R[i][5]!==km){km=R[i][5];seq=0}seq++;
+    const id=PANOS.length;PANOS.push({id,L,code:c,i0:i,i1:j,info:info(c),tag:`${R[i][5]}-${LANES[L].id}-${String(seq).padStart(2,'0')}`});for(let k=i;k<=j;k++)PANO_AT[L][k]=id;i=j+1}}
   const NAME_IDX=new Map();R.forEach((r,i)=>NAME_IDX.set(r[0],i));
-  const KM_FIRST=new Map();for(let i=0;i<N;i++)if(!KM_FIRST.has(R[i][5]))KM_FIRST.set(R[i][5],i);
+  const KM_FIRST=new Map(),KM_LAST=new Map();for(let i=0;i<N;i++){if(!KM_FIRST.has(R[i][5]))KM_FIRST.set(R[i][5],i);KM_LAST.set(R[i][5],i)}
   const splitName=n=>{const p=n.split('+');return [p[0],parseInt(p[1],10)]};
   const fmtName=(i,extra)=>{const [km,o]=splitName(R[i][0]);return km+'+'+String(Math.round(o+extra)).padStart(3,'0')};
   const endName=i1=>i1+1<N?R[i1+1][0]:fmtName(i1,20);
   const famCount={};PANOS.forEach(p=>famCount[p.info.fam]=(famCount[p.info.fam]||0)+1);
-  return {CODES,R,N,FAM,FAM_ORDER,LANES,SIDE,PANOS,PANO_AT,NAME_IDX,KM_FIRST,info,codeAt,saidaAt,splitName,fmtName,endName,famCount,inkOn};
+  const ODO0=R[0][3],ODO_END=R[N-1][3]+20;
+  function nameAt(s){let i=Math.floor((s-ODO0)/20+1e-9);i=Math.max(0,Math.min(N-1,i));let d=s-R[i][3];if(Math.round(d)>=20&&i+1<N){i++;d=s-R[i][3]}return fmtName(i,Math.max(0,d))}
+  function parseKm(txt){const t=String(txt||'').trim().replace(/\s/g,'');if(!t)return {err:'Informe o km.'};
+    let m=t.match(/^(\d{1,3})\+(\d{1,4}(?:[.,]\d+)?)$/),km,o;
+    if(m){km=+m[1];o=parseFloat(m[2].replace(',','.'))}else{m=t.match(/^(\d{1,3})$/);if(!m)return {err:'Use o formato 236+300.'};km=+m[1];o=null}
+    const f=KM_FIRST.get(km),l=KM_LAST.get(km);if(f==null)return {err:`O km ${km} não está no trecho (164+700 a 303+800).`};
+    const fo=splitName(R[f][0])[1],lo=splitName(R[l][0])[1]+20;if(o==null)o=fo;
+    if(o<fo)return {err:`O km ${km} começa em ${km}+${String(fo).padStart(3,'0')} neste trecho.`};
+    if(o>lo)return {err:`O km ${km} vai até ${km}+${String(lo).padStart(3,'0')} (${lo} m neste marco).`};
+    return {s:R[f][3]+(o-fo),name:`${km}+${String(Math.round(o)).padStart(3,'0')}`}}
+  return {CODES,R,N,FAM,FAM_ORDER,LANES,SIDE,GRP,PANOS,PANO_AT,NAME_IDX,KM_FIRST,info,codeAt,saidaAt,splitName,fmtName,endName,nameAt,parseKm,famCount,inkOn,ODO0,ODO_END};
 })();
 const {R,N,LANES,SIDE,PANOS,PANO_AT}=Data;
 
@@ -294,8 +512,7 @@ const Geo=(function(){
     for(let a=x0;a<=x1;a++)for(let b=y0;b<=y1;b++){const k=key(a,b);(grid.get(k)||grid.set(k,[]).get(k)).push(i)}}
   function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x))}
   const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
-  const HALF=12; // m de plataforma a partir do eixo (faixas + acostamento + dreno)
-  // GPS → segmento → posição interpolada → estaca
+  const HALF=12;
   function locate(lat,lon,acc){
     const [px,py]=toXY(lat,lon),sig=Math.max(acc||5,3),Rq=Math.max(80,4*sig+HALF+20);
     const seen=new Set(),cand=[];
@@ -317,24 +534,124 @@ const Geo=(function(){
     const bounds=[[7.2,9.7],[3.6,7.2],[0,3.6],[-3.6,0],[-7.2,-3.6],[-9.7,-7.2]];
     const lane=bounds.map(([a,b])=>Phi((b-main.lat)/sig)-Phi((a-main.lat)/sig));
     const s=main.s,bi=Math.max(0,Math.min(N-1,Math.floor((s-ODO[0]+0.5)/20)));
-    return {outside:false,main,s,bi,probs,lane,sig,ambiguous:hyps.length>1&&hyps[1].w/W>0.15};
-  }
+    return {outside:false,main,s,bi,probs,lane,sig,ambiguous:hyps.length>1&&hyps[1].w/W>0.15}}
   return {LAT,LON,ODO,X,Y,NX,NY,lat0,toLL,off,locate};
 })();
 const {LAT,LON,ODO,X,Y,NX,NY}=Geo;
 
-/* ------------------------------ Filtros ------------------------------ */
-const Filters=(function(){
-  const def={sent:'ALL',faixa:['F1','F23','AC'],sol:Data.FAM_ORDER.slice()};
-  let st=def;try{const v=JSON.parse(localStorage.getItem('br277.filters'));if(v&&v.sol&&v.faixa)st=v}catch(e){}
-  const save=()=>{try{localStorage.setItem('br277.filters',JSON.stringify(st))}catch(e){}};
-  function visible(p){const L=LANES[p.L];if(st.sent!=='ALL'&&L.side!==st.sent)return false;if(L.grp!=='DRN'&&!st.faixa.includes(L.grp))return false;return st.sol.includes(p.info.fam)}
-  function saidaVisible(side){return (st.sent==='ALL'||st.sent===side)&&(st.sol.includes('DR')||st.sol.includes('DP'))}
-  const isDefault=()=>st.sent==='ALL'&&st.faixa.length===3&&st.sol.length===Data.FAM_ORDER.length;
-  return {get:()=>st,set:(k,v)=>{st={...st,[k]:v};save();emit('filters',st)},visible,saidaVisible,isDefault};
+/* ------------------------------ Loc: localização compartilhada ------------------------------ */
+const Loc=(function(){
+  const st={mode:'exemplo',lat:null,lon:null,acc:null,r:null,src:null,t:0,dirSign:0,lastS:null};
+  const gps={on:false,status:'off',err:null,watchId:null,lastFix:0,wake:false};
+  let wakeObj=null,watchdog=null;
+  function set(lat,lon,acc,heading,speed,src,mode){
+    const r=Geo.locate(lat,lon,acc);
+    if(!r.outside){const h=r.main;
+      if(heading!=null&&!isNaN(heading)&&speed!=null&&speed>1.5){const az=Math.atan2(h.dx,h.dy)*180/Math.PI;st.dirSign=Math.abs(((heading-az)%360+540)%360-180)<90?1:-1}
+      else if(src==='gps'&&st.lastS!=null&&Math.abs(r.s-st.lastS)>4&&Math.abs(r.s-st.lastS)<400)st.dirSign=Math.sign(r.s-st.lastS);
+      if(src==='gps')st.lastS=r.s}
+    if(src!=='gps')st.dirSign=0;
+    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st)}
+  const gpsEmit=()=>emit('gps',gps);
+  async function keepAwake(){if(!('wakeLock' in navigator)){gps.wake=false;return}try{wakeObj=await navigator.wakeLock.request('screen');gps.wake=true;wakeObj.addEventListener('release',()=>{gps.wake=false;gpsEmit()})}catch(e){gps.wake=false}gpsEmit()}
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&gps.on&&!gps.wake)keepAwake()});
+  function start(){
+    if(gps.on)return;
+    if(!('geolocation' in navigator)){gps.status='error';gps.err={code:'nosupport'};gpsEmit();return}
+    gps.on=true;gps.status='waiting';gps.err=null;gps.lastFix=0;st.lastS=null;st.dirSign=0;gpsEmit();
+    gps.watchId=navigator.geolocation.watchPosition(p=>{const c=p.coords;gps.lastFix=Date.now();
+        if(gps.status!=='on'||gps.err){gps.status='on';gps.err=null;gpsEmit()}
+        set(c.latitude,c.longitude,c.accuracy,c.heading,c.speed,'gps','gps')},
+      err=>{if(err.code===1){stop();gps.status='error';gps.err={code:'denied'};gpsEmit()}
+        else{gps.status='nosignal';gps.err={code:err.code===3?'timeout':'unavailable',msg:err.message};gpsEmit()}},
+      {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+    clearInterval(watchdog);watchdog=setInterval(()=>{if(!gps.on)return;const age=gps.lastFix?Date.now()-gps.lastFix:Infinity;
+      if(gps.status==='on'&&age>15000){gps.status='nosignal';gps.err={code:'stale'}}gpsEmit()},3000);
+    keepAwake()}
+  function stop(){if(gps.watchId!=null)navigator.geolocation.clearWatch(gps.watchId);gps.watchId=null;gps.on=false;gps.status='off';clearInterval(watchdog);
+    if(wakeObj){wakeObj.release().catch(()=>{});wakeObj=null}gps.wake=false;if(st.mode==='gps')st.mode='sim';gpsEmit()}
+  return {st,gps,set,start,stop};
 })();
 
-/* ------------------------------ Layers ------------------------------ */
+/* ------------------------------ Filtros do mapa ------------------------------ */
+const Filters=(function(){
+  const def={sent:'ALL',faixa:['F1','F23','AC'],sol:Data.FAM_ORDER.slice()};
+  let st=store.get('filters',def);if(!st||!st.sol||!st.faixa)st=def;
+  function visible(p){const L=LANES[p.L];if(st.sent!=='ALL'&&L.side!==st.sent)return false;if(L.grp!=='DRN'&&!st.faixa.includes(L.grp))return false;return st.sol.includes(p.info.fam)}
+  const saidaVisible=side=>(st.sent==='ALL'||st.sent===side)&&(st.sol.includes('DR')||st.sol.includes('DP'));
+  const isDefault=()=>st.sent==='ALL'&&st.faixa.length===3&&st.sol.length===Data.FAM_ORDER.length;
+  return {get:()=>st,set:(k,v)=>{st={...st,[k]:v};store.set('filters',st);emit('filters',st)},visible,saidaVisible,isDefault};
+})();
+
+/* ------------------------------ Menu e páginas ------------------------------ */
+const Router=(function(){
+  const PAGES=['localizacao','mapa','calculadora'];const inits={};const shown={};let cur=null;
+  document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
+  function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
+  function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
+  $('scrim').onclick=close;$('drawer').querySelector('[data-close]').onclick=close;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  $('drawer').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();go(a.dataset.page);close()});
+  function go(p){if(!PAGES.includes(p))p='localizacao';if(p===cur)return;cur=p;
+    document.querySelectorAll('.page').forEach(s=>s.hidden=s.dataset.page!==p);
+    $('drawer').querySelectorAll('a').forEach(a=>a.setAttribute('aria-current',a.dataset.page===p?'page':'false'));
+    if(!shown[p]){shown[p]=true;inits[p]&&inits[p]()}
+    store.set('page',p);try{history.replaceState(null,'','#'+p)}catch(e){}emit('page',p)}
+  window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+  return {go,onInit:(p,f)=>inits[p]=f,cur:()=>cur};
+})();
+
+/* =====================================================================
+   PÁGINA 1 — Localização estaca
+   ===================================================================== */
+(function LocPage(){
+  const setStatus=(cls,txt)=>{$('lStatus').className='status '+cls;$('lStatusTxt').textContent=txt};
+  function msg(kind,title,text){const m=$('lMsg');if(!kind){m.hidden=true;return}m.className='msg '+kind;m.innerHTML=`<div><b>${title}</b>${text}</div>`;m.hidden=false}
+  function render(){const st=Loc.st,g=Loc.gps,r=st.r;
+    if(g.status==='on')setStatus('on','Acompanhando');else if(g.status==='waiting')setStatus('wait','Buscando sinal');
+    else if(g.status==='nosignal')setStatus('err','Sem sinal');else if(g.status==='error')setStatus('err',g.err&&g.err.code==='denied'?'Sem permissão':'Indisponível');
+    else setStatus('',{exemplo:'Exemplo',sim:'Simulado',consulta:'Consulta',gps:'Parado'}[st.mode]||'Parado');
+    $('lGo').className='bigBtn'+(g.on?' stop':'');$('lGoTxt').textContent=g.on?'Pausar acompanhamento':'Iniciar acompanhamento';
+    const age=g.lastFix?Math.round((Date.now()-g.lastFix)/1000):null;
+    $('lTrk').textContent=g.on?(g.status==='on'?(age<=2?'ao vivo':`há ${age} s`):g.status==='waiting'?'aguardando GPS':'sem posição')+(g.wake?' · tela ativa':''):({exemplo:'exemplo',sim:'simulado no mapa',consulta:'consulta manual'}[st.mode]||'desligado');
+    if(g.status==='error'&&g.err.code==='denied')msg('bad','Permissão de localização negada.',' Libere em Ajustes › Privacidade › Serviços de Localização › Safari, ou no botão "aA" da barra, em Ajustes do Site. Dentro do visualizador do Claude a localização não é liberada; use o endereço publicado no GitHub Pages.');
+    else if(g.status==='error')msg('bad','Este navegador não oferece localização.',' Abra o aplicativo no Safari ou no Chrome do celular.');
+    else if(g.status==='nosignal')msg('warn','Sem sinal de GPS.',g.err&&g.err.code==='stale'?' A última posição tem mais de 15 s. Procure céu aberto; a estaca mostrada pode estar desatualizada.':' Não foi possível obter a posição. Procure céu aberto e aguarde.');
+    else if(g.status==='waiting')msg('info','Buscando sua posição…',' Isso pode levar alguns segundos na primeira vez.');
+    else if(r&&r.outside)msg('info','Fora do trecho.',` Você está a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} da estaca mais próxima (${R[r.nearest][0]}). O trecho vai de 164+700 a 303+800.`);
+    else if(st.acc!=null&&st.acc>20&&st.mode==='gps')msg('warn','Precisão baixa do GPS.',` Erro estimado de ±${Math.round(st.acc)} m: a posição pode variar mais de uma estaca. Aguarde a precisão melhorar.`);
+    else if(r&&!r.outside&&Math.abs(r.main.lat)>25)msg('info','Longe do eixo.',` Você está a ${fmtM(Math.abs(r.main.lat))} do eixo; confira se está sobre a pista.`);
+    else if(!g.on&&st.mode==='exemplo')msg('info','Posição de exemplo.',' Toque em Iniciar acompanhamento e permita o acesso à localização.');
+    else msg(null);
+    if(!r){$('lSt').textContent='—';return}
+    if(r.outside){$('lSt').className='st out';$('lSt').textContent='Fora do trecho';$('lPlus').textContent='';$('lTrack').hidden=true;$('lNext').innerHTML=`Estaca mais próxima: <b>${R[r.nearest][0]}</b>`;
+      $('lEixo').textContent='—';accBox(st.acc);fit($('lSt'));return}
+    let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
+    const j=Math.min(N-1,i+1),endB=i+1<N?R[j][0]:Data.fmtName(i,20);
+    $('lSt').className='st';$('lSt').textContent=R[i][0];$('lPlus').textContent=`+ ${d} m`;
+    $('lTrack').hidden=false;const pct=Math.min(100,d/20*100);$('lFill').style.width=pct+'%';$('lKnob').style.left=pct+'%';
+    $('lA').textContent=R[i][0];$('lB').textContent=endB;
+    const toNext=st.dirSign<0?d:20-d,nxt=st.dirSign<0?R[i][0]:endB;
+    $('lNext').innerHTML=`Próxima estaca <b>${nxt}</b> em <b>${Math.max(0,toNext)} m</b>${st.dirSign?` · sentido ${st.dirSign>0?'crescente':'decrescente'}`:''}`;
+    const la=r.main.lat;$('lEixo').textContent=Math.abs(la)<1?'no eixo':`${nf(Math.abs(la),1)} m ${la>0?'à dir.':'à esq.'}`;
+    accBox(st.acc);fit($('lSt'));fit($('lPlus'))}
+  function fit(el){el.style.fontSize='';const box=$('pLoc').clientWidth*0.94;if(!box)return;const w=el.scrollWidth;if(w>box){const fs=parseFloat(getComputedStyle(el).fontSize);el.style.fontSize=Math.floor(fs*box/w)+'px'}}
+  window.addEventListener('resize',()=>{fit($('lSt'));fit($('lPlus'))});
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit($('lSt'));fit($('lPlus'))});
+  function accBox(a){const b=$('lAccBox');if(a==null){$('lAcc').textContent='—';b.className='';return}
+    $('lAcc').textContent='±'+Math.round(a)+' m';b.className=a<=10?'good':a<=20?'mid':'poor'}
+  on('position',render);on('gps',render);
+  $('lGo').onclick=()=>{Loc.gps.on?Loc.stop():Loc.start()};
+  $('lSol').onclick=()=>Router.go('mapa');
+  Router.onInit('localizacao',render);
+  try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(p=>{if(p.state==='granted'&&store.get('gpsOn',false))Loc.start()}).catch(()=>{})}catch(e){}
+  on('gps',g=>{if(g.status==='on'||g.status==='off')store.set('gpsOn',g.on)});
+})();
+
+/* =====================================================================
+   PÁGINA 2 — Estacas BR-277 B2+B3 (mapa, painéis ESTAQUEAMENTO e SOLUÇÕES)
+   ===================================================================== */
+Router.onInit('mapa',function(){
 const map=L.map('map',{zoomControl:false,preferCanvas:true,maxZoom:20,zoomSnap:0.5});
 map.setView([LAT[0],LON[0]],12);
 L.control.zoom({position:'bottomleft'}).addTo(map);
@@ -345,9 +662,8 @@ const Layers=(function(){
     {k:'sat',t:'Satélite',l:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:20,maxNativeZoom:19,attribution:'Imagem © Esri'})},
     {k:'osm',t:'Mapa',l:L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© OpenStreetMap'})},
     {k:'none',t:'Sem fundo',l:null}];
-  let bi=0;try{bi=Math.max(0,BASES.findIndex(b=>b.k===localStorage.getItem('br277.base')))}catch(e){}
-  function setBase(i){BASES.forEach(b=>b.l&&map.hasLayer(b.l)&&map.removeLayer(b.l));bi=i;const b=BASES[i];if(b.l)b.l.addTo(map).bringToBack();
-    document.getElementById('baseTxt').textContent=b.t;try{localStorage.setItem('br277.base',b.k)}catch(e){}}
+  let bi=Math.max(0,BASES.findIndex(b=>b.k===store.get('base','sat')));
+  function setBase(i){BASES.forEach(b=>b.l&&map.hasLayer(b.l)&&map.removeLayer(b.l));bi=i;const b=BASES[i];if(b.l)b.l.addTo(map).bringToBack();$('baseTxt').textContent=b.t;store.set('base',b.k)}
   const axisLL=[];for(let i=0;i<N;i++)axisLL.push([LAT[i],LON[i]]);
   L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
   const axis=L.polyline(axisLL,{renderer,color:css('--axis')||'#222',weight:2.5,interactive:false}).addTo(map);
@@ -364,17 +680,13 @@ const Layers=(function(){
   function restyle(){const z=map.getZoom();const k=exag(z),m=mpp(z);
     if(k!==curK){PANOS.forEach(p=>lines[p.id].setLatLngs(geom(p,k)));curK=k}
     PANOS.forEach(p=>{const L0=LANES[p.L];const w=L0.grp==='DRN'?(p.code==='DP'?4:3):Math.max(2,L0.w*k/m-0.6);lines[p.id].setStyle({weight:w})});
-    const ls=z<=13?0.85:z<=16?0.95:z<18?1:1.1;document.getElementById('map').style.setProperty('--ls',ls);axis.bringToFront()}
-  // camada dinâmica: estacas, rótulos, limites de pano, saídas, km
+    $('map').style.setProperty('--ls',z<=13?0.85:z<=16?0.95:z<18?1:1.1);axis.bringToFront()}
   const dyn=L.layerGroup().addTo(map);let hot=-1;
-  function stepFor(z){return z>=18?1:z>=17?2:z>=16?5:z>=15?10:z>=14?25:0}
-  function detail(){dyn.clearLayers();const z=map.getZoom(),k=exag(z),m=mpp(z),b=map.getBounds().pad(0.15);
-    const edge=-(12.6*k+2*m);
-    // km
+  const stepFor=z=>z>=18?1:z>=17?2:z>=16?5:z>=15?10:z>=14?25:0;
+  function detail(){dyn.clearLayers();const z=map.getZoom(),k=exag(z),m=mpp(z),b=map.getBounds().pad(0.15);const edge=-(12.6*k+2*m);
     const kmStep=z>=12?1:z>=10?5:10;
-    Data.KM_FIRST.forEach((i,km)=>{if(km%kmStep||!b.contains([LAT[i],LON[i]]))return;if(z>=16)return;
+    Data.KM_FIRST.forEach((i,km)=>{if(km%kmStep||z>=16||!b.contains([LAT[i],LON[i]]))return;
       L.marker(Geo.off(i,edge-10*m),{interactive:false,icon:L.divIcon({className:'',html:`<span class="kml">km ${km}</span>`,iconSize:[0,0]})}).addTo(dyn)});
-    // estacas
     const step=stepFor(z);
     if(step){const ax=css('--axis'),ac=css('--accent');let n=0;
       for(let i=0;i<N;i++){if(!b.contains([LAT[i],LON[i]]))continue;const o=Data.splitName(R[i][0])[1],isHot=i===hot;
@@ -384,11 +696,9 @@ const Layers=(function(){
         if(ref||isHot){const sx=-NX[i],sy=NY[i];let a=Math.atan2(sy,sx)*180/Math.PI;const flip=Math.abs(a)>90;if(flip)a+=180;
           const style=flip?`right:0;transform-origin:100% 50%;transform:rotate(${a.toFixed(1)}deg)`:`left:0;transform-origin:0 50%;transform:rotate(${a.toFixed(1)}deg)`;
           L.marker(Geo.off(i,edge),{interactive:false,zIndexOffset:isHot?900:0,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="stl${isHot?' hot':''}" style="${style}">${R[i][0]}</span>`})}).addTo(dyn)}}}
-    // saídas de dreno
     if(z>=16)for(const side of ['C','D']){if(!Filters.saidaVisible(side))continue;const o=(side==='C'?12.6:-12.6)*k;
       for(let i=0;i<N;i++){if(!Data.saidaAt(side,i)||!b.contains([LAT[i],LON[i]]))continue;
         L.circleMarker(Geo.off(i,o),{renderer,radius:z>=18?5:3.5,color:'#fff',weight:1.5,fillColor:Data.FAM.DR.color,fillOpacity:1}).on('click',e=>{L.DomEvent.stopPropagation(e);openStation(i)}).addTo(dyn)}}
-    // rótulos e limites dos panos
     if(z>=14){const gap=z>=18?420:z>=16?520:640;let n=0;
       for(const p of PANOS){if(!Filters.visible(p))continue;const L0=LANES[p.L];if(L0.grp==='DRN'&&z<16)continue;
         const lenPx=20*(p.i1-p.i0+1)/m;const txt=z>=17?p.code:p.info.fam;const need=txt.length*7*(z>=18?1.1:1)+10;if(lenPx<need)continue;
@@ -400,172 +710,234 @@ const Layers=(function(){
           L.marker(Geo.toLL(xx,yy),{interactive:false,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="sol" style="background:${p.info.color};color:${p.info.ink};transform:translate(-50%,-50%) rotate(${a.toFixed(1)}deg)">${txt}</span>`})}).addTo(dyn)}}
       if(z>=17){const tc=css('--ink');for(const p of PANOS){if(!Filters.visible(p)||LANES[p.L].grp==='DRN')continue;
         for(const i of [p.i0,Math.min(N-1,p.i1+1)]){if(!b.contains([LAT[i],LON[i]]))continue;const L0=LANES[p.L],c=L0.off*k,hw=L0.w*k/2;
-          L.polyline([Geo.off(i,c-hw),Geo.off(i,c+hw)],{renderer,color:tc,weight:2,opacity:.85,interactive:false}).addTo(dyn)}}}}
-  }
+          L.polyline([Geo.off(i,c-hw),Geo.off(i,c+hw)],{renderer,color:tc,weight:2,opacity:.85,interactive:false}).addTo(dyn)}}}}}
   map.on('zoomend',()=>{restyle();detail()});map.on('moveend',detail);
-  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i},mpp};
+  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i}};
 })();
 
-/* ------------------------------ Popups ------------------------------ */
-const fmtM=v=>Math.round(v).toLocaleString('pt-BR')+' m';
-const fmtKm=s=>(s/1000).toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3})+' km';
-const tagHtml=inf=>`<span class="tag" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
+const tagHtml=(inf,cls)=>`<span class="tag${cls?' '+cls:''}" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
 const laneName=L0=>`${SIDE[L0.side]} — ${L0.name}`;
 function panoRows(p){const inf=p.info,L0=LANES[p.L];return [
-  ['Solução',inf.code],['Descrição',inf.desc],inf.esp?[inf.fam==='DR'||inf.fam==='DP'?'Profundidade':'Espessura',inf.esp]:null,inf.param?['Parâmetro no R08',inf.param]:null,
+  ['Pano',p.tag],['Solução',inf.code],['Descrição',inf.desc],inf.esp?[inf.fam==='DR'||inf.fam==='DP'?'Profundidade':'Espessura',inf.esp]:null,inf.param?['Parâmetro no R08',inf.param]:null,
   ['Sentido',SIDE[L0.side]],['Faixa',L0.name],['Estaca inicial',R[p.i0][0]],['Estaca final',Data.endName(p.i1)],['Extensão',fmtM(20*(p.i1-p.i0+1))],
   ['Blocos de 20 m',p.i1-p.i0+1],['Marco km',R[p.i0][5]],['Hodômetro',`${fmtKm(ODO[p.i0])} → ${fmtKm(ODO[p.i1]+20)}`],['Bloco do contrato','B'+R[p.i0][4]],['Página do PDF',R[p.i0][8]===R[p.i1][8]?R[p.i0][8]:R[p.i0][8]+'–'+R[p.i1][8]]].filter(Boolean)}
 function openPano(id,ll){const p=PANOS[id];emit('select',{type:'pano',pano:p});
-  L.popup({maxWidth:300,autoPanPaddingTopLeft:[10,190]}).setLatLng(ll).setContent(`<div class="pp"><h3>${tagHtml(p.info)}<span style="font-size:16px">${laneName(LANES[p.L])}</span></h3><dl>${panoRows(p).map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>`).openOn(map)}
+  L.popup({maxWidth:300,autoPanPaddingTopLeft:[10,190]}).setLatLng(ll).setContent(`<div class="pp"><h3>${tagHtml(p.info,'sm')}<span style="font-size:16px">${laneName(LANES[p.L])}</span></h3><dl>${panoRows(p).map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>`).openOn(map)}
 function openStation(i){emit('select',{type:'estaca',i});
-  const rows=[0,1,2,3,4,5,6,7].map(L=>{const c=Data.codeAt(L,i);const L0=LANES[L];return `<tr><td>${laneName(L0)}</td><td style="text-align:right">${c?tagHtml(Data.info(c)).replace('min-width:58px',''):'—'}</td></tr>`}).join('');
+  const rows=[0,1,2,3,4,5,6,7].map(L=>{const c=Data.codeAt(L,i);return `<tr><td>${laneName(LANES[L])}</td><td style="text-align:right">${c?tagHtml(Data.info(c),'sm'):'—'}</td></tr>`}).join('');
   const sd=[Data.saidaAt('C',i)?'crescente':null,Data.saidaAt('D',i)?'decrescente':null].filter(Boolean).join(' e ');
   const html=`<div class="pp"><h3>Estaca ${R[i][0]}</h3><dl><dt>Hodômetro</dt><dd>${fmtKm(ODO[i])}</dd><dt>Coordenadas</dt><dd>${LAT[i].toFixed(5)}, ${LON[i].toFixed(5)}</dd><dt>Marco km</dt><dd>${R[i][5]}</dd><dt>Bloco</dt><dd>B${R[i][4]} · pág. ${R[i][8]} do R08</dd>${sd?`<dt>Saída de dreno</dt><dd>${sd}</dd>`:''}</dl>
     <table>${rows}</table><button class="go" type="button" data-go="${i}">Consultar esta estaca</button></div>`;
   const pop=L.popup({maxWidth:320,autoPanPaddingTopLeft:[10,190]}).setLatLng([LAT[i],LON[i]]).setContent(html).openOn(map);
-  const btn=pop.getElement().querySelector('[data-go]');btn.onclick=()=>{map.closePopup();UI.consult(i,0)}}
+  pop.getElement().querySelector('[data-go]').onclick=()=>{map.closePopup();consult(i,0)}}
 
-/* ------------------------------ UI ------------------------------ */
-const UI=(function(){
-  const $=id=>document.getElementById(id);
-  let mode='exemplo',watchId=null,follow=true,last=null,lastS=null,dirSign=0,wake=null,simAcc=5;
-  try{simAcc=+(localStorage.getItem('br277.acc')||5)}catch(e){}
-  const me=L.layerGroup().addTo(map);
-  function setMode(m){mode=m;$('mode').className='mode'+(m==='gps'?' live':m==='exemplo'?'':' sim');
-    $('modeTxt').textContent={gps:'GPS',sim:'Simulado',consulta:'Consulta',exemplo:'Exemplo'}[m]}
-  function setFollow(v){follow=v;$('followBtn').setAttribute('aria-pressed',v)}
-  function toast(msg,ms){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);if(ms)toast.h=setTimeout(()=>t.hidden=true,ms)}
-  $('toast').onclick=()=>$('toast').hidden=true;
+let follow=true,simAcc=store.get('acc',5);
+const me=L.layerGroup().addTo(map);
+function setFollow(v){follow=v;$('followBtn').setAttribute('aria-pressed',v)}
+function toast(msg,ms){const t=$('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);if(ms)toast.h=setTimeout(()=>t.hidden=true,ms)}
+$('toast').onclick=()=>$('toast').hidden=true;
+function onPosition(st){const r=st.r;if(!r)return;const {lat,lon,acc}=st;
+  $('mode').className='mode'+(st.mode==='gps'?' live':st.mode==='exemplo'?'':' sim');$('modeTxt').textContent={gps:'GPS',sim:'Simulado',consulta:'Consulta',exemplo:'Exemplo'}[st.mode];
+  me.clearLayers();
+  L.circle([lat,lon],{renderer,radius:acc,color:css('--me'),weight:1,fillColor:css('--me'),fillOpacity:.12,interactive:false}).addTo(me);
+  if(!r.outside)L.polyline([[lat,lon],Geo.toLL(r.main.qx,r.main.qy)],{renderer,color:css('--me'),weight:1.5,dashArray:'3 4',interactive:false}).addTo(me);
+  L.circleMarker([lat,lon],{renderer,radius:8,color:'#fff',weight:3,fillColor:css('--me'),fillOpacity:1,interactive:false}).addTo(me);
+  Layers.setHot(r.outside?-1:(r.probs[0]?r.probs[0].k:r.bi));
+  renderEstaq(st);renderPoint(st);
+  if(follow&&st.src!=='tap'&&Router.cur()==='mapa')map.panTo([lat,lon],{animate:true});else Layers.detail()}
+function accChip(a,mode){const c=a<=6?'acc-good':a<=15?'acc-mid':'acc-bad';return `<span class="${c}">${mode==='gps'?'GPS':'Precisão'} ±${Math.round(a)} m</span>`}
+function renderEstaq(st){const r=st.r;
+  if(r.outside){$('big').className='big out';$('big').textContent='Fora do trecho';$('esub').innerHTML=`a <b>${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)}</b> da estaca <b>${R[r.nearest][0]}</b>`;$('emeta').innerHTML=accChip(st.acc,st.mode);return}
+  const s=r.s,bi=r.bi;const nm=Data.fmtName(bi,s-ODO[bi]).split('+');
+  $('big').className='big';$('big').innerHTML=`${nm[0]}<small>+</small>${nm[1]}`;
+  const j=Math.min(N-1,bi+1);const toNext=st.dirSign<0?s-ODO[bi]:ODO[bi]+20-s;const nextName=st.dirSign<0?R[bi][0]:R[j][0];
+  $('esub').innerHTML=`entre <b>${R[bi][0]}</b> e <b>${R[j][0]}</b> · próxima <b>${nextName}</b> em <b>${fmtM(Math.max(0,toNext))}</b>`;
+  const la=r.main.lat;const side=Math.abs(la)<1?'no eixo':`${nf(Math.abs(la),1)} m ${la>0?'à direita (cresc.)':'à esquerda (decresc.)'}`;const top=r.probs[0];
+  $('emeta').innerHTML=accChip(st.acc,st.mode)+`<span>Eixo: ${side}</span>`+(st.dirSign?`<span>${st.dirSign>0?'▲ Crescente':'▼ Decrescente'}</span>`:'')+(top?`<span>Mais próxima ${R[top.k][0]} · ${Math.round(top.p*100)}%</span>`:'')}
+function renderPoint(st){const r=st.r;
+  if(r.outside){$('blockTxt').textContent='—';$('xs').innerHTML='';$('groups').innerHTML='<p class="none">Fora do trecho do projeto.</p>';drawReti(null);return}
+  const bi=r.bi,s=r.s;$('blockTxt').textContent=`${R[bi][0]} → ${Data.endName(bi)}`;
+  const likely=r.lane.indexOf(Math.max(...r.lane));
+  const cell=L=>{const c=Data.codeAt(L,bi),inf=c?Data.info(c):null,L0=LANES[L];
+    return `<button type="button" class="cell${c?'':' empty'}${L===likely&&r.lane[likely]>0.35?' likely':''}" data-l="${L}" style="${inf?`background:${inf.color};color:${inf.ink};border-color:${inf.color}`:''}"><b>${c||'—'}</b><i>${L0.grp==='F1'?'F1':L0.grp==='F23'?'F2/3':'Acost.'}</i></button>`};
+  const dcell=L=>{const c=Data.codeAt(L,bi);const inf=c?Data.info(c):null;return `<div class="dcell${c?' on':''}" style="${inf?`background:${inf.color};border-color:${inf.color}`:''}">${c||'—'}</div>`};
+  $('xs').innerHTML=[dcell(7),cell(5),cell(4),cell(3),'<div class="mid"></div>',cell(2),cell(1),cell(0),dcell(6)].join('');
+  $('xs').querySelectorAll('.cell').forEach(el=>el.onclick=()=>{const L=+el.dataset.l,id=PANO_AT[L][bi];if(id>=0){const q=Geo.off(bi,LANES[L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(id,q)}});
+  const sides=st.dirSign<0?['D','C']:['C','D'];
+  $('groups').innerHTML=sides.map(sd=>{const order=sd==='C'?[2,1,0,6]:[3,4,5,7];
+    const items=order.map(L=>{const id=PANO_AT[L][bi];const L0=LANES[L];if(id<0)return '';const p=PANOS[id],inf=p.info;const vis=Filters.visible(p);
+      const a=ODO[p.i0],b=ODO[p.i1]+20,ext=b-a,fs=Math.max(0,s-a),te=Math.max(0,b-s);
+      const rest=sd==='C'?`faltam ${fmtM(te)} até ${Data.endName(p.i1)}`:`faltam ${fmtM(fs)} até ${R[p.i0][0]}`;
+      return `<div class="item${vis?'':' off'}" data-p="${id}"><span>${tagHtml(inf)}</span><div><div class="t">${L0.name} — ${inf.desc}${inf.esp?' '+inf.esp:''}</div>
+        <div class="d">Pano ${p.tag} · ${R[p.i0][0]} → ${Data.endName(p.i1)} · ${fmtM(ext)}${inf.param?' · parâmetro '+inf.param:''}<br>${rest}${vis?'':' · oculto pelos filtros'}</div>
+        <div class="bar"><i style="left:calc(${(100*fs/ext).toFixed(1)}% - 1px)"></i></div></div></div>`}).join('');
+    const sa=Data.saidaAt(sd,bi)?`<div class="none">● Saída de dreno nesta estaca</div>`:'';
+    const mine=(st.dirSign>0&&sd==='C')||(st.dirSign<0&&sd==='D');
+    return `<div class="grp"><h4>${SIDE[sd]}${mine?'<em>seu sentido</em>':''}</h4>${items||'<p class="none">Sem solução neste bloco.</p>'}${sa}</div>`}).join('');
+  $('groups').querySelectorAll('.item').forEach(el=>el.onclick=()=>{const p=PANOS[+el.dataset.p];const q=Geo.off(bi,LANES[p.L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(p.id,q)});
+  drawReti(s)}
+function drawReti(s){const cv=$('reti');const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
+  const g=cv.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,W,H);if(s==null)return;
+  const span=200,x=v=>W/2+(v-s)*(W/(2*span));const rowsL=[6,0,1,2,3,4,5,7];const top=8;
+  const hOf=L=>L>=6?9:18,yOf=[];let y=top;rowsL.forEach((L,r)=>{yOf[r]=y;y+=hOf(L)+3+(r===3?6:0)});
+  const i0=Math.max(0,Math.floor((s-span-ODO[0])/20)-1),i1=Math.min(N-1,Math.ceil((s+span-ODO[0])/20)+1);
+  g.font='700 11px "Barlow Condensed", system-ui';g.textBaseline='middle';g.textAlign='center';
+  rowsL.forEach((L,r)=>{const yy=yOf[r],h=hOf(L);let k=i0;while(k<=i1){const c=Data.codeAt(L,k);let j=k;while(j+1<=i1&&PANO_AT[L][j+1]===PANO_AT[L][k]&&c)j++;
+    if(c){const inf=Data.info(c),xa=x(ODO[k]),xb=x(ODO[j]+20);g.fillStyle=inf.color;g.fillRect(xa+0.5,yy,xb-xa-1,h);
+      if(h>12&&xb-xa>30){g.fillStyle=inf.ink;g.fillText(c,(Math.max(xa,0)+Math.min(xb,W))/2,yy+h/2+1)}}k=j+1}});
+  const ym=yOf[4]-5;g.strokeStyle=css('--accent');g.setLineDash([6,5]);g.lineWidth=2;g.beginPath();g.moveTo(0,ym);g.lineTo(W,ym);g.stroke();g.setLineDash([]);
+  const yb=y+2;g.fillStyle=css('--muted');g.strokeStyle=css('--muted');g.lineWidth=1;g.textBaseline='top';g.font='600 11px "Barlow Condensed", system-ui';
+  for(let k=i0;k<=i1;k++){if(Data.splitName(R[k][0])[1]%100)continue;const xx=x(ODO[k]);if(xx<20||xx>W-20)continue;g.beginPath();g.moveTo(xx,top-4);g.lineTo(xx,yb);g.stroke();g.fillText(R[k][0],xx,yb+2)}
+  g.fillStyle=css('--ink');g.fillRect(W/2-1.5,0,3,yb)}
+function renderFilters(){const st=Filters.get();
+  $('fSent').innerHTML=[['C','Crescente'],['D','Decrescente'],['ALL','Todas']].map(([k,t])=>`<button type="button" class="segb" data-k="${k}" aria-pressed="${st.sent===k}">${t}</button>`).join('');
+  $('fFaixa').innerHTML=[['F1','Faixa 1'],['F23','Faixa 2/3'],['AC','Acostamento']].map(([k,t])=>`<button type="button" class="pill" data-k="${k}" aria-pressed="${st.faixa.includes(k)}"><span class="sw" style="background:var(--ink);color:var(--surface)">${k==='AC'?'AC':k==='F1'?'1':'2/3'}</span><span>${t}</span></button>`).join('');
+  $('fSol').innerHTML=Data.FAM_ORDER.map(f=>{const inf=Data.info(f==='REC'?'RECe25':f==='PA'?'PA3,0':f==='RP'?'RPe25':f);
+    const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='FS'?'3 cm':f==='DR'?'0,60 m':f==='DP'?'1,50 m':'';
+    return `<button type="button" class="pill" data-k="${f}" aria-pressed="${st.sol.includes(f)}"><span class="sw" style="background:${inf.color};color:${inf.ink}">${f}</span><span>${Data.FAM[f].desc}${sub?' '+sub:''}<small>${(Data.famCount[f]||0).toLocaleString('pt-BR')} panos</small></span></button>`}).join('');
+  $('fSent').querySelectorAll('button').forEach(b=>b.onclick=()=>Filters.set('sent',b.dataset.k));
+  $('fFaixa').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().faixa);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('faixa',[...s])});
+  $('fSol').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().sol);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('sol',[...s])});
+  const n=(st.sent!=='ALL')+(st.faixa.length<3)+(st.sol.length<Data.FAM_ORDER.length);$('fcnt').textContent=n?`(${n})`:'';
+  $('filterSummary').textContent=Filters.isDefault()?'':'Filtros ativos'}
+$('faixaAll').onclick=()=>Filters.set('faixa',['F1','F23','AC']);
+$('solAll').onclick=()=>Filters.set('sol',Data.FAM_ORDER.slice());
+$('solNone').onclick=()=>Filters.set('sol',[]);
+on('filters',()=>{renderFilters();Layers.applyFilters();if(Loc.st.r)renderPoint(Loc.st)});
+function tab(which){$('tabPt').setAttribute('aria-selected',which==='pt');$('tabF').setAttribute('aria-selected',which==='f');$('viewPt').hidden=which!=='pt';$('viewF').hidden=which!=='f';$('pbody').scrollTop=0;
+  if(which==='pt'&&Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s);$('panel').classList.remove('min')}
+$('tabPt').onclick=()=>tab('pt');$('tabF').onclick=()=>tab('f');
+$('grab').onclick=()=>{const p=$('panel');if(p.classList.contains('min'))p.classList.remove('min');else if(p.classList.contains('max')){p.classList.remove('max');p.classList.add('min')}else p.classList.add('max');
+  setTimeout(()=>{map.invalidateSize();if(Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s)},230)};
+$('acc').value=simAcc;$('accTxt').textContent='±'+simAcc+' m';
+$('acc').oninput=e=>{simAcc=+e.target.value;$('accTxt').textContent='±'+simAcc+' m';store.set('acc',simAcc);const st=Loc.st;if(st.mode==='sim')Loc.set(st.lat,st.lon,simAcc,null,null,'tap','sim')};
+map.on('click',e=>{if(Loc.gps.on)return;Loc.set(e.latlng.lat,e.latlng.lng,simAcc,null,null,'tap','sim')});
+map.on('dragstart',()=>setFollow(false));
+$('followBtn').onclick=()=>{setFollow(!follow);if(follow&&Loc.st.lat!=null)map.panTo([Loc.st.lat,Loc.st.lon])};
+$('centerBtn').onclick=()=>{if(Loc.st.lat==null){toast('Ligue o GPS ou toque no mapa para definir uma posição.',4000);return}setFollow(true);map.setView([Loc.st.lat,Loc.st.lon],Math.max(map.getZoom(),17.5))};
+$('baseBtn').onclick=()=>Layers.nextBase();
+$('searchBtn').onclick=()=>{const box=$('searchBox');box.hidden=!box.hidden;$('searchBtn').setAttribute('aria-pressed',!box.hidden);$('estaq').style.visibility=box.hidden?'':'hidden';if(!box.hidden)$('q').focus()};
+function closeSearch(){$('searchBox').hidden=true;$('searchBtn').setAttribute('aria-pressed','false');$('estaq').style.visibility=''}
+let lastErrShown=null;
+function renderGps(g){$('gpsBtn').setAttribute('aria-pressed',g.on);$('gpsBtn').querySelector('span').textContent=g.on?(g.status==='on'?'Ligado':g.status==='waiting'?'…':'Sem sinal'):'GPS';
+  if(g.status==='error'&&lastErrShown!==g.err&&Router.cur()==='mapa'){lastErrShown=g.err;toast(g.err.code==='denied'?'A localização foi bloqueada. No visualizador do Claude o GPS não é liberado: use o endereço publicado no GitHub Pages no Safari e permita a localização. Enquanto isso, toque no mapa para simular.':'Este navegador não oferece localização. Toque no mapa para simular.',12000)}
+  if(g.on&&g.status==='on'&&!renderGps.zoomed){renderGps.zoomed=true;setFollow(true);if(map.getZoom()<17)map.setZoom(18)}if(!g.on)renderGps.zoomed=false}
+$('gpsBtn').onclick=()=>{Loc.gps.on?Loc.stop():(setFollow(true),Loc.start())};
+function consult(i,extra){if(Loc.gps.on)Loc.stop();const t=Math.min(1,extra/20),j=Math.min(N-1,i+1);
+  const lat=LAT[i]+(LAT[j]-LAT[i])*t,lon=LON[i]+(LON[j]-LON[i])*t;setFollow(true);map.setView([lat,lon],Math.max(map.getZoom(),18));Loc.set(lat,lon,2,null,null,'search','consulta')}
+$('searchBox').addEventListener('submit',e=>{e.preventDefault();$('q').blur();const r=Data.parseKm($('q').value);
+  if(r.err){toast(r.err+' Exemplos: 181+040 ou 181.',5000);return}closeSearch();
+  const i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20)));consult(i,r.s-ODO[i])});
+window.addEventListener('resize',()=>{map.invalidateSize();if(Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s)});
+on('position',onPosition);on('gps',renderGps);
+on('page',p=>{if(p==='mapa')setTimeout(()=>{map.invalidateSize();Layers.detail();if(Loc.st.r&&!Loc.st.r.outside){drawReti(Loc.st.r.s);if(follow)map.setView([Loc.st.lat,Loc.st.lon],map.getZoom())}},30)});
+Layers.init();renderFilters();
+if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
+renderGps(Loc.gps);
+});
 
-  function update(lat,lon,acc,heading,speed,src){
-    const r=Geo.locate(lat,lon,acc);last={lat,lon,acc,r};
-    me.clearLayers();
-    L.circle([lat,lon],{renderer,radius:acc,color:css('--me'),weight:1,fillColor:css('--me'),fillOpacity:.12,interactive:false}).addTo(me);
-    if(!r.outside){L.polyline([[lat,lon],Geo.toLL(r.main.qx,r.main.qy)],{renderer,color:css('--me'),weight:1.5,dashArray:'3 4',interactive:false}).addTo(me)}
-    L.circleMarker([lat,lon],{renderer,radius:8,color:'#fff',weight:3,fillColor:css('--me'),fillOpacity:1,interactive:false}).addTo(me);
-    if(!r.outside){const h=r.main;
-      if(heading!=null&&!isNaN(heading)&&speed!=null&&speed>1.5){const az=Math.atan2(h.dx,h.dy)*180/Math.PI;dirSign=Math.abs(((heading-az)%360+540)%360-180)<90?1:-1}
-      else if(src==='gps'&&lastS!=null&&Math.abs(r.s-lastS)>4&&Math.abs(r.s-lastS)<400)dirSign=Math.sign(r.s-lastS);
-      if(src==='gps')lastS=r.s}
-    Layers.setHot(r.outside?-1:(r.probs[0]?r.probs[0].k:r.bi));
-    renderEstaq(r);renderPoint(r);
-    if(follow&&src!=='tap')map.panTo([lat,lon],{animate:true});else Layers.detail();
-    emit('position',{lat,lon,acc,result:r,mode});
-  }
-  /* --- ESTAQUEAMENTO --- */
-  function renderEstaq(r){
-    if(r.outside){$('big').className='big out';$('big').textContent='Fora do trecho';
-      $('esub').innerHTML=`a <b>${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)}</b> da estaca <b>${R[r.nearest][0]}</b>`;$('emeta').innerHTML=accChip(r.sig);return}
-    const s=r.s,bi=r.bi;const nm=Data.fmtName(bi,s-ODO[bi]).split('+');
-    $('big').className='big';$('big').innerHTML=`${nm[0]}<small>+</small>${nm[1]}`;
-    const j=Math.min(N-1,bi+1);const toNext=dirSign<0?s-ODO[bi]:ODO[bi]+20-s;const nextName=dirSign<0?R[bi][0]:R[j][0];
-    $('esub').innerHTML=`entre <b>${R[bi][0]}</b> e <b>${R[j][0]}</b> · próxima <b>${nextName}</b> em <b>${fmtM(Math.max(0,toNext))}</b>`;
-    const lat=r.main.lat;const side=Math.abs(lat)<1?'no eixo':`${Math.abs(lat).toFixed(1).replace('.',',')} m ${lat>0?'à direita (cresc.)':'à esquerda (decresc.)'}`;
-    const top=r.probs[0];
-    $('emeta').innerHTML=accChip(last.acc)+`<span>Eixo: ${side}</span>`+(dirSign?`<span>${dirSign>0?'▲ Crescente':'▼ Decrescente'}</span>`:'')+(top?`<span>Mais próxima ${R[top.k][0]} · ${Math.round(top.p*100)}%</span>`:'');
-  }
-  function accChip(a){const c=a<=6?'acc-good':a<=15?'acc-mid':'acc-bad';return `<span class="${c}">${mode==='gps'?'GPS':'Precisão'} ±${Math.round(a)} m</span>`}
-  /* --- SOLUÇÕES neste ponto --- */
-  function renderPoint(r){
-    if(r.outside){$('blockTxt').textContent='—';$('xs').innerHTML='';$('groups').innerHTML='<p class="none">Fora do trecho do projeto.</p>';drawReti(null);return}
-    const bi=r.bi,s=r.s;$('blockTxt').textContent=`${R[bi][0]} → ${Data.endName(bi)}`;
-    const likely=r.lane.indexOf(Math.max(...r.lane));
-    const cell=L=>{const c=Data.codeAt(L,bi),inf=c?Data.info(c):null,L0=LANES[L];
-      return `<button type="button" class="cell${c?'':' empty'}${L===likely&&r.lane[likely]>0.35?' likely':''}" data-l="${L}" style="${inf?`background:${inf.color};color:${inf.ink};border-color:${inf.color}`:''}"><b>${c||'—'}</b><i>${L0.grp==='F1'?'F1':L0.grp==='F23'?'F2/3':'Acost.'}</i></button>`};
-    const dcell=L=>{const c=Data.codeAt(L,bi);const inf=c?Data.info(c):null;return `<div class="dcell${c?' on':''}" style="${inf?`background:${inf.color};border-color:${inf.color}`:''}">${c||'—'}</div>`};
-    $('xs').innerHTML=[dcell(7),cell(5),cell(4),cell(3),'<div class="mid"></div>',cell(2),cell(1),cell(0),dcell(6)].join('');
-    $('xs').querySelectorAll('.cell').forEach(el=>el.onclick=()=>{const L=+el.dataset.l,id=PANO_AT[L][bi];if(id>=0){const q=Geo.off(bi,LANES[L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(id,q)}});
-    const sides=dirSign<0?['D','C']:['C','D'];let hidden=0;
-    $('groups').innerHTML=sides.map(sd=>{const order=sd==='C'?[2,1,0,6]:[3,4,5,7];
-      const items=order.map(L=>{const id=PANO_AT[L][bi];const L0=LANES[L];if(id<0)return '';const p=PANOS[id],inf=p.info;const vis=Filters.visible(p);if(!vis)hidden++;
-        const a=ODO[p.i0],b=ODO[p.i1]+20,ext=b-a,fs=Math.max(0,s-a),te=Math.max(0,b-s);
-        const rest=sd==='C'?`faltam ${fmtM(te)} até ${Data.endName(p.i1)}`:`faltam ${fmtM(fs)} até ${R[p.i0][0]}`;
-        return `<div class="item${vis?'':' off'}" data-p="${id}"><span>${tagHtml(inf)}</span><div><div class="t">${L0.name} — ${inf.desc}${inf.esp?' '+inf.esp:''}</div>
-          <div class="d">Pano ${R[p.i0][0]} → ${Data.endName(p.i1)} · ${fmtM(ext)}${inf.param?' · parâmetro '+inf.param:''}<br>${rest}${vis?'':' · oculto pelos filtros'}</div>
-          <div class="bar"><i style="left:calc(${(100*fs/ext).toFixed(1)}% - 1px)"></i></div></div></div>`}).join('');
-      const sa=Data.saidaAt(sd,bi)?`<div class="none">● Saída de dreno nesta estaca</div>`:'';
-      const mine=(dirSign>0&&sd==='C')||(dirSign<0&&sd==='D');
-      return `<div class="grp"><h4>${SIDE[sd]}${mine?'<em>seu sentido</em>':''}</h4>${items||'<p class="none">Sem solução neste bloco.</p>'}${sa}</div>`}).join('');
-    $('groups').querySelectorAll('.item').forEach(el=>el.onclick=()=>{const p=PANOS[+el.dataset.p];const q=Geo.off(bi,LANES[p.L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(p.id,q)});
-    drawReti(s);
-  }
-  function drawReti(s){const cv=$('reti');const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
-    const g=cv.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,W,H);if(s==null)return;
-    const span=200,x=v=>W/2+(v-s)*(W/(2*span));const rowsL=[6,0,1,2,3,4,5,7];const top=8;
-    const hOf=L=>L>=6?9:18,yOf=[];let y=top;rowsL.forEach((L,r)=>{yOf[r]=y;y+=hOf(L)+3+(r===3?6:0)});
-    const i0=Math.max(0,Math.floor((s-span-ODO[0])/20)-1),i1=Math.min(N-1,Math.ceil((s+span-ODO[0])/20)+1);
-    g.font='700 11px "Barlow Condensed", system-ui';g.textBaseline='middle';g.textAlign='center';
-    rowsL.forEach((L,r)=>{const yy=yOf[r],h=hOf(L);let k=i0;while(k<=i1){const c=Data.codeAt(L,k);let j=k;while(j+1<=i1&&PANO_AT[L][j+1]===PANO_AT[L][k]&&c)j++;
-      if(c){const inf=Data.info(c),xa=x(ODO[k]),xb=x(ODO[j]+20);g.fillStyle=inf.color;g.fillRect(xa+0.5,yy,xb-xa-1,h);
-        if(h>12&&xb-xa>30){g.fillStyle=inf.ink;g.fillText(c,(Math.max(xa,0)+Math.min(xb,W))/2,yy+h/2+1)}}k=j+1}});
-    const ym=yOf[4]-5;g.strokeStyle=css('--accent');g.setLineDash([6,5]);g.lineWidth=2;g.beginPath();g.moveTo(0,ym);g.lineTo(W,ym);g.stroke();g.setLineDash([]);
-    const yb=y+2;g.fillStyle=css('--muted');g.strokeStyle=css('--muted');g.lineWidth=1;g.textBaseline='top';g.font='600 11px "Barlow Condensed", system-ui';
-    for(let k=i0;k<=i1;k++){if(Data.splitName(R[k][0])[1]%100)continue;const xx=x(ODO[k]);if(xx<20||xx>W-20)continue;g.beginPath();g.moveTo(xx,top-4);g.lineTo(xx,yb);g.stroke();g.fillText(R[k][0],xx,yb+2)}
-    g.fillStyle=css('--ink');g.fillRect(W/2-1.5,0,3,yb);
-  }
-  /* --- Filtros --- */
-  function renderFilters(){const st=Filters.get();
-    $('fSent').innerHTML=[['C','Crescente'],['D','Decrescente'],['ALL','Todas']].map(([k,t])=>`<button type="button" class="segb" data-k="${k}" aria-pressed="${st.sent===k}">${t}</button>`).join('');
-    $('fFaixa').innerHTML=[['F1','Faixa 1'],['F23','Faixa 2/3'],['AC','Acostamento']].map(([k,t])=>`<button type="button" class="pill" data-k="${k}" aria-pressed="${st.faixa.includes(k)}"><span class="sw" style="background:var(--ink);color:var(--surface)">${k==='AC'?'AC':k==='F1'?'1':'2/3'}</span><span>${t}</span></button>`).join('');
-    $('fSol').innerHTML=Data.FAM_ORDER.map(f=>{const F=Data.FAM[f],inf=Data.info(f==='REC'?'RECe25':f==='PA'?'PA3,0':f==='RP'?'RPe25':f);
-      const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='FS'?'3 cm':f==='DR'?'0,60 m':f==='DP'?'1,50 m':'';
-      return `<button type="button" class="pill" data-k="${f}" aria-pressed="${st.sol.includes(f)}"><span class="sw" style="background:${inf.color};color:${inf.ink}">${f}</span><span>${F.desc}${sub?' '+sub:''}<small>${(Data.famCount[f]||0).toLocaleString('pt-BR')} panos</small></span></button>`}).join('');
-    $('fSent').querySelectorAll('button').forEach(b=>b.onclick=()=>Filters.set('sent',b.dataset.k));
-    $('fFaixa').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().faixa);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('faixa',[...s])});
-    $('fSol').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().sol);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('sol',[...s])});
-    const n=(st.sent!=='ALL')+(st.faixa.length<3)+(st.sol.length<Data.FAM_ORDER.length);$('fcnt').textContent=n?`(${n})`:'';
-    $('filterSummary').textContent=Filters.isDefault()?'':'Filtros ativos';
-  }
-  $('faixaAll').onclick=()=>Filters.set('faixa',['F1','F23','AC']);
-  $('solAll').onclick=()=>Filters.set('sol',Data.FAM_ORDER.slice());
-  $('solNone').onclick=()=>Filters.set('sol',[]);
-  on('filters',()=>{renderFilters();Layers.applyFilters();if(last&&!last.r.outside)renderPoint(last.r)});
-  function tab(which){$('tabPt').setAttribute('aria-selected',which==='pt');$('tabF').setAttribute('aria-selected',which==='f');$('viewPt').hidden=which!=='pt';$('viewF').hidden=which!=='f';$('pbody').scrollTop=0;
-    if(which==='pt'&&last&&!last.r.outside)drawReti(last.r.s);if($('panel').classList.contains('min'))$('panel').classList.remove('min')}
-  $('tabPt').onclick=()=>tab('pt');$('tabF').onclick=()=>tab('f');
-  $('grab').onclick=()=>{const p=$('panel');if(p.classList.contains('min'))p.classList.remove('min');else if(p.classList.contains('max')){p.classList.remove('max');p.classList.add('min')}else p.classList.add('max');
-    setTimeout(()=>{map.invalidateSize();if(last&&!last.r.outside)drawReti(last.r.s)},230)};
-  /* --- controles --- */
-  $('acc').value=simAcc;$('accTxt').textContent='±'+simAcc+' m';
-  $('acc').oninput=e=>{simAcc=+e.target.value;$('accTxt').textContent='±'+simAcc+' m';try{localStorage.setItem('br277.acc',simAcc)}catch(x){}
-    if(last&&mode==='sim')update(last.lat,last.lon,simAcc,null,null,'tap')};
-  map.on('click',e=>{if(mode==='gps')return;setMode('sim');dirSign=0;update(e.latlng.lat,e.latlng.lng,simAcc,null,null,'tap')});
-  map.on('dragstart',()=>setFollow(false));
-  $('followBtn').onclick=()=>{setFollow(!follow);if(follow&&last)map.panTo([last.lat,last.lon])};
-  $('centerBtn').onclick=()=>{if(!last){toast('Ligue o GPS ou toque no mapa para definir uma posição.',4000);return}setFollow(true);map.setView([last.lat,last.lon],Math.max(map.getZoom(),17.5))};
-  $('baseBtn').onclick=()=>Layers.nextBase();
-  $('searchBtn').onclick=()=>{const box=$('searchBox');box.hidden=!box.hidden;$('searchBtn').setAttribute('aria-pressed',!box.hidden);$('estaq').style.visibility=box.hidden?'':'hidden';if(!box.hidden)$('q').focus()};
-  function closeSearch(){$('searchBox').hidden=true;$('searchBtn').setAttribute('aria-pressed','false');$('estaq').style.visibility=''}
-  function stopGps(){if(watchId!=null)navigator.geolocation.clearWatch(watchId);watchId=null;$('gpsBtn').setAttribute('aria-pressed','false');$('gpsBtn').querySelector('span').textContent='GPS';
-    if(wake){wake.release().catch(()=>{});wake=null}if(mode==='gps')setMode('sim')}
-  $('gpsBtn').onclick=()=>{
-    if(watchId!=null){stopGps();return}
-    if(!('geolocation' in navigator)){toast('Este navegador não oferece localização. Toque no mapa para simular uma posição.',6000);return}
-    $('gpsBtn').querySelector('span').textContent='…';setFollow(true);dirSign=0;lastS=null;
-    watchId=navigator.geolocation.watchPosition(p=>{const c=p.coords;
-      if(mode!=='gps'){setMode('gps');$('gpsBtn').setAttribute('aria-pressed','true');$('gpsBtn').querySelector('span').textContent='Ligado';$('toast').hidden=true;if(map.getZoom()<17)map.setZoom(18)}
-      update(c.latitude,c.longitude,c.accuracy,c.heading,c.speed,'gps')},
-    err=>{stopGps();toast(err.code===1?'A localização foi bloqueada. No visualizador do Claude o GPS não é liberado: use a versão publicada em um site https no Safari e permita a localização. Enquanto isso, toque no mapa para simular.':'Não foi possível obter a posição ('+err.message+'). Tente em céu aberto ou toque no mapa para simular.',12000)},
-    {enableHighAccuracy:true,maximumAge:0,timeout:20000});
-    if('wakeLock' in navigator)navigator.wakeLock.request('screen').then(w=>wake=w).catch(()=>{});
-  };
-  function findStation(q){q=q.trim().replace(/\s/g,'').replace(',','.');if(!q)return null;let m=q.match(/^(\d{3})\+(\d{1,4})$/);
-    if(m){const km=+m[1],o=+m[2],nm=`${km}+${String(o).padStart(3,'0')}`;if(Data.NAME_IDX.has(nm))return {i:Data.NAME_IDX.get(nm),extra:0};
-      const f=Data.KM_FIRST.get(km);if(f==null)return null;const d=o-Data.splitName(R[f][0])[1];const i=Math.max(0,Math.min(N-1,f+Math.floor(d/20)));return {i,extra:Math.max(0,Math.min(20,d-20*(i-f)))}}
-    m=q.match(/^(\d{3})(?:\.(\d+))?$/);if(m){const f=Data.KM_FIRST.get(+m[1]);if(f==null)return null;return findStation(`${m[1]}+${m[2]?Math.round(parseFloat('0.'+m[2])*1000):Data.splitName(R[f][0])[1]}`)}
-    return null}
-  function consult(i,extra){if(watchId!=null)stopGps();const t=Math.min(1,extra/20),j=Math.min(N-1,i+1);
-    const lat=LAT[i]+(LAT[j]-LAT[i])*t,lon=LON[i]+(LON[j]-LON[i])*t;setMode('consulta');dirSign=0;setFollow(true);map.setView([lat,lon],Math.max(map.getZoom(),18));update(lat,lon,2,null,null,'search')}
-  $('searchBox').addEventListener('submit',e=>{e.preventDefault();const r=findStation($('q').value);$('q').blur();
-    if(!r){toast('Estaca não encontrada. Use o formato 181+040 ou só o km (181). O trecho vai de 164+700 a 303+800.',5000);return}closeSearch();consult(r.i,r.extra)});
-  window.addEventListener('resize',()=>{map.invalidateSize();if(last&&!last.r.outside)drawReti(last.r.s)});
-  return {update,setMode,renderFilters,consult,start(){
-    renderFilters();const f=findStation('196+610');const i=f.i;const lat=(LAT[i]+LAT[i+1])/2+0.00002,lon=(LON[i]+LON[i+1])/2;
-    map.setView([lat,lon],18);setMode('exemplo');update(lat,lon,5,null,null,'init')}};
+/* =====================================================================
+   PÁGINA 3 — Calculadora de programação (CBUQ)
+   ===================================================================== */
+(function CalcPage(){
+  const PAVE_CODES=Data.CODES.slice().sort((a,b)=>{const fa=Data.FAM_ORDER.indexOf(Data.info(a).fam),fb=Data.FAM_ORDER.indexOf(Data.info(b).fam);return fa-fb||a.localeCompare(b,'pt',{numeric:true})});
+  const DEF_ESP={FF:6,FE:10,FS:3};
+  const saved=store.get('calc',null)||{};
+  const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:saved.dens??'',perda:saved.perda??'',
+    w:Object.assign({F1:'',F23:'',AC:''},saved.w||{}),esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true};
+  const save=()=>store.set('calc',S);
+  const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
+  const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
+  Object.entries(F).forEach(([k,el])=>{el.value=S[k];const h=()=>{S[k]=el.value;save();if(S.done)calc(false)};el.addEventListener('input',h);el.addEventListener('change',h)});
+  ['F1','F23','AC'].forEach(k=>{const el=$('w'+k);el.value=S.w[k];el.addEventListener('input',()=>{S.w[k]=el.value;save();cadFlag();if(S.done)calc(false)})});
+  $('cEsp').innerHTML=PAVE_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
+      <span class="dsc"><b>${inf.desc}</b>${inf.esp?'espessura da solução '+inf.esp:inf.param?'parâmetro no R08: '+inf.param:'sem espessura na base'}</span>
+      <input type="number" inputmode="decimal" step="0.1" min="0" aria-label="Espessura de CBUQ de ${c} em cm" placeholder="cm" value="${S.esp[c]??''}">
+      <label class="no"><input type="checkbox" ${S.excl[c]?'checked':''}> não leva CBUQ</label></div>`}).join('');
+  $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,inp=row.querySelector('input[type=number]'),chk=row.querySelector('input[type=checkbox]');
+    inp.addEventListener('input',()=>{S.esp[c]=inp.value;save();cadFlag();if(S.done)calc(false)});
+    chk.addEventListener('change',()=>{S.excl[c]=chk.checked;save();cadFlag();if(S.done)calc(false)})});
+  function cadFlag(){const missW=['F1','F23','AC'].filter(k=>!(num(S.w[k])>0)).length;let missE=0;
+    $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c;const ok=S.excl[c]||num(S.esp[c])>0;row.classList.toggle('miss',!ok);row.classList.toggle('excl',!!S.excl[c]);if(!ok)missE++});
+    const parts=[];if(missW)parts.push(`${missW} largura${missW>1?'s':''}`);if(missE)parts.push(`${missE} espessura${missE>1?'s':''}`);
+    $('cCadFlag').textContent=parts.length?parts.join(' e ')+' sem valor':'completo';$('cCadFlag').style.color=parts.length?'':'var(--ok)'}
+  cadFlag();
+  if(!['F1','F23','AC'].every(k=>num(S.w[k])>0))$('cCad').open=true;
+  $('cForm').addEventListener('submit',e=>{e.preventDefault();S.done=true;save();calc(true)});
+  $('cHere').onclick=()=>{const r=Loc.st.r;if(!r||r.outside){fieldErr('eKmA','Sem posição no trecho. Ative o GPS em Localização estaca.');return}
+    F.kmA.value=S.kmA=Data.nameAt(r.s);const B=Data.parseKm(S.kmB);if(!B.s||B.s<=r.s){F.kmB.value=S.kmB=Data.nameAt(Math.min(Data.ODO_END,r.s+1000))}save();S.done=true;calc(true)};
+  function fieldErr(id,t){$(id).textContent=t||'';const inp={eKmA:F.kmA,eKmB:F.kmB,eDens:F.dens,ePerda:F.perda}[id];inp&&inp.setAttribute('aria-invalid',t?'true':'false')}
+  const tag=inf=>`<span class="tag sm" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
+
+  function calc(scroll){
+    const out=$('cOut');['eKmA','eKmB','eDens','ePerda'].forEach(id=>fieldErr(id,''));
+    const A=Data.parseKm(S.kmA),B=Data.parseKm(S.kmB);let bad=false;
+    if(A.err){fieldErr('eKmA',A.err);bad=true}if(B.err){fieldErr('eKmB',B.err);bad=true}
+    if(!bad&&A.s===B.s){fieldErr('eKmB','O km final deve ser diferente do inicial.');bad=true}
+    const dens=num(S.dens),perda=num(S.perda);let densWarn='';
+    if(dens!=null&&(isNaN(dens)||dens<=0)){fieldErr('eDens','Informe um valor maior que zero.');bad=true}
+    else if(dens!=null&&(dens<1.5||dens>3.5))densWarn='Confira a densidade: valor fora da faixa usual de CBUQ.';
+    if(perda!=null&&(isNaN(perda)||perda<0||perda>100)){fieldErr('ePerda','Use um percentual entre 0 e 100.');bad=true}
+    if(bad){out.innerHTML=`<div class="alert warn"><b>Corrija os campos destacados para calcular.</b>O km aceita o formato rodoviário, por exemplo 236+300, dentro do trecho de 164+700 a 303+800.</div>`;return}
+    if(densWarn)fieldErr('eDens',densWarn),F.dens.setAttribute('aria-invalid','false');
+    let sA=A.s,sB=B.s,nA=A.name,nB=B.name,swapped=false;if(sA>sB){[sA,sB]=[sB,sA];[nA,nB]=[nB,nA];swapped=true}
+    const rows=[];
+    for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN')continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+      const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;
+      const len=b-a,w=num(S.w[L0.grp]),excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]);
+      const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
+      const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
+      rows.push({p,L0,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
+    rows.sort((x,y)=>x.a-y.a||x.p.L-y.p.L);
+    const scope=`${S.pista==='ALL'?'todas as faixas':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
+    if(!rows.length){out.innerHTML=`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
+    const valid=rows.filter(r=>!r.excl),inc=valid.filter(r=>r.miss.length),comp=valid.filter(r=>!r.miss.length),nExcl=rows.length-valid.length;
+    const sum=(arr,k)=>arr.reduce((s,r)=>s+(r[k]||0),0);
+    const totLen=sum(rows,'len'),totA=sum(comp,'area'),totV=sum(comp,'vol'),totT=dens>0?sum(comp,'t'):null;
+    const partial=inc.length>0,perdaT=(totT!=null&&perda>0)?totT*perda/100:null;
+    const fmt=(v,d)=>v==null?'—':nf(v,d);const pB=partial?' <span class="badge warn">parcial</span>':'';
+    const bySol=new Map();for(const r of rows){const k=r.p.code;if(!bySol.has(k))bySol.set(k,{info:r.p.info,n:0,len:0,area:0,vol:0,t:0,inc:0,excl:r.excl});const o=bySol.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.vol+=r.vol;o.t+=r.t||0}
+    const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
+    const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
+    let h='';
+    if(swapped)h+=`<div class="alert info">O km inicial era maior que o final; o intervalo foi considerado de ${nA} a ${nB}.</div>`;
+    if(partial||dens==null){const det=[missW.length?`Falta largura: ${missW.join(', ')}.`:'',missE.length?`Falta espessura de CBUQ: ${missE.join(', ')}.`:'',dens==null?'Sem densidade, as toneladas não são calculadas.':''].filter(Boolean).join(' ');
+      h+=`<div class="alert warn"><b>${partial?`Resultado incompleto: ${inc.length} de ${valid.length} panos têm dados ausentes e não entram nos totais.`:'Informe a densidade para obter as toneladas de CBUQ.'}</b>${det} Preencha em "Cadastro de larguras e espessuras".</div>`}
+    h+=`<div class="kpis">
+      <div class="kpi"><span>Panos</span><b>${rows.length}</b><div class="sub">${comp.length} somados${inc.length?` · ${inc.length} com dados ausentes`:''}${nExcl?` · ${nExcl} sem CBUQ`:''}</div></div>
+      <div class="kpi"><span>Área total${pB}</span><b>${partial&&!comp.length?'—':fmt(totA,1)}<small>m²</small></b><div class="sub">${nf(totLen,0)} m de panos no trecho</div></div>
+      <div class="kpi"><span>Volume total${pB}</span><b>${partial&&!comp.length?'—':fmt(totV,2)}<small>m³</small></b><div class="sub">espessura de cada solução</div></div>
+      <div class="kpi main"><span>CBUQ total${pB}</span><b>${totT==null||(partial&&!comp.length)?'—':nf(totT,2)}<small>t</small></b><div class="sub">${totT==null?'informe a densidade':`densidade ${nf(dens,3)} t/m³`}${perdaT!=null?`<br><b style="color:var(--accent)">+ ${nf(perdaT,2)} t de perdas (${nf(perda,1)}%) → ${nf(totT+perdaT,2)} t</b>`:''}</div></div></div>`;
+    h+=`<div class="card"><h2>Resumo por solução</h2><div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Solução</th><th>Panos</th><th>Comprimento<small>m</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
+      ${sol.map(o=>`<tr class="${o.excl?'exc':o.inc?'inc':''}"><td class="l sticky">${tag(o.info)} <span style="color:var(--muted);font-size:12.5px">${o.info.desc}</span></td><td>${o.n}</td><td>${nf(o.len,1)}</td>
+        ${o.excl?'<td class="l" colspan="3"><span class="badge muted">não leva CBUQ</span></td>':o.inc===o.n?`<td class="miss" colspan="3" style="text-align:left">dados ausentes em ${o.inc} pano${o.inc>1?'s':''}</td>`:`<td>${nf(o.area,1)}${o.inc?` <span class="badge warn">${o.inc} sem dados</span>`:''}</td><td>${nf(o.vol,2)}</td><td>${dens>0?nf(o.t,2):'—'}</td>`}</tr>`).join('')}
+      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td>${rows.length}</td><td>${nf(totLen,1)}</td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div></div>`;
+    h+=`<div class="card"><h2>Panos de ${nA} a ${nB} · ${scope}</h2>
+      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
+        <th class="l sticky">Pano</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
+      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.excl?'exc':r.miss.length?'inc':''}">
+        <td class="l sticky pano">${r.p.tag}<small>${r.partial?`parcial · pano ${R[r.p.i0][0]} a ${Data.endName(r.p.i1)}`:'pano inteiro'}</small></td>
+        <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
+        <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>
+        <td>${Data.nameAt(r.a)}</td><td>${Data.nameAt(r.b)}</td><td>${nf(r.len,1)}</td>
+        ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
+        <td class="${r.w==null?'miss':''}">${r.w==null?'sem largura':nf(r.w,2)}</td>
+        <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
+        <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
+      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
+      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02).</div></div>`;
+    out.innerHTML=h;
+    if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
+  Router.onInit('calculadora',()=>{if(S.done)calc(false)});
 })();
 
-Layers.init();UI.start();
-if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js').catch(()=>{});
-return {on,Data,Geo,Filters,map};
+/* ------------------------------ Início ------------------------------ */
+(function boot(){
+  const f=Data.parseKm('196+610');const i=Math.floor((f.s-ODO[0])/20);
+  Loc.set((LAT[i]+LAT[i+1])/2+0.00002,(LON[i]+LON[i+1])/2,5,null,null,'init','exemplo');
+  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora'].includes(h)?h:store.get('page','localizacao'));
+  if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+return {on,Data,Geo,Loc,Filters,Router};
 })();
 </script>

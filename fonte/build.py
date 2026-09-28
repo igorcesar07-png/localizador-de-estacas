@@ -14,7 +14,7 @@ head='''<!doctype html>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Estacas 277">
+<meta name="apple-mobile-web-app-title" content="Estacas">
 <meta name="theme-color" content="#1A1E1C">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -22,9 +22,9 @@ head='''<!doctype html>
 '''
 b2=body.replace('<div id="app">','</head>\n<body>\n<div id="app">',1)
 open('site/index.html','w').write(head+b2+'\n</body>\n</html>\n')
-json.dump({"name":"Estacas BR-277 B2+B3","short_name":"Estacas 277","start_url":"./","display":"standalone","background_color":"#1A1E1C","theme_color":"#1A1E1C",
+json.dump({"name":"Localizador de Estacas","short_name":"Estacas","start_url":"./","display":"standalone","background_color":"#1A1E1C","theme_color":"#1A1E1C",
  "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]},open('site/manifest.webmanifest','w'),ensure_ascii=False)
-open('site/sw.js','w').write('''const C='estacas277-v2';
+open('site/sw.js','w').write('''const C='estacas277-v3';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='tiles277').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
