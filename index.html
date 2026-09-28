@@ -925,6 +925,10 @@ table.q tr.exc td{color:var(--muted)}
 table.q td.miss{color:var(--warn);font-weight:700}
 table.q tfoot td{background:var(--plate)!important;color:var(--plate-ink);font-weight:700;border-bottom:0}
 table.q tfoot td.big2{font:700 18px var(--cond)}
+.ordbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:12px 16px 0}
+.ordbar label{font:600 13px var(--body);color:var(--muted)}
+.ordbar select{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 15px var(--body);padding:0 10px;max-width:100%}
+.ordbar span{font-size:12.5px;color:var(--muted);flex-basis:100%}
 .tnote{padding:10px 16px 14px;font-size:12.5px;color:var(--muted);line-height:1.45}
 .empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:15px;line-height:1.5}
 .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
@@ -1518,7 +1522,7 @@ renderGps(Loc.gps);
   const DEF_ESP={FF:6,FE:10,FS:3};
   const saved=store.get('calc',null)||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:saved.dens??'',perda:saved.perda??'',
-    w:Object.assign({F1:'',F23:'',AC:''},saved.w||{}),esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true};
+    w:Object.assign({F1:'',F23:'',AC:''},saved.w||{}),esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1554,7 +1558,8 @@ renderGps(Loc.gps);
     if(perda!=null&&(isNaN(perda)||perda<0||perda>100)){fieldErr('ePerda','Use um percentual entre 0 e 100.');bad=true}
     if(bad){out.innerHTML=`<div class="alert warn"><b>Corrija os campos destacados para calcular.</b>O km aceita o formato rodoviário, por exemplo 236+300, dentro do trecho de 164+700 a 303+800.</div>`;return}
     if(densWarn)fieldErr('eDens',densWarn),F.dens.setAttribute('aria-invalid','false');
-    let sA=A.s,sB=B.s,nA=A.name,nB=B.name,swapped=false;if(sA>sB){[sA,sB]=[sB,sA];[nA,nB]=[nB,nA];swapped=true}
+    const nIn=[A.name,B.name];let sA=A.s,sB=B.s,nA=A.name,nB=B.name,swapped=false;if(sA>sB){[sA,sB]=[sB,sA];[nA,nB]=[nB,nA];swapped=S.sent!=='D'}
+    if(S.sent==='D'&&!(A.s>B.s))nIn.reverse(); // no decrescente o trecho vai da estaca maior para a menor
     const rows=[];
     for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN')continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;
@@ -1562,7 +1567,14 @@ renderGps(Loc.gps);
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
       rows.push({p,L0,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
-    rows.sort((x,y)=>x.a-y.a||x.p.L-y.p.L);
+    // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
+    rows.forEach(r=>{const dec=r.L0.side==='D';r.ini=dec?r.b:r.a;r.fim=dec?r.a:r.b;r.pIni=dec?Data.endName(r.p.i1):R[r.p.i0][0];r.pFim=dec?R[r.p.i0][0]:Data.endName(r.p.i1)});
+    const ordem=S.ordem==='auto'?(S.sent==='C'?'asc':S.sent==='D'?'desc':'exec'):S.ordem;
+    const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
+    const cmp={asc:(x,y)=>x.ini-y.ini||LORD[x.p.L]-LORD[y.p.L],desc:(x,y)=>y.ini-x.ini||LORD[x.p.L]-LORD[y.p.L],
+      exec:(x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini)||LORD[x.p.L]-LORD[y.p.L]};
+    rows.sort(cmp[ordem]);
+    const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor'}[ordem];
     const scope=`${S.pista==='ALL'?'todas as faixas':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
     if(!rows.length){out.innerHTML=`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
     const valid=rows.filter(r=>!r.excl),inc=valid.filter(r=>r.miss.length),comp=valid.filter(r=>!r.miss.length),nExcl=rows.length-valid.length;
@@ -1574,7 +1586,7 @@ renderGps(Loc.gps);
     const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
     let h='';
-    if(swapped)h+=`<div class="alert info">O km inicial era maior que o final; o intervalo foi considerado de ${nA} a ${nB}.</div>`;
+    if(swapped)h+=`<div class="alert info">O km inicial era maior que o final; para ${S.sent==='C'?'o sentido crescente':'os dois sentidos'} o intervalo foi considerado de ${nA} a ${nB}.</div>`;
     if(partial||dens==null){const det=[missW.length?`Falta largura: ${missW.join(', ')}.`:'',missE.length?`Falta espessura de CBUQ: ${missE.join(', ')}.`:'',dens==null?'Sem densidade, as toneladas não são calculadas.':''].filter(Boolean).join(' ');
       h+=`<div class="alert warn"><b>${partial?`Resultado incompleto: ${inc.length} de ${valid.length} panos têm dados ausentes e não entram nos totais.`:'Informe a densidade para obter as toneladas de CBUQ.'}</b>${det} Preencha em "Cadastro de larguras e espessuras".</div>`}
     h+=`<div class="kpis">
@@ -1586,21 +1598,27 @@ renderGps(Loc.gps);
       ${sol.map(o=>`<tr class="${o.excl?'exc':o.inc?'inc':''}"><td class="l sticky">${tag(o.info)} <span style="color:var(--muted);font-size:12.5px">${o.info.desc}</span></td><td>${o.n}</td><td>${nf(o.len,1)}</td>
         ${o.excl?'<td class="l" colspan="3"><span class="badge muted">não leva CBUQ</span></td>':o.inc===o.n?`<td class="miss" colspan="3" style="text-align:left">dados ausentes em ${o.inc} pano${o.inc>1?'s':''}</td>`:`<td>${nf(o.area,1)}${o.inc?` <span class="badge warn">${o.inc} sem dados</span>`:''}</td><td>${nf(o.vol,2)}</td><td>${dens>0?nf(o.t,2):'—'}</td>`}</tr>`).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td>${rows.length}</td><td>${nf(totLen,1)}</td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div></div>`;
-    h+=`<div class="card"><h2>Panos de ${nA} a ${nB} · ${scope}</h2>
+    h+=`<div class="card"><h2>Panos de ${nIn[0]} a ${nIn[1]} · ${scope}</h2>
+      <div class="ordbar"><label for="cOrdem">Ordenar segmentos</label><select id="cOrdem">
+        <option value="auto"${S.ordem==='auto'?' selected':''}>Pelo sentido selecionado</option>
+        <option value="asc"${S.ordem==='asc'?' selected':''}>Estaca inicial: menor → maior</option>
+        <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
+        <span>${ordTxt}</span></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
         <th class="l sticky">Pano</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.excl?'exc':r.miss.length?'inc':''}">
-        <td class="l sticky pano">${r.p.tag}<small>${r.partial?`parcial · pano ${R[r.p.i0][0]} a ${Data.endName(r.p.i1)}`:'pano inteiro'}</small></td>
+        <td class="l sticky pano">${r.p.tag}<small>${r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
         <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>
-        <td>${Data.nameAt(r.a)}</td><td>${Data.nameAt(r.b)}</td><td>${nf(r.len,1)}</td>
+        <td>${Data.nameAt(r.ini)}</td><td>${Data.nameAt(r.fim)}</td><td>${nf(r.len,1)}</td>
         ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
         <td class="${r.w==null?'miss':''}">${r.w==null?'sem largura':nf(r.w,2)}</td>
         <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
-      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02).</div></div>`;
+      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02).</div></div>`;
     out.innerHTML=h;
+    const so=$('cOrdem');if(so)so.onchange=()=>{S.ordem=so.value;save();calc(false)};
     if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
   Router.onInit('calculadora',()=>{if(S.done)calc(false)});
 })();
