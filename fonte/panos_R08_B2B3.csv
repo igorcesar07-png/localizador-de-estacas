@@ -1,0 +1,2027 @@
+﻿Sentido;Faixa;Solução;Km;Estaca inicial;Estaca final;Extensão (m);Hodômetro inicial;Hodômetro final;Bloco
+Crescente;Acostamento Cresc.;RF;164;164+860;165+000;120;164940;165060;2
+Crescente;Faixa 2/Adic. Cresc.;FE;164;164+860;165+000;120;164940;165060;2
+Crescente;Faixa 1 Cresc.;FF;164;164+860;165+000;120;164940;165060;2
+Decrescente;Faixa 1 Decresc.;FF;164;164+860;165+000;120;164940;165060;2
+Decrescente;Acostamento Decresc.;RF;164;164+860;165+000;120;164940;165060;2
+Crescente;Acostamento Cresc.;RF;165;165+000;165+460;460;165060;165520;2
+Crescente;Faixa 2/Adic. Cresc.;FE;165;165+000;165+460;460;165060;165520;2
+Crescente;Faixa 1 Cresc.;FF;165;165+000;165+120;120;165060;165180;2
+Decrescente;Faixa 1 Decresc.;FF;165;165+000;165+460;460;165060;165520;2
+Decrescente;Acostamento Decresc.;RF;165;165+000;165+040;40;165060;165100;2
+Crescente;Acostamento Cresc.;RF;165;165+960;165+1000;40;166020;166060;2
+Crescente;Faixa 1 Cresc.;FS;165;165+960;166+000;60;166020;166080;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;165;165+980;166+000;40;166040;166080;2
+Crescente;Faixa 1 Cresc.;RPe25;166;166+000;166+040;40;166080;166120;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;166;166+000;167+000;1000;166080;167080;2
+Crescente;Faixa 1 Cresc.;FS;166;166+040;166+220;180;166120;166300;2
+Decrescente;Faixa 1 Decresc.;FE;166;166+080;166+100;20;166160;166180;2
+Decrescente;Faixa 1 Decresc.;FE;166;166+180;166+200;20;166260;166280;2
+Crescente;Faixa 1 Cresc.;FE;166;166+260;166+300;40;166340;166380;2
+Crescente;Faixa 1 Cresc.;FS;166;166+380;166+580;200;166460;166660;2
+Crescente;Faixa 1 Cresc.;RECe25;166;166+580;166+880;300;166660;166960;2
+Crescente;Faixa 1 Cresc.;FF;166;166+880;167+000;120;166960;167080;2
+Crescente;Faixa 1 Cresc.;FF;167;167+000;167+120;120;167080;167200;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;167;167+000;167+220;220;167080;167300;2
+Decrescente;Faixa 1 Decresc.;FS;167;167+020;167+260;240;167100;167340;2
+Crescente;Faixa 1 Cresc.;RPe25;167;167+120;167+180;60;167200;167260;2
+Crescente;Faixa 1 Cresc.;FF;167;167+180;167+420;240;167260;167500;2
+Decrescente;Acostamento Decresc.;RF;167;167+220;167+260;40;167300;167340;2
+Decrescente;Faixa 1 Decresc.;FF;167;167+260;167+420;160;167340;167500;2
+Decrescente;Acostamento Decresc.;PA1,5;167;167+320;167+420;100;167400;167500;2
+Decrescente;Acostamento Decresc.;PA4,0;167;167+420;167+620;200;167500;167700;2
+Crescente;Acostamento Cresc.;RF;167;167+440;167+500;60;167520;167580;2
+Crescente;Faixa 1 Cresc.;FF;167;167+620;168+000;360;167700;168060;2
+Decrescente;Acostamento Decresc.;PA3,0;167;167+620;167+820;200;167700;167900;2
+Decrescente;Acostamento Decresc.;PA4,5;167;167+820;168+000;160;167900;168060;2
+Decrescente;Faixa 1 Decresc.;FE;167;167+880;167+900;20;167960;167980;2
+Crescente;Faixa 1 Cresc.;FF;168;168+000;168+700;700;168060;168760;2
+Decrescente;Acostamento Decresc.;PA4,5;168;168+000;168+040;40;168060;168100;2
+Decrescente;Faixa 1 Decresc.;FF;168;168+040;168+100;60;168100;168160;2
+Decrescente;Acostamento Decresc.;PA4,0;168;168+040;168+200;160;168100;168260;2
+Decrescente;Faixa 1 Decresc.;RPe25;168;168+100;168+160;60;168160;168220;2
+Decrescente;Faixa 1 Decresc.;FF;168;168+160;169+000;840;168220;169060;2
+Decrescente;Acostamento Decresc.;RF;168;168+200;168+300;100;168260;168360;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;168;168+400;169+000;600;168460;169060;2
+Crescente;Faixa 1 Cresc.;FF;168;168+880;168+940;60;168940;169000;2
+Decrescente;Faixa 1 Decresc.;FF;169;169+000;169+520;520;169060;169580;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;169;169+000;169+380;380;169060;169440;2
+Decrescente;Acostamento Decresc.;RF;169;169+020;169+140;120;169080;169200;2
+Crescente;Faixa 1 Cresc.;FF;169;169+040;169+440;400;169100;169500;2
+Decrescente;Acostamento Decresc.;RF;169;169+380;169+520;140;169440;169580;2
+Crescente;Faixa 1 Cresc.;FF;169;169+520;169+580;60;169580;169640;2
+Decrescente;Faixa 1 Decresc.;FE;169;169+520;169+600;80;169580;169660;2
+Decrescente;Acostamento Decresc.;PA4,5;169;169+520;170+000;500;169580;170080;2
+Decrescente;Faixa 1 Decresc.;FF;169;169+600;170+000;420;169660;170080;2
+Crescente;Faixa 1 Cresc.;FF;169;169+960;170+000;60;170020;170080;2
+Decrescente;Faixa 1 Decresc.;FF;170;170+000;170+040;40;170080;170120;2
+Decrescente;Acostamento Decresc.;PA4,5;170;170+000;170+020;20;170080;170100;2
+Decrescente;Acostamento Decresc.;PA4,0;170;170+020;170+420;400;170100;170500;2
+Decrescente;Faixa 1 Decresc.;FE;170;170+040;170+080;40;170120;170160;2
+Decrescente;Faixa 1 Decresc.;FF;170;170+080;170+360;280;170160;170440;2
+Crescente;Faixa 1 Cresc.;FF;170;170+220;170+420;200;170300;170500;2
+Decrescente;Faixa 1 Decresc.;FE;170;170+360;170+480;120;170440;170560;2
+Decrescente;Acostamento Decresc.;PA2,5;170;170+420;170+620;200;170500;170700;2
+Decrescente;Faixa 1 Decresc.;FF;170;170+480;170+660;180;170560;170740;2
+Decrescente;Acostamento Decresc.;PA4,0;170;170+620;170+820;200;170700;170900;2
+Decrescente;Faixa 1 Decresc.;FE;170;170+660;170+760;100;170740;170840;2
+Decrescente;Faixa 1 Decresc.;FF;170;170+760;171+000;280;170840;171120;2
+Crescente;Faixa 1 Cresc.;FF;170;170+800;170+940;140;170880;171020;2
+Decrescente;Acostamento Decresc.;PA4,5;170;170+820;170+1020;200;170900;171100;2
+Decrescente;Acostamento Decresc.;PA5,0;170;170+1020;171+000;20;171100;171120;2
+Decrescente;Faixa 1 Decresc.;FF;171;171+000;171+120;120;171120;171240;2
+Decrescente;Acostamento Decresc.;PA5,0;171;171+000;171+180;180;171120;171300;2
+Decrescente;Faixa 1 Decresc.;FS;171;171+120;171+780;660;171240;171900;2
+Crescente;Acostamento Cresc.;RF;171;171+160;171+260;100;171280;171380;2
+Crescente;Faixa 1 Cresc.;FF;171;171+180;171+360;180;171300;171480;2
+Decrescente;Acostamento Decresc.;PA4,5;171;171+180;171+580;400;171300;171700;2
+Crescente;Faixa 1 Cresc.;FE;171;171+360;171+620;260;171480;171740;2
+Decrescente;Acostamento Decresc.;PA4,0;171;171+580;171+780;200;171700;171900;2
+Crescente;Faixa 1 Cresc.;FF;171;171+620;171+920;300;171740;172040;2
+Decrescente;Faixa 1 Decresc.;FF;171;171+780;171+880;100;171900;172000;2
+Decrescente;Acostamento Decresc.;PA4,5;171;171+780;171+820;40;171900;171940;2
+Crescente;Faixa 1 Cresc.;FF;172;172+680;173+000;300;172820;173120;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;172;172+680;173+000;300;172820;173120;2
+Decrescente;Acostamento Decresc.;RF;172;172+680;172+700;20;172820;172840;2
+Crescente;Faixa 1 Cresc.;FF;173;173+000;173+180;180;173120;173300;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;173;173+000;174+000;1040;173120;174160;2
+Crescente;Faixa 1 Cresc.;FE;173;173+480;173+500;20;173600;173620;2
+Crescente;Faixa 1 Cresc.;FE;173;173+680;173+700;20;173800;173820;2
+Decrescente;Faixa 1 Decresc.;FF;173;173+680;173+720;40;173800;173840;2
+Crescente;Faixa 1 Cresc.;FS;173;173+780;174+000;260;173900;174160;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;174;174+000;174+420;420;174160;174580;2
+Crescente;Faixa 1 Cresc.;FF;174;174+080;174+340;260;174240;174500;2
+Decrescente;Faixa 1 Decresc.;FF;174;174+080;174+100;20;174240;174260;2
+Decrescente;Faixa 1 Decresc.;FF;174;174+280;174+300;20;174440;174460;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;174;174+420;174+660;240;174580;174820;2
+Crescente;Faixa 1 Cresc.;FF;174;174+560;174+580;20;174720;174740;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;174;174+660;174+760;100;174820;174920;2
+Crescente;Faixa 1 Cresc.;FS;174;174+740;174+1000;260;174900;175160;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;174;174+760;175+000;300;174920;175220;2
+Crescente;Acostamento Cresc.;RF;174;174+860;174+960;100;175020;175120;2
+Decrescente;Acostamento Decresc.;RF;174;174+900;175+000;160;175060;175220;2
+Decrescente;Faixa 1 Decresc.;FS;174;174+940;175+000;120;175100;175220;2
+Crescente;Faixa 1 Cresc.;RPe25;174;174+1000;175+000;60;175160;175220;2
+Crescente;Faixa 1 Cresc.;RPe25;175;175+000;175+020;20;175220;175240;2
+Decrescente;Faixa 1 Decresc.;FS;175;175+000;175+080;80;175220;175300;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;175;175+000;175+700;700;175220;175920;2
+Decrescente;Acostamento Decresc.;RF;175;175+000;175+300;300;175220;175520;2
+Crescente;Acostamento Cresc.;RF;175;175+020;175+240;220;175240;175460;2
+Crescente;Faixa 1 Cresc.;FS;175;175+020;175+280;260;175240;175500;2
+Crescente;Faixa 2/Adic. Cresc.;FS;175;175+060;175+120;60;175280;175340;2
+Crescente;Faixa 2/Adic. Cresc.;RPe25;175;175+120;175+180;60;175340;175400;2
+Crescente;Faixa 2/Adic. Cresc.;FS;175;175+180;175+440;260;175400;175660;2
+Decrescente;Faixa 1 Decresc.;FE;175;175+280;175+300;20;175500;175520;2
+Crescente;Acostamento Cresc.;RF;175;175+400;175+920;520;175620;176140;2
+Crescente;Faixa 2/Adic. Cresc.;RPe25;175;175+440;175+500;60;175660;175720;2
+Decrescente;Acostamento Decresc.;RF;175;175+440;175+920;480;175660;176140;2
+Crescente;Faixa 1 Cresc.;FF;175;175+480;175+500;20;175700;175720;2
+Decrescente;Faixa 1 Decresc.;FS;175;175+480;175+700;220;175700;175920;2
+Crescente;Faixa 2/Adic. Cresc.;FS;175;175+500;175+700;200;175720;175920;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;175;175+700;175+920;220;175920;176140;2
+Decrescente;Faixa 1 Decresc.;RECe25;175;175+700;175+920;220;175920;176140;2
+Crescente;Faixa 1 Cresc.;FF;175;175+720;175+740;20;175940;175960;2
+Crescente;Faixa 1 Cresc.;FF;175;175+780;175+800;20;176000;176020;2
+Crescente;Faixa 1 Cresc.;FF;175;175+880;176+000;100;176100;176200;2
+Crescente;Faixa 2/Adic. Cresc.;FF;175;175+920;176+000;60;176140;176200;2
+Decrescente;Faixa 1 Decresc.;FF;175;175+920;176+000;60;176140;176200;2
+Crescente;Faixa 2/Adic. Cresc.;FF;176;176+000;176+020;20;176200;176220;2
+Crescente;Faixa 1 Cresc.;FF;176;176+000;176+140;140;176200;176340;2
+Decrescente;Faixa 1 Decresc.;FF;176;176+000;176+040;40;176200;176240;2
+Crescente;Acostamento Cresc.;RF;176;176+020;176+260;240;176220;176460;2
+Decrescente;Acostamento Decresc.;PA1,5;176;176+020;176+040;20;176220;176240;2
+Decrescente;Faixa 1 Decresc.;FS;176;176+040;176+280;240;176240;176480;2
+Decrescente;Acostamento Decresc.;RF;176;176+040;176+300;260;176240;176500;2
+Crescente;Acostamento Cresc.;PA1,5;176;176+260;176+700;440;176460;176900;2
+Decrescente;Faixa 1 Decresc.;FF;176;176+280;176+420;140;176480;176620;2
+Crescente;Faixa 1 Cresc.;FF;176;176+300;176+500;200;176500;176700;2
+Decrescente;Acostamento Decresc.;PA5,0;176;176+300;176+500;200;176500;176700;2
+Decrescente;Faixa 1 Decresc.;FS;176;176+420;177+000;480;176620;177100;2
+Decrescente;Acostamento Decresc.;PA3,5;176;176+500;176+600;100;176700;176800;2
+Decrescente;Acostamento Decresc.;RF;176;176+600;176+840;240;176800;177040;2
+Crescente;Acostamento Cresc.;RF;176;176+700;177+000;200;176900;177100;2
+Crescente;Faixa 2/Adic. Cresc.;FE;176;176+780;177+000;120;176980;177100;2
+Decrescente;Acostamento Decresc.;PA2,0;176;176+840;177+000;60;177040;177100;2
+Crescente;Acostamento Cresc.;RF;177;177+000;177+140;140;177100;177240;2
+Crescente;Faixa 2/Adic. Cresc.;FE;177;177+000;177+140;140;177100;177240;2
+Decrescente;Faixa 1 Decresc.;FS;177;177+000;177+380;380;177100;177480;2
+Decrescente;Acostamento Decresc.;PA4,5;177;177+000;177+140;140;177100;177240;2
+Crescente;Faixa 1 Cresc.;FF;177;177+080;177+200;120;177180;177300;2
+Crescente;Faixa 2/Adic. Cresc.;FF;177;177+140;177+200;60;177240;177300;2
+Crescente;Acostamento Cresc.;RF;177;177+200;178+000;820;177300;178120;2
+Crescente;Faixa 2/Adic. Cresc.;FE;177;177+200;177+740;540;177300;177840;2
+Decrescente;Acostamento Decresc.;PA2,5;177;177+200;177+300;100;177300;177400;2
+Crescente;Faixa 1 Cresc.;FF;177;177+280;177+300;20;177380;177400;2
+Decrescente;Acostamento Decresc.;RF;177;177+300;177+700;400;177400;177800;2
+Decrescente;Faixa 1 Decresc.;FF;177;177+380;177+820;440;177480;177920;2
+Crescente;Faixa 1 Cresc.;FE;177;177+400;177+420;20;177500;177520;2
+Crescente;Faixa 1 Cresc.;FF;177;177+660;177+680;20;177760;177780;2
+Crescente;Faixa 1 Cresc.;FF;177;177+720;177+740;20;177820;177840;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;177;177+740;178+000;280;177840;178120;2
+Decrescente;Acostamento Decresc.;RF;177;177+740;177+860;120;177840;177960;2
+Decrescente;Faixa 1 Decresc.;FS;177;177+820;178+000;200;177920;178120;2
+Crescente;Faixa 1 Cresc.;FF;177;177+860;177+880;20;177960;177980;2
+Decrescente;Acostamento Decresc.;PA1,5;177;177+860;177+900;40;177960;178000;2
+Decrescente;Acostamento Decresc.;RF;177;177+900;178+000;120;178000;178120;2
+Crescente;Acostamento Cresc.;RF;178;178+000;178+320;320;178120;178440;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;178;178+000;178+020;20;178120;178140;2
+Decrescente;Faixa 1 Decresc.;FS;178;178+000;178+980;980;178120;179100;2
+Decrescente;Acostamento Decresc.;RF;178;178+000;178+080;80;178120;178200;2
+Crescente;Faixa 2/Adic. Cresc.;FF;178;178+020;178+240;220;178140;178360;2
+Crescente;Faixa 1 Cresc.;FF;178;178+080;178+100;20;178200;178220;2
+Decrescente;Acostamento Decresc.;PA1,5;178;178+080;178+180;100;178200;178300;2
+Crescente;Faixa 1 Cresc.;FF;178;178+240;178+400;160;178360;178520;2
+Crescente;Acostamento Cresc.;PA1,5;178;178+320;178+380;60;178440;178500;2
+Crescente;Acostamento Cresc.;PA4,0;178;178+380;178+780;400;178500;178900;2
+Crescente;Faixa 1 Cresc.;FE;178;178+400;178+480;80;178520;178600;2
+Crescente;Faixa 1 Cresc.;FF;178;178+480;178+580;100;178600;178700;2
+Crescente;Faixa 1 Cresc.;FE;178;178+580;178+640;60;178700;178760;2
+Decrescente;Acostamento Decresc.;PA4,5;178;178+580;178+780;200;178700;178900;2
+Crescente;Faixa 1 Cresc.;FF;178;178+640;179+000;360;178760;179120;2
+Crescente;Acostamento Cresc.;PA3,5;178;178+780;178+980;200;178900;179100;2
+Decrescente;Acostamento Decresc.;PA3,5;178;178+780;178+980;200;178900;179100;2
+Crescente;Acostamento Cresc.;PA2,5;178;178+980;179+000;20;179100;179120;2
+Decrescente;Acostamento Decresc.;PA1,5;178;178+980;179+000;20;179100;179120;2
+Crescente;Acostamento Cresc.;PA2,5;179;179+000;179+180;180;179120;179300;2
+Crescente;Faixa 1 Cresc.;FF;179;179+000;179+380;380;179120;179500;2
+Decrescente;Acostamento Decresc.;PA1,5;179;179+000;179+080;80;179120;179200;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;179;179+060;179+620;560;179180;179740;2
+Decrescente;Acostamento Decresc.;RF;179;179+080;180+000;900;179200;180100;2
+Crescente;Acostamento Cresc.;PA1,5;179;179+180;180+000;800;179300;180100;2
+Decrescente;Faixa 1 Decresc.;FF;179;179+180;180+000;800;179300;180100;2
+Crescente;Faixa 1 Cresc.;FE;179;179+500;179+580;80;179620;179700;2
+Crescente;Faixa 1 Cresc.;FF;179;179+580;180+000;400;179700;180100;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;179;179+620;180+000;360;179740;180100;2
+Crescente;Acostamento Cresc.;PA2,0;180;180+000;180+200;200;180100;180300;2
+Crescente;Faixa 1 Cresc.;FF;180;180+000;180+220;220;180100;180320;2
+Decrescente;Faixa 1 Decresc.;FF;180;180+000;181+000;1020;180100;181120;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;180;180+000;181+000;1020;180100;181120;2
+Decrescente;Acostamento Decresc.;RF;180;180+000;181+000;1020;180100;181120;2
+Crescente;Acostamento Cresc.;PA1,5;180;180+200;180+800;600;180300;180900;2
+Crescente;Faixa 1 Cresc.;FE;180;180+220;180+280;60;180320;180380;2
+Crescente;Faixa 1 Cresc.;FF;180;180+280;180+720;440;180380;180820;2
+Crescente;Faixa 1 Cresc.;FE;180;180+720;180+780;60;180820;180880;2
+Crescente;Faixa 1 Cresc.;FF;180;180+780;180+1000;220;180880;181100;2
+Crescente;Acostamento Cresc.;PA2,0;180;180+800;180+1000;200;180900;181100;2
+Crescente;Acostamento Cresc.;PA3,0;180;180+1000;181+000;20;181100;181120;2
+Crescente;Faixa 1 Cresc.;FE;180;180+1000;181+000;20;181100;181120;2
+Crescente;Acostamento Cresc.;PA3,0;181;181+000;181+180;180;181120;181300;2
+Crescente;Faixa 1 Cresc.;FE;181;181+000;181+020;20;181120;181140;2
+Decrescente;Faixa 1 Decresc.;FF;181;181+000;182+000;1000;181120;182120;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;181;181+000;181+020;20;181120;181140;2
+Decrescente;Acostamento Decresc.;RF;181;181+000;181+940;940;181120;182060;2
+Crescente;Faixa 1 Cresc.;FF;181;181+020;181+560;540;181140;181680;2
+Decrescente;Faixa 2/Adic. Decresc.;RPe25;181;181+020;181+060;40;181140;181180;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;181;181+060;181+300;240;181180;181420;2
+Crescente;Acostamento Cresc.;PA2,0;181;181+180;181+380;200;181300;181500;2
+Decrescente;Faixa 2/Adic. Decresc.;RECe25;181;181+300;181+800;500;181420;181920;2
+Crescente;Acostamento Cresc.;PA1,5;181;181+380;181+580;200;181500;181700;2
+Crescente;Faixa 1 Cresc.;FE;181;181+560;181+660;100;181680;181780;2
+Crescente;Acostamento Cresc.;PA2,0;181;181+580;181+980;400;181700;182100;2
+Crescente;Faixa 1 Cresc.;FF;181;181+660;182+000;340;181780;182120;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;181;181+800;181+900;100;181920;182020;2
+Crescente;Faixa 1 Cresc.;FF;182;182+000;182+080;80;182120;182200;2
+Decrescente;Faixa 1 Decresc.;FF;182;182+000;182+380;380;182120;182500;2
+Crescente;Acostamento Cresc.;PA3,0;182;182+040;182+180;140;182160;182300;2
+Decrescente;Acostamento Decresc.;PA4,5;182;182+040;182+180;140;182160;182300;2
+Crescente;Faixa 1 Cresc.;FE;182;182+080;182+160;80;182200;182280;2
+Crescente;Faixa 1 Cresc.;FF;182;182+160;183+000;820;182280;183100;2
+Crescente;Acostamento Cresc.;PA1,5;182;182+180;182+320;140;182300;182440;2
+Decrescente;Acostamento Decresc.;PA3,0;182;182+180;182+380;200;182300;182500;2
+Crescente;Acostamento Cresc.;RF;182;182+320;183+000;660;182440;183100;2
+Crescente;Faixa 2/Adic. Cresc.;FF;182;182+320;182+680;360;182440;182800;2
+Decrescente;Faixa 1 Decresc.;FS;182;182+380;183+000;600;182500;183100;2
+Decrescente;Acostamento Decresc.;PA1,5;182;182+380;182+780;400;182500;182900;2
+Crescente;Faixa 2/Adic. Cresc.;FE;182;182+680;182+920;240;182800;183040;2
+Decrescente;Acostamento Decresc.;PA4,0;182;182+780;183+000;200;182900;183100;2
+Crescente;Faixa 2/Adic. Cresc.;FF;182;182+920;183+000;60;183040;183100;2
+Crescente;Acostamento Cresc.;RF;183;183+000;184+000;1020;183100;184120;2
+Crescente;Faixa 2/Adic. Cresc.;FF;183;183+000;183+300;300;183100;183400;2
+Crescente;Faixa 1 Cresc.;FF;183;183+000;183+400;400;183100;183500;2
+Decrescente;Faixa 1 Decresc.;FS;183;183+000;183+280;280;183100;183380;2
+Decrescente;Acostamento Decresc.;PA4,0;183;183+000;183+400;400;183100;183500;2
+Decrescente;Faixa 1 Decresc.;FF;183;183+280;183+680;400;183380;183780;2
+Crescente;Faixa 2/Adic. Cresc.;FE;183;183+300;183+520;220;183400;183620;2
+Crescente;Faixa 1 Cresc.;FS;183;183+400;184+000;620;183500;184120;2
+Decrescente;Acostamento Decresc.;PA3,5;183;183+400;183+600;200;183500;183700;2
+Crescente;Faixa 2/Adic. Cresc.;FF;183;183+520;183+1000;480;183620;184100;2
+Decrescente;Acostamento Decresc.;PA4,0;183;183+600;183+1000;400;183700;184100;2
+Decrescente;Faixa 1 Decresc.;FE;183;183+680;183+760;80;183780;183860;2
+Decrescente;Faixa 1 Decresc.;FF;183;183+760;184+000;260;183860;184120;2
+Decrescente;Acostamento Decresc.;PA5,0;183;183+1000;184+000;20;184100;184120;2
+Crescente;Acostamento Cresc.;PA3,5;184;184+000;184+180;180;184120;184300;2
+Crescente;Faixa 1 Cresc.;FE;184;184+000;184+360;360;184120;184480;2
+Decrescente;Faixa 1 Decresc.;FE;184;184+000;184+800;800;184120;184920;2
+Decrescente;Acostamento Decresc.;PA5,0;184;184+000;184+380;380;184120;184500;2
+Crescente;Acostamento Cresc.;PA4,5;184;184+180;184+380;200;184300;184500;2
+Crescente;Faixa 1 Cresc.;FS;184;184+360;185+000;620;184480;185100;2
+Crescente;Acostamento Cresc.;PA5,0;184;184+380;184+580;200;184500;184700;2
+Decrescente;Acostamento Decresc.;PA4,5;184;184+380;184+780;400;184500;184900;2
+Crescente;Acostamento Cresc.;PA4,0;184;184+580;184+780;200;184700;184900;2
+Crescente;Acostamento Cresc.;PA4,5;184;184+780;185+000;200;184900;185100;2
+Decrescente;Acostamento Decresc.;PA1,5;184;184+780;184+940;160;184900;185060;2
+Decrescente;Faixa 1 Decresc.;FS;184;184+800;185+000;180;184920;185100;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;184;184+920;185+000;60;185040;185100;2
+Decrescente;Acostamento Decresc.;RF;184;184+940;185+000;40;185060;185100;2
+Crescente;Acostamento Cresc.;PA4,5;185;185+000;185+200;200;185100;185300;2
+Crescente;Faixa 1 Cresc.;FS;185;185+000;185+200;200;185100;185300;2
+Decrescente;Faixa 1 Decresc.;FS;185;185+000;185+800;800;185100;185900;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;185;185+000;186+000;1020;185100;186120;2
+Decrescente;Acostamento Decresc.;RF;185;185+000;186+000;1020;185100;186120;2
+Crescente;Acostamento Cresc.;PA1,5;185;185+200;185+600;400;185300;185700;2
+Crescente;Faixa 1 Cresc.;FF;185;185+200;185+260;60;185300;185360;2
+Crescente;Faixa 1 Cresc.;FS;185;185+260;185+400;140;185360;185500;2
+Crescente;Faixa 1 Cresc.;FE;185;185+400;185+820;420;185500;185920;2
+Crescente;Acostamento Cresc.;PA2,5;185;185+600;185+800;200;185700;185900;2
+Crescente;Acostamento Cresc.;PA4,5;185;185+800;185+1000;200;185900;186100;2
+Crescente;Faixa 1 Cresc.;FF;185;185+820;186+000;200;185920;186120;2
+Decrescente;Faixa 1 Decresc.;FF;185;185+980;186+000;40;186080;186120;2
+Crescente;Acostamento Cresc.;PA3,0;185;185+1000;186+000;20;186100;186120;2
+Crescente;Acostamento Cresc.;PA3,0;186;186+000;186+180;180;186120;186300;2
+Crescente;Faixa 1 Cresc.;FF;186;186+000;186+300;300;186120;186420;2
+Decrescente;Faixa 1 Decresc.;FF;186;186+000;187+000;980;186120;187100;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;186;186+000;186+180;180;186120;186300;2
+Decrescente;Acostamento Decresc.;RF;186;186+000;186+580;580;186120;186700;2
+Crescente;Acostamento Cresc.;PA1,5;186;186+180;186+380;200;186300;186500;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;186;186+180;186+300;120;186300;186420;2
+Crescente;Faixa 1 Cresc.;FE;186;186+300;186+400;100;186420;186520;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;186;186+300;186+380;80;186420;186500;2
+Crescente;Acostamento Cresc.;PA3,0;186;186+380;186+580;200;186500;186700;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;186;186+380;186+540;160;186500;186660;2
+Crescente;Faixa 1 Cresc.;FF;186;186+400;186+780;380;186520;186900;2
+Crescente;Acostamento Cresc.;PA4,5;186;186+580;186+780;200;186700;186900;2
+Decrescente;Acostamento Decresc.;PA5,0;186;186+580;186+780;200;186700;186900;2
+Crescente;Acostamento Cresc.;PA2,5;186;186+780;186+900;120;186900;187020;2
+Crescente;Faixa 1 Cresc.;FS;186;186+780;187+000;200;186900;187100;2
+Decrescente;Acostamento Decresc.;PA3,0;186;186+780;186+900;120;186900;187020;2
+Crescente;Acostamento Cresc.;PA2,5;186;186+940;187+000;40;187060;187100;2
+Decrescente;Acostamento Decresc.;PA3,0;186;186+940;187+000;40;187060;187100;2
+Crescente;Acostamento Cresc.;PA1,5;187;187+000;187+300;300;187100;187400;2
+Crescente;Faixa 1 Cresc.;FS;187;187+000;187+300;300;187100;187400;2
+Decrescente;Faixa 1 Decresc.;FF;187;187+000;187+460;460;187100;187560;2
+Decrescente;Acostamento Decresc.;PA1,5;187;187+000;187+300;300;187100;187400;2
+Crescente;Faixa 1 Cresc.;FF;187;187+300;188+000;700;187400;188100;2
+Crescente;Acostamento Cresc.;PA1,5;187;187+340;187+400;60;187440;187500;2
+Decrescente;Acostamento Decresc.;PA1,5;187;187+340;187+400;60;187440;187500;2
+Crescente;Acostamento Cresc.;PA3,0;187;187+400;187+600;200;187500;187700;2
+Decrescente;Acostamento Decresc.;PA3,5;187;187+400;187+600;200;187500;187700;2
+Decrescente;Faixa 1 Decresc.;FE;187;187+460;187+500;40;187560;187600;2
+Decrescente;Faixa 1 Decresc.;FF;187;187+500;187+560;60;187600;187660;2
+Decrescente;Faixa 1 Decresc.;FS;187;187+560;188+000;440;187660;188100;2
+Crescente;Acostamento Cresc.;PA1,5;187;187+600;187+800;200;187700;187900;2
+Decrescente;Acostamento Decresc.;PA4,0;187;187+600;187+800;200;187700;187900;2
+Crescente;Acostamento Cresc.;RF;187;187+800;188+000;200;187900;188100;2
+Crescente;Faixa 2/Adic. Cresc.;FE;187;187+800;188+000;200;187900;188100;2
+Decrescente;Acostamento Decresc.;PA3,0;187;187+800;187+820;20;187900;187920;2
+Decrescente;Acostamento Decresc.;RF;187;187+820;187+880;60;187920;187980;2
+Decrescente;Acostamento Decresc.;PA3,0;187;187+880;188+000;120;187980;188100;2
+Crescente;Acostamento Cresc.;RF;188;188+000;189+000;1000;188100;189100;2
+Crescente;Faixa 2/Adic. Cresc.;FE;188;188+000;188+180;180;188100;188280;2
+Crescente;Faixa 1 Cresc.;FF;188;188+000;188+600;600;188100;188700;2
+Decrescente;Faixa 1 Decresc.;FS;188;188+000;188+200;200;188100;188300;2
+Decrescente;Acostamento Decresc.;PA2,5;188;188+000;188+200;200;188100;188300;2
+Crescente;Faixa 2/Adic. Cresc.;RPe25;188;188+180;188+280;100;188280;188380;2
+Decrescente;Faixa 1 Decresc.;FF;188;188+200;188+520;320;188300;188620;2
+Decrescente;Acostamento Decresc.;PA1,5;188;188+200;188+400;200;188300;188500;2
+Crescente;Faixa 2/Adic. Cresc.;FE;188;188+280;189+000;720;188380;189100;2
+Decrescente;Acostamento Decresc.;PA3,5;188;188+400;188+800;400;188500;188900;2
+Decrescente;Acostamento Decresc.;PA2,0;188;188+800;189+000;200;188900;189100;2
+Crescente;Faixa 1 Cresc.;FF;188;188+820;188+840;20;188920;188940;2
+Decrescente;Faixa 1 Decresc.;FF;188;188+900;188+920;20;189000;189020;2
+Crescente;Faixa 1 Cresc.;FF;188;188+980;189+000;20;189080;189100;2
+Crescente;Acostamento Cresc.;RF;189;189+000;190+000;1000;189100;190100;2
+Crescente;Faixa 2/Adic. Cresc.;FE;189;189+000;190+000;1000;189100;190100;2
+Crescente;Faixa 1 Cresc.;FF;189;189+000;190+000;1000;189100;190100;2
+Decrescente;Faixa 1 Decresc.;FF;189;189+000;189+400;400;189100;189500;2
+Decrescente;Acostamento Decresc.;PA1,5;189;189+000;189+400;400;189100;189500;2
+Decrescente;Acostamento Decresc.;PA2,5;189;189+400;189+600;200;189500;189700;2
+Decrescente;Acostamento Decresc.;PA3,0;189;189+600;190+000;400;189700;190100;2
+Decrescente;Faixa 1 Decresc.;FF;189;189+800;190+000;200;189900;190100;2
+Crescente;Acostamento Cresc.;RF;190;190+000;190+520;520;190100;190620;2
+Crescente;Faixa 2/Adic. Cresc.;FE;190;190+000;190+420;420;190100;190520;2
+Crescente;Faixa 1 Cresc.;FF;190;190+000;190+180;180;190100;190280;2
+Decrescente;Acostamento Decresc.;PA3,0;190;190+000;190+600;600;190100;190700;2
+Decrescente;Faixa 1 Decresc.;FF;190;190+200;190+400;200;190300;190500;2
+Crescente;Faixa 1 Cresc.;FF;190;190+320;190+900;580;190420;191000;2
+Crescente;Acostamento Cresc.;PA1,5;190;190+520;190+600;80;190620;190700;2
+Crescente;Acostamento Cresc.;PA3,0;190;190+600;190+800;200;190700;190900;2
+Decrescente;Acostamento Decresc.;PA3,5;190;190+600;191+000;400;190700;191100;2
+Crescente;Acostamento Cresc.;PA1,5;190;190+800;191+000;200;190900;191100;2
+Crescente;Faixa 1 Cresc.;FE;190;190+900;191+000;100;191000;191100;2
+Crescente;Acostamento Cresc.;RF;191;191+000;191+740;740;191100;191840;2
+Crescente;Faixa 1 Cresc.;FE;191;191+000;191+140;140;191100;191240;2
+Decrescente;Acostamento Decresc.;PA1,5;191;191+000;191+040;40;191100;191140;2
+Decrescente;Acostamento Decresc.;RF;191;191+040;191+740;700;191140;191840;2
+Decrescente;Faixa 1 Decresc.;FF;191;191+060;191+080;20;191160;191180;2
+Crescente;Faixa 1 Cresc.;FF;191;191+140;191+360;220;191240;191460;2
+Decrescente;Faixa 1 Decresc.;FS;191;191+200;191+800;600;191300;191900;2
+Crescente;Faixa 1 Cresc.;FE;191;191+360;191+420;60;191460;191520;2
+Crescente;Faixa 1 Cresc.;FF;191;191+420;192+000;560;191520;192080;2
+Crescente;Acostamento Cresc.;PA1,5;191;191+740;191+800;60;191840;191900;2
+Decrescente;Acostamento Decresc.;PA1,5;191;191+740;192+000;240;191840;192080;2
+Crescente;Acostamento Cresc.;PA3,0;191;191+800;192+000;180;191900;192080;2
+Decrescente;Faixa 1 Decresc.;FS;191;191+920;192+000;60;192020;192080;2
+Crescente;Acostamento Cresc.;PA3,0;192;192+000;192+020;20;192080;192100;2
+Crescente;Faixa 1 Cresc.;FF;192;192+000;192+580;580;192080;192660;2
+Decrescente;Faixa 1 Decresc.;FS;192;192+000;192+220;220;192080;192300;2
+Decrescente;Acostamento Decresc.;PA1,5;192;192+000;192+220;220;192080;192300;2
+Crescente;Acostamento Cresc.;PA1,5;192;192+020;192+220;200;192100;192300;2
+Crescente;Acostamento Cresc.;PA3,5;192;192+220;193+000;780;192300;193080;2
+Decrescente;Faixa 1 Decresc.;FF;192;192+220;193+000;780;192300;193080;2
+Decrescente;Acostamento Decresc.;PA2,5;192;192+220;192+340;120;192300;192420;2
+Decrescente;Acostamento Decresc.;RF;192;192+340;193+000;660;192420;193080;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;192;192+440;192+640;200;192520;192720;2
+Crescente;Faixa 1 Cresc.;FE;192;192+580;192+620;40;192660;192700;2
+Crescente;Faixa 1 Cresc.;FF;192;192+620;192+880;260;192700;192960;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;192;192+640;193+000;360;192720;193080;2
+Crescente;Faixa 1 Cresc.;RPe25;192;192+880;192+920;40;192960;193000;2
+Crescente;Faixa 1 Cresc.;FF;192;192+920;193+000;80;193000;193080;2
+Crescente;Acostamento Cresc.;PA3,5;193;193+000;193+020;20;193080;193100;2
+Crescente;Faixa 1 Cresc.;FF;193;193+000;193+200;200;193080;193280;2
+Decrescente;Faixa 1 Decresc.;FF;193;193+000;193+220;220;193080;193300;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;193;193+000;193+700;700;193080;193780;2
+Decrescente;Acostamento Decresc.;RF;193;193+000;193+820;820;193080;193900;2
+Crescente;Acostamento Cresc.;PA1,5;193;193+020;193+220;200;193100;193300;2
+Crescente;Faixa 1 Cresc.;FE;193;193+200;193+240;40;193280;193320;2
+Crescente;Acostamento Cresc.;PA2,0;193;193+220;193+420;200;193300;193500;2
+Crescente;Faixa 1 Cresc.;FF;193;193+240;193+420;180;193320;193500;2
+Decrescente;Faixa 1 Decresc.;FS;193;193+360;193+660;300;193440;193740;2
+Crescente;Acostamento Cresc.;PA3,0;193;193+420;193+620;200;193500;193700;2
+Crescente;Faixa 1 Cresc.;FS;193;193+420;193+620;200;193500;193700;2
+Crescente;Acostamento Cresc.;PA3,5;193;193+620;193+820;200;193700;193900;2
+Crescente;Faixa 1 Cresc.;FF;193;193+720;194+000;280;193800;194080;2
+Decrescente;Faixa 1 Decresc.;FF;193;193+740;193+880;140;193820;193960;2
+Crescente;Acostamento Cresc.;PA1,5;193;193+820;194+000;180;193900;194080;2
+Crescente;Acostamento Cresc.;PA1,5;194;194+000;194+020;20;194080;194100;2
+Crescente;Faixa 1 Cresc.;FE;194;194+000;194+080;80;194080;194160;2
+Crescente;Acostamento Cresc.;PA3,5;194;194+020;194+220;200;194100;194300;2
+Crescente;Faixa 1 Cresc.;FF;194;194+080;195+000;940;194160;195100;2
+Crescente;Acostamento Cresc.;PA4,5;194;194+220;194+420;200;194300;194500;2
+Decrescente;Faixa 1 Decresc.;FF;194;194+220;194+820;600;194300;194900;2
+Crescente;Acostamento Cresc.;PA4,0;194;194+420;194+620;200;194500;194700;2
+Crescente;Acostamento Cresc.;PA1,5;194;194+620;194+820;200;194700;194900;2
+Crescente;Acostamento Cresc.;PA4,5;194;194+820;195+000;200;194900;195100;2
+Decrescente;Acostamento Decresc.;RF;194;194+840;194+900;60;194920;194980;2
+Crescente;Acostamento Cresc.;PA1,5;195;195+000;195+200;200;195100;195300;2
+Crescente;Faixa 1 Cresc.;FF;195;195+000;195+420;420;195100;195520;2
+Decrescente;Faixa 1 Decresc.;FF;195;195+000;196+000;1000;195100;196100;2
+Decrescente;Acostamento Decresc.;RF;195;195+180;196+000;820;195280;196100;2
+Crescente;Acostamento Cresc.;PA4,5;195;195+200;195+400;200;195300;195500;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;195;195+200;195+420;220;195300;195520;2
+Crescente;Acostamento Cresc.;PA4,0;195;195+400;195+800;400;195500;195900;2
+Decrescente;Faixa 2/Adic. Decresc.;RECe25;195;195+420;196+000;580;195520;196100;2
+Crescente;Faixa 1 Cresc.;FF;195;195+600;196+000;400;195700;196100;2
+Crescente;Acostamento Cresc.;PA3,5;195;195+800;196+000;200;195900;196100;2
+Crescente;Acostamento Cresc.;PA4,0;196;196+000;196+200;200;196100;196300;2
+Crescente;Faixa 1 Cresc.;FF;196;196+000;196+360;360;196100;196460;2
+Decrescente;Faixa 1 Decresc.;FF;196;196+000;196+600;600;196100;196700;2
+Decrescente;Faixa 2/Adic. Decresc.;RECe25;196;196+000;197+000;1000;196100;197100;2
+Decrescente;Acostamento Decresc.;RF;196;196+000;197+000;1000;196100;197100;2
+Crescente;Acostamento Cresc.;PA3,5;196;196+200;196+600;400;196300;196700;2
+Crescente;Faixa 1 Cresc.;FF;196;196+480;196+560;80;196580;196660;2
+Crescente;Faixa 1 Cresc.;FE;196;196+560;196+600;40;196660;196700;2
+Crescente;Acostamento Cresc.;PA3,0;196;196+600;196+800;200;196700;196900;2
+Crescente;Faixa 1 Cresc.;FF;196;196+600;197+000;400;196700;197100;2
+Decrescente;Faixa 1 Decresc.;FS;196;196+600;196+800;200;196700;196900;2
+Crescente;Acostamento Cresc.;PA1,5;196;196+800;197+000;200;196900;197100;2
+Decrescente;Faixa 1 Decresc.;FF;196;196+800;197+000;200;196900;197100;2
+Crescente;Acostamento Cresc.;PA2,5;197;197+000;197+400;400;197100;197500;2
+Crescente;Faixa 1 Cresc.;FF;197;197+000;197+180;180;197100;197280;2
+Decrescente;Faixa 1 Decresc.;FF;197;197+000;197+240;240;197100;197340;2
+Decrescente;Faixa 2/Adic. Decresc.;RECe25;197;197+000;197+200;200;197100;197300;2
+Decrescente;Acostamento Decresc.;RF;197;197+000;197+300;300;197100;197400;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;197;197+200;197+240;40;197300;197340;2
+Decrescente;Acostamento Decresc.;PA2,5;197;197+300;197+400;100;197400;197500;2
+Crescente;Acostamento Cresc.;PA2,0;197;197+400;197+480;80;197500;197580;2
+Decrescente;Faixa 1 Decresc.;FF;197;197+400;197+620;220;197500;197720;2
+Decrescente;Acostamento Decresc.;PA2,0;197;197+400;197+480;80;197500;197580;2
+Crescente;Acostamento Cresc.;PA2,0;197;197+540;197+600;60;197640;197700;2
+Decrescente;Acostamento Decresc.;PA2,0;197;197+540;197+800;260;197640;197900;2
+Crescente;Acostamento Cresc.;PA2,5;197;197+600;197+800;200;197700;197900;2
+Decrescente;Faixa 1 Decresc.;FS;197;197+780;198+000;220;197880;198100;2
+Crescente;Acostamento Cresc.;PA1,5;197;197+800;197+860;60;197900;197960;2
+Decrescente;Acostamento Decresc.;PA2,5;197;197+800;198+000;200;197900;198100;2
+Crescente;Acostamento Cresc.;RF;197;197+860;198+000;140;197960;198100;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;197;197+880;198+000;120;197980;198100;2
+Crescente;Faixa 1 Cresc.;FF;197;197+900;198+000;100;198000;198100;2
+Crescente;Acostamento Cresc.;RF;198;198+000;199+000;1000;198100;199100;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;198;198+000;199+000;1000;198100;199100;2
+Crescente;Faixa 1 Cresc.;FF;198;198+000;199+000;1000;198100;199100;2
+Decrescente;Acostamento Decresc.;PA1,5;198;198+000;198+400;400;198100;198500;2
+Decrescente;Faixa 1 Decresc.;FS;198;198+400;198+600;200;198500;198700;2
+Decrescente;Acostamento Decresc.;PA2,0;198;198+400;198+540;140;198500;198640;2
+Decrescente;Acostamento Decresc.;RF;198;198+540;198+620;80;198640;198720;2
+Decrescente;Acostamento Decresc.;PA2,5;198;198+620;198+800;180;198720;198900;2
+Decrescente;Acostamento Decresc.;PA3,0;198;198+800;199+000;200;198900;199100;2
+Decrescente;Faixa 1 Decresc.;FE;198;198+920;198+940;20;199020;199040;2
+Crescente;Acostamento Cresc.;RF;199;199+000;199+960;960;199100;200060;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;199;199+000;199+600;600;199100;199700;2
+Crescente;Faixa 1 Cresc.;FF;199;199+000;199+760;760;199100;199860;2
+Decrescente;Acostamento Decresc.;PA1,5;199;199+000;199+200;200;199100;199300;2
+Decrescente;Faixa 1 Decresc.;FF;199;199+120;199+200;80;199220;199300;2
+Decrescente;Acostamento Decresc.;PA3,5;199;199+200;199+400;200;199300;199500;2
+Decrescente;Faixa 1 Decresc.;FF;199;199+300;199+340;40;199400;199440;2
+Decrescente;Faixa 1 Decresc.;FS;199;199+400;199+800;400;199500;199900;2
+Decrescente;Acostamento Decresc.;PA2,5;199;199+400;199+600;200;199500;199700;2
+Crescente;Faixa 2/Adic. Cresc.;FF;199;199+600;199+700;100;199700;199800;2
+Decrescente;Acostamento Decresc.;PA2,0;199;199+600;200+000;420;199700;200120;2
+Crescente;Faixa 1 Cresc.;FE;199;199+760;199+800;40;199860;199900;2
+Crescente;Faixa 1 Cresc.;FF;199;199+800;199+1000;200;199900;200100;2
+Decrescente;Faixa 1 Decresc.;FF;199;199+900;199+960;60;200000;200060;2
+Crescente;Acostamento Cresc.;PA1,5;199;199+960;199+1000;40;200060;200100;2
+Crescente;Acostamento Cresc.;PA4,0;199;199+1000;200+000;20;200100;200120;2
+Crescente;Acostamento Cresc.;PA4,0;200;200+000;200+180;180;200120;200300;2
+Decrescente;Acostamento Decresc.;PA2,0;200;200+000;201+000;960;200120;201080;2
+Crescente;Faixa 1 Cresc.;FF;200;200+160;200+580;420;200280;200700;2
+Crescente;Acostamento Cresc.;PA4,5;200;200+180;200+380;200;200300;200500;2
+Decrescente;Faixa 1 Decresc.;FF;200;200+180;200+360;180;200300;200480;2
+Decrescente;Faixa 1 Decresc.;FE;200;200+360;200+400;40;200480;200520;2
+Crescente;Acostamento Cresc.;PA3,5;200;200+380;200+580;200;200500;200700;2
+Decrescente;Faixa 1 Decresc.;FF;200;200+400;200+500;100;200520;200620;2
+Decrescente;Faixa 1 Decresc.;FE;200;200+500;200+640;140;200620;200760;2
+Crescente;Acostamento Cresc.;PA4,5;200;200+580;200+780;200;200700;200900;2
+Crescente;Faixa 1 Cresc.;FE;200;200+580;200+680;100;200700;200800;2
+Decrescente;Faixa 1 Decresc.;FF;200;200+640;201+000;320;200760;201080;2
+Crescente;Faixa 1 Cresc.;FS;200;200+680;201+000;280;200800;201080;2
+Crescente;Acostamento Cresc.;PA2,0;200;200+780;201+000;180;200900;201080;2
+Crescente;Acostamento Cresc.;PA2,0;201;201+000;201+020;20;201080;201100;2
+Crescente;Faixa 1 Cresc.;FS;201;201+000;201+020;20;201080;201100;2
+Decrescente;Faixa 1 Decresc.;FF;201;201+000;201+280;280;201080;201360;2
+Decrescente;Acostamento Decresc.;PA2,0;201;201+000;201+220;220;201080;201300;2
+Crescente;Acostamento Cresc.;PA3,5;201;201+020;201+220;200;201100;201300;2
+Crescente;Acostamento Cresc.;PA1,5;201;201+220;201+320;100;201300;201400;2
+Crescente;Faixa 1 Cresc.;FS;201;201+220;202+000;800;201300;202100;2
+Decrescente;Acostamento Decresc.;PA1,5;201;201+220;201+260;40;201300;201340;2
+Decrescente;Acostamento Decresc.;RF;201;201+260;201+560;300;201340;201640;2
+Decrescente;Faixa 1 Decresc.;FE;201;201+280;201+400;120;201360;201480;2
+Crescente;Acostamento Cresc.;RF;201;201+320;201+480;160;201400;201560;2
+Decrescente;Faixa 1 Decresc.;FF;201;201+400;201+540;140;201480;201620;2
+Crescente;Acostamento Cresc.;PA1,5;201;201+480;201+620;140;201560;201700;2
+Decrescente;Faixa 1 Decresc.;FE;201;201+540;201+580;40;201620;201660;2
+Decrescente;Acostamento Decresc.;PA1,5;201;201+560;201+620;60;201640;201700;2
+Decrescente;Faixa 1 Decresc.;FF;201;201+580;201+720;140;201660;201800;2
+Crescente;Acostamento Cresc.;PA3,0;201;201+620;201+640;20;201700;201720;2
+Decrescente;Acostamento Decresc.;PA2,0;201;201+620;201+640;20;201700;201720;2
+Crescente;Acostamento Cresc.;PA3,0;201;201+720;201+820;100;201800;201900;2
+Decrescente;Faixa 1 Decresc.;FE;201;201+720;201+780;60;201800;201860;2
+Decrescente;Acostamento Decresc.;PA2,0;201;201+720;201+820;100;201800;201900;2
+Decrescente;Faixa 1 Decresc.;FF;201;201+780;201+880;100;201860;201960;2
+Crescente;Acostamento Cresc.;PA5,0;201;201+820;202+000;200;201900;202100;2
+Decrescente;Acostamento Decresc.;PA3,5;201;201+820;202+000;200;201900;202100;2
+Crescente;Acostamento Cresc.;PA4,0;202;202+000;202+200;200;202100;202300;2
+Decrescente;Faixa 1 Decresc.;FF;202;202+000;202+120;120;202100;202220;2
+Decrescente;Acostamento Decresc.;PA4,0;202;202+000;202+200;200;202100;202300;2
+Crescente;Faixa 1 Cresc.;FE;202;202+120;202+220;100;202220;202320;2
+Decrescente;Faixa 1 Decresc.;FE;202;202+120;202+200;80;202220;202300;2
+Crescente;Acostamento Cresc.;PA3,5;202;202+200;202+400;200;202300;202500;2
+Decrescente;Faixa 1 Decresc.;FF;202;202+200;202+600;400;202300;202700;2
+Decrescente;Acostamento Decresc.;PA3,5;202;202+200;202+400;200;202300;202500;2
+Crescente;Faixa 1 Cresc.;FF;202;202+300;202+320;20;202400;202420;2
+Crescente;Acostamento Cresc.;PA1,5;202;202+400;202+440;40;202500;202540;2
+Decrescente;Acostamento Decresc.;PA3,0;202;202+400;202+520;120;202500;202620;2
+Crescente;Acostamento Cresc.;RF;202;202+440;202+760;320;202540;202860;2
+Decrescente;Acostamento Decresc.;RF;202;202+520;202+760;240;202620;202860;2
+Crescente;Faixa 1 Cresc.;FF;202;202+580;202+840;260;202680;202940;2
+Decrescente;Faixa 1 Decresc.;FF;202;202+760;202+920;160;202860;203020;2
+Crescente;Acostamento Cresc.;PA1,5;202;202+840;202+940;100;202940;203040;2
+Crescente;Faixa 1 Cresc.;FE;202;202+840;202+900;60;202940;203000;2
+Decrescente;Acostamento Decresc.;PA2,5;202;202+840;203+000;140;202940;203080;2
+Crescente;Faixa 1 Cresc.;FF;202;202+900;203+000;80;203000;203080;2
+Decrescente;Faixa 1 Decresc.;FE;202;202+920;203+000;60;203020;203080;2
+Crescente;Acostamento Cresc.;RF;202;202+940;203+000;40;203040;203080;2
+Crescente;Faixa 2/Adic. Cresc.;FE;202;202+940;203+000;40;203040;203080;2
+Crescente;Acostamento Cresc.;RF;203;203+000;204+000;980;203080;204060;2
+Crescente;Faixa 2/Adic. Cresc.;FE;203;203+000;204+000;980;203080;204060;2
+Crescente;Faixa 1 Cresc.;FF;203;203+000;204+000;980;203080;204060;2
+Decrescente;Faixa 1 Decresc.;FE;203;203+000;203+020;20;203080;203100;2
+Decrescente;Acostamento Decresc.;PA2,5;203;203+000;203+020;20;203080;203100;2
+Decrescente;Faixa 1 Decresc.;FF;203;203+020;203+760;740;203100;203840;2
+Decrescente;Acostamento Decresc.;PA3,0;203;203+020;203+220;200;203100;203300;2
+Decrescente;Acostamento Decresc.;PA3,5;203;203+220;203+620;400;203300;203700;2
+Decrescente;Acostamento Decresc.;PA2,5;203;203+620;204+000;360;203700;204060;2
+Decrescente;Faixa 1 Decresc.;FE;203;203+760;203+840;80;203840;203920;2
+Decrescente;Faixa 1 Decresc.;FF;203;203+840;203+940;100;203920;204020;2
+Decrescente;Faixa 1 Decresc.;FE;203;203+940;204+000;40;204020;204060;2
+Crescente;Acostamento Cresc.;RF;204;204+000;205+000;1020;204060;205080;2
+Crescente;Faixa 2/Adic. Cresc.;FE;204;204+000;205+000;1020;204060;205080;2
+Crescente;Faixa 1 Cresc.;FF;204;204+000;205+000;1020;204060;205080;2
+Decrescente;Faixa 1 Decresc.;FF;204;204+000;204+080;80;204060;204140;2
+Decrescente;Acostamento Decresc.;PA2,5;204;204+000;204+040;40;204060;204100;2
+Decrescente;Acostamento Decresc.;PA3,0;204;204+040;204+240;200;204100;204300;2
+Decrescente;Faixa 1 Decresc.;FE;204;204+080;204+180;100;204140;204240;2
+Decrescente;Faixa 1 Decresc.;FF;204;204+180;204+840;660;204240;204900;2
+Decrescente;Acostamento Decresc.;PA2,5;204;204+240;204+840;600;204300;204900;2
+Decrescente;Acostamento Decresc.;PA1,5;204;204+840;204+920;80;204900;204980;2
+Decrescente;Acostamento Decresc.;RF;204;204+920;205+000;100;204980;205080;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;204;204+1000;205+000;20;205060;205080;2
+Crescente;Acostamento Cresc.;RF;205;205+000;205+200;200;205080;205280;2
+Crescente;Faixa 2/Adic. Cresc.;FE;205;205+000;205+040;40;205080;205120;2
+Crescente;Faixa 1 Cresc.;FF;205;205+000;205+280;280;205080;205360;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;205;205+000;205+180;180;205080;205260;2
+Decrescente;Acostamento Decresc.;RF;205;205+000;206+000;940;205080;206020;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;205;205+180;206+000;760;205260;206020;2
+Crescente;Acostamento Cresc.;PA1,5;205;205+200;205+220;20;205280;205300;2
+Crescente;Acostamento Cresc.;PA2,0;205;205+220;205+420;200;205300;205500;2
+Crescente;Acostamento Cresc.;PA1,5;205;205+420;205+820;400;205500;205900;2
+Decrescente;Faixa 1 Decresc.;FE;205;205+460;205+480;20;205540;205560;2
+Crescente;Faixa 1 Cresc.;FF;205;205+700;205+720;20;205780;205800;2
+Crescente;Acostamento Cresc.;PA2,0;205;205+820;206+000;120;205900;206020;2
+Crescente;Acostamento Cresc.;PA2,0;206;206+000;206+280;280;206020;206300;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;206;206+000;207+000;1040;206020;207060;2
+Decrescente;Acostamento Decresc.;RF;206;206+000;207+000;1040;206020;207060;2
+Crescente;Faixa 1 Cresc.;FF;206;206+080;206+320;240;206100;206340;2
+Crescente;Acostamento Cresc.;PA1,5;206;206+280;206+740;460;206300;206760;2
+Crescente;Faixa 1 Cresc.;FF;206;206+480;206+940;460;206500;206960;2
+Crescente;Acostamento Cresc.;RF;206;206+740;207+000;300;206760;207060;2
+Crescente;Faixa 1 Cresc.;FE;206;206+940;207+000;100;206960;207060;2
+Crescente;Acostamento Cresc.;RF;207;207+000;207+240;240;207060;207300;2
+Crescente;Faixa 1 Cresc.;FE;207;207+000;207+020;20;207060;207080;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;207;207+000;208+000;1000;207060;208060;2
+Decrescente;Acostamento Decresc.;RF;207;207+000;208+000;1000;207060;208060;2
+Crescente;Faixa 1 Cresc.;FF;207;207+020;207+060;40;207080;207120;2
+Crescente;Faixa 1 Cresc.;FS;207;207+060;207+680;620;207120;207740;2
+Decrescente;Faixa 1 Decresc.;FE;207;207+120;207+320;200;207180;207380;2
+Crescente;Acostamento Cresc.;PA1,5;207;207+240;207+800;560;207300;207860;2
+Decrescente;Faixa 1 Decresc.;FE;207;207+460;207+520;60;207520;207580;2
+Decrescente;Faixa 1 Decresc.;FE;207;207+760;207+800;40;207820;207860;2
+Crescente;Acostamento Cresc.;RF;207;207+800;207+920;120;207860;207980;2
+Crescente;Acostamento Cresc.;PA1,5;207;207+920;208+000;80;207980;208060;2
+Crescente;Faixa 1 Cresc.;FF;207;207+960;208+000;40;208020;208060;2
+Crescente;Acostamento Cresc.;PA1,5;208;208+000;208+140;140;208060;208200;2
+Crescente;Faixa 1 Cresc.;FE;208;208+000;208+140;140;208060;208200;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;208;208+000;208+020;20;208060;208080;2
+Decrescente;Acostamento Decresc.;RF;208;208+000;208+080;80;208060;208140;2
+Decrescente;Faixa 1 Decresc.;FS;208;208+040;208+820;780;208100;208880;2
+Decrescente;Acostamento Decresc.;PA1,5;208;208+080;208+140;60;208140;208200;2
+Crescente;Faixa 1 Cresc.;FF;208;208+140;208+200;60;208200;208260;2
+Crescente;Acostamento Cresc.;PA1,5;208;208+200;208+280;80;208260;208340;2
+Crescente;Faixa 1 Cresc.;FE;208;208+200;208+260;60;208260;208320;2
+Decrescente;Acostamento Decresc.;PA1,5;208;208+200;208+640;440;208260;208700;2
+Crescente;Faixa 1 Cresc.;FF;208;208+260;208+440;180;208320;208500;2
+Crescente;Acostamento Cresc.;RF;208;208+280;209+000;700;208340;209040;2
+Crescente;Faixa 2/Adic. Cresc.;FF;208;208+340;208+440;100;208400;208500;2
+Crescente;Faixa 1 Cresc.;FF;208;208+540;208+560;20;208600;208620;2
+Crescente;Faixa 2/Adic. Cresc.;FS;208;208+640;208+900;260;208700;208960;2
+Decrescente;Acostamento Decresc.;PA2,0;208;208+640;208+840;200;208700;208900;2
+Decrescente;Faixa 1 Decresc.;FE;208;208+820;208+880;60;208880;208940;2
+Crescente;Faixa 1 Cresc.;FF;208;208+840;209+000;140;208900;209040;2
+Decrescente;Acostamento Decresc.;PA1,5;208;208+840;209+000;140;208900;209040;2
+Decrescente;Faixa 1 Decresc.;FF;208;208+880;209+000;100;208940;209040;2
+Crescente;Faixa 2/Adic. Cresc.;FE;208;208+900;209+000;80;208960;209040;2
+Crescente;Acostamento Cresc.;RF;209;209+000;210+000;1020;209040;210060;2
+Crescente;Faixa 2/Adic. Cresc.;FE;209;209+000;210+000;1020;209040;210060;2
+Crescente;Faixa 1 Cresc.;FF;209;209+000;210+000;1020;209040;210060;2
+Decrescente;Faixa 1 Decresc.;FF;209;209+000;209+060;60;209040;209100;2
+Decrescente;Acostamento Decresc.;PA1,5;209;209+000;209+180;180;209040;209220;2
+Decrescente;Acostamento Decresc.;RF;209;209+180;209+320;140;209220;209360;2
+Decrescente;Acostamento Decresc.;PA2,0;209;209+320;209+460;140;209360;209500;2
+Decrescente;Faixa 1 Decresc.;FF;209;209+460;209+880;420;209500;209920;2
+Decrescente;Acostamento Decresc.;PA3,0;209;209+460;209+660;200;209500;209700;2
+Decrescente;Acostamento Decresc.;PA2,5;209;209+660;209+860;200;209700;209900;2
+Decrescente;Acostamento Decresc.;PA2,0;209;209+860;210+000;160;209900;210060;2
+Crescente;Acostamento Cresc.;RF;210;210+000;211+000;980;210060;211040;2
+Crescente;Faixa 2/Adic. Cresc.;FE;210;210+000;210+240;240;210060;210300;2
+Crescente;Faixa 1 Cresc.;FF;210;210+000;211+000;980;210060;211040;2
+Decrescente;Acostamento Decresc.;PA2,0;210;210+000;210+240;240;210060;210300;2
+Decrescente;Faixa 1 Decresc.;FF;210;210+040;210+280;240;210100;210340;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;210;210+240;210+500;260;210300;210560;2
+Decrescente;Acostamento Decresc.;PA2,5;210;210+240;210+440;200;210300;210500;2
+Decrescente;Acostamento Decresc.;PA1,5;210;210+440;210+660;220;210500;210720;2
+Crescente;Faixa 2/Adic. Cresc.;FE;210;210+500;210+680;180;210560;210740;2
+Decrescente;Acostamento Decresc.;RF;210;210+660;211+000;320;210720;211040;2
+Decrescente;Faixa 1 Decresc.;FF;210;210+840;211+000;140;210900;211040;2
+Crescente;Acostamento Cresc.;RF;211;211+000;211+480;480;211040;211520;2
+Crescente;Faixa 1 Cresc.;FF;211;211+000;211+020;20;211040;211060;2
+Decrescente;Faixa 1 Decresc.;FF;211;211+000;211+280;280;211040;211320;2
+Decrescente;Acostamento Decresc.;RF;211;211+000;211+480;480;211040;211520;2
+Crescente;Faixa 1 Cresc.;FE;211;211+020;211+060;40;211060;211100;2
+Crescente;Faixa 1 Cresc.;FF;211;211+060;211+520;460;211100;211560;2
+Crescente;Acostamento Cresc.;PA1,5;211;211+480;212+000;560;211520;212080;2
+Decrescente;Acostamento Decresc.;PA2,5;211;211+480;211+660;180;211520;211700;2
+Crescente;Faixa 1 Cresc.;FE;211;211+520;211+1000;480;211560;212040;2
+Decrescente;Faixa 1 Decresc.;FE;211;211+660;211+680;20;211700;211720;2
+Decrescente;Acostamento Decresc.;PA2,0;211;211+660;211+860;200;211700;211900;2
+Decrescente;Acostamento Decresc.;PA1,5;211;211+860;212+000;180;211900;212080;2
+Decrescente;Faixa 1 Decresc.;FF;211;211+920;212+000;120;211960;212080;2
+Crescente;Faixa 1 Cresc.;FF;211;211+1000;212+000;40;212040;212080;2
+Crescente;Acostamento Cresc.;PA1,5;212;212+000;212+620;620;212080;212700;2
+Crescente;Faixa 1 Cresc.;FF;212;212+000;212+560;560;212080;212640;2
+Decrescente;Faixa 1 Decresc.;FF;212;212+000;212+220;220;212080;212300;2
+Decrescente;Acostamento Decresc.;PA1,5;212;212+000;212+020;20;212080;212100;2
+Decrescente;Acostamento Decresc.;PA2,0;212;212+020;212+220;200;212100;212300;2
+Decrescente;Acostamento Decresc.;PA1,5;212;212+220;212+1020;800;212300;213100;2
+Decrescente;Faixa 1 Decresc.;FF;212;212+300;212+400;100;212380;212480;2
+Decrescente;Faixa 1 Decresc.;FF;212;212+500;212+560;60;212580;212640;2
+Crescente;Faixa 1 Cresc.;FE;212;212+560;212+620;60;212640;212700;2
+Crescente;Acostamento Cresc.;PA2,5;212;212+620;212+820;200;212700;212900;2
+Crescente;Faixa 1 Cresc.;FF;212;212+620;213+000;440;212700;213140;2
+Decrescente;Faixa 1 Decresc.;FF;212;212+780;212+820;40;212860;212900;2
+Crescente;Acostamento Cresc.;PA2,0;212;212+820;212+1020;200;212900;213100;2
+Decrescente;Faixa 1 Decresc.;FF;212;212+900;213+000;160;212980;213140;2
+Crescente;Acostamento Cresc.;PA1,5;212;212+1020;213+000;40;213100;213140;2
+Decrescente;Acostamento Decresc.;PA2,0;212;212+1020;213+000;40;213100;213140;2
+Crescente;Acostamento Cresc.;PA1,5;213;213+000;213+100;100;213140;213240;2
+Crescente;Faixa 1 Cresc.;FF;213;213+000;214+000;1020;213140;214160;2
+Decrescente;Faixa 1 Decresc.;FF;213;213+000;214+000;1020;213140;214160;2
+Decrescente;Acostamento Decresc.;PA2,0;213;213+000;213+020;20;213140;213160;2
+Decrescente;Acostamento Decresc.;RF;213;213+020;213+100;80;213160;213240;2
+Crescente;Acostamento Cresc.;RF;213;213+100;213+160;60;213240;213300;2
+Decrescente;Acostamento Decresc.;PA2,0;213;213+100;213+160;60;213240;213300;2
+Crescente;Acostamento Cresc.;PA1,5;213;213+160;213+880;720;213300;214020;2
+Decrescente;Acostamento Decresc.;PA2,5;213;213+160;213+360;200;213300;213500;2
+Decrescente;Acostamento Decresc.;PA2,0;213;213+360;213+560;200;213500;213700;2
+Decrescente;Acostamento Decresc.;PA1,5;213;213+560;213+760;200;213700;213900;2
+Decrescente;Acostamento Decresc.;PA2,5;213;213+760;213+880;120;213900;214020;2
+Crescente;Acostamento Cresc.;RF;213;213+880;214+000;140;214020;214160;2
+Decrescente;Acostamento Decresc.;RF;213;213+880;214+000;140;214020;214160;2
+Crescente;Acostamento Cresc.;RF;214;214+000;215+000;1020;214160;215180;2
+Crescente;Faixa 1 Cresc.;FF;214;214+000;214+020;20;214160;214180;2
+Decrescente;Faixa 1 Decresc.;FF;214;214+000;214+040;40;214160;214200;2
+Decrescente;Acostamento Decresc.;RF;214;214+000;214+480;480;214160;214640;2
+Crescente;Faixa 1 Cresc.;FE;214;214+020;214+480;460;214180;214640;2
+Decrescente;Faixa 1 Decresc.;FE;214;214+040;214+400;360;214200;214560;2
+Crescente;Faixa 2/Adic. Cresc.;FF;214;214+440;214+500;60;214600;214660;2
+Decrescente;Acostamento Decresc.;PA2,0;214;214+480;214+940;460;214640;215100;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;214;214+500;214+860;360;214660;215020;2
+Decrescente;Faixa 1 Decresc.;FF;214;214+560;214+660;100;214720;214820;2
+Crescente;Faixa 2/Adic. Cresc.;FF;214;214+860;214+940;80;215020;215100;2
+Decrescente;Faixa 1 Decresc.;FF;214;214+920;215+000;100;215080;215180;2
+Decrescente;Acostamento Decresc.;PA2,5;214;214+940;215+000;80;215100;215180;2
+Crescente;Acostamento Cresc.;RF;215;215+000;216+000;1020;215180;216200;2
+Decrescente;Faixa 1 Decresc.;FF;215;215+000;215+600;600;215180;215780;2
+Decrescente;Acostamento Decresc.;PA2,5;215;215+000;215+280;280;215180;215460;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;215;215+200;215+640;440;215380;215820;2
+Decrescente;Acostamento Decresc.;RF;215;215+280;215+420;140;215460;215600;2
+Decrescente;Acostamento Decresc.;PA2,0;215;215+420;215+520;100;215600;215700;2
+Decrescente;Acostamento Decresc.;PA1,5;215;215+520;215+720;200;215700;215900;2
+Crescente;Faixa 2/Adic. Cresc.;FF;215;215+640;215+800;160;215820;215980;2
+Decrescente;Faixa 1 Decresc.;FS;215;215+700;215+900;200;215880;216080;2
+Decrescente;Acostamento Decresc.;PA2,0;215;215+720;215+920;200;215900;216100;2
+Crescente;Faixa 2/Adic. Cresc.;RPe25;215;215+800;215+840;40;215980;216020;2
+Crescente;Faixa 2/Adic. Cresc.;FF;215;215+840;216+000;180;216020;216200;2
+Decrescente;Faixa 1 Decresc.;FF;215;215+900;216+000;120;216080;216200;2
+Decrescente;Acostamento Decresc.;PA2,5;215;215+920;216+000;100;216100;216200;2
+Crescente;Acostamento Cresc.;RF;216;216+000;216+060;60;216200;216260;2
+Crescente;Faixa 2/Adic. Cresc.;FF;216;216+000;216+020;20;216200;216220;2
+Decrescente;Faixa 1 Decresc.;FF;216;216+000;216+160;160;216200;216360;2
+Decrescente;Acostamento Decresc.;PA2,5;216;216+000;216+100;100;216200;216300;2
+Crescente;Acostamento Cresc.;PA1,5;216;216+060;216+100;40;216260;216300;2
+Crescente;Faixa 1 Cresc.;FF;216;216+060;216+300;240;216260;216500;2
+Crescente;Acostamento Cresc.;PA2,5;216;216+100;216+300;200;216300;216500;2
+Decrescente;Acostamento Decresc.;PA2,0;216;216+100;216+500;400;216300;216700;2
+Decrescente;Faixa 1 Decresc.;FF;216;216+280;216+400;120;216480;216600;2
+Crescente;Acostamento Cresc.;PA1,5;216;216+300;216+760;460;216500;216960;2
+Crescente;Faixa 1 Cresc.;FE;216;216+300;216+340;40;216500;216540;2
+Crescente;Faixa 1 Cresc.;FF;216;216+340;216+560;220;216540;216760;2
+Decrescente;Faixa 1 Decresc.;FF;216;216+500;216+520;20;216700;216720;2
+Decrescente;Acostamento Decresc.;RF;216;216+520;217+000;460;216720;217180;2
+Crescente;Faixa 1 Cresc.;FE;216;216+560;216+640;80;216760;216840;2
+Crescente;Faixa 1 Cresc.;FF;216;216+640;216+900;260;216840;217100;2
+Crescente;Acostamento Cresc.;RF;216;216+760;216+900;140;216960;217100;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;216;216+860;217+000;120;217060;217180;2
+Crescente;Acostamento Cresc.;PA1,5;216;216+900;217+000;80;217100;217180;2
+Crescente;Faixa 1 Cresc.;FE;216;216+900;216+960;60;217100;217160;2
+Crescente;Faixa 1 Cresc.;FF;216;216+960;217+000;20;217160;217180;2
+Crescente;Acostamento Cresc.;PA1,5;217;217+000;217+120;120;217180;217300;2
+Crescente;Faixa 1 Cresc.;FF;217;217+000;218+000;1000;217180;218180;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;217;217+000;217+380;380;217180;217560;2
+Decrescente;Acostamento Decresc.;RF;217;217+000;218+000;1000;217180;218180;2
+Crescente;Acostamento Cresc.;PA2,0;217;217+120;217+320;200;217300;217500;2
+Decrescente;Faixa 1 Decresc.;FE;217;217+200;217+260;60;217380;217440;2
+Crescente;Acostamento Cresc.;PA2,5;217;217+320;217+520;200;217500;217700;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;217;217+380;217+540;160;217560;217720;2
+Crescente;Acostamento Cresc.;PA2,0;217;217+520;217+720;200;217700;217900;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;217;217+700;217+780;80;217880;217960;2
+Crescente;Acostamento Cresc.;PA1,5;217;217+720;218+000;280;217900;218180;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;217;217+780;218+000;220;217960;218180;2
+Crescente;Acostamento Cresc.;PA1,5;218;218+000;218+920;920;218180;219100;2
+Crescente;Faixa 1 Cresc.;FF;218;218+000;218+120;120;218180;218300;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;218;218+000;218+280;280;218180;218460;2
+Decrescente;Acostamento Decresc.;RF;218;218+000;219+000;1000;218180;219180;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;218;218+280;218+540;260;218460;218720;2
+Crescente;Faixa 1 Cresc.;FF;218;218+320;218+480;160;218500;218660;2
+Crescente;Faixa 1 Cresc.;FE;218;218+480;218+520;40;218660;218700;2
+Crescente;Faixa 1 Cresc.;FF;218;218+520;218+680;160;218700;218860;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;218;218+540;218+800;260;218720;218980;2
+Crescente;Faixa 1 Cresc.;FE;218;218+680;218+780;100;218860;218960;2
+Crescente;Faixa 1 Cresc.;FF;218;218+780;219+000;220;218960;219180;2
+Crescente;Acostamento Cresc.;PA2,0;218;218+920;219+000;80;219100;219180;2
+Decrescente;Faixa 1 Decresc.;FF;218;218+920;218+940;20;219100;219120;2
+Crescente;Acostamento Cresc.;PA2,0;219;219+000;219+120;120;219180;219300;2
+Crescente;Faixa 1 Cresc.;FF;219;219+000;219+220;220;219180;219400;2
+Decrescente;Acostamento Decresc.;RF;219;219+000;219+680;680;219180;219860;2
+Crescente;Acostamento Cresc.;PA2,5;219;219+120;219+520;400;219300;219700;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;219;219+160;219+200;40;219340;219380;2
+Crescente;Faixa 1 Cresc.;FE;219;219+220;219+300;80;219400;219480;2
+Crescente;Faixa 1 Cresc.;RPe25;219;219+300;219+340;40;219480;219520;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;219;219+320;219+400;80;219500;219580;2
+Crescente;Faixa 1 Cresc.;FE;219;219+340;219+600;260;219520;219780;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;219;219+500;219+560;60;219680;219740;2
+Crescente;Acostamento Cresc.;PA1,5;219;219+520;219+720;200;219700;219900;2
+Crescente;Faixa 1 Cresc.;RPe25;219;219+600;219+640;40;219780;219820;2
+Crescente;Faixa 1 Cresc.;FE;219;219+640;219+740;100;219820;219920;2
+Decrescente;Acostamento Decresc.;PA1,5;219;219+680;219+720;40;219860;219900;2
+Crescente;Acostamento Cresc.;PA2,0;219;219+720;219+760;40;219900;219940;2
+Decrescente;Faixa 1 Decresc.;FF;219;219+720;219+920;200;219900;220100;2
+Decrescente;Acostamento Decresc.;PA2,0;219;219+720;219+760;40;219900;219940;2
+Crescente;Faixa 1 Cresc.;FF;219;219+740;219+900;160;219920;220080;2
+Crescente;Acostamento Cresc.;PA2,0;219;219+860;219+920;60;220040;220100;2
+Decrescente;Acostamento Decresc.;PA2,0;219;219+860;219+940;80;220040;220120;2
+Crescente;Faixa 1 Cresc.;FE;219;219+900;220+000;80;220080;220160;2
+Crescente;Acostamento Cresc.;RF;219;219+920;220+000;60;220100;220160;2
+Decrescente;Acostamento Decresc.;RF;219;219+940;220+000;40;220120;220160;2
+Crescente;Acostamento Cresc.;RF;220;220+000;220+140;140;220160;220300;2
+Crescente;Faixa 1 Cresc.;FE;220;220+000;220+060;60;220160;220220;2
+Decrescente;Acostamento Decresc.;RF;220;220+000;220+100;100;220160;220260;2
+Crescente;Faixa 1 Cresc.;FS;220;220+060;221+000;960;220220;221180;2
+Decrescente;Acostamento Decresc.;PA2,0;220;220+100;220+140;40;220260;220300;2
+Decrescente;Faixa 1 Decresc.;FF;220;220+120;220+140;20;220280;220300;2
+Crescente;Acostamento Cresc.;PA2,0;220;220+140;220+300;160;220300;220460;2
+Decrescente;Acostamento Decresc.;PA3,0;220;220+140;220+340;200;220300;220500;2
+Crescente;Acostamento Cresc.;RF;220;220+300;221+000;720;220460;221180;2
+Decrescente;Faixa 1 Decresc.;FF;220;220+320;220+340;20;220480;220500;2
+Decrescente;Acostamento Decresc.;PA2,5;220;220+340;220+740;400;220500;220900;2
+Decrescente;Faixa 1 Decresc.;FF;220;220+400;220+460;60;220560;220620;2
+Crescente;Faixa 2/Adic. Cresc.;FF;220;220+460;220+480;20;220620;220640;2
+Decrescente;Faixa 1 Decresc.;FF;220;220+520;220+540;20;220680;220700;2
+Crescente;Faixa 2/Adic. Cresc.;FE;220;220+540;220+560;20;220700;220720;2
+Crescente;Faixa 2/Adic. Cresc.;FF;220;220+740;220+800;60;220900;220960;2
+Decrescente;Acostamento Decresc.;PA2,0;220;220+740;220+940;200;220900;221100;2
+Decrescente;Acostamento Decresc.;PA2,5;220;220+940;221+000;80;221100;221180;2
+Crescente;Acostamento Cresc.;RF;221;221+000;222+000;980;221180;222160;2
+Crescente;Faixa 1 Cresc.;FS;221;221+000;221+120;120;221180;221300;2
+Decrescente;Acostamento Decresc.;PA2,5;221;221+000;221+520;520;221180;221700;2
+Crescente;Faixa 1 Cresc.;FS;221;221+320;222+000;660;221500;222160;2
+Decrescente;Acostamento Decresc.;PA2,0;221;221+520;221+700;180;221700;221880;2
+Decrescente;Faixa 1 Decresc.;FE;221;221+560;221+600;40;221740;221780;2
+Decrescente;Faixa 1 Decresc.;FF;221;221+660;221+720;60;221840;221900;2
+Decrescente;Acostamento Decresc.;RF;221;221+700;222+000;280;221880;222160;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;221;221+880;221+920;40;222060;222100;2
+Crescente;Acostamento Cresc.;RF;222;222+000;222+300;300;222160;222460;2
+Crescente;Faixa 1 Cresc.;FS;222;222+000;222+200;200;222160;222360;2
+Decrescente;Acostamento Decresc.;RF;222;222+000;223+000;1000;222160;223160;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;222;222+040;222+240;200;222200;222400;2
+Crescente;Faixa 1 Cresc.;FF;222;222+200;222+380;180;222360;222540;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;222;222+240;222+280;40;222400;222440;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;222;222+280;222+740;460;222440;222900;2
+Crescente;Acostamento Cresc.;PA1,5;222;222+300;222+740;440;222460;222900;2
+Crescente;Faixa 1 Cresc.;FF;222;222+600;222+620;20;222760;222780;2
+Crescente;Acostamento Cresc.;PA2,0;222;222+740;222+940;200;222900;223100;2
+Crescente;Faixa 1 Cresc.;RECe25;222;222+840;223+000;160;223000;223160;2
+Decrescente;Faixa 1 Decresc.;FS;222;222+840;223+000;160;223000;223160;2
+Crescente;Acostamento Cresc.;PA1,5;222;222+940;223+000;60;223100;223160;2
+Crescente;Acostamento Cresc.;PA1,5;223;223+000;223+940;940;223160;224100;2
+Crescente;Faixa 1 Cresc.;RECe25;223;223+000;223+120;120;223160;223280;2
+Decrescente;Faixa 1 Decresc.;FS;223;223+000;223+940;940;223160;224100;2
+Decrescente;Acostamento Decresc.;RF;223;223+000;224+000;1000;223160;224160;2
+Crescente;Faixa 1 Cresc.;FF;223;223+340;223+360;20;223500;223520;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;223;223+420;223+440;20;223580;223600;2
+Crescente;Faixa 1 Cresc.;FF;223;223+440;223+460;20;223600;223620;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;223;223+500;223+520;20;223660;223680;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;223;223+560;223+580;20;223720;223740;2
+Crescente;Faixa 1 Cresc.;FE;223;223+600;223+620;20;223760;223780;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;223;223+720;223+760;40;223880;223920;2
+Crescente;Acostamento Cresc.;PA2,0;223;223+940;224+000;60;224100;224160;2
+Crescente;Acostamento Cresc.;PA2,0;224;224+000;224+140;140;224160;224300;2
+Decrescente;Acostamento Decresc.;RF;224;224+000;225+000;1000;224160;225160;2
+Crescente;Acostamento Cresc.;PA1,5;224;224+140;224+940;800;224300;225100;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;224;224+140;224+340;200;224300;224500;2
+Crescente;Faixa 1 Cresc.;FF;224;224+380;224+700;320;224540;224860;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;224;224+540;224+700;160;224700;224860;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;224;224+760;224+780;20;224920;224940;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;224;224+920;225+000;80;225080;225160;2
+Crescente;Acostamento Cresc.;PA2,0;224;224+940;225+000;60;225100;225160;2
+Crescente;Acostamento Cresc.;PA2,0;225;225+000;225+140;140;225160;225300;2
+Decrescente;Faixa 2/Adic. Decresc.;FS;225;225+000;225+140;140;225160;225300;2
+Decrescente;Acostamento Decresc.;RF;225;225+000;225+500;500;225160;225660;2
+Crescente;Acostamento Cresc.;PA1,5;225;225+140;225+1000;860;225300;226160;2
+Decrescente;Faixa 1 Decresc.;FE;225;225+440;225+480;40;225600;225640;2
+Decrescente;Faixa 1 Decresc.;FF;225;225+480;225+700;220;225640;225860;2
+Decrescente;Acostamento Decresc.;PA1,5;225;225+500;225+740;240;225660;225900;2
+Crescente;Faixa 1 Cresc.;FF;225;225+600;225+860;260;225760;226020;2
+Decrescente;Acostamento Decresc.;PA2,0;225;225+740;225+940;200;225900;226100;2
+Decrescente;Acostamento Decresc.;PA1,5;225;225+940;225+1000;60;226100;226160;2
+Crescente;Faixa 1 Cresc.;FF;225;225+1000;226+000;80;226160;226240;2
+Crescente;Acostamento Cresc.;PA1,5;226;226+000;226+060;60;226240;226300;2
+Crescente;Faixa 1 Cresc.;FF;226;226+000;226+040;40;226240;226280;2
+Decrescente;Acostamento Decresc.;PA1,5;226;226+000;226+060;60;226240;226300;2
+Crescente;Acostamento Cresc.;PA2,0;226;226+060;226+460;400;226300;226700;2
+Decrescente;Acostamento Decresc.;PA2,0;226;226+060;226+260;200;226300;226500;2
+Crescente;Faixa 1 Cresc.;FF;226;226+140;226+400;260;226380;226640;2
+Decrescente;Faixa 1 Decresc.;FF;226;226+220;226+280;60;226460;226520;2
+Decrescente;Acostamento Decresc.;PA1,5;226;226+260;226+880;620;226500;227120;2
+Decrescente;Faixa 1 Decresc.;FF;226;226+380;226+960;580;226620;227200;2
+Crescente;Faixa 1 Cresc.;FE;226;226+400;226+720;320;226640;226960;2
+Crescente;Acostamento Cresc.;PA2,5;226;226+460;226+660;200;226700;226900;2
+Crescente;Acostamento Cresc.;PA1,5;226;226+660;226+880;220;226900;227120;2
+Crescente;Faixa 1 Cresc.;FF;226;226+720;227+000;260;226960;227220;2
+Crescente;Acostamento Cresc.;PA1,5;226;226+960;227+000;20;227200;227220;2
+Decrescente;Acostamento Decresc.;PA1,5;226;226+960;227+000;20;227200;227220;2
+Crescente;Acostamento Cresc.;PA1,5;227;227+000;227+040;40;227220;227260;2
+Crescente;Faixa 1 Cresc.;FF;227;227+000;227+940;940;227220;228160;2
+Decrescente;Acostamento Decresc.;PA1,5;227;227+000;227+080;80;227220;227300;2
+Crescente;Acostamento Cresc.;RF;227;227+040;228+000;940;227260;228200;2
+Crescente;Faixa 2/Adic. Cresc.;FE;227;227+040;227+100;60;227260;227320;2
+Decrescente;Acostamento Decresc.;PA3,0;227;227+080;227+280;200;227300;227500;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;227;227+100;227+260;160;227320;227480;2
+Crescente;Faixa 2/Adic. Cresc.;FE;227;227+260;228+000;720;227480;228200;2
+Decrescente;Acostamento Decresc.;PA1,5;227;227+280;227+480;200;227500;227700;2
+Decrescente;Faixa 1 Decresc.;FE;227;227+400;228+000;580;227620;228200;2
+Decrescente;Acostamento Decresc.;PA2,0;227;227+480;227+680;200;227700;227900;2
+Decrescente;Acostamento Decresc.;PA1,5;227;227+680;228+000;300;227900;228200;2
+Crescente;Faixa 1 Cresc.;FE;227;227+940;228+000;40;228160;228200;2
+Crescente;Acostamento Cresc.;RF;228;228+000;228+800;800;228200;229000;2
+Crescente;Faixa 2/Adic. Cresc.;FE;228;228+000;228+780;780;228200;228980;2
+Crescente;Faixa 1 Cresc.;FE;228;228+000;228+200;200;228200;228400;2
+Decrescente;Faixa 1 Decresc.;FE;228;228+000;228+100;100;228200;228300;2
+Decrescente;Acostamento Decresc.;PA1,5;228;228+000;228+100;100;228200;228300;2
+Decrescente;Faixa 1 Decresc.;FF;228;228+100;228+900;800;228300;229100;2
+Decrescente;Acostamento Decresc.;PA2,5;228;228+100;228+300;200;228300;228500;2
+Crescente;Faixa 1 Cresc.;FF;228;228+200;228+280;80;228400;228480;2
+Crescente;Faixa 1 Cresc.;FE;228;228+280;228+380;100;228480;228580;2
+Decrescente;Acostamento Decresc.;PA2,0;228;228+300;228+700;400;228500;228900;2
+Crescente;Faixa 1 Cresc.;FF;228;228+380;228+560;180;228580;228760;2
+Crescente;Faixa 1 Cresc.;FE;228;228+560;228+680;120;228760;228880;2
+Crescente;Faixa 1 Cresc.;FF;228;228+680;229+000;380;228880;229260;2
+Decrescente;Acostamento Decresc.;PA1,5;228;228+700;229+000;360;228900;229260;2
+Crescente;Acostamento Cresc.;PA1,5;228;228+800;228+900;100;229000;229100;2
+Crescente;Acostamento Cresc.;PA2,5;228;228+900;229+000;160;229100;229260;2
+Crescente;Acostamento Cresc.;PA2,5;229;229+000;229+040;40;229260;229300;2
+Crescente;Faixa 1 Cresc.;FF;229;229+000;230+000;1020;229260;230280;2
+Decrescente;Acostamento Decresc.;PA1,5;229;229+000;229+040;40;229260;229300;2
+Crescente;Acostamento Cresc.;PA2,0;229;229+040;229+380;340;229300;229640;2
+Decrescente;Faixa 1 Decresc.;FF;229;229+040;229+120;80;229300;229380;2
+Decrescente;Acostamento Decresc.;PA2,5;229;229+040;229+240;200;229300;229500;2
+Decrescente;Faixa 1 Decresc.;FF;229;229+220;229+280;60;229480;229540;2
+Decrescente;Acostamento Decresc.;PA1,5;229;229+240;229+360;120;229500;229620;2
+Decrescente;Acostamento Decresc.;RF;229;229+360;229+660;300;229620;229920;2
+Crescente;Acostamento Cresc.;RF;229;229+380;229+660;280;229640;229920;2
+Crescente;Acostamento Cresc.;PA2,0;229;229+660;229+760;100;229920;230020;2
+Decrescente;Acostamento Decresc.;PA1,5;229;229+660;229+840;180;229920;230100;2
+Crescente;Acostamento Cresc.;RF;229;229+760;229+900;140;230020;230160;2
+Decrescente;Acostamento Decresc.;PA4,5;229;229+840;230+000;180;230100;230280;2
+Crescente;Acostamento Cresc.;PA1,5;229;229+900;230+000;120;230160;230280;2
+Crescente;Acostamento Cresc.;PA1,5;230;230+000;230+620;620;230280;230900;2
+Crescente;Faixa 1 Cresc.;FF;230;230+000;230+020;20;230280;230300;2
+Decrescente;Acostamento Decresc.;PA4,5;230;230+000;230+020;20;230280;230300;2
+Decrescente;Faixa 1 Decresc.;FS;230;230+020;230+420;400;230300;230700;2
+Decrescente;Acostamento Decresc.;PA3,5;230;230+020;230+220;200;230300;230500;2
+Crescente;Faixa 1 Cresc.;FE;230;230+140;230+440;300;230420;230720;2
+Decrescente;Acostamento Decresc.;PA3,0;230;230+220;230+420;200;230500;230700;2
+Decrescente;Faixa 1 Decresc.;FF;230;230+420;230+740;320;230700;231020;2
+Decrescente;Acostamento Decresc.;PA1,5;230;230+420;230+620;200;230700;230900;2
+Crescente;Faixa 1 Cresc.;FF;230;230+600;231+000;380;230880;231260;2
+Crescente;Acostamento Cresc.;PA2,0;230;230+620;231+000;360;230900;231260;2
+Decrescente;Acostamento Decresc.;PA3,5;230;230+620;230+820;200;230900;231100;2
+Decrescente;Acostamento Decresc.;PA4,0;230;230+820;231+000;160;231100;231260;2
+Decrescente;Faixa 1 Decresc.;FE;230;230+960;231+000;20;231240;231260;2
+Crescente;Acostamento Cresc.;PA2,0;231;231+000;231+040;40;231260;231300;2
+Crescente;Faixa 1 Cresc.;FF;231;231+000;231+120;120;231260;231380;2
+Decrescente;Faixa 1 Decresc.;FE;231;231+000;231+120;120;231260;231380;2
+Decrescente;Acostamento Decresc.;PA4,0;231;231+000;231+240;240;231260;231500;2
+Crescente;Acostamento Cresc.;PA2,5;231;231+040;231+240;200;231300;231500;2
+Decrescente;Faixa 1 Decresc.;FF;231;231+200;231+220;20;231460;231480;2
+Crescente;Acostamento Cresc.;PA2,0;231;231+240;231+440;200;231500;231700;2
+Decrescente;Acostamento Decresc.;PA2,5;231;231+240;231+440;200;231500;231700;2
+Crescente;Faixa 1 Cresc.;FF;231;231+340;232+000;660;231600;232260;2
+Decrescente;Faixa 1 Decresc.;FF;231;231+380;231+400;20;231640;231660;2
+Crescente;Acostamento Cresc.;PA1,5;231;231+440;232+000;560;231700;232260;2
+Decrescente;Acostamento Decresc.;PA3,0;231;231+440;231+640;200;231700;231900;2
+Decrescente;Faixa 1 Decresc.;FE;231;231+460;231+520;60;231720;231780;2
+Decrescente;Faixa 1 Decresc.;FF;231;231+620;231+900;280;231880;232160;2
+Decrescente;Acostamento Decresc.;PA2,5;231;231+640;231+840;200;231900;232100;2
+Decrescente;Acostamento Decresc.;PA3,0;231;231+840;232+000;160;232100;232260;2
+Decrescente;Faixa 1 Decresc.;FE;231;231+900;232+000;100;232160;232260;2
+Crescente;Acostamento Cresc.;PA1,5;232;232+000;232+440;440;232260;232700;2
+Crescente;Faixa 1 Cresc.;FF;232;232+000;232+720;720;232260;232980;2
+Decrescente;Faixa 1 Decresc.;FE;232;232+000;232+760;760;232260;233020;2
+Decrescente;Acostamento Decresc.;PA3,0;232;232+000;232+040;40;232260;232300;2
+Decrescente;Acostamento Decresc.;PA2,5;232;232+040;232+240;200;232300;232500;2
+Decrescente;Acostamento Decresc.;PA3,0;232;232+240;232+440;200;232500;232700;2
+Crescente;Acostamento Cresc.;PA2,5;232;232+440;232+640;200;232700;232900;2
+Decrescente;Acostamento Decresc.;PA2,5;232;232+440;232+840;400;232700;233100;2
+Crescente;Acostamento Cresc.;PA3,0;232;232+640;232+840;200;232900;233100;2
+Crescente;Faixa 1 Cresc.;FE;232;232+720;232+820;100;232980;233080;2
+Decrescente;Faixa 1 Decresc.;FF;232;232+760;232+860;100;233020;233120;2
+Crescente;Faixa 1 Cresc.;FF;232;232+820;233+000;180;233080;233260;2
+Crescente;Acostamento Cresc.;PA2,0;232;232+840;233+000;160;233100;233260;2
+Decrescente;Acostamento Decresc.;PA3,0;232;232+840;233+000;160;233100;233260;2
+Decrescente;Faixa 1 Decresc.;FE;232;232+860;232+940;80;233120;233200;2
+Crescente;Acostamento Cresc.;PA2,0;233;233+000;233+040;40;233260;233300;2
+Crescente;Faixa 1 Cresc.;FF;233;233+000;233+740;740;233260;234000;2
+Decrescente;Acostamento Decresc.;PA3,0;233;233+000;233+040;40;233260;233300;2
+Crescente;Acostamento Cresc.;PA1,5;233;233+040;234+000;940;233300;234240;2
+Decrescente;Acostamento Decresc.;PA3,5;233;233+040;233+440;400;233300;233700;2
+Decrescente;Faixa 1 Decresc.;FF;233;233+160;233+580;420;233420;233840;2
+Decrescente;Acostamento Decresc.;PA2,5;233;233+440;233+640;200;233700;233900;2
+Decrescente;Faixa 1 Decresc.;FE;233;233+580;233+720;140;233840;233980;2
+Decrescente;Acostamento Decresc.;PA3,5;233;233+640;233+840;200;233900;234100;2
+Decrescente;Faixa 1 Decresc.;FF;233;233+720;233+860;140;233980;234120;2
+Decrescente;Acostamento Decresc.;PA2,5;233;233+840;234+000;140;234100;234240;2
+Crescente;Faixa 1 Cresc.;FE;233;233+860;233+900;40;234120;234160;2
+Decrescente;Faixa 1 Decresc.;FE;233;233+860;233+920;60;234120;234180;2
+Decrescente;Faixa 1 Decresc.;FF;233;233+920;234+000;60;234180;234240;2
+Crescente;Acostamento Cresc.;PA1,5;234;234+000;235+000;1000;234240;235240;2
+Decrescente;Faixa 1 Decresc.;FF;234;234+000;234+160;160;234240;234400;2
+Decrescente;Acostamento Decresc.;PA2,5;234;234+000;234+060;60;234240;234300;2
+Crescente;Faixa 1 Cresc.;FE;234;234+040;234+160;120;234280;234400;2
+Decrescente;Acostamento Decresc.;PA1,5;234;234+060;235+000;940;234300;235240;2
+Crescente;Faixa 1 Cresc.;FF;234;234+160;234+320;160;234400;234560;2
+Decrescente;Faixa 1 Decresc.;FE;234;234+160;234+380;220;234400;234620;2
+Crescente;Faixa 1 Cresc.;FE;234;234+320;234+400;80;234560;234640;2
+Decrescente;Faixa 1 Decresc.;FF;234;234+380;234+460;80;234620;234700;2
+Crescente;Faixa 1 Cresc.;FF;234;234+400;234+460;60;234640;234700;2
+Crescente;Faixa 1 Cresc.;FE;234;234+460;234+640;180;234700;234880;2
+Decrescente;Faixa 1 Decresc.;FE;234;234+460;234+500;40;234700;234740;2
+Decrescente;Faixa 1 Decresc.;FF;234;234+500;234+600;100;234740;234840;2
+Decrescente;Faixa 1 Decresc.;FE;234;234+600;234+660;60;234840;234900;2
+Decrescente;Faixa 1 Decresc.;FF;234;234+660;234+760;100;234900;235000;2
+Crescente;Faixa 1 Cresc.;FE;234;234+860;235+000;140;235100;235240;2
+Decrescente;Faixa 1 Decresc.;FE;234;234+940;235+000;60;235180;235240;2
+Crescente;Acostamento Cresc.;PA1,5;235;235+000;235+880;880;235240;236120;2
+Crescente;Faixa 1 Cresc.;FE;235;235+000;235+720;720;235240;235960;2
+Decrescente;Acostamento Decresc.;PA1,5;235;235+000;235+660;660;235240;235900;2
+Decrescente;Faixa 1 Decresc.;FE;235;235+300;235+420;120;235540;235660;2
+Decrescente;Faixa 1 Decresc.;FE;235;235+520;235+620;100;235760;235860;2
+Crescente;Faixa 1 Cresc.;FF;235;235+720;235+940;220;235960;236180;2
+Decrescente;Faixa 1 Decresc.;FF;235;235+860;235+960;100;236100;236200;2
+Decrescente;Acostamento Decresc.;PA1,5;235;235+860;235+880;20;236100;236120;2
+Crescente;Acostamento Cresc.;PA1,5;235;235+940;236+000;40;236180;236220;2
+Crescente;Faixa 1 Cresc.;FE;235;235+940;236+000;40;236180;236220;2
+Decrescente;Acostamento Decresc.;PA1,5;235;235+940;236+000;40;236180;236220;2
+Decrescente;Faixa 1 Decresc.;FE;235;235+960;236+000;20;236200;236220;2
+Crescente;Acostamento Cresc.;PA1,5;236;236+000;236+280;280;236220;236500;2
+Crescente;Faixa 1 Cresc.;FE;236;236+000;236+140;140;236220;236360;2
+Decrescente;Faixa 1 Decresc.;FE;236;236+000;236+340;340;236220;236560;2
+Decrescente;Acostamento Decresc.;PA1,5;236;236+000;236+280;280;236220;236500;2
+Crescente;Faixa 1 Cresc.;FE;236;236+240;236+300;60;236460;236520;2
+Crescente;Acostamento Cresc.;RF;236;236+280;237+000;720;236500;237220;2
+Decrescente;Acostamento Decresc.;RF;236;236+300;237+000;700;236520;237220;2
+Crescente;Faixa 2/Adic. Cresc.;FF;236;236+320;236+500;180;236540;236720;2
+Crescente;Faixa 1 Cresc.;FE;236;236+380;236+420;40;236600;236640;2
+Crescente;Faixa 2/Adic. Cresc.;FE;236;236+500;236+860;360;236720;237080;2
+Crescente;Faixa 2/Adic. Cresc.;FF;236;236+860;237+000;140;237080;237220;2
+Decrescente;Faixa 1 Decresc.;FE;236;236+980;237+000;20;237200;237220;2
+Crescente;Acostamento Cresc.;RF;237;237+000;237+320;320;237220;237540;2
+Crescente;Faixa 2/Adic. Cresc.;FF;237;237+000;237+080;80;237220;237300;2
+Decrescente;Acostamento Decresc.;RF;237;237+000;238+000;980;237220;238200;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;237;237+020;237+600;580;237240;237820;2
+Decrescente;Faixa 1 Decresc.;FE;237;237+060;237+100;40;237280;237320;2
+Crescente;Faixa 1 Cresc.;FF;237;237+180;237+540;360;237400;237760;2
+Crescente;Acostamento Cresc.;PA2,0;237;237+320;237+480;160;237540;237700;2
+Crescente;Acostamento Cresc.;PA1,5;237;237+480;237+680;200;237700;237900;2
+Crescente;Faixa 1 Cresc.;RECe25;237;237+540;237+880;340;237760;238100;2
+Crescente;Acostamento Cresc.;PA1,5;237;237+880;238+000;100;238100;238200;2
+Crescente;Faixa 1 Cresc.;FF;237;237+880;238+000;100;238100;238200;2
+Crescente;Acostamento Cresc.;PA1,5;238;238+000;238+500;500;238200;238700;2
+Crescente;Faixa 1 Cresc.;FF;238;238+000;238+700;700;238200;238900;2
+Decrescente;Acostamento Decresc.;RF;238;238+000;238+240;240;238200;238440;2
+Decrescente;Acostamento Decresc.;PA1,5;238;238+240;238+300;60;238440;238500;2
+Decrescente;Acostamento Decresc.;PA2,0;238;238+300;238+500;200;238500;238700;2
+Decrescente;Faixa 1 Decresc.;FE;238;238+360;238+380;20;238560;238580;2
+Crescente;Acostamento Cresc.;PA2,5;238;238+500;238+540;40;238700;238740;2
+Decrescente;Faixa 1 Decresc.;FF;238;238+500;238+620;120;238700;238820;2
+Decrescente;Acostamento Decresc.;PA1,5;238;238+500;238+540;40;238700;238740;2
+Crescente;Acostamento Cresc.;PA2,5;238;238+600;238+700;100;238800;238900;2
+Decrescente;Acostamento Decresc.;PA1,5;238;238+600;238+700;100;238800;238900;2
+Crescente;Acostamento Cresc.;PA1,5;238;238+700;239+000;300;238900;239200;2
+Decrescente;Acostamento Decresc.;PA2,5;238;238+700;238+900;200;238900;239100;2
+Decrescente;Acostamento Decresc.;PA1,5;238;238+900;238+960;60;239100;239160;2
+Decrescente;Acostamento Decresc.;RF;238;238+960;239+000;40;239160;239200;2
+Decrescente;Faixa 1 Decresc.;FE;238;238+980;239+000;20;239180;239200;2
+Crescente;Acostamento Cresc.;RF;239;239+000;239+320;320;239200;239520;2
+Decrescente;Acostamento Decresc.;RF;239;239+000;239+460;460;239200;239660;2
+Crescente;Faixa 1 Cresc.;FE;239;239+080;239+100;20;239280;239300;2
+Crescente;Faixa 1 Cresc.;FF;239;239+240;239+260;20;239440;239460;2
+Decrescente;Faixa 1 Decresc.;FF;239;239+300;239+500;200;239500;239700;2
+Crescente;Acostamento Cresc.;PA1,5;239;239+320;239+500;180;239520;239700;2
+Crescente;Faixa 1 Cresc.;FF;239;239+380;239+740;360;239580;239940;2
+Decrescente;Acostamento Decresc.;PA1,5;239;239+460;239+700;240;239660;239900;2
+Crescente;Acostamento Cresc.;PA2,0;239;239+500;239+600;100;239700;239800;2
+Decrescente;Faixa 1 Decresc.;RPe25;239;239+500;239+580;80;239700;239780;2
+Decrescente;Faixa 1 Decresc.;FE;239;239+580;240+000;380;239780;240160;2
+Crescente;Acostamento Cresc.;RF;239;239+600;240+000;360;239800;240160;2
+Decrescente;Acostamento Decresc.;PA3,5;239;239+700;240+000;260;239900;240160;2
+Crescente;Faixa 1 Cresc.;FE;239;239+740;240+000;220;239940;240160;2
+Crescente;Acostamento Cresc.;RF;240;240+000;240+200;200;240160;240360;2
+Crescente;Faixa 1 Cresc.;FE;240;240+000;240+260;260;240160;240420;2
+Decrescente;Faixa 1 Decresc.;FE;240;240+000;240+200;200;240160;240360;2
+Decrescente;Acostamento Decresc.;PA3,5;240;240+000;240+140;140;240160;240300;2
+Decrescente;Acostamento Decresc.;PA2,0;240;240+140;240+260;120;240300;240420;2
+Crescente;Acostamento Cresc.;PA2,0;240;240+200;240+340;140;240360;240500;2
+Decrescente;Faixa 1 Decresc.;FF;240;240+200;240+460;260;240360;240620;2
+Crescente;Faixa 1 Cresc.;FF;240;240+260;240+420;160;240420;240580;2
+Decrescente;Acostamento Decresc.;RF;240;240+260;240+920;660;240420;241080;2
+Crescente;Acostamento Cresc.;PA1,5;240;240+340;240+360;20;240500;240520;2
+Crescente;Acostamento Cresc.;RF;240;240+360;241+000;660;240520;241180;2
+Decrescente;Faixa 1 Decresc.;RPe25;240;240+460;240+500;40;240620;240660;2
+Decrescente;Faixa 1 Decresc.;FF;240;240+500;240+580;80;240660;240740;2
+Crescente;Faixa 1 Cresc.;FS;240;240+540;240+740;200;240700;240900;2
+Decrescente;Faixa 1 Decresc.;RPe25;240;240+580;240+620;40;240740;240780;2
+Decrescente;Faixa 1 Decresc.;FF;240;240+620;240+780;160;240780;240940;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;240;240+720;240+960;240;240880;241120;2
+Decrescente;Faixa 1 Decresc.;FE;240;240+780;240+940;160;240940;241100;2
+Decrescente;Acostamento Decresc.;PA1,5;240;240+920;240+940;20;241080;241100;2
+Decrescente;Acostamento Decresc.;PA2,0;240;240+940;241+000;80;241100;241180;2
+Crescente;Faixa 2/Adic. Cresc.;FE;240;240+960;241+000;60;241120;241180;2
+Crescente;Acostamento Cresc.;RF;241;241+000;242+000;1000;241180;242180;2
+Crescente;Faixa 2/Adic. Cresc.;FE;241;241+000;241+260;260;241180;241440;2
+Decrescente;Acostamento Decresc.;PA2,0;241;241+000;241+120;120;241180;241300;2
+Decrescente;Acostamento Decresc.;PA1,5;241;241+120;241+260;140;241300;241440;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;241;241+260;242+000;740;241440;242180;2
+Decrescente;Acostamento Decresc.;RF;241;241+260;241+620;360;241440;241800;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;241;241+280;241+300;20;241460;241480;2
+Decrescente;Faixa 2/Adic. Decresc.;RPe25;241;241+300;241+360;60;241480;241540;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;241;241+360;241+760;400;241540;241940;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;241;241+760;242+000;240;241940;242180;2
+Crescente;Acostamento Cresc.;RF;242;242+000;242+860;860;242180;243040;2
+Crescente;Faixa 2/Adic. Cresc.;RECe25;242;242+000;242+740;740;242180;242920;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;242;242+000;243+000;1000;242180;243180;2
+Crescente;Faixa 1 Cresc.;FE;242;242+060;242+080;20;242240;242260;2
+Crescente;Faixa 1 Cresc.;FF;242;242+520;242+780;260;242700;242960;2
+Decrescente;Acostamento Decresc.;RF;242;242+680;242+780;100;242860;242960;2
+Crescente;Faixa 2/Adic. Cresc.;FF;242;242+740;242+840;100;242920;243020;2
+Crescente;Acostamento Cresc.;PA1,5;242;242+860;243+000;140;243040;243180;2
+Crescente;Faixa 1 Cresc.;RECe25;242;242+940;243+000;60;243120;243180;2
+Crescente;Acostamento Cresc.;PA1,5;243;243+000;243+520;520;243180;243700;2
+Crescente;Faixa 1 Cresc.;RECe25;243;243+000;243+520;520;243180;243700;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;243;243+000;243+620;620;243180;243800;2
+Decrescente;Faixa 1 Decresc.;FF;243;243+500;243+980;480;243680;244160;2
+Crescente;Acostamento Cresc.;PA2,0;243;243+520;243+640;120;243700;243820;2
+Crescente;Faixa 1 Cresc.;FF;243;243+520;243+620;100;243700;243800;2
+Decrescente;Acostamento Decresc.;RF;243;243+580;244+000;420;243760;244180;2
+Crescente;Faixa 1 Cresc.;FE;243;243+620;244+000;380;243800;244180;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;243;243+620;243+700;80;243800;243880;2
+Crescente;Acostamento Cresc.;RF;243;243+640;244+000;360;243820;244180;2
+Decrescente;Faixa 2/Adic. Decresc.;FE;243;243+700;243+780;80;243880;243960;2
+Decrescente;Faixa 2/Adic. Decresc.;FF;243;243+780;243+840;60;243960;244020;2
+Decrescente;Faixa 1 Decresc.;FE;243;243+980;244+000;20;244160;244180;2
+Crescente;Acostamento Cresc.;RF;244;244+000;244+180;180;244180;244360;2
+Crescente;Faixa 1 Cresc.;FF;244;244+000;244+100;100;244180;244280;2
+Decrescente;Faixa 1 Decresc.;FE;244;244+000;244+060;60;244180;244240;2
+Decrescente;Acostamento Decresc.;RF;244;244+000;244+280;280;244180;244460;2
+Decrescente;Faixa 1 Decresc.;FF;244;244+060;244+820;760;244240;245000;2
+Crescente;Faixa 1 Cresc.;FE;244;244+100;244+160;60;244280;244340;2
+Crescente;Faixa 1 Cresc.;FF;244;244+160;244+380;220;244340;244560;2
+Crescente;Acostamento Cresc.;PA2,0;244;244+180;244+320;140;244360;244500;2
+Decrescente;Acostamento Decresc.;PA1,5;244;244+280;244+500;220;244460;244680;2
+Crescente;Acostamento Cresc.;PA2,5;244;244+320;244+720;400;244500;244900;2
+Crescente;Faixa 1 Cresc.;FE;244;244+380;244+480;100;244560;244660;2
+Crescente;Faixa 1 Cresc.;FF;244;244+480;244+780;300;244660;244960;2
+Decrescente;Acostamento Decresc.;RF;244;244+500;245+000;540;244680;245220;2
+Crescente;Acostamento Cresc.;PA2,0;244;244+720;244+920;200;244900;245100;2
+Crescente;Faixa 1 Cresc.;FE;244;244+780;244+920;140;244960;245100;2
+Crescente;Acostamento Cresc.;RF;244;244+920;245+000;120;245100;245220;2
+Crescente;Faixa 1 Cresc.;FF;244;244+920;245+000;120;245100;245220;2
+Crescente;Acostamento Cresc.;RF;245;245+000;245+140;140;245220;245360;2
+Crescente;Faixa 1 Cresc.;FF;245;245+000;245+340;340;245220;245560;2
+Decrescente;Acostamento Decresc.;RF;245;245+000;245+140;140;245220;245360;2
+Decrescente;Faixa 1 Decresc.;FF;245;245+020;245+100;80;245240;245320;2
+Decrescente;Faixa 1 Decresc.;RPe25;245;245+100;245+140;40;245320;245360;2
+Decrescente;Faixa 1 Decresc.;FF;245;245+140;245+340;200;245360;245560;2
+Decrescente;Acostamento Decresc.;PA1,5;245;245+140;245+280;140;245360;245500;2
+Crescente;Acostamento Cresc.;RF;245;245+340;245+360;20;245560;245580;2
+Crescente;Faixa 1 Cresc.;FE;245;245+340;245+580;240;245560;245800;2
+Decrescente;Faixa 1 Decresc.;FE;245;245+340;245+840;500;245560;246060;2
+Decrescente;Acostamento Decresc.;RF;245;245+340;245+360;20;245560;245580;2
+Crescente;Acostamento Cresc.;PA1,5;245;245+360;245+480;120;245580;245700;2
+Decrescente;Acostamento Decresc.;PA1,5;245;245+360;245+480;120;245580;245700;2
+Crescente;Acostamento Cresc.;RF;245;245+480;245+580;100;245700;245800;2
+Decrescente;Acostamento Decresc.;RF;245;245+480;245+600;120;245700;245820;2
+Crescente;Acostamento Cresc.;PA1,5;245;245+580;245+680;100;245800;245900;2
+Crescente;Faixa 1 Cresc.;FF;245;245+580;245+720;140;245800;245940;2
+Decrescente;Acostamento Decresc.;PA1,5;245;245+600;245+840;240;245820;246060;2
+Crescente;Faixa 1 Cresc.;FE;245;245+720;245+780;60;245940;246000;2
+Crescente;Faixa 1 Cresc.;FF;245;245+780;246+000;180;246000;246180;2
+Decrescente;Faixa 1 Decresc.;FF;245;245+840;246+000;120;246060;246180;2
+Crescente;Faixa 2/Adic. Cresc.;FE;246;246+000;247+000;1000;246180;247180;2
+Crescente;Faixa 1 Cresc.;FF;246;246+000;247+000;1000;246180;247180;2
+Decrescente;Acostamento Decresc.;PA1,5;246;246+000;246+320;320;246180;246500;2
+Crescente;Acostamento Cresc.;RF;246;246+020;247+000;980;246200;247180;2
+Decrescente;Faixa 1 Decresc.;FE;246;246+220;246+300;80;246400;246480;2
+Decrescente;Acostamento Decresc.;PA3,5;246;246+320;246+520;200;246500;246700;2
+Decrescente;Faixa 1 Decresc.;FS;246;246+440;246+660;220;246620;246840;2
+Decrescente;Acostamento Decresc.;PA2,5;246;246+520;246+920;400;246700;247100;2
+Decrescente;Faixa 1 Decresc.;FE;246;246+720;246+760;40;246900;246940;2
+Decrescente;Faixa 1 Decresc.;FF;246;246+820;247+000;180;247000;247180;2
+Decrescente;Acostamento Decresc.;PA3,0;246;246+920;247+000;80;247100;247180;2
+Crescente;Acostamento Cresc.;RF;247;247+000;248+000;1000;247180;248180;2
+Crescente;Faixa 2/Adic. Cresc.;FE;247;247+000;248+000;1000;247180;248180;2
+Crescente;Faixa 1 Cresc.;FF;247;247+000;248+000;1000;247180;248180;2
+Decrescente;Faixa 1 Decresc.;FF;247;247+000;247+520;520;247180;247700;2
+Decrescente;Acostamento Decresc.;PA3,0;247;247+000;247+320;320;247180;247500;2
+Decrescente;Acostamento Decresc.;PA1,5;247;247+320;247+520;200;247500;247700;2
+Decrescente;Faixa 1 Decresc.;FE;247;247+520;247+740;220;247700;247920;2
+Decrescente;Acostamento Decresc.;RF;247;247+520;247+820;300;247700;248000;2
+Decrescente;Faixa 1 Decresc.;FF;247;247+740;247+820;80;247920;248000;2
+Decrescente;Acostamento Decresc.;PA2,0;247;247+820;248+000;180;248000;248180;2
+Decrescente;Faixa 1 Decresc.;FS;247;247+900;248+000;100;248080;248180;2
+Crescente;Acostamento Cresc.;RF;248;248+000;248+040;40;248180;248220;2
+Crescente;Faixa 2/Adic. Cresc.;FE;248;248+000;248+020;20;248180;248200;2
+Crescente;Faixa 1 Cresc.;FF;248;248+000;248+080;80;248180;248260;2
+Decrescente;Faixa 1 Decresc.;FS;248;248+000;248+200;200;248180;248380;2
+Decrescente;Acostamento Decresc.;PA2,0;248;248+000;248+120;120;248180;248300;2
+Crescente;Acostamento Cresc.;PA1,5;248;248+040;248+120;80;248220;248300;2
+Crescente;Acostamento Cresc.;PA4,0;248;248+120;248+320;200;248300;248500;2
+Crescente;Faixa 1 Cresc.;FE;248;248+260;249+000;700;248440;249140;2
+Crescente;Acostamento Cresc.;PA5,0;248;248+320;248+520;200;248500;248700;2
+Decrescente;Acostamento Decresc.;PA1,5;248;248+320;248+600;280;248500;248780;2
+Crescente;Acostamento Cresc.;PA2,5;248;248+520;248+580;60;248700;248760;2
+Crescente;Acostamento Cresc.;RF;248;248+580;248+600;20;248760;248780;2
+Crescente;Acostamento Cresc.;PA2,5;248;248+600;248+720;120;248780;248900;2
+Decrescente;Faixa 1 Decresc.;FE;248;248+620;248+660;40;248800;248840;2
+Crescente;Acostamento Cresc.;PA1,5;248;248+720;248+880;160;248900;249060;2
+Decrescente;Faixa 1 Decresc.;FE;248;248+740;248+760;20;248920;248940;2
+Crescente;Acostamento Cresc.;RF;248;248+880;249+000;80;249060;249140;2
+Crescente;Acostamento Cresc.;RF;249;249+000;249+200;200;249140;249340;3
+Crescente;Faixa 1 Cresc.;FE;249;249+000;249+380;380;249140;249520;3
+Decrescente;Faixa 1 Decresc.;FS;249;249+020;249+240;220;249160;249380;3
+Decrescente;Acostamento Decresc.;RF;249;249+020;249+380;360;249160;249520;3
+Crescente;Acostamento Cresc.;RF;249;249+340;249+380;40;249480;249520;3
+Decrescente;Faixa 1 Decresc.;FF;249;249+360;249+380;20;249500;249520;3
+Crescente;Faixa 1 Cresc.;FF;250;250+120;250+320;200;250280;250480;3
+Decrescente;Faixa 1 Decresc.;FS;250;250+120;250+600;480;250280;250760;3
+Crescente;Faixa 1 Cresc.;FE;250;250+320;250+420;100;250480;250580;3
+Crescente;Faixa 1 Cresc.;FF;250;250+420;251+000;560;250580;251140;3
+Crescente;Acostamento Cresc.;PA5,0;250;250+600;250+740;140;250760;250900;3
+Decrescente;Faixa 1 Decresc.;FS;250;250+620;250+940;320;250780;251100;3
+Crescente;Acostamento Cresc.;PA3,5;250;250+740;250+860;120;250900;251020;3
+Crescente;Acostamento Cresc.;RF;250;250+860;250+900;40;251020;251060;3
+Crescente;Acostamento Cresc.;PA3,5;250;250+900;250+940;40;251060;251100;3
+Crescente;Acostamento Cresc.;PA4,5;250;250+940;251+000;40;251100;251140;3
+Crescente;Acostamento Cresc.;PA4,5;251;251+000;251+160;160;251140;251300;3
+Crescente;Faixa 1 Cresc.;FF;251;251+000;251+020;20;251140;251160;3
+Crescente;Faixa 1 Cresc.;FE;251;251+020;251+460;440;251160;251600;3
+Decrescente;Faixa 1 Decresc.;FE;251;251+060;251+120;60;251200;251260;3
+Crescente;Acostamento Cresc.;PA1,5;251;251+160;251+480;320;251300;251620;3
+Decrescente;Faixa 1 Decresc.;FE;251;251+180;251+220;40;251320;251360;3
+Decrescente;Faixa 1 Decresc.;FF;251;251+220;251+480;260;251360;251620;3
+Crescente;Faixa 1 Cresc.;FF;251;251+460;251+560;100;251600;251700;3
+Decrescente;Faixa 1 Decresc.;FE;251;251+480;251+500;20;251620;251640;3
+Decrescente;Faixa 1 Decresc.;FF;251;251+500;251+580;80;251640;251720;3
+Crescente;Faixa 1 Cresc.;FE;251;251+560;252+000;440;251700;252140;3
+Decrescente;Faixa 1 Decresc.;FE;251;251+580;251+600;20;251720;251740;3
+Crescente;Acostamento Cresc.;PA1,5;251;251+600;251+760;160;251740;251900;3
+Decrescente;Faixa 1 Decresc.;FF;251;251+600;251+620;20;251740;251760;3
+Decrescente;Acostamento Decresc.;RF;251;251+600;251+680;80;251740;251820;3
+Decrescente;Faixa 1 Decresc.;FS;251;251+620;252+000;380;251760;252140;3
+Crescente;Acostamento Cresc.;RF;251;251+940;251+980;40;252080;252120;3
+Crescente;Faixa 2/Adic. Cresc.;FS;251;251+980;252+000;20;252120;252140;3
+Crescente;Faixa 2/Adic. Cresc.;FS;252;252+000;252+660;660;252140;252800;3
+Decrescente;Faixa 1 Decresc.;FS;252;252+000;252+040;40;252140;252180;3
+Decrescente;Acostamento Decresc.;RF;252;252+020;252+440;420;252160;252580;3
+Decrescente;Faixa 1 Decresc.;FE;252;252+040;252+100;60;252180;252240;3
+Decrescente;Faixa 1 Decresc.;FS;252;252+100;253+000;880;252240;253120;3
+Crescente;Faixa 1 Cresc.;FE;252;252+340;252+360;20;252480;252500;3
+Crescente;Faixa 1 Cresc.;FF;252;252+580;252+780;200;252720;252920;3
+Crescente;Acostamento Cresc.;RF;252;252+660;252+700;40;252800;252840;3
+Crescente;Acostamento Cresc.;PA1,5;252;252+700;252+760;60;252840;252900;3
+Crescente;Acostamento Cresc.;PA2,0;252;252+760;252+960;200;252900;253100;3
+Crescente;Faixa 1 Cresc.;FE;252;252+780;252+840;60;252920;252980;3
+Crescente;Faixa 1 Cresc.;FS;252;252+840;253+000;140;252980;253120;3
+Crescente;Acostamento Cresc.;PA4,0;252;252+960;253+000;20;253100;253120;3
+Crescente;Acostamento Cresc.;PA4,0;253;253+000;253+180;180;253120;253300;3
+Crescente;Faixa 1 Cresc.;FS;253;253+000;253+180;180;253120;253300;3
+Decrescente;Faixa 1 Decresc.;FS;253;253+000;253+800;800;253120;253920;3
+Crescente;Acostamento Cresc.;PA3,5;253;253+180;253+380;200;253300;253500;3
+Crescente;Faixa 1 Cresc.;FF;253;253+180;253+420;240;253300;253540;3
+Crescente;Acostamento Cresc.;PA1,5;253;253+380;253+580;200;253500;253700;3
+Crescente;Faixa 1 Cresc.;FF;253;253+500;253+520;20;253620;253640;3
+Crescente;Acostamento Cresc.;PA2,5;253;253+580;253+780;200;253700;253900;3
+Crescente;Faixa 1 Cresc.;FF;253;253+580;253+600;20;253700;253720;3
+Crescente;Faixa 1 Cresc.;FF;253;253+760;253+820;60;253880;253940;3
+Crescente;Acostamento Cresc.;PA3,5;253;253+780;253+980;200;253900;254100;3
+Decrescente;Acostamento Decresc.;RF;253;253+860;253+880;20;253980;254000;3
+Crescente;Faixa 1 Cresc.;FF;253;253+880;254+000;120;254000;254120;3
+Decrescente;Faixa 1 Decresc.;FF;253;253+920;253+960;40;254040;254080;3
+Crescente;Acostamento Cresc.;PA2,5;253;253+980;254+000;20;254100;254120;3
+Crescente;Acostamento Cresc.;PA2,5;254;254+000;254+180;180;254120;254300;3
+Crescente;Faixa 1 Cresc.;FF;254;254+000;254+060;60;254120;254180;3
+Crescente;Faixa 1 Cresc.;RECe25;254;254+060;254+240;180;254180;254360;3
+Crescente;Acostamento Cresc.;PA3,0;254;254+180;254+380;200;254300;254500;3
+Decrescente;Faixa 1 Decresc.;FF;254;254+220;254+340;120;254340;254460;3
+Crescente;Faixa 1 Cresc.;FF;254;254+240;254+520;280;254360;254640;3
+Crescente;Acostamento Cresc.;PA1,5;254;254+380;254+580;200;254500;254700;3
+Crescente;Acostamento Cresc.;PA2,0;254;254+580;254+780;200;254700;254900;3
+Crescente;Faixa 1 Cresc.;FF;254;254+580;254+820;240;254700;254940;3
+Crescente;Acostamento Cresc.;PA3,0;254;254+780;255+000;180;254900;255080;3
+Crescente;Faixa 1 Cresc.;FE;254;254+820;255+000;140;254940;255080;3
+Crescente;Acostamento Cresc.;PA3,0;255;255+000;255+020;20;255080;255100;3
+Crescente;Faixa 1 Cresc.;FE;255;255+000;255+060;60;255080;255140;3
+Crescente;Acostamento Cresc.;PA2,5;255;255+020;255+220;200;255100;255300;3
+Crescente;Faixa 1 Cresc.;FF;255;255+060;255+160;100;255140;255240;3
+Crescente;Faixa 1 Cresc.;FE;255;255+160;255+240;80;255240;255320;3
+Crescente;Acostamento Cresc.;PA1,5;255;255+220;255+420;200;255300;255500;3
+Crescente;Faixa 1 Cresc.;FE;255;255+300;255+360;60;255380;255440;3
+Crescente;Faixa 1 Cresc.;FF;255;255+360;255+520;160;255440;255600;3
+Crescente;Acostamento Cresc.;PA3,0;255;255+420;255+440;20;255500;255520;3
+Crescente;Faixa 1 Cresc.;FF;255;255+580;255+680;100;255660;255760;3
+Crescente;Faixa 1 Cresc.;FE;255;255+680;255+720;40;255760;255800;3
+Crescente;Faixa 1 Cresc.;FF;255;255+720;255+820;100;255800;255900;3
+Crescente;Acostamento Cresc.;RF;255;255+880;256+000;120;255960;256080;3
+Decrescente;Faixa 1 Decresc.;FF;255;255+900;255+920;20;255980;256000;3
+Decrescente;Faixa 1 Decresc.;FE;255;255+980;256+000;20;256060;256080;3
+Crescente;Acostamento Cresc.;RF;256;256+440;256+480;40;256520;256560;3
+Crescente;Faixa 1 Cresc.;FF;256;256+440;256+480;40;256520;256560;3
+Decrescente;Acostamento Decresc.;RF;256;256+440;256+480;40;256520;256560;3
+Crescente;Acostamento Cresc.;PA1,5;256;256+480;256+620;140;256560;256700;3
+Crescente;Acostamento Cresc.;PA3,5;256;256+620;256+820;200;256700;256900;3
+Crescente;Faixa 1 Cresc.;FF;256;256+620;256+840;220;256700;256920;3
+Decrescente;Faixa 1 Decresc.;FF;256;256+720;256+760;40;256800;256840;3
+Decrescente;Acostamento Decresc.;RF;256;256+740;256+820;80;256820;256900;3
+Crescente;Acostamento Cresc.;PA4,0;256;256+820;257+000;180;256900;257080;3
+Crescente;Faixa 1 Cresc.;FF;256;256+900;257+000;100;256980;257080;3
+Crescente;Acostamento Cresc.;PA4,0;257;257+000;257+020;20;257080;257100;3
+Crescente;Faixa 1 Cresc.;FF;257;257+000;257+040;40;257080;257120;3
+Crescente;Acostamento Cresc.;PA4,5;257;257+020;257+180;160;257100;257260;3
+Decrescente;Faixa 1 Decresc.;FF;257;257+040;257+080;40;257120;257160;3
+Crescente;Faixa 1 Cresc.;FE;257;257+160;257+480;320;257240;257560;3
+Decrescente;Faixa 1 Decresc.;FF;257;257+220;257+320;100;257300;257400;3
+Crescente;Acostamento Cresc.;PA4,5;257;257+340;257+420;80;257420;257500;3
+Crescente;Acostamento Cresc.;PA4,0;257;257+420;257+620;200;257500;257700;3
+Decrescente;Faixa 1 Decresc.;FF;257;257+460;257+480;20;257540;257560;3
+Crescente;Faixa 1 Cresc.;FF;257;257+480;257+960;480;257560;258040;3
+Crescente;Acostamento Cresc.;PA4,5;257;257+620;257+820;200;257700;257900;3
+Crescente;Acostamento Cresc.;PA3,0;257;257+820;258+000;200;257900;258100;3
+Decrescente;Faixa 1 Decresc.;FS;257;257+820;258+000;200;257900;258100;3
+Crescente;Acostamento Cresc.;PA2,5;258;258+000;258+200;200;258100;258300;3
+Decrescente;Faixa 1 Decresc.;FS;258;258+000;258+140;140;258100;258240;3
+Crescente;Faixa 1 Cresc.;FE;258;258+060;258+080;20;258160;258180;3
+Crescente;Faixa 1 Cresc.;FF;258;258+120;258+140;20;258220;258240;3
+Crescente;Acostamento Cresc.;PA4,5;258;258+200;258+400;200;258300;258500;3
+Crescente;Faixa 1 Cresc.;FF;258;258+200;258+260;60;258300;258360;3
+Crescente;Faixa 1 Cresc.;FF;258;258+320;258+400;80;258420;258500;3
+Crescente;Acostamento Cresc.;PA2,0;258;258+400;258+800;400;258500;258900;3
+Crescente;Faixa 1 Cresc.;FE;258;258+400;258+440;40;258500;258540;3
+Decrescente;Faixa 1 Decresc.;FS;258;258+400;258+620;220;258500;258720;3
+Crescente;Faixa 1 Cresc.;FF;258;258+440;259+000;540;258540;259080;3
+Crescente;Acostamento Cresc.;PA4,5;258;258+800;259+000;180;258900;259080;3
+Crescente;Acostamento Cresc.;PA4,5;259;259+000;259+420;420;259080;259500;3
+Crescente;Faixa 1 Cresc.;FF;259;259+000;259+020;20;259080;259100;3
+Crescente;Faixa 1 Cresc.;FE;259;259+020;259+080;60;259100;259160;3
+Crescente;Faixa 1 Cresc.;FF;259;259+080;259+140;60;259160;259220;3
+Crescente;Faixa 1 Cresc.;FE;259;259+140;259+240;100;259220;259320;3
+Crescente;Faixa 1 Cresc.;FF;259;259+320;259+800;480;259400;259880;3
+Crescente;Acostamento Cresc.;PA3,0;259;259+420;259+620;200;259500;259700;3
+Decrescente;Faixa 1 Decresc.;FS;259;259+420;259+660;240;259500;259740;3
+Crescente;Acostamento Cresc.;PA4,0;259;259+620;259+820;200;259700;259900;3
+Decrescente;Acostamento Decresc.;RF;259;259+640;259+720;80;259720;259800;3
+Decrescente;Faixa 1 Decresc.;FF;259;259+740;259+780;40;259820;259860;3
+Crescente;Faixa 1 Cresc.;RECe25;259;259+800;260+000;200;259880;260080;3
+Crescente;Acostamento Cresc.;PA3,0;259;259+820;260+000;180;259900;260080;3
+Crescente;Acostamento Cresc.;PA3,0;260;260+000;260+020;20;260080;260100;3
+Crescente;Faixa 1 Cresc.;RECe25;260;260+000;260+100;100;260080;260180;3
+Crescente;Acostamento Cresc.;PA3,5;260;260+020;260+220;200;260100;260300;3
+Decrescente;Faixa 1 Decresc.;FF;260;260+080;260+340;260;260160;260420;3
+Crescente;Faixa 1 Cresc.;FF;260;260+100;260+500;400;260180;260580;3
+Crescente;Acostamento Cresc.;PA3,0;260;260+220;260+420;200;260300;260500;3
+Crescente;Acostamento Cresc.;PA3,5;260;260+420;260+620;200;260500;260700;3
+Crescente;Faixa 1 Cresc.;RECe25;260;260+500;261+000;520;260580;261100;3
+Crescente;Acostamento Cresc.;PA2,0;260;260+620;260+820;200;260700;260900;3
+Decrescente;Faixa 1 Decresc.;FS;260;260+760;260+860;100;260840;260940;3
+Crescente;Acostamento Cresc.;PA3,0;260;260+820;261+000;200;260900;261100;3
+Decrescente;Faixa 1 Decresc.;RPe25;260;260+860;260+900;40;260940;260980;3
+Decrescente;Faixa 1 Decresc.;FS;260;260+900;261+000;120;260980;261100;3
+Crescente;Acostamento Cresc.;PA1,5;261;261+000;261+120;120;261100;261220;3
+Crescente;Faixa 1 Cresc.;RECe25;261;261+000;261+040;40;261100;261140;3
+Decrescente;Faixa 1 Decresc.;FS;261;261+000;261+240;240;261100;261340;3
+Crescente;Faixa 1 Cresc.;FE;261;261+040;261+280;240;261140;261380;3
+Crescente;Acostamento Cresc.;RF;261;261+120;261+580;460;261220;261680;3
+Decrescente;Acostamento Decresc.;RF;261;261+140;261+380;240;261240;261480;3
+Decrescente;Faixa 1 Decresc.;FE;261;261+240;261+460;220;261340;261560;3
+Crescente;Faixa 1 Cresc.;FF;261;261+280;261+520;240;261380;261620;3
+Decrescente;Faixa 1 Decresc.;FF;261;261+460;261+940;480;261560;262040;3
+Crescente;Faixa 1 Cresc.;RECe25;261;261+520;261+720;200;261620;261820;3
+Crescente;Acostamento Cresc.;PA1,5;261;261+580;261+600;20;261680;261700;3
+Crescente;Acostamento Cresc.;PA4,5;261;261+600;261+800;200;261700;261900;3
+Crescente;Faixa 1 Cresc.;FF;261;261+720;261+920;200;261820;262020;3
+Crescente;Acostamento Cresc.;PA1,5;261;261+800;261+840;40;261900;261940;3
+Decrescente;Faixa 1 Decresc.;FF;262;262+040;262+260;220;262120;262340;3
+Crescente;Faixa 1 Cresc.;FS;262;262+060;262+640;580;262140;262720;3
+Decrescente;Acostamento Decresc.;RF;262;262+160;262+300;140;262240;262380;3
+Decrescente;Acostamento Decresc.;PA2,0;262;262+300;262+420;120;262380;262500;3
+Decrescente;Faixa 1 Decresc.;FS;262;262+420;262+800;380;262500;262880;3
+Decrescente;Acostamento Decresc.;PA4,0;262;262+420;262+820;400;262500;262900;3
+Crescente;Faixa 1 Cresc.;FE;262;262+640;262+740;100;262720;262820;3
+Crescente;Faixa 1 Cresc.;FF;262;262+740;263+000;260;262820;263080;3
+Decrescente;Faixa 1 Decresc.;FF;262;262+800;263+000;200;262880;263080;3
+Decrescente;Acostamento Decresc.;PA3,0;262;262+820;263+000;180;262900;263080;3
+Crescente;Faixa 1 Cresc.;FS;263;263+000;263+460;460;263080;263540;3
+Decrescente;Faixa 1 Decresc.;FF;263;263+000;263+240;240;263080;263320;3
+Decrescente;Acostamento Decresc.;PA3,0;263;263+000;263+020;20;263080;263100;3
+Decrescente;Acostamento Decresc.;PA3,5;263;263+020;263+220;200;263100;263300;3
+Decrescente;Acostamento Decresc.;PA3,0;263;263+220;263+420;200;263300;263500;3
+Decrescente;Faixa 1 Decresc.;FE;263;263+240;263+340;100;263320;263420;3
+Decrescente;Faixa 1 Decresc.;FF;263;263+400;263+440;40;263480;263520;3
+Decrescente;Acostamento Decresc.;PA1,5;263;263+420;264+000;560;263500;264060;3
+Crescente;Faixa 1 Cresc.;FF;263;263+460;264+000;520;263540;264060;3
+Decrescente;Faixa 1 Decresc.;FS;263;263+520;263+800;280;263600;263880;3
+Decrescente;Faixa 1 Decresc.;FE;263;263+800;263+880;80;263880;263960;3
+Decrescente;Faixa 1 Decresc.;FF;263;263+880;264+000;100;263960;264060;3
+Crescente;Faixa 1 Cresc.;FF;264;264+000;264+600;600;264060;264660;3
+Decrescente;Faixa 1 Decresc.;FF;264;264+000;265+000;1020;264060;265080;3
+Decrescente;Acostamento Decresc.;PA1,5;264;264+000;264+020;20;264060;264080;3
+Decrescente;Acostamento Decresc.;RF;264;264+020;264+040;20;264080;264100;3
+Decrescente;Faixa 2/Adic. Decresc.;FS;264;264+040;265+000;980;264100;265080;3
+Crescente;Faixa 1 Cresc.;FE;264;264+600;264+640;40;264660;264700;3
+Crescente;Faixa 1 Cresc.;FS;264;264+640;265+000;380;264700;265080;3
+Crescente;Faixa 1 Cresc.;FS;265;265+000;265+200;200;265080;265280;3
+Decrescente;Faixa 1 Decresc.;FF;265;265+000;265+560;560;265080;265640;3
+Decrescente;Faixa 2/Adic. Decresc.;FS;265;265+000;265+560;560;265080;265640;3
+Crescente;Faixa 1 Cresc.;FF;265;265+200;265+300;100;265280;265380;3
+Crescente;Faixa 1 Cresc.;FS;265;265+300;265+440;140;265380;265520;3
+Crescente;Faixa 1 Cresc.;FF;265;265+440;265+980;540;265520;266060;3
+Decrescente;Faixa 1 Decresc.;FS;265;265+560;265+860;300;265640;265940;3
+Decrescente;Acostamento Decresc.;RF;265;265+560;265+660;100;265640;265740;3
+Decrescente;Acostamento Decresc.;PA2,5;265;265+660;265+1020;360;265740;266100;3
+Crescente;Acostamento Cresc.;RF;265;265+820;265+940;120;265900;266020;3
+Crescente;Faixa 1 Cresc.;RPe25;265;265+980;265+1040;60;266060;266120;3
+Decrescente;Acostamento Decresc.;PA1,5;265;265+1020;266+000;40;266100;266140;3
+Crescente;Faixa 1 Cresc.;FF;265;265+1040;266+000;20;266120;266140;3
+Crescente;Faixa 1 Cresc.;FF;266;266+000;266+080;80;266140;266220;3
+Decrescente;Acostamento Decresc.;PA1,5;266;266+000;266+160;160;266140;266300;3
+Crescente;Faixa 1 Cresc.;FE;266;266+080;266+120;40;266220;266260;3
+Decrescente;Faixa 1 Decresc.;FF;266;266+080;266+180;100;266220;266320;3
+Crescente;Faixa 1 Cresc.;FS;266;266+120;266+400;280;266260;266540;3
+Decrescente;Acostamento Decresc.;PA2,0;266;266+160;266+360;200;266300;266500;3
+Crescente;Acostamento Cresc.;PA4,0;266;266+200;266+360;160;266340;266500;3
+Decrescente;Faixa 1 Decresc.;FF;266;266+260;266+300;40;266400;266440;3
+Crescente;Acostamento Cresc.;PA3,0;266;266+360;266+760;400;266500;266900;3
+Decrescente;Acostamento Decresc.;PA1,5;266;266+360;266+760;400;266500;266900;3
+Crescente;Faixa 1 Cresc.;FF;266;266+400;266+640;240;266540;266780;3
+Decrescente;Faixa 1 Decresc.;FS;266;266+560;266+760;200;266700;266900;3
+Crescente;Faixa 1 Cresc.;FF;266;266+700;267+000;300;266840;267140;3
+Crescente;Acostamento Cresc.;PA4,5;266;266+760;267+000;240;266900;267140;3
+Decrescente;Acostamento Decresc.;PA2,5;266;266+760;267+000;240;266900;267140;3
+Decrescente;Faixa 1 Decresc.;FE;266;266+820;266+840;20;266960;266980;3
+Crescente;Acostamento Cresc.;PA4,5;267;267+000;267+160;160;267140;267300;3
+Crescente;Faixa 1 Cresc.;FF;267;267+000;267+020;20;267140;267160;3
+Decrescente;Acostamento Decresc.;PA2,5;267;267+000;267+360;360;267140;267500;3
+Crescente;Faixa 1 Cresc.;FE;267;267+020;267+100;80;267160;267240;3
+Crescente;Faixa 1 Cresc.;FF;267;267+100;267+160;60;267240;267300;3
+Decrescente;Faixa 1 Decresc.;FF;267;267+100;267+160;60;267240;267300;3
+Crescente;Acostamento Cresc.;PA3,5;267;267+160;267+360;200;267300;267500;3
+Crescente;Faixa 1 Cresc.;FE;267;267+200;267+240;40;267340;267380;3
+Crescente;Faixa 1 Cresc.;FF;267;267+240;267+280;40;267380;267420;3
+Crescente;Faixa 1 Cresc.;FF;267;267+320;267+360;40;267460;267500;3
+Crescente;Acostamento Cresc.;PA5,0;267;267+360;267+560;200;267500;267700;3
+Crescente;Faixa 1 Cresc.;FE;267;267+360;267+440;80;267500;267580;3
+Decrescente;Acostamento Decresc.;PA3,0;267;267+360;267+380;20;267500;267520;3
+Decrescente;Acostamento Decresc.;RF;267;267+380;267+440;60;267520;267580;3
+Decrescente;Acostamento Decresc.;PA3,0;267;267+440;267+560;120;267580;267700;3
+Crescente;Faixa 1 Cresc.;FF;267;267+480;267+520;40;267620;267660;3
+Crescente;Faixa 1 Cresc.;FE;267;267+520;267+560;40;267660;267700;3
+Crescente;Acostamento Cresc.;PA4,5;267;267+560;267+760;200;267700;267900;3
+Crescente;Faixa 1 Cresc.;FF;267;267+560;268+000;400;267700;268100;3
+Decrescente;Acostamento Decresc.;PA2,5;267;267+560;267+760;200;267700;267900;3
+Crescente;Acostamento Cresc.;PA4,0;267;267+760;268+000;200;267900;268100;3
+Decrescente;Acostamento Decresc.;PA1,5;267;267+760;268+000;200;267900;268100;3
+Decrescente;Faixa 1 Decresc.;FF;267;267+840;267+880;40;267980;268020;3
+Crescente;Acostamento Cresc.;PA3,0;268;268+000;268+400;400;268100;268500;3
+Crescente;Faixa 1 Cresc.;FF;268;268+000;268+400;400;268100;268500;3
+Decrescente;Faixa 1 Decresc.;FF;268;268+000;268+020;20;268100;268120;3
+Decrescente;Acostamento Decresc.;PA2,0;268;268+000;268+600;600;268100;268700;3
+Decrescente;Faixa 1 Decresc.;FF;268;268+280;268+380;100;268380;268480;3
+Decrescente;Faixa 1 Decresc.;FS;268;268+380;269+000;600;268480;269080;3
+Crescente;Acostamento Cresc.;PA3,5;268;268+400;268+800;400;268500;268900;3
+Crescente;Faixa 1 Cresc.;FS;268;268+400;268+800;400;268500;268900;3
+Decrescente;Acostamento Decresc.;PA3,0;268;268+600;268+800;200;268700;268900;3
+Crescente;Acostamento Cresc.;PA4,5;268;268+800;269+000;180;268900;269080;3
+Crescente;Faixa 1 Cresc.;FF;268;268+800;269+000;180;268900;269080;3
+Decrescente;Acostamento Decresc.;PA2,5;268;268+800;269+000;180;268900;269080;3
+Crescente;Acostamento Cresc.;PA4,5;269;269+000;269+220;220;269080;269300;3
+Crescente;Faixa 1 Cresc.;FF;269;269+000;269+220;220;269080;269300;3
+Decrescente;Faixa 1 Decresc.;FS;269;269+000;269+060;60;269080;269140;3
+Decrescente;Acostamento Decresc.;PA2,5;269;269+000;269+020;20;269080;269100;3
+Decrescente;Acostamento Decresc.;PA2,0;269;269+020;269+220;200;269100;269300;3
+Crescente;Acostamento Cresc.;PA4,0;269;269+220;269+420;200;269300;269500;3
+Decrescente;Faixa 1 Decresc.;FS;269;269+220;269+660;440;269300;269740;3
+Decrescente;Acostamento Decresc.;PA1,5;269;269+220;269+420;200;269300;269500;3
+Crescente;Acostamento Cresc.;PA2,5;269;269+420;269+620;200;269500;269700;3
+Decrescente;Acostamento Decresc.;PA2,5;269;269+420;270+000;580;269500;270080;3
+Crescente;Faixa 1 Cresc.;RECe25;269;269+440;269+660;220;269520;269740;3
+Crescente;Acostamento Cresc.;PA3,5;269;269+620;269+820;200;269700;269900;3
+Crescente;Faixa 1 Cresc.;FS;269;269+660;270+000;340;269740;270080;3
+Crescente;Acostamento Cresc.;RF;269;269+820;269+900;80;269900;269980;3
+Decrescente;Faixa 1 Decresc.;FS;269;269+820;270+000;180;269900;270080;3
+Crescente;Acostamento Cresc.;PA2,5;269;269+900;270+000;100;269980;270080;3
+Crescente;Acostamento Cresc.;PA2,5;270;270+000;270+420;420;270080;270500;3
+Crescente;Faixa 1 Cresc.;FS;270;270+000;270+360;360;270080;270440;3
+Decrescente;Faixa 1 Decresc.;FS;270;270+000;270+420;420;270080;270500;3
+Decrescente;Acostamento Decresc.;PA2,5;270;270+000;270+020;20;270080;270100;3
+Decrescente;Acostamento Decresc.;PA3,0;270;270+020;270+220;200;270100;270300;3
+Decrescente;Acostamento Decresc.;PA2,5;270;270+220;270+420;200;270300;270500;3
+Crescente;Faixa 1 Cresc.;FF;270;270+360;270+480;120;270440;270560;3
+Crescente;Acostamento Cresc.;PA3,5;270;270+420;270+480;60;270500;270560;3
+Decrescente;Acostamento Decresc.;PA2,0;270;270+420;270+480;60;270500;270560;3
+Crescente;Acostamento Cresc.;PA2,5;270;270+620;270+820;200;270700;270900;3
+Crescente;Faixa 1 Cresc.;FF;270;270+620;270+820;200;270700;270900;3
+Decrescente;Acostamento Decresc.;PA2,0;270;270+620;271+000;380;270700;271080;3
+Crescente;Acostamento Cresc.;PA3,0;270;270+820;271+000;180;270900;271080;3
+Crescente;Faixa 1 Cresc.;FE;270;270+820;270+860;40;270900;270940;3
+Decrescente;Faixa 1 Decresc.;FS;270;270+820;271+000;180;270900;271080;3
+Crescente;Faixa 1 Cresc.;FF;270;270+860;271+000;140;270940;271080;3
+Crescente;Acostamento Cresc.;PA3,0;271;271+000;271+020;20;271080;271100;3
+Crescente;Faixa 1 Cresc.;FF;271;271+000;271+060;60;271080;271140;3
+Decrescente;Faixa 1 Decresc.;FS;271;271+000;271+020;20;271080;271100;3
+Decrescente;Acostamento Decresc.;PA2,0;271;271+000;271+420;420;271080;271500;3
+Crescente;Acostamento Cresc.;PA2,5;271;271+020;271+420;400;271100;271500;3
+Crescente;Faixa 1 Cresc.;FS;271;271+060;271+300;240;271140;271380;3
+Decrescente;Faixa 1 Decresc.;FS;271;271+180;272+000;800;271260;272060;3
+Crescente;Faixa 1 Cresc.;FF;271;271+300;271+420;120;271380;271500;3
+Crescente;Acostamento Cresc.;PA3,5;271;271+420;271+620;200;271500;271700;3
+Crescente;Faixa 1 Cresc.;FE;271;271+420;271+460;40;271500;271540;3
+Decrescente;Acostamento Decresc.;PA3,0;271;271+420;271+620;200;271500;271700;3
+Crescente;Faixa 1 Cresc.;FF;271;271+460;271+540;80;271540;271620;3
+Crescente;Acostamento Cresc.;PA2,5;271;271+620;271+800;180;271700;271880;3
+Crescente;Faixa 1 Cresc.;FF;271;271+620;271+820;200;271700;271900;3
+Decrescente;Acostamento Decresc.;PA2,0;271;271+620;271+820;200;271700;271900;3
+Crescente;Acostamento Cresc.;RF;271;271+800;272+000;180;271880;272060;3
+Decrescente;Acostamento Decresc.;PA1,5;271;271+820;271+840;20;271900;271920;3
+Decrescente;Acostamento Decresc.;RF;271;271+840;272+000;140;271920;272060;3
+Crescente;Faixa 1 Cresc.;FF;271;271+880;272+000;100;271960;272060;3
+Crescente;Acostamento Cresc.;RF;272;272+000;272+320;320;272060;272380;3
+Crescente;Faixa 1 Cresc.;FF;272;272+000;272+040;40;272060;272100;3
+Decrescente;Faixa 1 Decresc.;FS;272;272+000;272+060;60;272060;272120;3
+Decrescente;Acostamento Decresc.;RF;272;272+000;272+320;320;272060;272380;3
+Crescente;Faixa 1 Cresc.;FS;272;272+040;272+360;320;272100;272420;3
+Decrescente;Faixa 1 Decresc.;FE;272;272+060;272+100;40;272120;272160;3
+Decrescente;Faixa 1 Decresc.;FS;272;272+100;272+320;220;272160;272380;3
+Crescente;Acostamento Cresc.;PA1,5;272;272+320;272+440;120;272380;272500;3
+Decrescente;Faixa 1 Decresc.;FF;272;272+320;272+420;100;272380;272480;3
+Decrescente;Acostamento Decresc.;PA2,0;272;272+320;272+440;120;272380;272500;3
+Decrescente;Faixa 1 Decresc.;RECe25;272;272+420;272+640;220;272480;272700;3
+Crescente;Acostamento Cresc.;PA2,5;272;272+440;272+640;200;272500;272700;3
+Decrescente;Acostamento Decresc.;PA2,5;272;272+440;272+640;200;272500;272700;3
+Crescente;Faixa 1 Cresc.;FF;272;272+480;272+640;160;272540;272700;3
+Crescente;Acostamento Cresc.;PA3,0;272;272+640;272+840;200;272700;272900;3
+Crescente;Faixa 1 Cresc.;FS;272;272+640;273+000;340;272700;273040;3
+Decrescente;Faixa 1 Decresc.;FS;272;272+640;273+000;340;272700;273040;3
+Decrescente;Acostamento Decresc.;PA2,0;272;272+640;272+840;200;272700;272900;3
+Crescente;Acostamento Cresc.;PA2,5;272;272+840;273+000;140;272900;273040;3
+Decrescente;Acostamento Decresc.;PA2,5;272;272+840;273+000;140;272900;273040;3
+Crescente;Acostamento Cresc.;PA2,5;273;273+000;273+260;260;273040;273300;3
+Crescente;Faixa 1 Cresc.;FS;273;273+000;273+040;40;273040;273080;3
+Decrescente;Faixa 1 Decresc.;FS;273;273+000;273+420;420;273040;273460;3
+Decrescente;Acostamento Decresc.;PA2,5;273;273+000;273+260;260;273040;273300;3
+Crescente;Faixa 1 Cresc.;FF;273;273+040;273+740;700;273080;273780;3
+Crescente;Acostamento Cresc.;PA3,0;273;273+260;273+460;200;273300;273500;3
+Decrescente;Acostamento Decresc.;PA2,0;273;273+260;273+620;360;273300;273660;3
+Decrescente;Faixa 1 Decresc.;FF;273;273+420;273+740;320;273460;273780;3
+Crescente;Acostamento Cresc.;PA2,0;273;273+460;273+620;160;273500;273660;3
+Crescente;Acostamento Cresc.;PA1,5;273;273+680;273+860;180;273720;273900;3
+Decrescente;Acostamento Decresc.;PA2,0;273;273+680;274+000;340;273720;274060;3
+Crescente;Faixa 1 Cresc.;RECe25;273;273+740;274+000;280;273780;274060;3
+Decrescente;Faixa 1 Decresc.;FE;273;273+740;274+000;280;273780;274060;3
+Crescente;Acostamento Cresc.;PA2,0;273;273+860;274+000;160;273900;274060;3
+Crescente;Acostamento Cresc.;PA2,0;274;274+000;274+640;640;274060;274700;3
+Crescente;Faixa 1 Cresc.;RECe25;274;274+000;274+180;180;274060;274240;3
+Decrescente;Faixa 1 Decresc.;FE;274;274+000;274+040;40;274060;274100;3
+Decrescente;Acostamento Decresc.;PA2,0;274;274+000;274+240;240;274060;274300;3
+Decrescente;Faixa 1 Decresc.;FF;274;274+040;274+160;120;274100;274220;3
+Decrescente;Faixa 1 Decresc.;FE;274;274+160;274+300;140;274220;274360;3
+Crescente;Faixa 1 Cresc.;FF;274;274+180;274+440;260;274240;274500;3
+Decrescente;Acostamento Decresc.;PA2,5;274;274+240;274+640;400;274300;274700;3
+Decrescente;Faixa 1 Decresc.;FF;274;274+360;274+380;20;274420;274440;3
+Crescente;Faixa 1 Cresc.;RECe25;274;274+440;274+780;340;274500;274840;3
+Decrescente;Faixa 1 Decresc.;FF;274;274+440;274+540;100;274500;274600;3
+Decrescente;Faixa 1 Decresc.;FE;274;274+540;274+600;60;274600;274660;3
+Decrescente;Faixa 1 Decresc.;FF;274;274+600;274+780;180;274660;274840;3
+Crescente;Acostamento Cresc.;PA2,5;274;274+640;275+000;340;274700;275040;3
+Decrescente;Acostamento Decresc.;PA3,0;274;274+640;275+000;340;274700;275040;3
+Crescente;Faixa 1 Cresc.;FF;274;274+780;274+840;60;274840;274900;3
+Decrescente;Faixa 1 Decresc.;FE;274;274+780;274+820;40;274840;274880;3
+Decrescente;Faixa 1 Decresc.;FF;274;274+820;274+940;120;274880;275000;3
+Crescente;Faixa 1 Cresc.;FE;274;274+840;274+900;60;274900;274960;3
+Crescente;Faixa 1 Cresc.;FF;274;274+900;275+000;80;274960;275040;3
+Decrescente;Faixa 1 Decresc.;FE;274;274+940;275+000;40;275000;275040;3
+Crescente;Acostamento Cresc.;PA2,5;275;275+000;275+260;260;275040;275300;3
+Crescente;Faixa 1 Cresc.;FF;275;275+000;275+020;20;275040;275060;3
+Decrescente;Faixa 1 Decresc.;FF;275;275+000;275+040;40;275040;275080;3
+Decrescente;Acostamento Decresc.;PA3,0;275;275+000;275+260;260;275040;275300;3
+Crescente;Faixa 1 Cresc.;FE;275;275+020;275+060;40;275060;275100;3
+Decrescente;Faixa 1 Decresc.;RPe25;275;275+040;275+080;40;275080;275120;3
+Decrescente;Faixa 1 Decresc.;FS;275;275+080;275+320;240;275120;275360;3
+Crescente;Faixa 1 Cresc.;FF;275;275+240;275+300;60;275280;275340;3
+Crescente;Acostamento Cresc.;PA2,0;275;275+260;275+460;200;275300;275500;3
+Decrescente;Acostamento Decresc.;PA2,0;275;275+260;275+460;200;275300;275500;3
+Crescente;Faixa 1 Cresc.;FE;275;275+300;275+360;60;275340;275400;3
+Decrescente;Faixa 1 Decresc.;FF;275;275+320;275+840;520;275360;275880;3
+Crescente;Faixa 1 Cresc.;FF;275;275+360;275+620;260;275400;275660;3
+Crescente;Acostamento Cresc.;PA2,5;275;275+460;275+660;200;275500;275700;3
+Decrescente;Acostamento Decresc.;PA2,5;275;275+460;276+000;500;275500;276000;3
+Crescente;Faixa 1 Cresc.;RECe25;275;275+620;275+820;200;275660;275860;3
+Crescente;Acostamento Cresc.;PA3,0;275;275+660;276+000;300;275700;276000;3
+Crescente;Faixa 1 Cresc.;FF;275;275+820;276+000;140;275860;276000;3
+Decrescente;Faixa 1 Decresc.;FE;275;275+840;275+880;40;275880;275920;3
+Decrescente;Faixa 1 Decresc.;FF;275;275+880;275+940;60;275920;275980;3
+Decrescente;Faixa 1 Decresc.;FE;275;275+940;276+000;20;275980;276000;3
+Crescente;Acostamento Cresc.;PA3,0;276;276+000;276+500;500;276000;276500;3
+Crescente;Faixa 1 Cresc.;FF;276;276+000;276+160;160;276000;276160;3
+Decrescente;Faixa 1 Decresc.;FE;276;276+000;276+040;40;276000;276040;3
+Decrescente;Acostamento Decresc.;PA2,5;276;276+000;276+300;300;276000;276300;3
+Decrescente;Faixa 1 Decresc.;FF;276;276+040;276+340;300;276040;276340;3
+Crescente;Faixa 1 Cresc.;RECe25;276;276+160;276+660;500;276160;276660;3
+Decrescente;Acostamento Decresc.;PA3,0;276;276+300;276+700;400;276300;276700;3
+Crescente;Acostamento Cresc.;PA3,5;276;276+500;276+700;200;276500;276700;3
+Decrescente;Faixa 1 Decresc.;FE;276;276+500;276+600;100;276500;276600;3
+Decrescente;Faixa 1 Decresc.;FF;276;276+600;276+780;180;276600;276780;3
+Crescente;Faixa 1 Cresc.;FF;276;276+660;277+000;340;276660;277000;3
+Crescente;Acostamento Cresc.;PA3,0;276;276+700;276+900;200;276700;276900;3
+Decrescente;Acostamento Decresc.;PA2,0;276;276+700;276+900;200;276700;276900;3
+Decrescente;Faixa 1 Decresc.;FE;276;276+780;276+820;40;276780;276820;3
+Decrescente;Faixa 1 Decresc.;FF;276;276+820;276+840;20;276820;276840;3
+Decrescente;Faixa 1 Decresc.;FE;276;276+840;276+880;40;276840;276880;3
+Decrescente;Faixa 1 Decresc.;FF;276;276+880;277+000;120;276880;277000;3
+Crescente;Acostamento Cresc.;PA3,5;276;276+900;277+000;100;276900;277000;3
+Decrescente;Acostamento Decresc.;PA2,5;276;276+900;277+000;100;276900;277000;3
+Crescente;Acostamento Cresc.;PA3,5;277;277+000;277+300;300;277000;277300;3
+Crescente;Faixa 1 Cresc.;FF;277;277+000;277+420;420;277000;277420;3
+Decrescente;Faixa 1 Decresc.;FF;277;277+000;277+100;100;277000;277100;3
+Decrescente;Acostamento Decresc.;PA2,5;277;277+000;277+100;100;277000;277100;3
+Decrescente;Acostamento Decresc.;PA3,0;277;277+100;278+000;900;277100;278000;3
+Decrescente;Faixa 1 Decresc.;FF;277;277+180;277+260;80;277180;277260;3
+Crescente;Acostamento Cresc.;PA2,5;277;277+300;277+700;400;277300;277700;3
+Decrescente;Faixa 1 Decresc.;FF;277;277+380;277+940;560;277380;277940;3
+Crescente;Faixa 1 Cresc.;FS;277;277+420;277+980;560;277420;277980;3
+Crescente;Acostamento Cresc.;PA3,0;277;277+700;278+000;300;277700;278000;3
+Decrescente;Faixa 1 Decresc.;RPe25;277;277+940;278+000;60;277940;278000;3
+Crescente;Faixa 1 Cresc.;RECe25;277;277+980;278+000;20;277980;278000;3
+Crescente;Acostamento Cresc.;PA3,0;278;278+000;279+000;1040;278000;279040;3
+Crescente;Faixa 1 Cresc.;RECe25;278;278+000;278+200;200;278000;278200;3
+Decrescente;Faixa 1 Decresc.;FF;278;278+000;278+240;240;278000;278240;3
+Decrescente;Acostamento Decresc.;PA3,0;278;278+000;278+100;100;278000;278100;3
+Decrescente;Acostamento Decresc.;PA3,5;278;278+100;278+500;400;278100;278500;3
+Crescente;Faixa 1 Cresc.;FF;278;278+200;278+340;140;278200;278340;3
+Decrescente;Faixa 1 Decresc.;FE;278;278+240;278+360;120;278240;278360;3
+Crescente;Faixa 1 Cresc.;FS;278;278+340;278+540;200;278340;278540;3
+Decrescente;Faixa 1 Decresc.;RECe25;278;278+360;278+520;160;278360;278520;3
+Decrescente;Acostamento Decresc.;PA3,0;278;278+500;278+700;200;278500;278700;3
+Decrescente;Faixa 1 Decresc.;FF;278;278+520;278+720;200;278520;278720;3
+Crescente;Faixa 1 Cresc.;FF;278;278+540;278+860;320;278540;278860;3
+Decrescente;Acostamento Decresc.;PA3,5;278;278+700;279+000;340;278700;279040;3
+Decrescente;Faixa 1 Decresc.;FE;278;278+720;278+980;260;278720;278980;3
+Crescente;Faixa 1 Cresc.;RECe25;278;278+860;279+000;180;278860;279040;3
+Crescente;Acostamento Cresc.;PA3,0;279;279+000;279+260;260;279040;279300;3
+Crescente;Faixa 1 Cresc.;RECe25;279;279+000;279+080;80;279040;279120;3
+Decrescente;Acostamento Decresc.;PA3,5;279;279+000;279+060;60;279040;279100;3
+Decrescente;Faixa 1 Decresc.;FE;279;279+040;279+080;40;279080;279120;3
+Decrescente;Acostamento Decresc.;PA4,0;279;279+060;279+260;200;279100;279300;3
+Crescente;Faixa 1 Cresc.;FS;279;279+080;279+520;440;279120;279560;3
+Decrescente;Faixa 1 Decresc.;RPc30;279;279+080;279+120;40;279120;279160;3
+Decrescente;Faixa 1 Decresc.;FE;279;279+120;279+160;40;279160;279200;3
+Decrescente;Faixa 1 Decresc.;RPc30;279;279+160;279+200;40;279200;279240;3
+Decrescente;Faixa 1 Decresc.;FE;279;279+200;279+220;20;279240;279260;3
+Crescente;Acostamento Cresc.;PA1,5;279;279+260;279+460;200;279300;279500;3
+Decrescente;Acostamento Decresc.;PA2,0;279;279+260;279+660;400;279300;279700;3
+Crescente;Acostamento Cresc.;PA3,0;279;279+460;279+860;400;279500;279900;3
+Decrescente;Faixa 1 Decresc.;RPc35;279;279+500;279+540;40;279540;279580;3
+Crescente;Faixa 1 Cresc.;FE;279;279+520;279+560;40;279560;279600;3
+Crescente;Faixa 1 Cresc.;FS;279;279+560;279+740;180;279600;279780;3
+Decrescente;Acostamento Decresc.;PA3,0;279;279+660;280+000;380;279700;280080;3
+Decrescente;Faixa 1 Decresc.;RECe25;279;279+760;280+000;280;279800;280080;3
+Crescente;Acostamento Cresc.;PA2,0;279;279+860;280+000;180;279900;280080;3
+Crescente;Faixa 1 Cresc.;RECe25;279;279+940;280+000;100;279980;280080;3
+Crescente;Acostamento Cresc.;PA2,0;280;280+000;280+220;220;280080;280300;3
+Crescente;Faixa 1 Cresc.;RECe25;280;280+000;280+400;400;280080;280480;3
+Decrescente;Faixa 1 Decresc.;RECe25;280;280+000;280+200;200;280080;280280;3
+Decrescente;Acostamento Decresc.;PA3,0;280;280+000;280+020;20;280080;280100;3
+Decrescente;Acostamento Decresc.;PA2,5;280;280+020;280+220;200;280100;280300;3
+Crescente;Acostamento Cresc.;PA3,0;280;280+220;280+420;200;280300;280500;3
+Decrescente;Acostamento Decresc.;PA3,5;280;280+220;280+420;200;280300;280500;3
+Decrescente;Faixa 1 Decresc.;FE;280;280+340;280+420;80;280420;280500;3
+Crescente;Acostamento Cresc.;PA2,5;280;280+420;280+620;200;280500;280700;3
+Decrescente;Acostamento Decresc.;PA3,0;280;280+420;280+580;160;280500;280660;3
+Decrescente;Faixa 1 Decresc.;FF;280;280+520;280+620;100;280600;280700;3
+Crescente;Faixa 1 Cresc.;FF;280;280+540;280+680;140;280620;280760;3
+Decrescente;Acostamento Decresc.;RF;280;280+580;280+720;140;280660;280800;3
+Crescente;Acostamento Cresc.;PA1,5;280;280+620;280+680;60;280700;280760;3
+Crescente;Acostamento Cresc.;RF;280;280+680;280+800;120;280760;280880;3
+Crescente;Faixa 1 Cresc.;FS;280;280+680;281+000;300;280760;281060;3
+Decrescente;Acostamento Decresc.;PA2,5;280;280+720;280+820;100;280800;280900;3
+Decrescente;Faixa 1 Decresc.;RECe25;280;280+760;280+940;180;280840;281020;3
+Crescente;Acostamento Cresc.;PA1,5;280;280+800;281+000;180;280880;281060;3
+Decrescente;Acostamento Decresc.;PA3,0;280;280+820;281+000;160;280900;281060;3
+Decrescente;Faixa 1 Decresc.;FF;280;280+940;281+000;40;281020;281060;3
+Crescente;Acostamento Cresc.;PA1,5;281;281+000;281+040;40;281060;281100;3
+Crescente;Faixa 1 Cresc.;FS;281;281+000;281+020;20;281060;281080;3
+Decrescente;Faixa 1 Decresc.;FF;281;281+000;281+300;300;281060;281360;3
+Decrescente;Acostamento Decresc.;PA3,0;281;281+000;281+040;40;281060;281100;3
+Crescente;Faixa 1 Cresc.;FF;281;281+020;281+300;280;281080;281360;3
+Crescente;Acostamento Cresc.;PA2,0;281;281+040;281+240;200;281100;281300;3
+Decrescente;Acostamento Decresc.;PA2,5;281;281+040;281+240;200;281100;281300;3
+Crescente;Acostamento Cresc.;PA2,0;281;281+300;281+440;140;281360;281500;3
+Crescente;Faixa 1 Cresc.;RECe25;281;281+300;282+000;720;281360;282080;3
+Decrescente;Faixa 1 Decresc.;RECe25;281;281+300;281+840;540;281360;281900;3
+Decrescente;Acostamento Decresc.;PA2,0;281;281+300;281+440;140;281360;281500;3
+Crescente;Acostamento Cresc.;PA3,0;281;281+440;281+640;200;281500;281700;3
+Decrescente;Acostamento Decresc.;PA3,5;281;281+440;282+000;580;281500;282080;3
+Crescente;Acostamento Cresc.;PA3,5;281;281+640;281+840;200;281700;281900;3
+Crescente;Acostamento Cresc.;PA3,0;281;281+840;282+000;180;281900;282080;3
+Decrescente;Faixa 1 Decresc.;FE;281;281+840;281+920;80;281900;281980;3
+Decrescente;Faixa 1 Decresc.;RECe24;281;281+1000;282+000;20;282060;282080;3
+Crescente;Acostamento Cresc.;PA3,0;282;282+000;282+620;620;282080;282700;3
+Crescente;Faixa 1 Cresc.;RECe25;282;282+000;282+240;240;282080;282320;3
+Decrescente;Faixa 1 Decresc.;RECe24;282;282+000;282+180;180;282080;282260;3
+Decrescente;Acostamento Decresc.;PA3,5;282;282+000;282+220;220;282080;282300;3
+Decrescente;Faixa 1 Decresc.;FF;282;282+180;282+560;380;282260;282640;3
+Decrescente;Acostamento Decresc.;PA4,0;282;282+220;282+420;200;282300;282500;3
+Crescente;Faixa 1 Cresc.;FF;282;282+240;282+500;260;282320;282580;3
+Decrescente;Acostamento Decresc.;PA3,0;282;282+420;282+620;200;282500;282700;3
+Crescente;Faixa 1 Cresc.;RECe25;282;282+500;282+980;480;282580;283060;3
+Decrescente;Faixa 1 Decresc.;FE;282;282+560;282+700;140;282640;282780;3
+Crescente;Acostamento Cresc.;PA3,5;282;282+620;282+820;200;282700;282900;3
+Decrescente;Acostamento Decresc.;PA3,5;282;282+620;282+820;200;282700;282900;3
+Decrescente;Faixa 1 Decresc.;RECe25;282;282+700;282+900;200;282780;282980;3
+Crescente;Acostamento Cresc.;PA3,0;282;282+820;282+980;160;282900;283060;3
+Decrescente;Acostamento Decresc.;PA2,0;282;282+820;282+980;160;282900;283060;3
+Decrescente;Faixa 1 Decresc.;FE;282;282+900;282+980;80;282980;283060;3
+Crescente;Faixa 1 Cresc.;FF;282;282+980;283+000;140;283060;283200;3
+Decrescente;Faixa 1 Decresc.;FF;282;282+980;283+000;140;283060;283200;3
+Crescente;Acostamento Cresc.;PA1,5;283;283+000;283+100;100;283200;283300;3
+Crescente;Faixa 1 Cresc.;RECe25;283;283+000;284+000;940;283200;284140;3
+Decrescente;Faixa 1 Decresc.;RECe25;283;283+000;284+000;940;283200;284140;3
+Decrescente;Acostamento Decresc.;PA2,5;283;283+000;283+100;100;283200;283300;3
+Crescente;Acostamento Cresc.;PA2,0;283;283+100;283+300;200;283300;283500;3
+Decrescente;Acostamento Decresc.;PA2,0;283;283+100;283+300;200;283300;283500;3
+Crescente;Acostamento Cresc.;PA2,5;283;283+300;283+500;200;283500;283700;3
+Decrescente;Acostamento Decresc.;PA1,5;283;283+300;283+700;400;283500;283900;3
+Crescente;Acostamento Cresc.;PA3,0;283;283+500;283+700;200;283700;283900;3
+Crescente;Acostamento Cresc.;PA2,5;283;283+700;283+900;200;283900;284100;3
+Decrescente;Acostamento Decresc.;PA2,5;283;283+700;283+900;200;283900;284100;3
+Crescente;Acostamento Cresc.;PA2,0;283;283+900;284+000;40;284100;284140;3
+Decrescente;Acostamento Decresc.;PA3,5;283;283+900;284+000;40;284100;284140;3
+Crescente;Acostamento Cresc.;PA2,0;284;284+000;284+160;160;284140;284300;3
+Crescente;Faixa 1 Cresc.;RECe25;284;284+000;285+000;1060;284140;285200;3
+Decrescente;Faixa 1 Decresc.;RECe25;284;284+000;284+200;200;284140;284340;3
+Decrescente;Acostamento Decresc.;PA3,5;284;284+000;284+360;360;284140;284500;3
+Crescente;Acostamento Cresc.;PA2,5;284;284+160;284+360;200;284300;284500;3
+Decrescente;Faixa 1 Decresc.;FE;284;284+200;284+280;80;284340;284420;3
+Decrescente;Faixa 1 Decresc.;FF;284;284+280;284+740;460;284420;284880;3
+Crescente;Acostamento Cresc.;PA2,0;284;284+360;285+000;700;284500;285200;3
+Decrescente;Acostamento Decresc.;PA3,0;284;284+360;284+560;200;284500;284700;3
+Decrescente;Acostamento Decresc.;PA2,5;284;284+560;284+760;200;284700;284900;3
+Decrescente;Faixa 1 Decresc.;RECe25;284;284+740;284+900;160;284880;285040;3
+Decrescente;Acostamento Decresc.;PA2,0;284;284+760;284+960;200;284900;285100;3
+Decrescente;Faixa 1 Decresc.;FE;284;284+900;284+960;60;285040;285100;3
+Decrescente;Faixa 1 Decresc.;FF;284;284+960;285+000;100;285100;285200;3
+Decrescente;Acostamento Decresc.;PA1,5;284;284+960;285+000;100;285100;285200;3
+Crescente;Acostamento Cresc.;PA2,0;285;285+000;285+100;100;285200;285300;3
+Crescente;Faixa 1 Cresc.;RECe25;285;285+000;285+540;540;285200;285740;3
+Decrescente;Faixa 1 Decresc.;FF;285;285+000;285+260;260;285200;285460;3
+Decrescente;Acostamento Decresc.;PA1,5;285;285+000;285+540;540;285200;285740;3
+Crescente;Acostamento Cresc.;PA2,5;285;285+100;285+300;200;285300;285500;3
+Decrescente;Faixa 1 Decresc.;RPe25;285;285+260;285+360;100;285460;285560;3
+Crescente;Acostamento Cresc.;PA1,5;285;285+300;285+500;200;285500;285700;3
+Decrescente;Faixa 1 Decresc.;FF;285;285+360;285+600;240;285560;285800;3
+Crescente;Acostamento Cresc.;RF;285;285+500;285+880;380;285700;286080;3
+Crescente;Faixa 1 Cresc.;FF;285;285+540;285+760;220;285740;285960;3
+Decrescente;Acostamento Decresc.;RF;285;285+540;285+900;360;285740;286100;3
+Decrescente;Faixa 1 Decresc.;RPe25;285;285+600;285+700;100;285800;285900;3
+Decrescente;Faixa 1 Decresc.;FF;285;285+700;286+000;340;285900;286240;3
+Crescente;Faixa 1 Cresc.;RECe25;285;285+760;285+980;220;285960;286180;3
+Crescente;Acostamento Cresc.;PA2,0;285;285+880;285+900;20;286080;286100;3
+Crescente;Acostamento Cresc.;PA1,5;285;285+900;286+000;140;286100;286240;3
+Decrescente;Acostamento Decresc.;PA2,0;285;285+900;286+000;140;286100;286240;3
+Crescente;Faixa 1 Cresc.;FF;285;285+980;286+000;60;286180;286240;3
+Crescente;Acostamento Cresc.;PA1,5;286;286+000;286+060;60;286240;286300;3
+Crescente;Faixa 1 Cresc.;FF;286;286+000;286+140;140;286240;286380;3
+Decrescente;Faixa 1 Decresc.;FF;286;286+000;286+020;20;286240;286260;3
+Decrescente;Acostamento Decresc.;PA2,0;286;286+000;286+060;60;286240;286300;3
+Decrescente;Faixa 1 Decresc.;FE;286;286+020;286+120;100;286260;286360;3
+Crescente;Acostamento Cresc.;RF;286;286+060;286+140;80;286300;286380;3
+Decrescente;Acostamento Decresc.;PA2,5;286;286+060;286+460;400;286300;286700;3
+Decrescente;Faixa 1 Decresc.;RPe25;286;286+120;286+160;40;286360;286400;3
+Crescente;Acostamento Cresc.;PA2,0;286;286+140;286+260;120;286380;286500;3
+Crescente;Faixa 1 Cresc.;RECe25;286;286+140;287+000;840;286380;287220;3
+Decrescente;Faixa 1 Decresc.;FE;286;286+160;286+260;100;286400;286500;3
+Crescente;Acostamento Cresc.;PA1,5;286;286+260;286+460;200;286500;286700;3
+Decrescente;Faixa 1 Decresc.;FF;286;286+260;286+700;440;286500;286940;3
+Crescente;Acostamento Cresc.;PA3,0;286;286+460;286+660;200;286700;286900;3
+Decrescente;Acostamento Decresc.;PA1,5;286;286+460;286+780;320;286700;287020;3
+Crescente;Acostamento Cresc.;PA2,5;286;286+660;286+860;200;286900;287100;3
+Decrescente;Faixa 1 Decresc.;FE;286;286+700;286+780;80;286940;287020;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;286;286+760;286+820;60;287000;287060;3
+Decrescente;Faixa 1 Decresc.;FS;286;286+780;287+000;200;287020;287220;3
+Decrescente;Acostamento Decresc.;RF;286;286+780;287+000;200;287020;287220;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;286;286+820;286+940;120;287060;287180;3
+Crescente;Acostamento Cresc.;PA2,0;286;286+860;287+000;120;287100;287220;3
+Decrescente;Faixa 2/Adic. Decresc.;RPe25;286;286+940;287+000;40;287180;287220;3
+Crescente;Acostamento Cresc.;PA2,0;287;287+000;287+480;480;287220;287700;3
+Crescente;Faixa 1 Cresc.;RECe25;287;287+000;288+000;980;287220;288200;3
+Decrescente;Faixa 1 Decresc.;FS;287;287+000;287+020;20;287220;287240;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;287;287+000;287+300;300;287220;287520;3
+Decrescente;Acostamento Decresc.;RF;287;287+000;288+000;980;287220;288200;3
+Decrescente;Faixa 1 Decresc.;FF;287;287+020;287+260;240;287240;287480;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;287;287+300;287+520;220;287520;287740;3
+Crescente;Acostamento Cresc.;PA1,5;287;287+480;287+880;400;287700;288100;3
+Decrescente;Faixa 1 Decresc.;FE;287;287+500;287+560;60;287720;287780;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;287;287+520;288+000;460;287740;288200;3
+Decrescente;Faixa 1 Decresc.;FF;287;287+820;287+880;60;288040;288100;3
+Crescente;Acostamento Cresc.;PA2,0;287;287+880;288+000;100;288100;288200;3
+Decrescente;Faixa 1 Decresc.;FS;287;287+880;288+000;100;288100;288200;3
+Crescente;Acostamento Cresc.;PA2,0;288;288+000;288+100;100;288200;288300;3
+Crescente;Faixa 1 Cresc.;RECe25;288;288+000;288+300;300;288200;288500;3
+Decrescente;Faixa 1 Decresc.;FS;288;288+000;289+000;1020;288200;289220;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;288;288+000;288+100;100;288200;288300;3
+Decrescente;Acostamento Decresc.;RF;288;288+000;289+000;1020;288200;289220;3
+Crescente;Acostamento Cresc.;PA1,5;288;288+100;288+500;400;288300;288700;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;288;288+100;288+280;180;288300;288480;3
+Decrescente;Faixa 2/Adic. Decresc.;RECe25;288;288+280;288+620;340;288480;288820;3
+Crescente;Faixa 1 Cresc.;FF;288;288+300;288+680;380;288500;288880;3
+Crescente;Acostamento Cresc.;PA2,0;288;288+500;289+000;520;288700;289220;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;288;288+620;288+1000;380;288820;289200;3
+Crescente;Faixa 1 Cresc.;RECe24;288;288+680;289+000;340;288880;289220;3
+Crescente;Acostamento Cresc.;PA2,0;289;289+000;289+080;80;289220;289300;3
+Crescente;Faixa 1 Cresc.;RECe25;289;289+000;289+320;320;289220;289540;3
+Decrescente;Faixa 1 Decresc.;FS;289;289+000;289+060;60;289220;289280;3
+Decrescente;Acostamento Decresc.;PA1,5;289;289+000;289+080;80;289220;289300;3
+Decrescente;Faixa 1 Decresc.;RECe24;289;289+060;289+400;340;289280;289620;3
+Crescente;Acostamento Cresc.;PA2,5;289;289+080;289+280;200;289300;289500;3
+Decrescente;Acostamento Decresc.;PA3,0;289;289+080;289+280;200;289300;289500;3
+Crescente;Acostamento Cresc.;PA1,5;289;289+280;289+480;200;289500;289700;3
+Decrescente;Acostamento Decresc.;PA2,0;289;289+280;289+680;400;289500;289900;3
+Crescente;Faixa 1 Cresc.;FE;289;289+320;289+620;300;289540;289840;3
+Decrescente;Faixa 1 Decresc.;FF;289;289+400;289+520;120;289620;289740;3
+Crescente;Acostamento Cresc.;PA2,0;289;289+480;289+880;400;289700;290100;3
+Decrescente;Faixa 1 Decresc.;FE;289;289+520;289+860;340;289740;290080;3
+Crescente;Faixa 1 Cresc.;FS;289;289+620;289+960;340;289840;290180;3
+Decrescente;Acostamento Decresc.;PA3,0;289;289+680;289+880;200;289900;290100;3
+Decrescente;Faixa 1 Decresc.;RECe25;289;289+860;290+000;140;290080;290220;3
+Crescente;Acostamento Cresc.;PA2,5;289;289+880;290+000;120;290100;290220;3
+Decrescente;Acostamento Decresc.;PA3,5;289;289+880;290+000;120;290100;290220;3
+Crescente;Faixa 1 Cresc.;RECe25;289;289+960;290+000;40;290180;290220;3
+Crescente;Acostamento Cresc.;PA2,5;290;290+000;290+080;80;290220;290300;3
+Crescente;Faixa 1 Cresc.;RECe25;290;290+000;290+140;140;290220;290360;3
+Decrescente;Faixa 1 Decresc.;RECe25;290;290+000;290+180;180;290220;290400;3
+Decrescente;Acostamento Decresc.;PA3,5;290;290+000;290+280;280;290220;290500;3
+Crescente;Acostamento Cresc.;PA2,0;290;290+080;290+680;600;290300;290900;3
+Crescente;Faixa 1 Cresc.;FE;290;290+140;290+340;200;290360;290560;3
+Decrescente;Faixa 1 Decresc.;FF;290;290+180;290+280;100;290400;290500;3
+Decrescente;Faixa 1 Decresc.;FE;290;290+280;290+340;60;290500;290560;3
+Decrescente;Acostamento Decresc.;PA3,0;290;290+280;290+480;200;290500;290700;3
+Crescente;Faixa 1 Cresc.;RECe25;290;290+340;291+000;640;290560;291200;3
+Decrescente;Faixa 1 Decresc.;FF;290;290+340;290+440;100;290560;290660;3
+Decrescente;Faixa 1 Decresc.;RECe25;290;290+440;290+600;160;290660;290820;3
+Decrescente;Acostamento Decresc.;PA3,5;290;290+480;290+680;200;290700;290900;3
+Decrescente;Faixa 1 Decresc.;FS;290;290+600;291+000;380;290820;291200;3
+Crescente;Acostamento Cresc.;PA2,5;290;290+680;291+000;300;290900;291200;3
+Decrescente;Acostamento Decresc.;PA4,0;290;290+680;291+000;300;290900;291200;3
+Crescente;Acostamento Cresc.;PA2,5;291;291+000;291+500;500;291200;291700;3
+Crescente;Faixa 1 Cresc.;RECe25;291;291+000;291+380;380;291200;291580;3
+Decrescente;Faixa 1 Decresc.;FE;291;291+000;291+160;160;291200;291360;3
+Decrescente;Acostamento Decresc.;PA4,0;291;291+000;291+100;100;291200;291300;3
+Decrescente;Acostamento Decresc.;PA3,0;291;291+100;291+300;200;291300;291500;3
+Decrescente;Faixa 1 Decresc.;FS;291;291+160;291+880;720;291360;292080;3
+Decrescente;Acostamento Decresc.;PA2,0;291;291+300;291+500;200;291500;291700;3
+Crescente;Faixa 1 Cresc.;FS;291;291+380;291+740;360;291580;291940;3
+Crescente;Acostamento Cresc.;PA2,0;291;291+500;291+560;60;291700;291760;3
+Decrescente;Acostamento Decresc.;PA1,5;291;291+500;291+520;20;291700;291720;3
+Decrescente;Acostamento Decresc.;RF;291;291+520;291+740;220;291720;291940;3
+Crescente;Acostamento Cresc.;RF;291;291+560;291+760;200;291760;291960;3
+Crescente;Faixa 1 Cresc.;RECe25;291;291+740;292+000;260;291940;292200;3
+Decrescente;Acostamento Decresc.;PA3,5;291;291+740;291+900;160;291940;292100;3
+Crescente;Acostamento Cresc.;PA2,0;291;291+760;292+000;240;291960;292200;3
+Decrescente;Faixa 1 Decresc.;FE;291;291+880;292+000;120;292080;292200;3
+Decrescente;Acostamento Decresc.;PA3,0;291;291+900;292+000;100;292100;292200;3
+Crescente;Acostamento Cresc.;PA2,0;292;292+000;292+100;100;292200;292300;3
+Crescente;Faixa 1 Cresc.;RECe25;292;292+000;292+140;140;292200;292340;3
+Decrescente;Faixa 1 Decresc.;FE;292;292+000;292+220;220;292200;292420;3
+Decrescente;Acostamento Decresc.;PA3,0;292;292+000;292+100;100;292200;292300;3
+Crescente;Acostamento Cresc.;PA3,0;292;292+100;292+300;200;292300;292500;3
+Decrescente;Acostamento Decresc.;PA2,5;292;292+100;292+300;200;292300;292500;3
+Crescente;Faixa 1 Cresc.;FS;292;292+140;292+900;760;292340;293100;3
+Decrescente;Faixa 1 Decresc.;FF;292;292+220;292+460;240;292420;292660;3
+Crescente;Acostamento Cresc.;PA1,5;292;292+300;292+440;140;292500;292640;3
+Decrescente;Acostamento Decresc.;PA2,0;292;292+300;292+500;200;292500;292700;3
+Crescente;Faixa 2/Adic. Cresc.;FF;292;292+420;292+440;20;292620;292640;3
+Crescente;Acostamento Cresc.;RF;292;292+440;293+000;520;292640;293160;3
+Crescente;Faixa 2/Adic. Cresc.;FE;292;292+440;292+460;20;292640;292660;3
+Decrescente;Faixa 1 Decresc.;FE;292;292+460;292+600;140;292660;292800;3
+Decrescente;Acostamento Decresc.;PA2,5;292;292+500;292+700;200;292700;292900;3
+Crescente;Faixa 2/Adic. Cresc.;FE;292;292+540;292+620;80;292740;292820;3
+Decrescente;Faixa 1 Decresc.;FF;292;292+600;293+000;360;292800;293160;3
+Decrescente;Acostamento Decresc.;PA2,0;292;292+700;292+760;60;292900;292960;3
+Decrescente;Acostamento Decresc.;RF;292;292+760;292+820;60;292960;293020;3
+Crescente;Faixa 2/Adic. Cresc.;RECe25;292;292+780;292+940;160;292980;293140;3
+Decrescente;Acostamento Decresc.;PA2,0;292;292+820;293+000;140;293020;293160;3
+Crescente;Faixa 2/Adic. Cresc.;FS;292;292+940;293+000;20;293140;293160;3
+Crescente;Acostamento Cresc.;RF;293;293+000;293+800;800;293160;293960;3
+Crescente;Faixa 2/Adic. Cresc.;FS;293;293+000;293+140;140;293160;293300;3
+Decrescente;Faixa 1 Decresc.;FF;293;293+000;293+180;180;293160;293340;3
+Decrescente;Acostamento Decresc.;PA2,0;293;293+000;293+460;460;293160;293620;3
+Crescente;Faixa 1 Cresc.;FF;293;293+120;293+160;40;293280;293320;3
+Crescente;Faixa 2/Adic. Cresc.;FF;293;293+140;293+200;60;293300;293360;3
+Decrescente;Faixa 1 Decresc.;FE;293;293+180;293+280;100;293340;293440;3
+Crescente;Faixa 2/Adic. Cresc.;RPe25;293;293+200;293+300;100;293360;293460;3
+Crescente;Faixa 1 Cresc.;FS;293;293+280;293+700;420;293440;293860;3
+Decrescente;Faixa 1 Decresc.;FF;293;293+280;293+340;60;293440;293500;3
+Crescente;Faixa 2/Adic. Cresc.;FF;293;293+300;293+340;40;293460;293500;3
+Crescente;Faixa 2/Adic. Cresc.;FS;293;293+340;293+780;440;293500;293940;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;293;293+440;293+540;100;293600;293700;3
+Decrescente;Acostamento Decresc.;RF;293;293+460;294+000;580;293620;294200;3
+Crescente;Acostamento Cresc.;PA2,0;293;293+800;293+940;140;293960;294100;3
+Crescente;Faixa 1 Cresc.;RECe25;293;293+800;294+000;240;293960;294200;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;293;293+840;294+000;200;294000;294200;3
+Crescente;Acostamento Cresc.;PA2,5;293;293+940;294+000;100;294100;294200;3
+Decrescente;Faixa 1 Decresc.;FF;293;293+960;293+1000;40;294120;294160;3
+Crescente;Acostamento Cresc.;PA2,5;294;294+000;294+500;500;294200;294700;3
+Crescente;Faixa 1 Cresc.;RECe25;294;294+000;294+380;380;294200;294580;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;294;294+000;294+300;300;294200;294500;3
+Decrescente;Acostamento Decresc.;RF;294;294+000;294+500;500;294200;294700;3
+Decrescente;Faixa 1 Decresc.;FF;294;294+120;294+200;80;294320;294400;3
+Decrescente;Faixa 1 Decresc.;FE;294;294+200;294+380;180;294400;294580;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;294;294+300;294+420;120;294500;294620;3
+Crescente;Faixa 1 Cresc.;FF;294;294+380;294+600;220;294580;294800;3
+Decrescente;Faixa 1 Decresc.;FF;294;294+380;294+480;100;294580;294680;3
+Decrescente;Faixa 1 Decresc.;FS;294;294+480;294+700;220;294680;294900;3
+Crescente;Acostamento Cresc.;PA2,0;294;294+500;294+900;400;294700;295100;3
+Decrescente;Acostamento Decresc.;PA2,5;294;294+500;294+700;200;294700;294900;3
+Crescente;Faixa 1 Cresc.;RECe25;294;294+600;295+000;360;294800;295160;3
+Decrescente;Acostamento Decresc.;PA2,0;294;294+700;294+900;200;294900;295100;3
+Decrescente;Faixa 1 Decresc.;FE;294;294+780;294+840;60;294980;295040;3
+Decrescente;Faixa 1 Decresc.;FF;294;294+840;295+000;120;295040;295160;3
+Crescente;Acostamento Cresc.;PA2,5;294;294+900;295+000;60;295100;295160;3
+Decrescente;Acostamento Decresc.;PA2,5;294;294+900;295+000;60;295100;295160;3
+Crescente;Acostamento Cresc.;PA2,5;295;295+000;295+140;140;295160;295300;3
+Crescente;Faixa 1 Cresc.;RECe25;295;295+000;295+040;40;295160;295200;3
+Decrescente;Faixa 1 Decresc.;FF;295;295+000;295+140;140;295160;295300;3
+Decrescente;Acostamento Decresc.;PA2,5;295;295+000;295+340;340;295160;295500;3
+Crescente;Faixa 1 Cresc.;FS;295;295+040;295+420;380;295200;295580;3
+Crescente;Acostamento Cresc.;PA2,0;295;295+140;295+340;200;295300;295500;3
+Decrescente;Faixa 1 Decresc.;FF;295;295+240;295+340;100;295400;295500;3
+Crescente;Acostamento Cresc.;PA2,5;295;295+340;295+740;400;295500;295900;3
+Decrescente;Faixa 1 Decresc.;RPe25;295;295+340;295+380;40;295500;295540;3
+Decrescente;Acostamento Decresc.;PA2,0;295;295+340;295+740;400;295500;295900;3
+Crescente;Faixa 1 Cresc.;FF;295;295+560;295+600;40;295720;295760;3
+Decrescente;Faixa 1 Decresc.;FF;295;295+580;295+760;180;295740;295920;3
+Crescente;Acostamento Cresc.;PA2,0;295;295+740;295+940;200;295900;296100;3
+Decrescente;Acostamento Decresc.;PA2,5;295;295+740;296+000;260;295900;296160;3
+Decrescente;Faixa 1 Decresc.;FE;295;295+840;295+860;20;296000;296020;3
+Crescente;Faixa 1 Cresc.;FF;295;295+860;295+920;60;296020;296080;3
+Decrescente;Faixa 1 Decresc.;FE;295;295+900;295+920;20;296060;296080;3
+Crescente;Acostamento Cresc.;PA2,5;295;295+940;296+000;60;296100;296160;3
+Crescente;Acostamento Cresc.;PA2,5;296;296+000;296+140;140;296160;296300;3
+Decrescente;Acostamento Decresc.;PA2,5;296;296+000;296+180;180;296160;296340;3
+Decrescente;Faixa 1 Decresc.;FE;296;296+020;296+040;20;296180;296200;3
+Crescente;Acostamento Cresc.;PA2,0;296;296+140;296+740;600;296300;296900;3
+Decrescente;Acostamento Decresc.;RF;296;296+180;296+320;140;296340;296480;3
+Decrescente;Faixa 1 Decresc.;FE;296;296+260;296+280;20;296420;296440;3
+Decrescente;Acostamento Decresc.;PA2,5;296;296+320;297+000;660;296480;297140;3
+Crescente;Faixa 1 Cresc.;FF;296;296+460;296+620;160;296620;296780;3
+Decrescente;Faixa 1 Decresc.;FE;296;296+520;296+540;20;296680;296700;3
+Crescente;Faixa 1 Cresc.;FF;296;296+700;296+760;60;296860;296920;3
+Crescente;Acostamento Cresc.;PA2,5;296;296+740;296+940;200;296900;297100;3
+Crescente;Faixa 1 Cresc.;FS;296;296+800;297+000;180;296960;297140;3
+Decrescente;Faixa 1 Decresc.;FE;296;296+900;297+000;80;297060;297140;3
+Crescente;Acostamento Cresc.;PA2,0;296;296+940;297+000;40;297100;297140;3
+Crescente;Acostamento Cresc.;PA2,0;297;297+000;297+360;360;297140;297500;3
+Crescente;Faixa 1 Cresc.;FS;297;297+000;297+300;300;297140;297440;3
+Decrescente;Faixa 1 Decresc.;FE;297;297+000;297+080;80;297140;297220;3
+Decrescente;Acostamento Decresc.;PA2,5;297;297+000;297+360;360;297140;297500;3
+Decrescente;Faixa 1 Decresc.;FF;297;297+080;297+160;80;297220;297300;3
+Decrescente;Faixa 1 Decresc.;FF;297;297+260;297+620;360;297400;297760;3
+Crescente;Faixa 1 Cresc.;FF;297;297+300;297+760;460;297440;297900;3
+Crescente;Acostamento Cresc.;PA2,5;297;297+360;297+560;200;297500;297700;3
+Decrescente;Acostamento Decresc.;PA2,0;297;297+360;297+760;400;297500;297900;3
+Crescente;Acostamento Cresc.;PA2,0;297;297+560;298+000;420;297700;298120;3
+Decrescente;Faixa 1 Decresc.;FE;297;297+620;297+720;100;297760;297860;3
+Decrescente;Faixa 1 Decresc.;FF;297;297+720;297+940;220;297860;298080;3
+Crescente;Faixa 1 Cresc.;FS;297;297+760;298+000;220;297900;298120;3
+Decrescente;Acostamento Decresc.;PA2,5;297;297+760;297+960;200;297900;298100;3
+Decrescente;Faixa 1 Decresc.;FE;297;297+940;298+000;40;298080;298120;3
+Decrescente;Acostamento Decresc.;PA2,0;297;297+960;298+000;20;298100;298120;3
+Crescente;Acostamento Cresc.;PA2,0;298;298+000;298+180;180;298120;298300;3
+Crescente;Faixa 1 Cresc.;FS;298;298+000;298+040;40;298120;298160;3
+Decrescente;Faixa 1 Decresc.;FE;298;298+000;298+020;20;298120;298140;3
+Decrescente;Acostamento Decresc.;PA2,0;298;298+000;298+180;180;298120;298300;3
+Decrescente;Faixa 1 Decresc.;FF;298;298+020;298+080;60;298140;298200;3
+Decrescente;Faixa 1 Decresc.;FE;298;298+080;298+140;60;298200;298260;3
+Crescente;Faixa 1 Cresc.;FF;298;298+140;298+200;60;298260;298320;3
+Decrescente;Faixa 1 Decresc.;FF;298;298+140;298+400;260;298260;298520;3
+Crescente;Acostamento Cresc.;PA3,0;298;298+180;298+380;200;298300;298500;3
+Decrescente;Acostamento Decresc.;PA1,5;298;298+180;298+380;200;298300;298500;3
+Crescente;Faixa 1 Cresc.;FF;298;298+280;298+380;100;298400;298500;3
+Crescente;Acostamento Cresc.;PA1,5;298;298+380;298+580;200;298500;298700;3
+Decrescente;Acostamento Decresc.;PA2,0;298;298+380;298+580;200;298500;298700;3
+Crescente;Faixa 1 Cresc.;FS;298;298+540;299+000;460;298660;299120;3
+Decrescente;Faixa 1 Decresc.;FS;298;298+560;298+780;220;298680;298900;3
+Crescente;Acostamento Cresc.;PA2,0;298;298+580;298+780;200;298700;298900;3
+Decrescente;Acostamento Decresc.;PA2,5;298;298+580;298+780;200;298700;298900;3
+Crescente;Acostamento Cresc.;PA2,5;298;298+780;299+000;220;298900;299120;3
+Decrescente;Faixa 1 Decresc.;FF;298;298+780;299+000;220;298900;299120;3
+Decrescente;Acostamento Decresc.;PA1,5;298;298+780;299+000;220;298900;299120;3
+Crescente;Acostamento Cresc.;PA2,5;299;299+000;299+180;180;299120;299300;3
+Crescente;Faixa 1 Cresc.;FS;299;299+000;299+240;240;299120;299360;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+000;299+080;80;299120;299200;3
+Decrescente;Acostamento Decresc.;PA1,5;299;299+000;299+040;40;299120;299160;3
+Decrescente;Acostamento Decresc.;RF;299;299+040;300+000;980;299160;300140;3
+Crescente;Acostamento Cresc.;PA1,5;299;299+180;299+780;600;299300;299900;3
+Decrescente;Faixa 2/Adic. Decresc.;FF;299;299+180;299+380;200;299300;299500;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+220;299+260;40;299340;299380;3
+Crescente;Faixa 1 Cresc.;FE;299;299+240;299+580;340;299360;299700;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+320;299+400;80;299440;299520;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;299;299+380;299+660;280;299500;299780;3
+Crescente;Faixa 1 Cresc.;FS;299;299+580;299+760;180;299700;299880;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+720;299+740;20;299840;299860;3
+Crescente;Faixa 1 Cresc.;RPe25;299;299+760;299+840;80;299880;299960;3
+Crescente;Acostamento Cresc.;PA2,0;299;299+780;300+000;240;299900;300140;3
+Crescente;Faixa 1 Cresc.;FS;299;299+840;300+000;180;299960;300140;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+860;299+900;40;299980;300020;3
+Decrescente;Faixa 2/Adic. Decresc.;RPe25;299;299+860;299+900;40;299980;300020;3
+Decrescente;Faixa 1 Decresc.;FF;299;299+940;299+980;40;300060;300100;3
+Crescente;Acostamento Cresc.;PA2,0;300;300+000;300+160;160;300140;300300;3
+Crescente;Faixa 1 Cresc.;FS;300;300+000;300+460;460;300140;300600;3
+Decrescente;Acostamento Decresc.;RF;300;300+000;300+020;20;300140;300160;3
+Decrescente;Faixa 1 Decresc.;FF;300;300+020;300+140;120;300160;300280;3
+Decrescente;Acostamento Decresc.;PA2,0;300;300+020;300+360;340;300160;300500;3
+Crescente;Acostamento Cresc.;PA1,5;300;300+160;300+360;200;300300;300500;3
+Crescente;Acostamento Cresc.;PA2,0;300;300+360;300+760;400;300500;300900;3
+Decrescente;Acostamento Decresc.;PA2,5;300;300+360;300+560;200;300500;300700;3
+Crescente;Faixa 1 Cresc.;FE;300;300+460;300+580;120;300600;300720;3
+Decrescente;Acostamento Decresc.;PA2,0;300;300+560;300+760;200;300700;300900;3
+Crescente;Faixa 1 Cresc.;FS;300;300+580;301+000;400;300720;301120;3
+Crescente;Acostamento Cresc.;PA1,5;300;300+760;301+000;220;300900;301120;3
+Decrescente;Faixa 1 Decresc.;FF;300;300+760;301+000;220;300900;301120;3
+Decrescente;Acostamento Decresc.;PA2,5;300;300+760;300+960;200;300900;301100;3
+Decrescente;Acostamento Decresc.;PA2,0;300;300+960;301+000;20;301100;301120;3
+Crescente;Acostamento Cresc.;PA1,5;301;301+000;301+380;380;301120;301500;3
+Crescente;Faixa 1 Cresc.;FS;301;301+000;301+260;260;301120;301380;3
+Decrescente;Faixa 1 Decresc.;FF;301;301+000;301+280;280;301120;301400;3
+Decrescente;Acostamento Decresc.;PA2,0;301;301+000;301+980;980;301120;302100;3
+Crescente;Faixa 1 Cresc.;FS;301;301+360;302+000;680;301480;302160;3
+Crescente;Acostamento Cresc.;PA2,0;301;301+380;301+580;200;301500;301700;3
+Decrescente;Faixa 1 Decresc.;FS;301;301+380;301+620;240;301500;301740;3
+Crescente;Acostamento Cresc.;PA1,5;301;301+580;301+780;200;301700;301900;3
+Decrescente;Faixa 1 Decresc.;FE;301;301+620;301+840;220;301740;301960;3
+Crescente;Acostamento Cresc.;PA2,0;301;301+780;301+980;200;301900;302100;3
+Decrescente;Faixa 1 Decresc.;FS;301;301+840;302+000;200;301960;302160;3
+Crescente;Acostamento Cresc.;PA1,5;301;301+980;302+000;60;302100;302160;3
+Decrescente;Acostamento Decresc.;PA2,5;301;301+980;302+000;60;302100;302160;3
+Crescente;Acostamento Cresc.;PA1,5;302;302+000;303+000;1020;302160;303180;3
+Crescente;Faixa 1 Cresc.;FS;302;302+000;302+460;460;302160;302620;3
+Decrescente;Faixa 1 Decresc.;FS;302;302+000;302+080;80;302160;302240;3
+Decrescente;Acostamento Decresc.;PA2,5;302;302+000;302+740;740;302160;302900;3
+Decrescente;Faixa 1 Decresc.;FE;302;302+080;302+460;380;302240;302620;3
+Crescente;Faixa 1 Cresc.;FF;302;302+460;302+640;180;302620;302800;3
+Decrescente;Faixa 1 Decresc.;FF;302;302+460;302+940;480;302620;303100;3
+Crescente;Faixa 1 Cresc.;FE;302;302+640;302+740;100;302800;302900;3
+Crescente;Faixa 1 Cresc.;FF;302;302+740;303+000;280;302900;303180;3
+Decrescente;Acostamento Decresc.;PA2,0;302;302+740;303+000;280;302900;303180;3
+Crescente;Acostamento Cresc.;PA1,5;303;303+000;303+100;100;303180;303280;3
+Crescente;Faixa 1 Cresc.;FF;303;303+000;303+060;60;303180;303240;3
+Decrescente;Acostamento Decresc.;PA2,0;303;303+000;303+100;100;303180;303280;3
+Crescente;Faixa 1 Cresc.;FS;303;303+060;303+500;440;303240;303680;3
+Crescente;Acostamento Cresc.;RF;303;303+100;303+200;100;303280;303380;3
+Decrescente;Acostamento Decresc.;RF;303;303+100;303+800(+20);720;303280;304000;3
+Crescente;Acostamento Cresc.;PA1,5;303;303+200;303+320;120;303380;303500;3
+Crescente;Acostamento Cresc.;RF;303;303+320;303+420;100;303500;303600;3
+Decrescente;Faixa 1 Decresc.;FE;303;303+380;303+500;120;303560;303680;3
+Crescente;Acostamento Cresc.;PA1,5;303;303+420;303+680;260;303600;303860;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;303;303+420;303+500;80;303600;303680;3
+Crescente;Faixa 1 Cresc.;FE;303;303+500;303+800(+20);320;303680;304000;3
+Decrescente;Faixa 1 Decresc.;FF;303;303+500;303+600;100;303680;303780;3
+Decrescente;Faixa 2/Adic. Decresc.;RPe25;303;303+500;303+600;100;303680;303780;3
+Decrescente;Faixa 1 Decresc.;FE;303;303+600;303+800(+20);220;303780;304000;3
+Decrescente;Faixa 2/Adic. Decresc.;FE;303;303+600;303+800(+20);220;303780;304000;3
+Crescente;Acostamento Cresc.;RF;303;303+680;303+800(+20);140;303860;304000;3
