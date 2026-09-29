@@ -1789,7 +1789,14 @@ renderGps(Loc.gps);
   const f=Data.parseKm('196+610');const i=Math.floor((f.s-ODO[0])/20);
   Loc.set((LAT[i]+LAT[i+1])/2+0.00002,(LON[i]+LON[i+1])/2,5,null,null,'init','exemplo');
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
-  if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js').catch(()=>{});
+  if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
+  // aviso de versão nova: compara a versão publicada com a que está aberta
+  const CUR_VER='/*__VERSION__*/';
+  async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
+    if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
+      b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
+      b.onclick=async()=>{try{const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update()));const ks=await caches.keys();await Promise.all(ks.filter(k=>k!=='tiles277').map(k=>caches.delete(k)))}catch(e){}location.reload()};document.body.appendChild(b)}}catch(e){}}
+  setTimeout(checkVer,4000);setInterval(checkVer,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkVer()});
 })();
 return {on,Data,Geo,Loc,Filters,Router};
 })();
