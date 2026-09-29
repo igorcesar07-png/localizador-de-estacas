@@ -735,8 +735,8 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
   <div id="fGal" hidden>
     <div class="gbar"><b>Fotos</b><span class="gact"><button type="button" class="ghostBtn gmenu" id="fGalMenuBtn" aria-haspopup="true" aria-expanded="false">⋯</button><button type="button" class="ghostBtn" id="fGalClose">Fechar</button></span>
       <div class="gpop" id="fGalMenu" hidden><button type="button" id="fGalNote">Nota para as próximas capturas</button></div></div>
-    <div class="gsel"><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · 15 min</button><button type="button" id="gSelNone">Selecionar nenhuma</button><b id="gSelN">0 selecionadas</b></div>
-    <p class="rmsg" id="fGalMsg" style="padding:0 12px 8px">Cada foto tirada fica guardada aqui automaticamente. Selecione as fotos e toque em "Salvar selecionadas" para gravar no aparelho.</p>
+    <div class="gsel"><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · 15 min</button><button type="button" id="gSelNone">Selecionar nenhuma</button><button type="button" id="gSelPend">Não salvas no aparelho</button><b id="gSelN">0 selecionadas</b></div>
+    <p class="rmsg" id="fGalPend" style="padding:0 12px 6px"></p><p class="rmsg" id="fGalMsg" style="padding:0 12px 8px">Cada foto tirada fica guardada aqui automaticamente. Selecione as fotos e toque em "Salvar selecionadas" para gravar no aparelho.</p>
     <div class="ggrid" id="fGalGrid"></div>
     <div class="rbar"><div class="rbtns"><button class="delBtn" type="button" id="fGalDel" disabled>Excluir selecionadas</button><button class="bigBtn" type="button" id="fGalSave" disabled>Salvar selecionadas</button></div></div>
   </div>
@@ -1972,7 +1972,7 @@ renderGps(Loc.gps);
       const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
       await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null});
       await galCount();
-      okToast(`✓ Foto guardada${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
+      okToast(`✓ Guardada em Fotos do app${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
     finally{busy=false;$('fBusy').hidden=true}}
   function shoot(){const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
@@ -1999,6 +1999,7 @@ renderGps(Loc.gps);
     grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><img src="${URL.createObjectURL(f.blob)}" alt=""><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button><i class="${f.saved?'ok':''}">${f.saved?'salva no aparelho':'só no app'}</i><span>${new Date(f.t).toLocaleString('pt-BR')}${f.stake?' · '+f.stake:''}</span></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
+    const np=GAL.filter(f=>!f.saved).length;$('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: toque em "Não salvas no aparelho" e depois em "Salvar selecionadas" › Salvar Imagens.`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
     selUi();$('fGal').hidden=false;stopCam()}
   function confirmDel(n,txt){return new Promise(res=>{$('cfTxt').textContent=txt||`${n} foto${n>1?'s serão removidas':' será removida'} do armazenamento do app. Essa ação não pode ser desfeita.`;
     $('cfYes').textContent=n>1?`Excluir ${n} fotos`:'Excluir';$('confModal').hidden=false;const done=v=>{$('confModal').hidden=true;res(v)};
@@ -2006,6 +2007,7 @@ renderGps(Loc.gps);
   $('gSelAll').onclick=()=>{GAL.forEach(f=>SEL.add(f.id));selUi()};
   $('gSelRec').onclick=()=>{const lim=Date.now()-15*60000;SEL.clear();GAL.forEach(f=>{if(f.t>=lim)SEL.add(f.id)});selUi();if(!SEL.size)$('fGalMsg').textContent='Nenhuma foto tirada nos últimos 15 minutos.'};
   $('gSelNone').onclick=()=>{SEL.clear();selUi()};
+  $('gSelPend').onclick=()=>{SEL.clear();GAL.forEach(f=>{if(!f.saved)SEL.add(f.id)});selUi();if(!SEL.size)$('fGalMsg').textContent='Todas as fotos já foram salvas no aparelho.'};
   $('fGalBtn').onclick=openGal;
   $('fGalClose').onclick=()=>{$('fGal').hidden=true;$('fGalMenu').hidden=true;startCam()};
   $('fGalMenuBtn').onclick=()=>{const m=$('fGalMenu');m.hidden=!m.hidden;$('fGalMenuBtn').setAttribute('aria-expanded',!m.hidden)};
@@ -2024,7 +2026,8 @@ renderGps(Loc.gps);
     catch(e){m.textContent='O navegador bloqueou o download.'}};
   Router.onInit('foto',()=>{});
   const galOpen=()=>!$('fGal').hidden;
-  on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if(!galOpen())startCam();gpsUi()}else stopCam()});
+  on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if(!galOpen())startCam();gpsUi();
+    if(!store.get('fotoGalInfo',false)){store.set('fotoGalInfo',true);setTimeout(()=>msg('info','Onde as fotos ficam:',' cada foto é guardada no botão "Fotos" deste app. O navegador do iPhone não permite gravar direto no app Fotos; para isso use "Salvar selecionadas" (várias de uma vez).'),600)}}else stopCam()});
   document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if(!galOpen())startCam()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('noteModal').hidden=true;$('fGalMenu').hidden=true}});
 })();
