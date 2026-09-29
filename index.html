@@ -890,7 +890,8 @@ details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:70
 .erow .dsc{font-size:12.5px;line-height:1.25;color:var(--muted);min-width:0}
 .erow .dsc b{display:block;color:var(--ink);font-size:13px}
 .erow input[type=number]{min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 8px;width:100%;box-sizing:border-box;text-align:right}
-.erow label.no{grid-column:2 / -1;font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
+.erow .opts{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:4px 14px}
+.erow label.no{font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
 .erow.miss{border-color:var(--warn);background:var(--warn-bg)}
 .erow.excl{opacity:.6}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
@@ -1123,8 +1124,8 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
       <form class="card" id="cForm" novalidate>
         <h2>Trecho e parâmetros</h2>
         <div class="form">
-          <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000"><span class="err" id="eKmA"></span></div>
-          <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000"><span class="err" id="eKmB"></span></div>
+          <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000 ou 236000"><span class="err" id="eKmA"></span></div>
+          <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000 ou 237000"><span class="err" id="eKmB"></span></div>
           <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option></select></div>
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
@@ -1225,7 +1226,9 @@ const Data=(function(){
   function nameAt(s){let i=Math.floor((s-ODO0)/20+1e-9);i=Math.max(0,Math.min(N-1,i));let d=s-R[i][3];if(Math.round(d)>=20&&i+1<N){i++;d=s-R[i][3]}return fmtName(i,Math.max(0,d))}
   function parseKm(txt){const t=String(txt||'').trim().replace(/\s/g,'');if(!t)return {err:'Informe o km.'};
     let m=t.match(/^(\d{1,3})\+(\d{1,4}(?:[.,]\d+)?)$/),km,o;
-    if(m){km=+m[1];o=parseFloat(m[2].replace(',','.'))}else{m=t.match(/^(\d{1,3})$/);if(!m)return {err:'Use o formato 236+300.'};km=+m[1];o=null}
+    if(m){km=+m[1];o=parseFloat(m[2].replace(',','.'))}
+    else if((m=t.match(/^(\d{3})[.,]?(\d{3,4})$/))){km=+m[1];o=+m[2]} // 235600, 235.600 ou 235,600 → 235+600
+    else{m=t.match(/^(\d{1,3})$/);if(!m)return {err:'Use 236+300 ou 236300.'};km=+m[1];o=null}
     const f=KM_FIRST.get(km),l=KM_LAST.get(km);if(f==null)return {err:`O km ${km} não está no trecho (164+700 a 303+800).`};
     const fo=splitName(R[f][0])[1],lo=splitName(R[l][0])[1]+20;if(o==null)o=fo;
     if(o<fo)return {err:`O km ${km} começa em ${km}+${String(fo).padStart(3,'0')} neste trecho.`};
@@ -1587,7 +1590,7 @@ renderGps(Loc.gps);
   const filled=v=>v!==''&&v!=null;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
-    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1596,12 +1599,14 @@ renderGps(Loc.gps);
   $('cEsp').innerHTML=PAVE_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
       <span class="dsc"><b>${inf.desc}</b>${inf.esp?'espessura da solução '+inf.esp:inf.param?'parâmetro no R08: '+inf.param:'sem espessura na base'}</span>
       <input type="number" inputmode="decimal" step="0.1" min="0" aria-label="Espessura de CBUQ de ${c} em cm" placeholder="cm" value="${S.esp[c]??''}">
-      <label class="no"><input type="checkbox" ${S.excl[c]?'checked':''}> não leva CBUQ</label></div>`}).join('');
-  $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,inp=row.querySelector('input[type=number]'),chk=row.querySelector('input[type=checkbox]');
+      <div class="opts"><label class="no"><input type="checkbox" data-k="show" ${S.show[c]===false?'':'checked'}> exibir no resumo e nos panos</label>
+      <label class="no"><input type="checkbox" data-k="excl" ${S.excl[c]?'checked':''}> não leva CBUQ</label></div></div>`}).join('');
+  $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,inp=row.querySelector('input[type=number]'),chk=row.querySelector('input[data-k=excl]'),shw=row.querySelector('input[data-k=show]');
+    shw.addEventListener('change',()=>{S.show[c]=shw.checked;save();cadFlag();if(S.done)calc(false)});
     inp.addEventListener('input',()=>{S.esp[c]=inp.value;save();cadFlag();if(S.done)calc(false)});
     chk.addEventListener('change',()=>{S.excl[c]=chk.checked;save();cadFlag();if(S.done)calc(false)})});
   function cadFlag(){const missW=['F1','F23','AC'].filter(k=>!(num(S.w[k])>0)).length;let missE=0;
-    $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c;const ok=S.excl[c]||num(S.esp[c])>0;row.classList.toggle('miss',!ok);row.classList.toggle('excl',!!S.excl[c]);if(!ok)missE++});
+    $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c;const hid=S.show[c]===false,ok=hid||S.excl[c]||num(S.esp[c])>0;row.classList.toggle('miss',!ok);row.classList.toggle('excl',!!S.excl[c]||hid);if(!ok)missE++});
     const parts=[];if(missW)parts.push(`${missW} largura${missW>1?'s':''}`);if(missE)parts.push(`${missE} espessura${missE>1?'s':''}`);
     $('cCadFlag').textContent=parts.length?parts.join(' e ')+' sem valor':'completo';$('cCadFlag').style.color=parts.length?'':'var(--ok)'}
   cadFlag();
@@ -1624,11 +1629,15 @@ renderGps(Loc.gps);
     if(perda!=null&&(isNaN(perda)||perda<0||perda>100)){fieldErr('ePerda','Use um percentual entre 0 e 100.');bad=true}
     if(bad){out.innerHTML=`<div class="alert warn"><b>Corrija os campos destacados para calcular.</b>O km aceita o formato rodoviário, por exemplo 236+300, dentro do trecho de 164+700 a 303+800.</div>`;return}
     if(densWarn)fieldErr('eDens',densWarn),F.dens.setAttribute('aria-invalid','false');
+    [[F.kmA,A,'kmA'],[F.kmB,B,'kmB']].forEach(([el,P,k])=>{if(document.activeElement!==el&&el.value!==P.name){el.value=P.name;S[k]=P.name;save()}});
     const nIn=[A.name,B.name];let sA=A.s,sB=B.s,nA=A.name,nB=B.name,swapped=false;if(sA>sB){[sA,sB]=[sB,sA];[nA,nB]=[nB,nA];swapped=S.sent!=='D'}
     if(S.sent==='D'&&!(A.s>B.s))nIn.reverse(); // no decrescente o trecho vai da estaca maior para a menor
+    const hidden=new Map();
     const rows=[];
     for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN')continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+      const hid=S.show[p.code]===false;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;
+      if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
       const len=b-a,w=num(S.w[L0.grp]),excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]);
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
@@ -1642,7 +1651,8 @@ renderGps(Loc.gps);
     rows.sort(cmp[ordem]);
     const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor'}[ordem];
     const scope=`${S.pista==='ALL'?'todas as faixas':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
-    if(!rows.length){out.innerHTML=`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
+    const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}. Marque de novo em Cadastro de larguras e espessuras.</div>`:'';
+    if(!rows.length){out.innerHTML=hidTxt+`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
     const valid=rows.filter(r=>!r.excl),inc=valid.filter(r=>r.miss.length),comp=valid.filter(r=>!r.miss.length),nExcl=rows.length-valid.length;
     const sum=(arr,k)=>arr.reduce((s,r)=>s+(r[k]||0),0);
     const totLen=sum(rows,'len'),totA=sum(comp,'area'),totV=sum(comp,'vol'),totT=dens>0?sum(comp,'t'):null;
@@ -1651,7 +1661,7 @@ renderGps(Loc.gps);
     const bySol=new Map();for(const r of rows){const k=r.p.code;if(!bySol.has(k))bySol.set(k,{info:r.p.info,n:0,len:0,area:0,vol:0,t:0,inc:0,excl:r.excl});const o=bySol.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.vol+=r.vol;o.t+=r.t||0}
     const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
-    let h='';
+    let h=hidTxt;
     if(swapped)h+=`<div class="alert info">O km inicial era maior que o final; para ${S.sent==='C'?'o sentido crescente':'os dois sentidos'} o intervalo foi considerado de ${nA} a ${nB}.</div>`;
     if(partial||dens==null){const det=[missW.length?`Falta largura: ${missW.join(', ')}.`:'',missE.length?`Falta espessura de CBUQ: ${missE.join(', ')}.`:'',dens==null?'Sem densidade, as toneladas não são calculadas.':''].filter(Boolean).join(' ');
       h+=`<div class="alert warn"><b>${partial?`Resultado incompleto: ${inc.length} de ${valid.length} panos têm dados ausentes e não entram nos totais.`:'Informe a densidade para obter as toneladas de CBUQ.'}</b>${det} Preencha em "Cadastro de larguras e espessuras".</div>`}
