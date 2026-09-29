@@ -26,8 +26,8 @@ b2=body.replace('<div id="app">','</head>\n<body>\n<div id="app">',1)
 open('site/index.html','w').write(head+b2+'\n</body>\n</html>\n')
 json.dump({"name":"Localizador de Estacas","short_name":"Estacas","start_url":"./","display":"standalone","background_color":"#1A1E1C","theme_color":"#1A1E1C",
  "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]},open('site/manifest.webmanifest','w'),ensure_ascii=False)
-open('site/sw.js','w').write('''const C='estacas277-v4';
-const CORE=['./','index.html','manifest.webmanifest','icon-192.png','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'];
+open('site/sw.js','w').write('''const C='estacas277-v5';
+const CORE=['./','index.html','manifest.webmanifest','icon-192.png','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js','https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='tiles277').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{const u=e.request.url;if(e.request.method!=='GET')return;
