@@ -975,6 +975,10 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .rtool{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:var(--plate);color:var(--plate-ink);flex-wrap:wrap}
 .rtool b{flex:1;min-width:120px;font:700 14px var(--body);letter-spacing:.1em;text-transform:uppercase}
 .rtool button{min-height:44px;border-radius:10px;border:1px solid var(--plate-line);background:var(--plate-2);color:var(--plate-ink);font:700 14px var(--body);padding:0 14px;cursor:pointer}
+.rtype{display:flex;align-items:center;gap:0;border:1px solid var(--plate-line);border-radius:10px;overflow:hidden;order:9;flex-basis:100%}
+.rtype span{font:700 12px var(--body);color:var(--plate-muted);padding:0 10px;letter-spacing:.06em;text-transform:uppercase}
+.rtype button{flex:1;border:0!important;border-radius:0!important;background:transparent!important;color:var(--plate-muted)!important}
+.rtype button[aria-pressed="true"]{background:#C8101A!important;color:#fff!important}
 .rtool button.go2{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .rmsg2{padding:8px 12px;background:#10263F;color:#CFE3FF;font-size:13.5px;line-height:1.4}
 .rscroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px}
@@ -1110,6 +1114,41 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
   .nside{break-after:avoid}
   .ptab > thead{display:table-header-group}
 }
+
+/* ===== relatório simplificado ===== */
+.sr{--nr:#C8101A;--nk:#1A1A1A;--ng:#6B6B6B;--nl:#F2F2F2;--nb:#D9D9D9;font-family:var(--body);color:#1A1A1A;font-size:12.5px}
+.sr-h{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border-bottom:3px solid var(--nr);padding-bottom:6px}
+.sr-h img{height:30px;width:auto}.sr-h h1{margin:0;text-align:center;font:700 19px var(--body)}.sr-h small{display:block;text-align:center;color:var(--ng);font-size:11px}
+.sr-top{display:grid;grid-template-columns:.9fr 1.1fr;gap:8px;margin-top:8px}
+.sr-id{border:1px solid var(--nb);border-left:5px solid var(--nr);border-radius:6px;padding:6px 9px}
+.sr-id .d{color:var(--nr);font:700 16px var(--cond);text-transform:uppercase;display:block}
+.sr-id span,.sr-tp span,.sr-us span{display:block;font:700 9.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ng)}
+.sr-id b{font:700 15px var(--cond)}.sr-id b.o{font:600 12px var(--body)}
+.sr-tp{background:var(--nl);border:1px solid var(--nb);border-radius:6px;padding:6px 9px}.sr-tp.un{background:#FDEDEE;border-color:var(--nr)}.sr-tp.un span{color:var(--nr)}
+.sr-tp b{font:700 17px var(--cond);display:block}.sr-tp p{margin:1px 0 0;font-size:12px;line-height:1.35;white-space:pre-wrap}
+.sr-mid{display:grid;grid-template-columns:1.8fr 1fr;gap:8px;margin-top:8px}
+table.sr-ht{border-collapse:collapse;width:100%;border:1px solid var(--nb);border-radius:6px}
+.sr-ht th{font:700 9.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ng);text-align:left;padding:3px 6px}
+.sr-ht tbody th{color:var(--nk);font-size:10.5px}.sr-ht td{font:700 18px var(--cond);padding:2px 6px;border-top:1px solid var(--nb)}
+.sr-us{border:1px solid var(--nb);border-radius:6px;overflow:hidden}.sr-us span{background:var(--nr);color:#fff;padding:3px 8px}
+.sr-us div{display:flex;justify-content:space-between;align-items:baseline;padding:2px 8px;border-top:1px solid var(--nb)}.sr-us small{color:var(--ng)}.sr-us b{font:700 18px var(--cond)}
+.sr-go{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-top:8px;background:#FDEDEE;border:2px solid var(--nr);border-radius:8px;padding:6px 8px}
+.sr-go b{background:var(--nr);color:#fff;font:700 20px/1 var(--cond);border-radius:6px;padding:5px 8px}.sr-go p{margin:0;font:700 13px/1.3 var(--body)}
+.sr-warn{margin-top:6px;background:var(--nl);border-radius:6px;padding:4px 8px;font-size:11.5px}
+.sr-tw{overflow-x:auto;margin-top:8px}
+table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numeric:tabular-nums}
+.sr-t th{background:var(--nk);color:#fff;font:700 10px var(--body);padding:4px 5px;white-space:nowrap}
+.sr-t td{border:1px solid var(--nb);padding:3px 5px;text-align:right;white-space:nowrap}.sr-t .l{text-align:left}
+.sr-t td.o{background:var(--nk);color:#fff;font:700 14px var(--cond);text-align:center}.sr-t td.e{font:700 14px var(--cond)}
+.sr-t td.esp{text-align:center;font-weight:700;color:var(--nr)}.sr-t td.q{font:700 14px var(--cond)}.sr-t td.q small{font:500 11px var(--body);color:var(--ng)}
+.sr-t tr.b td{background:var(--nl);text-align:left;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-left:4px solid var(--nr)}.sr-t tr.b span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--ng)}
+.sr-t tr.inc td:not(.o):not(.esp){background:#FAFAFA}
+.sr-bot{margin-top:8px}.sr-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.sr-sum div{border:1px solid var(--nb);border-radius:6px;padding:4px 8px}.sr-sum span{display:block;font:700 9.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ng)}.sr-sum b{font:700 17px var(--cond)}
+.sr-sum .hl{background:var(--nr);border-color:var(--nr);color:#fff}.sr-sum .hl span{color:#fff}
+.sr-sol{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.sr-sol > span{border:1px solid var(--nb);border-radius:6px;padding:2px 6px;font-size:11.5px}
+.sr-note{margin:6px 0 0;font-size:10.5px;color:var(--ng);line-height:1.35}.sr-close{margin-top:8px;border-top:2px solid var(--nk);padding-top:5px;text-align:center;font-size:12.5px}.sr-close b{color:var(--nr)}
+@media (max-width:700px){.sr-top,.sr-mid{grid-template-columns:1fr}.sr-sum{grid-template-columns:repeat(2,minmax(0,1fr))}.sr-h img{height:22px}.sr-h h1{font-size:15px}}
 /* ===== página 4: foto georreferenciada ===== */
 #pFoto{background:#000;color:#fff;display:flex;flex-direction:column;overflow:hidden}
 .fstage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
@@ -1175,7 +1214,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 29/09/2026 00:06 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 29/09/2026 00:15 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1316,7 +1355,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
   </form>
 </div>
 <div id="repView" hidden>
-  <div class="rtool"><b>Programação de serviços</b><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" id="rvClose">Fechar</button></div>
+  <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" id="rvClose">Fechar</button></div>
   <div class="rmsg2" id="rvMsg" hidden></div>
   <div class="rscroll"><div id="repDoc"></div></div>
 </div>
@@ -2004,7 +2043,7 @@ renderGps(Loc.gps);
     cloud:'<svg viewBox="0 0 24 24" width="30" height="30"><path d="M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 9.1 4.5 4.5 0 0 0 7 18z" fill="#6B6B6B"/></svg>',
     rain:'<svg viewBox="0 0 24 24" width="30" height="30"><path d="M7 15h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 6.1 4.5 4.5 0 0 0 7 15z" fill="#6B6B6B"/><g stroke="#C8101A" stroke-width="2" stroke-linecap="round"><path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3"/></g></svg>',
     bad:'<svg viewBox="0 0 24 24" width="30" height="30"><path d="M7 14h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.2 5.1 4.5 4.5 0 0 0 7 14z" fill="#4A4A4A"/><path d="M12.5 14l-3 5h2.5l-1 4 4-6h-2.6l1.6-3z" fill="#C8101A"/></svg>'};
-  function showReport(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
+  function showReportFull(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
     if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
     const head=`<div class="nh"><img src="${LOGOS.neo}" alt="Neovia"><img class="r" src="${LOGOS.via}" alt="Via Araucária"></div><h1 class="nt">${M.title}</h1><div class="ns">${esc(M.subtitle)}</div><div class="nl"></div>`;
@@ -2025,11 +2064,113 @@ renderGps(Loc.gps);
     // cabeçalho no <thead>: a impressão repete em todas as páginas
     $('repDoc').innerHTML=`<table class="ptab"><thead><tr><td>${head}</td></tr></thead><tbody><tr><td>${h}</td></tr></tbody></table>`;
     $('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0;if(!miss.length)preparePdf()}
+
+  /* ===== Relatório Simplificado (modelo separado, 1 página) ===== */
+  const ABRV={FF:'Fres. funcional',FE:'Fres. estrutural',FS:'Fres. superficial',REC:'Reciclagem',PA:'Preench. acost.',RP:'Reparo profundo',RF:'Sigla R08'};
+  const abrv=code=>{const f=Data.info(code).fam;return ABRV[f]||Data.info(code).desc};
+  const faixaAb=l=>l.replace('Acostamento','Acost.').replace('Faixa ','F');
+  function simpRows(M){const out=[];for(const s of M.sides){out.push({band:true,title:s.title,sub:s.sub});for(const p of s.panos)out.push(p)}return out}
+  function showReportSimple(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
+    if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
+    const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
+    const hr=M.horarios;
+    let h=`<div class="sr"><div class="sr-h"><img src="${LOGOS.neo}" alt="Neovia"><div><h1>${M.title}</h1><small>${esc(M.subtitle)} · resumo</small></div><img src="${LOGOS.via}" alt="Via Araucária"></div>
+      <div class="sr-top"><div class="sr-id"><b class="d">${esc(M.date)}</b><div><span>Equipe</span><b>${esc(M.equipe)}</b></div><div><span>Obra</span><b class="o">${esc(M.obra)}</b></div></div>
+      <div class="sr-tp${M.tempo.unst?' un':''}"><span>Previsão · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
+      <div class="sr-mid"><table class="sr-ht"><thead><tr><th></th><th>Café</th><th>DDS</th><th>Saída trecho</th></tr></thead><tbody>
+        <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>Serviço</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
+        <div class="sr-us"><span>Usina</span><div><small>Preparação</small><b>${esc(hr[2].items[0][1])}</b></div><div><small>Início usinagem</small><b>${esc(hr[2].items[1][1])}</b></div></div></div>
+      <div class="sr-go"><b>1º</b><p>${esc(M.start)}</p></div>
+      ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
+      <div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
+      ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="11">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
+        <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:#fff"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
+        <div class="sr-sol">${M.sol.map(o=>`<span>${pill(o)} ${o.line.replace(/ panos?/,'p')} · <b>${o.val}</b></span>`).join('')}</div></div>
+      ${M.perda?`<p class="sr-note"><b>${M.perda}</b></p>`:''}<p class="sr-note">${esc(M.note)}</p>
+      <div class="sr-close">${M.close[0]} <b>${M.close[1]}</b></div></div>`;
+    $('repDoc').innerHTML=h;$('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0;if(!miss.length)preparePdf()}
+  async function makePdfSimple(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
+    const {jsPDF}=window.jspdf;const W=210,H0=297,Mg=9,CW=W-2*Mg;
+    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255];
+    const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/×/g,'x').replace(/÷/g,'/').replace(/m²/g,'m2').replace(/m³/g,'m3');
+    const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+    const PT=0.3528;const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
+    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);const rows=simpRows(M);
+    // desenha com escala s; se não couber em 1 página, reduz espaçamentos e fontes até o mínimo legível
+    const draw=(s,H)=>{const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
+      const font=(z,b)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(z*s)};
+      const lh=z=>z*s*PT*1.25;
+      const para=(str,x,yy,w,z,o={})=>{font(z,o.b);const ls=doc.splitTextToSize(clean(str),w);doc.setTextColor(...(o.c||INK));ls.forEach((l,k)=>doc.text(l,o.a==='right'?x+w:o.a==='center'?x+w/2:x,yy+z*s*PT+k*lh(z),o.a?{align:o.a}:undefined));return ls.length*lh(z)};
+      const hP=(str,w,z,b)=>{font(z,b);return doc.splitTextToSize(clean(str),w).length*lh(z)};
+      const box=(x,yy,w,h,{fill,stroke,lw=0.3,r=1.5}={})=>{if(fill)doc.setFillColor(...fill);if(stroke){doc.setDrawColor(...stroke);doc.setLineWidth(lw)}doc.roundedRect(x,yy,w,h,r,r,fill&&stroke?'FD':fill?'F':'S')};
+      const g=3*s;let y=Mg;
+      // cabeçalho
+      const lg=9*s;doc.addImage(LOGOS.neo,'PNG',Mg,y,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-Mg-lg*aV,y,lg*aV,lg,'via','FAST');
+      para(M.title,Mg,y+0.5,CW,14,{b:true,a:'center'});para(M.subtitle+' · resumo',Mg,y+0.5+lh(14)+0.6,CW,7.5,{c:MUT,a:'center'});
+      y+=Math.max(lg,lh(14)+lh(7.5)+1)+2;doc.setFillColor(...RED);doc.rect(Mg,y,CW,0.8,'F');y+=0.8+g;
+      // linha 1: identificação | previsão do tempo (lado a lado)
+      {const w1=CW*0.42,w2=CW-w1-g,pad=2.6*s;const hId=pad+lh(12)+1+lh(6)+hP(M.equipe,w1-2*pad-2,11,true)+0.8+lh(6)+hP(M.obra,w1-2*pad-2,8.5,false)+pad;
+        const un=M.tempo.unst,hT=pad+lh(6)+hP(M.tempo.status,w2-2*pad,12,true)+0.8+hP(M.tempo.msg,w2-2*pad,8.5,false)+pad;const h=Math.max(hId,hT);
+        box(Mg,y,w1,h,{stroke:LINE});doc.setFillColor(...RED);doc.roundedRect(Mg,y,1.8,h,0.9,0.9,'F');let yy=y+pad,x=Mg+pad+2;
+        yy+=para(M.date.toUpperCase(),x,yy,w1-2*pad-2,12,{b:true,c:RED})+1;yy+=para('EQUIPE',x,yy,w1,6,{b:true,c:MUT});yy+=para(M.equipe,x,yy,w1-2*pad-2,11,{b:true})+0.8;yy+=para('OBRA',x,yy,w1,6,{b:true,c:MUT});para(M.obra,x,yy,w1-2*pad-2,8.5,{});
+        const x2=Mg+w1+g;box(x2,y,w2,h,{fill:un?PINK:LIGHT,stroke:un?RED:LINE,lw:un?0.6:0.3});yy=y+pad;
+        yy+=para(`PREVISÃO DO TEMPO · ${M.tempo.label.toUpperCase()}`,x2+pad,yy,w2-2*pad,6,{b:true,c:un?RED:MUT});yy+=para(M.tempo.status,x2+pad,yy,w2-2*pad,12,{b:true})+0.8;para(M.tempo.msg,x2+pad,yy,w2-2*pad,8.5,{});y+=h+g}
+      // linha 2: horários das equipes | usina
+      {const hr=M.horarios,w1=CW*0.64,w2=CW-w1-g,rh=lh(12)+2.2*s,hh=lh(6.5)+2*s,h=hh+2*rh+1.5*s;
+        box(Mg,y,w1,h,{stroke:LINE});const c0=26*s,cw=(w1-c0-4)/3;['Café da manhã','DDS','Saída p/ trecho'].forEach((k,i)=>para(k.toUpperCase(),Mg+2+c0+i*cw,y+1.2*s,cw,6.5,{b:true,c:MUT}));
+        [hr[0],hr[1]].forEach((b,r)=>{const yy=y+hh+r*rh;doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.line(Mg+2,yy,Mg+w1-2,yy);para(b.title.replace('Equipe de ','').toUpperCase(),Mg+2,yy+1.4*s,c0,7.5,{b:true});
+          b.items.forEach(([k,v],i)=>para(v,Mg+2+c0+i*cw,yy+0.9*s,cw,12,{b:true}))});
+        const x2=Mg+w1+g;box(x2,y,w2,h,{stroke:LINE});doc.setFillColor(...RED);doc.rect(x2,y,w2,hh,'F');para('USINA',x2+2,y+1.2*s,w2-4,7,{b:true,c:WH});
+        hr[2].items.forEach(([k,v],i)=>{const yy=y+hh+i*rh;para(k,x2+2,yy+1.6*s,w2*0.55,7.5,{c:MUT});para(v,x2+2,yy+0.9*s,w2-4,12,{b:true,a:'right'})});y+=h+g}
+      // início da execução
+      {const w=CW-18*s,h=Math.max(10*s,hP(M.start,w,9,true)+4*s);box(Mg,y,CW,h,{fill:PINK,stroke:RED,lw:0.6});doc.setFillColor(...RED);doc.roundedRect(Mg+2,y+(h-7.5*s)/2,11*s,7.5*s,1,1,'F');
+        para('1º',Mg+2,y+(h-7.5*s)/2+1.2*s,11*s,12,{b:true,c:WH,a:'center'});para(M.start,Mg+15*s,y+2*s,w,9,{b:true});y+=h+g}
+      if(M.warn){const h=hP(M.warn,CW-4,7.5,false)+2.4*s;box(Mg,y,CW,h,{fill:LIGHT,r:1});para(M.warn,Mg+2,y+1.2*s,CW-4,7.5,{});y+=h+g*0.7}
+      // tabela de panos
+      const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:11,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
+        [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
+         {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:WH,fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
+         r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),clean(r.area.replace(' m²','')),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}}]);
+      doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','Área (m2)','CBUQ (t)']],body,
+        theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
+        headStyles:{fillColor:INK,textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
+        columnStyles:{0:{cellWidth:10*s},1:{cellWidth:12*s},2:{cellWidth:13*s},3:{halign:'right'},4:{halign:'right'},6:{cellWidth:14*s},7:{halign:'right'},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',cellWidth:17*s}},
+        didParseCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(raw.raw.code)+2;d.cell.styles.cellPadding={top:1.1*s,bottom:1.1*s,left:1.2*s+tw+1.4,right:1.2*s}}},
+        didDrawCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){const p=raw.raw;doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(p.code)+2;
+          const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'});
+}}});
+      y=doc.lastAutoTable.finalY+g;
+      // rodapé: resumo + por solução + nota + mensagem final
+      {const n=M.tiles.length,tw=(CW-(n-1)*2)/n,h=lh(6)+lh(12)+3*s;M.tiles.forEach(([k,v,hl],i)=>{const x=Mg+i*(tw+2);if(hl)box(x,y,tw,h,{fill:RED});else box(x,y,tw,h,{stroke:LINE});
+          para(k.toUpperCase(),x+2,y+1.2*s,tw-4,6,{b:true,c:hl?WH:MUT});para(v,x+2,y+1.2*s+lh(6)+0.5,tw-4,12,{b:true,c:hl?WH:INK})});y+=h+g*0.8}
+      {let x=Mg;const ch=lh(8)+1.6*s;for(const o of M.sol){const txt=clean(`${o.line.replace(/ panos?/,'p')} · ${o.val}`);font(8,false);const w0=doc.getTextWidth(txt);font(6.8,true);const tw=doc.getTextWidth(o.code)+2;const w=tw+w0+4;
+          if(x+w>Mg+CW){x=Mg;y+=ch+1}box(x,y,w,ch,{stroke:LINE,r:1});doc.setFillColor(...hex(o.color));doc.roundedRect(x+1,y+0.8*s,tw,ch-1.6*s,0.6,0.6,'F');doc.setTextColor(...hex(o.ink));doc.text(o.code,x+1+tw/2,y+ch/2+0.9*s,{align:'center'});
+          font(8,false);doc.setTextColor(...INK);doc.text(txt,x+tw+2.5,y+ch/2+1*s);x+=w+1.5}y+=ch+g*0.8}
+      if(M.perda)y+=para(M.perda,Mg,y,CW,8,{b:true})+1;
+      y+=para(M.note,Mg,y,CW,6.5,{c:MUT})+2*s;
+      doc.setDrawColor(...INK);doc.setLineWidth(0.4);doc.line(Mg,y,W-Mg,y);y+=1.5*s;
+      font(9,false);const c0=clean(M.close[0]),c1=clean(M.close[1]);const w0=doc.getTextWidth(c0+'  ');font(9,true);const w1=doc.getTextWidth(c1);const x0=Mg+(CW-w0-w1)/2;
+      font(9,false);doc.setTextColor(...INK);doc.text(c0,x0,y+9*s*PT+0.5);font(9,true);doc.setTextColor(...RED);doc.text(c1,x0+w0,y+9*s*PT+0.5);y+=lh(9)+2;
+      font(6.5,false);doc.setTextColor(...MUT);doc.text('Neovia Engenharia · Localizador de Estacas · relatório simplificado',Mg,H-4);
+      return {doc,y}};
+    // a descrição da solução é escrita pelo autotable depois da etiqueta: reserva o espaço com espaços iniciais
+    const fits=r=>r.doc.getNumberOfPages()===1&&r.y<=r.H-6;
+    let res=null;for(const s of [1,0.95,0.9,0.85,0.8,0.76,0.72]){res=draw(s,H0);res.H=H0;if(fits(res))break}
+    if(!fits(res)){ // muitos panos: continua em 1 página, estendendo a altura da página (A4 de largura)
+      const probe=draw(0.72,H0*12);const hNeed=Math.ceil(probe.y+10);res=draw(0.72,hNeed);res.H=hNeed}
+    return res.doc.output('blob')}
+  const setType=tp=>{PROG.type=tp;store.set('repType',tp);document.querySelectorAll('.rtype button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rt===tp));PROG.pdfP=null;PROG.pdfErr=null};
+  function showReport(){if(!PROG.type)PROG.type=store.get('repType','full');setType(PROG.type);(PROG.type==='simp'?showReportSimple:showReportFull)()}
+  document.querySelectorAll('.rtype button').forEach(b=>b.onclick=()=>{setType(b.dataset.rt);showReport()});
   $('rvClose').onclick=()=>$('repView').hidden=true;
   $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
   const isMobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   // O PDF é preparado assim que a pré-visualização abre: o toque em Imprimir/Gerar PDF usa o arquivo pronto
-  function preparePdf(){PROG.pdfP=makePdf().catch(e=>{PROG.pdfErr=e;return null})}
+  function preparePdf(){PROG.pdfP=(PROG.type==='simp'?makePdfSimple():makePdf()).catch(e=>{PROG.pdfErr=e;return null})}
   async function getPdf(){if(!PROG.pdfP)preparePdf();const b=await PROG.pdfP;if(!b)throw PROG.pdfErr||new Error('falha ao gerar');return b}
   $('rvPrint').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Preparando a impressão…';
     let blob;try{blob=await getPdf()}catch(e){msg.textContent='Não foi possível preparar a impressão ('+(e.message||e)+').';return}
@@ -2043,7 +2184,7 @@ renderGps(Loc.gps);
     fr.onload=()=>{try{fr.contentWindow.focus();fr.contentWindow.print();msg.textContent='Janela de impressão aberta.'}catch(e){const w=window.open(u,'_blank');msg.textContent=w?'O PDF abriu em outra aba; imprima por lá (Ctrl+P).':'Permita pop-ups ou use Gerar PDF.'}};
     fr.src=u;document.body.appendChild(fr)};
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
-  const pdfName=()=>{const I=PROG.info;return `Programacao_${I.data}_${I.equipe.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_')}.pdf`};
+  const pdfName=()=>{const I=PROG.info;return `Programacao_${I.data}_${I.equipe.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_')}${PROG.type==='simp'?'_simplificado':''}.pdf`};
   async function makePdf(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     const {jsPDF}=window.jspdf;
