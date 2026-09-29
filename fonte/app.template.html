@@ -260,6 +260,36 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:15px;line-height:1.5}
 .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
 
+
+/* ===== página 4: foto georreferenciada ===== */
+#pFoto{background:#000;color:#fff;display:flex;flex-direction:column;overflow:hidden}
+.fstage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+#fCanvas{display:block;max-width:100%;max-height:100%}
+#fVideo{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.ftop{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 12px 18px;background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,0))}
+.ftop h1{margin:0;font:700 14px var(--body);letter-spacing:.12em;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#fMsg{position:absolute;top:70px;left:0;right:0;z-index:6}
+.fempty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;color:#C9D1CC;font-size:15px;line-height:1.45}
+.fempty b{color:#fff;font-size:18px}
+.fbottom{padding:10px 12px 12px;background:#0A0C0B;display:grid;gap:10px;border-top:1px solid #1E2421}
+.fnote{display:flex;align-items:center;gap:10px}
+.fnote label{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#F2B705}
+.fnote input{flex:1;min-width:0;min-height:48px;border-radius:12px;border:1px solid #333B36;background:#161A18;color:#fff;font:500 16px var(--body);padding:0 12px}
+.fctl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.fsmall{font:600 13px var(--body);color:#A9B3AD;line-height:1.3;font-variant-numeric:tabular-nums}
+.fsmall b{color:#fff;display:block;font:700 18px var(--cond)}
+.shutter{width:80px;height:80px;border-radius:50%;border:5px solid #fff;background:#fff;box-shadow:inset 0 0 0 4px #0A0C0B;cursor:pointer;padding:0}
+.shutter:active{transform:scale(.94)}
+.shutter:disabled{opacity:.4}
+.fpick{justify-self:end;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:12px;border:1px solid #3A423D;color:#fff;font:600 13px/1.2 var(--body);padding:4px 12px;cursor:pointer}
+#fReview{position:absolute;inset:0;z-index:20;background:#000;display:flex;flex-direction:column}
+#fReview .rimg{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:8px}
+#fReview img{max-width:100%;max-height:100%;object-fit:contain;-webkit-touch-callout:default}
+.rbar{padding:10px 12px 14px;background:#0A0C0B;display:grid;gap:10px}
+.rbtns{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.rmsg{font-size:14px;line-height:1.4;color:#C9D1CC;margin:0}
+.rmsg.warn{color:#FFE9B0}.rmsg.ok{color:#9CF0C2}
+#fBusy{position:absolute;inset:0;z-index:15;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font:600 16px var(--body)}
 @media (max-width:900px){
   #pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #panel{border-left:0;border-top:1px solid var(--line);height:44vh;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);transition:height .2s}
@@ -294,6 +324,7 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
     <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
+    <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
   <div class="dfoot">6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
@@ -379,6 +410,35 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
       </div>
     </div>
   </aside>
+</section>
+
+<!-- ===== 4. Foto georreferenciada ===== -->
+<section class="page" id="pFoto" data-page="foto" hidden>
+  <div class="fstage" id="fStage">
+    <canvas id="fCanvas" aria-label="Prévia da câmera com marcas-d'água"></canvas>
+    <video id="fVideo" playsinline muted autoplay></video>
+    <div class="fempty" id="fEmpty" hidden></div>
+    <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
+    <div class="msg" id="fMsg" hidden></div>
+    <div id="fBusy" hidden>Obtendo localização da foto…</div>
+  </div>
+  <div class="fbottom">
+    <div class="fnote"><label for="fNote">Nota</label><input id="fNote" maxlength="140" autocomplete="off" placeholder="ex.: FF faixa 1 decrescente"></div>
+    <div class="fctl">
+      <div class="fsmall" id="fInfo"></div>
+      <button class="shutter" id="fShot" type="button" aria-label="Capturar foto"></button>
+      <label class="fpick" for="fFile">Câmera do<br>aparelho</label>
+      <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
+    </div>
+  </div>
+  <div id="fReview" hidden>
+    <div class="rimg"><img id="fImg" alt="Foto capturada com as marcas-d'água"></div>
+    <div class="rbar">
+      <p class="rmsg" id="fRevMsg"></p>
+      <div class="rbtns"><button class="ghostBtn" type="button" id="fRedo">Refazer</button><button class="bigBtn" type="button" id="fSave">Salvar na galeria</button></div>
+      <p class="rmsg" id="fSaveMsg">Dica: no iPhone você também pode tocar e segurar a foto e escolher "Salvar em Fotos".</p>
+    </div>
+  </div>
 </section>
 
 <!-- ===== 3. Calculadora de programação ===== -->
@@ -591,7 +651,7 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','calculadora'];const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','calculadora','foto'];const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -955,11 +1015,128 @@ renderGps(Loc.gps);
   Router.onInit('calculadora',()=>{if(S.done)calc(false)});
 })();
 
+/* =====================================================================
+   PÁGINA 4 — Foto georreferenciada
+   ===================================================================== */
+(function FotoPage(){
+  const LOGO_NEO='/*__LOGO_NEOVIA__*/',LOGO_VIA='/*__LOGO_VIA__*/';
+  const imgNeo=new Image(),imgVia=new Image();imgNeo.src=LOGO_NEO;imgVia.src=LOGO_VIA;
+  const video=$('fVideo'),cv=$('fCanvas'),ctx=cv.getContext('2d');
+  let stream=null,raf=0,live=null,liveT=0,busy=false,lastBlob=null,lastName='',lastURL=null;
+  $('fNote').value=store.get('fotoNote','');$('fNote').addEventListener('input',()=>store.set('fotoNote',$('fNote').value));
+  const pad2=n=>String(n).padStart(2,'0');
+  const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  // estaca pela mesma fonte e lógica da página Localização estaca
+  function stakeFor(fix){if(!fix)return {txt:'indisponível (sem GPS)',warn:true};const r=Geo.locate(fix.lat,fix.lon,fix.acc);
+    if(r.outside)return {txt:`fora do trecho (a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} de ${R[r.nearest][0]})`,warn:true};
+    let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
+    return {txt:`${R[i][0]} + ${d} m`,name:R[i][0],warn:false}}
+  function infoFrom(fix,date){const lines=[];const low=fix&&fix.acc>20;
+    lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
+    lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
+    if(low)lines.push({k:'Precisão',v:`±${Math.round(fix.acc)} m (baixa precisão)`,warn:true});
+    if(fix&&fix.stale)lines.push({k:'Posição',v:`última leitura, ${fix.stale} s antes da foto`,warn:true});
+    lines.push({k:'Data',v:fmtDate(date)});
+    const st=stakeFor(fix);lines.push({k:'Estaca',v:st.txt,warn:st.warn});
+    lines.push({k:'Rodovia',v:'BR-277'});
+    const note=$('fNote').value.trim();if(note)lines.push({k:'Nota',v:note,wrap:true});
+    return {lines,stake:st,low,fix}}
+  function liveFix(){const g=Loc.gps,st=Loc.st;if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=5000)return {lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix};return null}
+  // posição do momento da foto: usa leitura com até 3 s; senão pede uma nova ao GPS
+  function freshFix(){const g=Loc.gps,st=Loc.st;const cur=()=>({lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix});
+    if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=3000)return Promise.resolve(cur());
+    const t0=Date.now();
+    return new Promise(res=>{let done=false;const end=v=>{if(!done){done=true;res(v)}};
+      // a primeira leitura nova que chegar (acompanhamento ou pedido avulso)
+      on('position',s=>{if(!done&&s.src==='gps'&&g.lastFix>=t0)end(cur())});
+      if('geolocation' in navigator)navigator.geolocation.getCurrentPosition(p=>end({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()}),()=>{},{enableHighAccuracy:true,maximumAge:0,timeout:7000});
+      setTimeout(()=>{if(done)return;const age=g.lastFix?Math.round((Date.now()-g.lastFix)/1000):Infinity;
+        // parado, o GPS pode não emitir leitura nova: aceita a última de até 20 s e registra a idade
+        if(st.mode==='gps'&&age<=20)end({...cur(),stale:age});else end(null)},7000)})}
+  function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+  function wrap(g,text,maxW,maxLines){const words=text.split(/\s+/);const out=[];let cur='';
+    for(const w of words){const tt=cur?cur+' '+w:w;if(g.measureText(tt).width<=maxW||!cur)cur=tt;else{out.push(cur);cur=w}}if(cur)out.push(cur);
+    if(out.length>maxLines){out.length=maxLines;let l=out[maxLines-1];while(l.length&&g.measureText(l+'…').width>maxW)l=l.slice(0,-1);out[maxLines-1]=l+'…'}return out}
+  // marcas-d'água, proporcionais ao menor lado (foto vertical ou horizontal)
+  function watermark(g,W,H,info){const u=Math.min(W,H),m=Math.round(u*0.03),land=W>H;
+    // logotipos sobre placa branca, proporções preservadas
+    const lh=u*(land?0.075:0.07),pp=lh*0.22;
+    const plate=(img,x,y,alignRight)=>{if(!img.complete||!img.naturalWidth)return;const lw=lh*img.naturalWidth/img.naturalHeight;const pw=lw+pp*2,ph=lh+pp*2;const px=alignRight?x-pw:x;
+      g.save();g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=u*0.012;g.fillStyle='rgba(255,255,255,.94)';rr(g,px,y,pw,ph,pp*0.9);g.fill();g.restore();
+      g.imageSmoothingQuality='high';g.drawImage(img,px+pp,y+pp,lw,lh)};
+    plate(imgNeo,m,m,false);plate(imgVia,W-m,m,true);
+    // bloco de informações (canto inferior direito)
+    const fs=Math.max(12,u*(land?0.03:0.031)),lhT=fs*1.38,bp=fs*0.6,maxW=W*(land?0.46:0.8);
+    const font=`600 ${fs}px Barlow, "Helvetica Neue", Arial, sans-serif`,hfont=`700 ${fs*1.02}px Barlow, "Helvetica Neue", Arial, sans-serif`;
+    g.font=font;const rows=[];
+    for(const l of info.lines){const pre=`${l.k} : `;if(l.wrap){const ww=wrap(g,pre+l.v,maxW-bp*2,3);ww.forEach(t=>rows.push({t,warn:l.warn}))}else{let t=pre+l.v;while(g.measureText(t).width>maxW-bp*2&&t.length>4)t=t.slice(0,-2)+'…';rows.push({t,warn:l.warn})}}
+    const head='Neovia · Via Araucária';g.font=hfont;let bw=g.measureText(head).width;g.font=font;rows.forEach(r=>bw=Math.max(bw,g.measureText(r.t).width));bw=Math.min(maxW,bw+bp*2);
+    const hh=lhT*1.1,bh=hh+rows.length*lhT+bp*0.8,x=W-m-bw,y=H-m-bh;
+    g.save();g.fillStyle='rgba(0,0,0,.62)';rr(g,x,y,bw,bh,fs*0.35);g.fill();g.fillStyle='rgba(0,0,0,.55)';rr(g,x,y,bw,hh,fs*0.35);g.fill();
+    g.fillStyle='#F2B705';g.fillRect(x+bp,y+hh*0.3,fs*0.28,hh*0.4);
+    g.textBaseline='middle';g.fillStyle='#FFFFFF';g.font=hfont;g.fillText(head,x+bp+fs*0.55,y+hh/2);
+    g.font=font;rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp,y+hh+lhT*(k+0.5)+bp*0.2)});g.restore()}
+  function compose(g,src,W,H,info){g.drawImage(src,0,0,W,H);watermark(g,W,H,info)}
+  // prévia ao vivo: mesma função de desenho da foto salva
+  function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth||busy)return;
+    const st=$('fStage'),dpr=Math.min(2,window.devicePixelRatio||1),vw=video.videoWidth,vh=video.videoHeight;
+    const sc=Math.min(st.clientWidth/vw,st.clientHeight/vh);const cw=Math.round(vw*sc*dpr),ch=Math.round(vh*sc*dpr);
+    if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch;cv.style.width=cw/dpr+'px';cv.style.height=ch/dpr+'px'}
+    const now=Date.now();if(!live||now-liveT>500){live=infoFrom(liveFix(),new Date());liveT=now}
+    compose(ctx,video,cw,ch,live)}
+  function msg(kind,title,text){const m=$('fMsg');if(!kind){m.hidden=true;return}m.className='msg '+kind;m.innerHTML=`<div><b>${title}</b>${text}</div>`;m.hidden=false}
+  function gpsUi(){const g=Loc.gps,f=liveFix();const el=$('fGps');
+    if(f){el.className='status '+(f.acc>20?'wait':'on');$('fGpsTxt').textContent=`GPS ±${Math.round(f.acc)} m`}
+    else if(g.status==='waiting'){el.className='status wait';$('fGpsTxt').textContent='Buscando GPS'}
+    else if(g.status==='error'&&g.err&&g.err.code==='denied'){el.className='status err';$('fGpsTxt').textContent='GPS negado'}
+    else if(g.on){el.className='status err';$('fGpsTxt').textContent='Sem sinal'}else{el.className='status';$('fGpsTxt').textContent='GPS desligado'}
+    const s=stakeFor(f);$('fInfo').innerHTML=f?`Estaca<b>${s.name||'—'}</b>${s.warn?s.txt:s.txt.split(' + ')[1]?'+ '+s.txt.split(' + ')[1]:''}`:`Estaca<b>—</b>sem GPS`;
+    if(!stream&&!$('fEmpty').hidden)return;
+    if(g.status==='error'&&g.err&&g.err.code==='denied')msg('bad','Localização negada.',' A foto sairá sem coordenadas e sem estaca. Libere a localização do Safari em Ajustes para registrar a posição.');
+    else if(f&&f.acc>20)msg('warn','Precisão baixa do GPS.',` ±${Math.round(f.acc)} m no momento. A foto registrará essa precisão.`);
+    else if(!f&&g.on)msg('info','Aguardando posição do GPS…',' Se tirar a foto agora, o app tenta obter uma leitura nova antes de gravar.');
+    else msg(null)}
+  on('gps',gpsUi);on('position',()=>{if(Router.cur()==='foto')gpsUi()});
+  async function startCam(){$('fEmpty').hidden=true;
+    if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){camFail('Este navegador não dá acesso direto à câmera.');return}
+    try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:2160}}});
+      video.srcObject=stream;await video.play().catch(()=>{});cancelAnimationFrame(raf);loop();$('fShot').disabled=false}
+    catch(e){camFail(e&&e.name==='NotAllowedError'?'A permissão da câmera foi negada. Libere a câmera do Safari em Ajustes (ou em "aA" › Ajustes do Site). No visualizador do Claude a câmera não é liberada; use o endereço publicado no GitHub Pages.':'Não foi possível abrir a câmera ('+(e&&e.name||'erro')+').')}}
+  function camFail(t){stream=null;$('fShot').disabled=true;cancelAnimationFrame(raf);ctx.clearRect(0,0,cv.width,cv.height);
+    $('fEmpty').innerHTML=`<b>Câmera indisponível</b><span>${t}</span><span>Você ainda pode usar a câmera do aparelho: a foto volta para cá e recebe as marcas-d'água.</span><label class="bigBtn" for="fFile" style="padding:0 22px">Abrir câmera do aparelho</label>`;$('fEmpty').hidden=false}
+  function stopCam(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null}
+  async function finish(src,W,H,date){busy=true;$('fBusy').hidden=false;
+    const fix=await freshFix();const info=infoFrom(fix,date);
+    const out=document.createElement('canvas');out.width=W;out.height=H;const g=out.getContext('2d');compose(g,src,W,H,info);
+    $('fBusy').hidden=true;
+    out.toBlob(b=>{busy=false;if(!b){$('fRevMsg').textContent='Não foi possível gerar a imagem.';return}lastBlob=b;
+      const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';lastName=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
+      if(lastURL)URL.revokeObjectURL(lastURL);lastURL=URL.createObjectURL(b);$('fImg').src=lastURL;
+      const rm=$('fRevMsg');rm.className='rmsg'+(!fix||info.low||info.stake.warn?' warn':'');
+      rm.textContent=fix&&fix.stale&&!info.low?`Sem leitura nova do GPS; usada a última posição, de ${fix.stale} s antes da foto (registrado na imagem).`:!fix?'Foto sem localização: o GPS não respondeu. Coordenadas e estaca ficaram como "indisponível".':info.low?`Localização com baixa precisão (±${Math.round(fix.acc)} m), registrada na foto.`:info.stake.warn?`Estaca: ${info.stake.txt}.`:`Estaca ${info.stake.txt} · GPS ±${Math.round(fix.acc)} m · ${W}×${H} px`;
+      $('fSaveMsg').className='rmsg';$('fSaveMsg').textContent='Dica: no iPhone você também pode tocar e segurar a foto e escolher "Salvar em Fotos".';
+      $('fReview').hidden=false;stopCam()},'image/jpeg',0.95)}
+  $('fShot').onclick=()=>{if(busy||!video.videoWidth)return;const date=new Date(),W=video.videoWidth,H=video.videoHeight;
+    const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);finish(frame,W,H,date)};
+  $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
+    img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date);URL.revokeObjectURL(u)};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
+  $('fRedo').onclick=()=>{$('fReview').hidden=true;lastBlob=null;startCam()};
+  $('fSave').onclick=async()=>{if(!lastBlob)return;const sm=$('fSaveMsg');const file=new File([lastBlob],lastName,{type:'image/jpeg'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]});sm.className='rmsg';sm.textContent='Compartilhamento concluído. Se você escolheu "Salvar Imagem", a foto está no app Fotos; confira lá.';return}
+      catch(e){if(e&&e.name==='AbortError'){sm.className='rmsg warn';sm.textContent='Compartilhamento cancelado: a foto ainda não foi salva. Toque em Salvar e escolha "Salvar Imagem".';return}}}
+    try{const a=document.createElement('a');a.href=lastURL;a.download=lastName;document.body.appendChild(a);a.click();a.remove();
+      sm.className='rmsg warn';sm.textContent='O navegador não permite gravar direto na galeria. Foi solicitado o download do arquivo; confira em Arquivos › Downloads e use Compartilhar › Salvar Imagem. Ou toque e segure a foto acima e escolha "Salvar em Fotos".'}
+    catch(e){sm.className='rmsg warn';sm.textContent='Não foi possível salvar por aqui. Toque e segure a foto acima e escolha "Salvar em Fotos".'}};
+  Router.onInit('foto',()=>{});
+  on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if($('fReview').hidden)startCam();gpsUi()}else stopCam()});
+  document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if($('fReview').hidden)startCam()});
+})();
+
 /* ------------------------------ Início ------------------------------ */
 (function boot(){
   const f=Data.parseKm('196+610');const i=Math.floor((f.s-ODO[0])/20);
   Loc.set((LAT[i]+LAT[i+1])/2+0.00002,(LON[i]+LON[i+1])/2,5,null,null,'init','exemplo');
-  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora'].includes(h)?h:store.get('page','localizacao'));
+  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 return {on,Data,Geo,Loc,Filters,Router};

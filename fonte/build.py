@@ -2,7 +2,9 @@ import json
 t=open('app.template.html',encoding='utf-8').read()
 css=open('package/dist/leaflet.css').read()
 data=open('data.json').read()
-body=t.replace('/*__LEAFLET_CSS__*/',css).replace('/*__DATA__*/',data)
+import base64
+b64=lambda f:'data:image/png;base64,'+base64.b64encode(open(f,'rb').read()).decode()
+body=t.replace('/*__LEAFLET_CSS__*/',css).replace('/*__DATA__*/',data).replace('/*__LOGO_NEOVIA__*/',b64('logo_neovia.png')).replace('/*__LOGO_VIA__*/',b64('logo_via.png'))
 open('estacas-br277.html','w').write(body)
 import os
 os.makedirs('site',exist_ok=True)
@@ -24,7 +26,7 @@ b2=body.replace('<div id="app">','</head>\n<body>\n<div id="app">',1)
 open('site/index.html','w').write(head+b2+'\n</body>\n</html>\n')
 json.dump({"name":"Localizador de Estacas","short_name":"Estacas","start_url":"./","display":"standalone","background_color":"#1A1E1C","theme_color":"#1A1E1C",
  "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]},open('site/manifest.webmanifest','w'),ensure_ascii=False)
-open('site/sw.js','w').write('''const C='estacas277-v3';
+open('site/sw.js','w').write('''const C='estacas277-v4';
 const CORE=['./','index.html','manifest.webmanifest','icon-192.png','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='tiles277').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
