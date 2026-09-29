@@ -308,6 +308,15 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .rclose{margin-top:20px;border-top:2px solid #141715;padding-top:12px;text-align:center;font-size:15px}
 .rclose p{margin:4px 0}
 .rclose b{color:#C41010}
+.rside{margin:14px 0 6px;font:700 13px var(--body);letter-spacing:.08em;text-transform:uppercase;border-left:5px solid #F2B705;padding:4px 8px;background:#F2F4F0}
+.rside span{font-weight:500;letter-spacing:0;text-transform:none;color:#56605A;margin-left:6px}
+.pcard{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;border:1px solid #CFD6CF;border-radius:8px;padding:8px 10px;margin-bottom:6px}
+.pcard.inc{background:#FFF4DB;border-color:#E3A008}
+.po{background:#141715;color:#F2B705;font:700 24px/1 var(--cond);border-radius:6px;padding:8px 0;text-align:center}
+.pe{font:700 20px var(--cond);letter-spacing:.01em}.pe i{font:500 13px var(--body);color:#56605A}
+.pl{font-size:13px;margin-top:2px}.pm{font-size:12px;color:#56605A;margin-top:2px}
+.pt{text-align:right;font:700 22px var(--cond);white-space:nowrap}.pt small{font-size:13px;color:#56605A;margin-left:2px}
+.ptot{margin-top:8px;background:#141715;color:#fff;border-radius:8px;padding:10px 12px;font-size:14px}
 .rstart{margin-top:12px;display:flex;gap:12px;align-items:center;background:#FFF4DB;border:1px solid #E3A008;border-radius:6px;padding:10px 12px}
 .rstart .n{font:700 30px/1 var(--cond);background:#141715;color:#F2B705;border-radius:6px;padding:6px 10px}
 .rstart b{font:700 17px var(--cond)}
@@ -1184,12 +1193,14 @@ renderGps(Loc.gps);
       </div>
       <div class="rstart"><span class="n">1º</span><div>Começar pela <b>pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}</b>, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}). Depois siga a ordem da tabela.</div></div>`;
     if(partial||L.dens==null)h+=`<div class="rwarn"><b>Atenção:</b> ${L.inc.length} pano(s) sem largura ou espessura cadastrada; os totais consideram apenas os panos completos.</div>`;
-    h+=`<h3>Sequência de execução dos panos</h3><div class="rtw"><table class="rt"><thead><tr><th class="l" style="text-align:center">Ordem</th><th class="l">Pista</th><th class="l">Faixa</th><th>Estaca inicial</th><th>Estaca final</th><th class="l">Solução / serviço</th><th>Extensão<small>m</small></th><th>Largura<small>m</small></th><th>Área<small>m²</small></th><th>Espessura<small>cm</small></th><th>Quantidade<small>t CBUQ</small></th></tr></thead><tbody>`;
-    let lastSide=null;
-    for(const r of P.seq){if(r.L0.side!==lastSide){lastSide=r.L0.side;h+=`<tr class="side"><td colspan="11">Pista ${SIDE[lastSide].toLowerCase()} · ${lastSide==='C'?'estacas da menor para a maior':'estacas da maior para a menor'}</td></tr>`}
-      const v=cellVals(r);h+=`<tr class="${!r.excl&&r.miss.length?'inc':''}"><td class="ord">${ordTxt(r.ord)}</td><td class="l">${SIDE[r.L0.side]}</td><td class="l">${r.L0.name}</td><td>${Data.nameAt(r.ini)}</td><td>${Data.nameAt(r.fim)}</td>
-        <td class="l">${tag(r.p.info)} ${r.p.info.desc}</td><td>${v.ext}</td><td>${v.larg}</td><td>${v.area}</td><td>${v.esp}</td><td><b>${v.t}</b></td></tr>`}
-    h+=`</tbody><tfoot><tr><td class="l" colspan="6">Total${partial?' (parcial)':''}: ${P.seq.length} panos</td><td>${nf(L.totLen,1)}</td><td></td><td>${nf(L.totA,1)}</td><td></td><td>${totT==null?'-':nf(totT,2)}</td></tr></tfoot></table></div>`;
+    h+=`<h3>Sequência de execução dos panos</h3>`;let lastSide=null;
+    for(const r of P.seq){if(r.L0.side!==lastSide){lastSide=r.L0.side;h+=`<div class="rside">Pista ${SIDE[lastSide].toLowerCase()} <span>${lastSide==='C'?'estacas da menor para a maior':'estacas da maior para a menor'}</span></div>`}
+      const v=cellVals(r),inf=r.p.info,inc=!r.excl&&r.miss.length;
+      h+=`<div class="pcard${inc?' inc':''}"><div class="po">${ordTxt(r.ord)}</div><div class="pb"><div class="pe">${Data.nameAt(r.ini)} <i>até</i> ${Data.nameAt(r.fim)}</div>
+        <div class="pl">${SIDE[r.L0.side]} · ${r.L0.name} <span class="tag sm" style="background:${inf.color};color:${inf.ink}">${inf.code}</span> ${inf.desc}</div>
+        <div class="pm">${v.ext} m · larg. ${v.larg}${r.w!=null?' m':''} · ${v.area}${r.area!=null?' m²':''} · esp. ${v.esp}${r.e!=null?' cm':''}</div></div>
+        <div class="pt">${r.excl?'<small>não leva CBUQ</small>':inc||r.t==null?'<small>sem dados</small>':`${v.t}<small>t</small>`}</div></div>`}
+    h+=`<div class="ptot">Total${partial?' parcial':''}: <b>${P.seq.length} panos</b> · ${nf(L.totLen,0)} m · <b>${totT==null?'-':nf(totT,2)+' t'}</b></div>`;
     h+=`<h3>Resumo da programação</h3><div class="rsum"><div><span>Panos</span><b>${P.seq.length}</b></div><div><span>Extensão programada</span><b>${nf(L.totLen,1)} m</b></div><div><span>Área total</span><b>${nf(L.totA,1)} m²</b></div><div><span>CBUQ previsto</span><b>${totT==null?'-':nf(totT,2)+' t'}</b></div></div>`;
     if(L.perdaT!=null)h+=`<p class="rnote" style="font-size:13px;color:#141715"><b>Com perdas de ${nf(L.perda,1)}%:</b> + ${nf(L.perdaT,2)} t, total ${nf(totT+L.perdaT,2)} t.</p>`;
     h+=`<h3>Totais por solução / serviço</h3><div class="rtw"><table class="rt"><thead><tr><th class="l">Solução / serviço</th><th>Panos</th><th>Extensão<small>m</small></th><th>Área<small>m²</small></th><th>Quantidade<small>t CBUQ</small></th></tr></thead><tbody>
@@ -1204,55 +1215,83 @@ renderGps(Loc.gps);
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
   async function makePdf(){const P=PROG,L=P.L,I=P.info;
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
-    const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});const W=297,M=10;
-    const imgSize=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i.naturalWidth/i.naturalHeight);i.src=src});
-    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);const lh=11;
-    doc.addImage(LOGOS.neo,'PNG',M,M,lh*aN,lh,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M-lh*aV,M,lh*aV,lh,'via','FAST');
-    doc.setFont('helvetica','bold');doc.setFontSize(17);doc.text('PROGRAMAÇÃO DE SERVIÇOS',W/2,M+6,{align:'center'});
-    doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(86,96,90);doc.text(`BR-277 · trecho ${L.nIn[0]} a ${L.nIn[1]} · ${L.scope}`,W/2,M+11,{align:'center'});doc.setTextColor(20,23,21);
-    doc.setDrawColor(20,23,21);doc.setLineWidth(0.8);doc.line(M,M+14,W-M,M+14);
-    const lab=s=>({content:s,styles:{fontStyle:'bold',textColor:[86,96,90]}});
-    doc.autoTable({startY:M+17,theme:'grid',styles:{fontSize:9.5,cellPadding:1.8,lineColor:[207,214,207],textColor:[20,23,21]},
-      body:[[lab('Obra'),I.obra.replace(/[–—]/g,'-'),lab('Data'),dateBR(I.data),lab('Equipe'),I.equipe]],columnStyles:{0:{cellWidth:18},2:{cellWidth:16},4:{cellWidth:20}},margin:{left:M,right:M}});
-    {const yy=doc.lastAutoTable.finalY+2,[bg,fg]=TEMPO_RGB[tempoCls(I.tempo)];doc.setFillColor(...bg);doc.setDrawColor(...fg);doc.setLineWidth(0.6);doc.roundedRect(M,yy,W-2*M,9,1.5,1.5,'FD');
-      doc.setTextColor(...fg);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('PREVISÃO DO TEMPO',M+3,yy+5.7);doc.setFontSize(12);doc.text(I.tempo,M+38,yy+6);
-      if(I.tempoObs){doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.text(I.tempoObs,M+38+doc.getTextWidth(I.tempo)*12/9.5+6,yy+6)}doc.setTextColor(20,23,21);
-      const cw=(W-2*M-8)/3,y2=yy+12,hd={fillColor:[20,23,21],textColor:255,fontSize:8.5,halign:'left'};
-      const blk=(x,title,rows)=>{doc.autoTable({startY:y2,margin:{left:x},tableWidth:cw,theme:'grid',head:[[{content:title,colSpan:2}]],body:rows,headStyles:hd,styles:{fontSize:9,cellPadding:1.5,lineColor:[207,214,207]},columnStyles:{1:{halign:'right',fontStyle:'bold'}}});return doc.lastAutoTable.finalY};
-      const b1=blk(M,'USINA',[['Preparação da usina',I.uPrep],['Início da usinagem',I.uIni]]);
-      const b2=blk(M+cw+4,'EQUIPE DE SINALIZAÇÃO',[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]);
-      const b3=blk(M+2*(cw+4),'EQUIPE DE SERVIÇO',[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]);
-      doc.lastAutoTable.finalY=Math.max(b1,b2,b3)}
-    let y=doc.lastAutoTable.finalY+4;const f=P.seq[0];
-    doc.setFillColor(255,244,219);doc.setDrawColor(227,160,8);doc.setLineWidth(0.3);doc.roundedRect(M,y,W-2*M,9,1.5,1.5,'FD');
-    doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(`Início: 1º pano na pista ${SIDE[f.L0.side].toLowerCase()}, ${f.L0.name}, estaca ${Data.nameAt(f.ini)} até ${Data.nameAt(f.fim)} (${f.p.info.code}). Depois siga a ordem da tabela.`,M+3,y+5.8);
-    y+=12;if(L.partial){doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(183,121,31);doc.text(`Atenção: ${L.inc.length} pano(s) sem largura ou espessura cadastrada; os totais consideram apenas os panos completos.`,M,y);doc.setTextColor(20,23,21);y+=4}
-    const body=[];let lastSide=null;
-    for(const r of P.seq){if(r.L0.side!==lastSide){lastSide=r.L0.side;body.push([{content:`PISTA ${SIDE[lastSide].toUpperCase()} · ${lastSide==='C'?'estacas da menor para a maior':'estacas da maior para a menor'}`,colSpan:11,styles:{fillColor:[232,235,230],fontStyle:'bold',halign:'left'}}])}
-      const v=cellVals(r);body.push([{content:ordTxt(r.ord),styles:{fontStyle:'bold',halign:'center',fontSize:10}},SIDE[r.L0.side],r.L0.name,Data.nameAt(r.ini),Data.nameAt(r.fim),`${r.p.info.code} - ${r.p.info.desc}`,v.ext,v.larg,v.area,v.esp,{content:v.t,styles:{fontStyle:'bold'}}].map(c=>(!r.excl&&r.miss.length&&typeof c==='string')?{content:c,styles:{fillColor:[255,244,219]}}:c))}
-    const num={halign:'right'};
-    doc.autoTable({startY:y,head:[['Ordem','Pista','Faixa','Estaca inicial','Estaca final','Solução / serviço','Extensão (m)','Largura (m)','Área (m2)','Espessura (cm)','Quantidade (t)']],body,
-      foot:[[{content:`Total${L.partial?' (parcial)':''}: ${P.seq.length} panos`,colSpan:6},nf(L.totLen,1),'',nf(L.totA,1),'',L.totT==null?'-':nf(L.totT,2)]],
-      theme:'striped',styles:{fontSize:8.5,cellPadding:1.6,textColor:[20,23,21]},headStyles:{fillColor:[20,23,21],textColor:255,fontSize:8},footStyles:{fillColor:[20,23,21],textColor:255,halign:'right'},
-      alternateRowStyles:{fillColor:[244,246,242]},columnStyles:{0:{cellWidth:14},3:num,4:num,6:num,7:num,8:num,9:num,10:num},margin:{left:M,right:M},rowPageBreak:'avoid'});
-    y=doc.lastAutoTable.finalY+6;if(y>170){doc.addPage();y=M+4}
-    doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text('RESUMO DA PROGRAMAÇÃO',M,y);y+=2;
-    doc.autoTable({startY:y,theme:'grid',styles:{fontSize:10,cellPadding:2,halign:'center'},headStyles:{fillColor:[232,235,230],textColor:[86,96,90],fontSize:8},
-      head:[['Panos','Extensão programada','Área total','CBUQ previsto'+(L.perdaT!=null?` (+${nf(L.perda,1)}% perdas)`:'')]],
-      body:[[String(P.seq.length),nf(L.totLen,1)+' m',nf(L.totA,1)+' m2',{content:(L.totT==null?'-':nf(L.totT,2)+' t')+(L.perdaT!=null?`  (${nf(L.totT+L.perdaT,2)} t)`:''),styles:{fontStyle:'bold'}}]],margin:{left:M,right:M}});
-    y=doc.lastAutoTable.finalY+3;
-    doc.autoTable({startY:y,head:[['Solução / serviço','Panos','Extensão (m)','Área (m2)','Quantidade (t)']],
-      body:P.sol.map(o=>[`${o.info.code} - ${o.info.desc}`,String(o.n),nf(o.len,1),o.excl?'-':nf(o.area,1),o.excl?'não leva CBUQ':(o.inc?`${nf(o.t,2)} (${o.inc} sem dados)`:nf(o.t,2))]),
-      foot:[['Total',String(P.seq.length),nf(L.totLen,1),nf(L.totA,1),L.totT==null?'-':nf(L.totT,2)]],
-      theme:'striped',styles:{fontSize:8.5,cellPadding:1.6},headStyles:{fillColor:[20,23,21],fontSize:8},footStyles:{fillColor:[20,23,21],halign:'right'},columnStyles:{1:num,2:num,3:num,4:num},margin:{left:M,right:M}});
-    y=doc.lastAutoTable.finalY+5;doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(86,96,90);
-    const note=`Quantidade (t) = extensão x largura x espessura (cm) / 100 x densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}. Pista crescente: estacas da menor para a maior; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parcialmente dentro do trecho entram só com a parte interna.${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`;
-    if(y>195){doc.addPage();y=M+4}doc.text(doc.splitTextToSize(note,W-2*M),M,y);
-    {let yc=doc.lastAutoTable.finalY;yc=Math.max(yc,0);const lines=doc.splitTextToSize(note,W-2*M);let ye=y+lines.length*3.2+8;if(ye>192){doc.addPage();ye=M+8}
-      doc.setDrawColor(20,23,21);doc.setLineWidth(0.5);doc.line(M,ye-4,W-M,ye-4);doc.setTextColor(20,23,21);doc.setFont('helvetica','normal');doc.setFontSize(11);doc.text('Estamos à disposição. Bom trabalho a todos!',W/2,ye+1,{align:'center'});
-      doc.setFont('helvetica','bold');doc.setTextColor(196,16,16);doc.text('Neovia - por pessoas, com pessoas, para pessoas!',W/2,ye+7,{align:'center'})}
-    const n=doc.getNumberOfPages();for(let i=1;i<=n;i++){doc.setPage(i);doc.setFontSize(7.5);doc.setTextColor(86,96,90);doc.text(`Programação ${dateBR(I.data)} · ${I.equipe} · página ${i} de ${n}`,W-M,205,{align:'right'})}
+    const {jsPDF}=window.jspdf;
+    // página retrato na proporção de celular (9:16); ao imprimir, amplia para A4 sem cortes
+    const W=108,H=192,M=6,CW=W-2*M;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
+    const INK=[20,23,21],MUT=[86,96,90],LINE=[207,214,207],ACC=[242,183,5],PL=[17,20,18];
+    const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>');
+    const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+    let y=0,page=1;
+    const txt=(s,x,yy,o={})=>{doc.setFont('helvetica',o.b?'bold':'normal');doc.setFontSize(o.s||10);doc.setTextColor(...(o.c||INK));doc.text(clean(s),x,yy,o.a?{align:o.a}:undefined)};
+    const newPage=()=>{doc.addPage([W,H],'portrait');page++;y=M+2;
+      doc.setFillColor(...PL);doc.rect(0,0,W,9,'F');txt(`Programação ${dateBR(I.data)} · ${I.equipe}`,M,5.8,{s:7.5,c:[255,255,255],b:true});y=14};
+    const need=h=>{if(y+h>H-10)newPage()};
+    const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
+    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);
+    // cabeçalho
+    const lh=8;doc.addImage(LOGOS.neo,'PNG',M,M,lh*aN,lh,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M-lh*aV,M,lh*aV,lh,'via','FAST');
+    y=M+lh+6;txt('PROGRAMAÇÃO DE SERVIÇOS',W/2,y,{s:14,b:true,a:'center'});y+=4.5;
+    txt(`BR-277 · trecho ${L.nIn[0]} a ${L.nIn[1]}`,W/2,y,{s:8,c:MUT,a:'center'});y+=3;
+    // 1. obra, data e equipe
+    doc.setFillColor(...PL);doc.roundedRect(M,y,CW,27,2,2,'F');
+    txt(dateBR(I.data).toUpperCase(),M+4,y+7,{s:12,b:true,c:ACC});
+    txt('EQUIPE',M+4,y+13,{s:6.5,b:true,c:[169,179,173]});txt(I.equipe,M+4,y+18,{s:13,b:true,c:[255,255,255]});
+    txt('OBRA',M+4,y+22.5,{s:6.5,b:true,c:[169,179,173]});txt(I.obra,M+14,y+22.6,{s:8.5,c:[255,255,255]});y+=30;
+    // 2. previsão do tempo (com ícone simples)
+    const tc=tempoCls(I.tempo),[bg,fg]=TEMPO_RGB[tc];doc.setFillColor(...bg);doc.setDrawColor(...fg);doc.setLineWidth(0.7);doc.roundedRect(M,y,CW,15,2,2,'FD');
+    const ix=M+8,iy=y+7.5;
+    if(tc==='sun'){doc.setFillColor(242,183,5);doc.circle(ix,iy,2.6,'F');doc.setDrawColor(242,183,5);doc.setLineWidth(0.6);for(let k=0;k<8;k++){const a=k*Math.PI/4;doc.line(ix+Math.cos(a)*3.6,iy+Math.sin(a)*3.6,ix+Math.cos(a)*4.8,iy+Math.sin(a)*4.8)}}
+    else{doc.setFillColor(tc==='cloud'?150:120,tc==='cloud'?158:130,tc==='cloud'?152:140);doc.circle(ix-1.8,iy,2.2,'F');doc.circle(ix+0.6,iy-1.2,2.8,'F');doc.circle(ix+2.8,iy+0.3,2,'F');doc.rect(ix-1.8,iy,4.6,2.2,'F');
+      if(tc==='rain'||tc==='bad'){doc.setDrawColor(26,115,232);doc.setLineWidth(0.6);[-1.5,0.5,2.5].forEach(dx=>doc.line(ix+dx,iy+3.2,ix+dx-0.7,iy+5.2))}
+      if(tc==='bad'){doc.setFillColor(242,183,5);doc.triangle(ix+0.8,iy+2.4,ix-0.6,iy+5.6,ix+0.6,iy+5.2,'F');doc.triangle(ix+0.6,iy+5.2,ix+1.6,iy+4.6,ix-0.2,iy+7.6,'F')}}
+    txt('PREVISÃO DO TEMPO',M+16,y+5.2,{s:6.5,b:true,c:fg});txt(I.tempo,M+16,y+10.8,{s:13,b:true,c:fg});
+    if(I.tempoObs){doc.setFontSize(8);const lines=doc.splitTextToSize(clean(I.tempoObs),CW-60);txt(lines[0],W-M-3,y+10.5,{s:8,c:fg,a:'right'})}
+    y+=18;
+    // 3. horários operacionais
+    txt('HORÁRIOS',M,y+3,{s:8,b:true,c:MUT});y+=5;
+    const hblk=(title,items)=>{const bh=16;need(bh+2);doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,bh,1.5,1.5,'S');
+      doc.setFillColor(...ACC);doc.rect(M,y,1.4,bh,'F');txt(title,M+4,y+4.6,{s:7,b:true});
+      const cw=(CW-6)/items.length;items.forEach(([k,v],n)=>{const x=M+4+n*cw;txt(k,x,y+9,{s:6.5,c:MUT});txt(v,x,y+14,{s:14,b:true})});y+=bh+2};
+    hblk('EQUIPE DE SINALIZAÇÃO',[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída p/ trecho',I.sSai]]);
+    hblk('EQUIPE DE SERVIÇO',[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída p/ trecho',I.eSai]]);
+    hblk('USINA',[['Preparação',I.uPrep],['Início da usinagem',I.uIni]]);
+    // 4. sequência de execução
+    y+=2;need(24);txt('SEQUÊNCIA DE EXECUÇÃO',M,y+3,{s:8,b:true,c:MUT});txt(`${P.seq.length} panos`,W-M,y+3,{s:8,b:true,c:MUT,a:'right'});y+=5;
+    if(L.partial){need(8);doc.setFillColor(255,244,219);doc.roundedRect(M,y,CW,7,1.2,1.2,'F');txt(`Atenção: ${L.inc.length} pano(s) sem largura ou espessura; fora dos totais.`,M+2.5,y+4.6,{s:7,c:[140,90,10],b:true});y+=9}
+    let lastSide=null;
+    for(const r of P.seq){
+      if(r.L0.side!==lastSide){lastSide=r.L0.side;need(28);doc.setFillColor(242,244,240);doc.rect(M,y,CW,7,'F');doc.setFillColor(...ACC);doc.rect(M,y,1.4,7,'F');
+        txt(`PISTA ${SIDE[lastSide].toUpperCase()}`,M+4,y+4.8,{s:8.5,b:true});txt(lastSide==='C'?'da menor para a maior estaca':'da maior para a menor estaca',W-M-2,y+4.8,{s:7,c:MUT,a:'right'});y+=9}
+      const ch=19;need(ch+2);const v=cellVals(r),inf=r.p.info,inc=!r.excl&&r.miss.length;
+      if(inc){doc.setFillColor(255,244,219)}else doc.setFillColor(255,255,255);doc.setDrawColor(...(inc?[227,160,8]:LINE));doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,ch,1.8,1.8,'FD');
+      doc.setFillColor(...PL);doc.roundedRect(M+2,y+2,13,ch-4,1.5,1.5,'F');txt(ordTxt(r.ord),M+8.5,y+ch/2+2.2,{s:14,b:true,c:ACC,a:'center'});
+      const x=M+18;txt(`${Data.nameAt(r.ini)}  a  ${Data.nameAt(r.fim)}`,x,y+6.2,{s:12.5,b:true});
+      txt(`${SIDE[r.L0.side]} · ${r.L0.name}`,x,y+11,{s:8.5});
+      doc.setFontSize(8.5);const lw=doc.getTextWidth(clean(`${SIDE[r.L0.side]} · ${r.L0.name}`));
+      doc.setFont('helvetica','bold');doc.setFontSize(7.5);const tw=doc.getTextWidth(inf.code)+3;doc.setFillColor(...hex(inf.color));doc.roundedRect(x+lw+2,y+8.2,tw,3.9,0.8,0.8,'F');
+      txt(inf.code,x+lw+2+tw/2,y+11,{s:7.5,b:true,c:hex(inf.ink),a:'center'});
+      txt(`${v.ext} m · ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · ${r.area!=null?nf(r.area,0)+' m2':'-'} · ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,x,y+15.6,{s:7,c:MUT});
+      const tt=r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2);txt(tt,W-M-3,y+8,{s:r.excl||inc||r.t==null?8:13,b:true,a:'right',c:r.excl||inc?MUT:INK});
+      if(!(r.excl||inc||r.t==null))txt('t CBUQ',W-M-3,y+12,{s:6.5,c:MUT,a:'right'});
+      y+=ch+2}
+    // 5. quantitativos
+    y+=2;need(46);txt('RESUMO DA PROGRAMAÇÃO',M,y+3,{s:8,b:true,c:MUT});y+=5;
+    const tile=(x,yy,w,k,v,dark)=>{if(dark){doc.setFillColor(...PL);doc.roundedRect(x,yy,w,15,1.8,1.8,'F')}else{doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(x,yy,w,15,1.8,1.8,'S')}
+      txt(k,x+3,yy+5,{s:6.5,b:true,c:dark?ACC:MUT});txt(v,x+3,yy+12,{s:13,b:true,c:dark?[255,255,255]:INK})};
+    const tw2=(CW-3)/2;tile(M,y,tw2,'PANOS',String(P.seq.length));tile(M+tw2+3,y,tw2,'EXTENSÃO',nf(L.totLen,0)+' m');y+=17;
+    tile(M,y,tw2,'ÁREA'+(L.partial?' (parcial)':''),nf(L.totA,0)+' m2');tile(M+tw2+3,y,tw2,'CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true);y+=17;
+    if(L.perdaT!=null){need(7);txt(`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`,M,y+3,{s:8.5,b:true});y+=6}
+    need(8);txt('POR SOLUÇÃO',M,y+3,{s:7,b:true,c:MUT});y+=5;
+    for(const o of P.sol){need(8);doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.line(M,y+6.5,W-M,y+6.5);
+      doc.setFont('helvetica','bold');doc.setFontSize(7.5);const tw=doc.getTextWidth(o.info.code)+3;doc.setFillColor(...hex(o.info.color));doc.roundedRect(M,y+1.2,tw,4,0.8,0.8,'F');
+      txt(o.info.code,M+tw/2,y+4.1,{s:7.5,b:true,c:hex(o.info.ink),a:'center'});txt(`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,0)} m`,M+tw+2,y+4.3,{s:8});
+      txt(o.excl?'sem CBUQ':o.inc===o.n?'sem dados':(o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'),W-M,y+4.3,{s:9,b:true,a:'right',c:o.excl||o.inc===o.n?MUT:INK});y+=7}
+    // 6. observações e mensagem final
+    y+=3;doc.setFontSize(6.5);const note=clean(`Quantidade (t) = extensão x largura x espessura (cm) / 100 x densidade ${L.dens?nf(L.dens,3)+' t/m3':'(não informada)'}. Crescente: da menor para a maior estaca; decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${L.partial?' * soluções com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) fora desta programação.`:''} Fonte: R08 Unifilar B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')}.`);
+    const nl=doc.splitTextToSize(note,CW);need(nl.length*2.8+20);doc.setFont('helvetica','normal');doc.setTextColor(...MUT);doc.text(nl,M,y+2);y+=nl.length*2.8+5;
+    doc.setDrawColor(...INK);doc.setLineWidth(0.5);doc.line(M,y,W-M,y);y+=6;
+    txt('Estamos à disposição. Bom trabalho a todos!',W/2,y,{s:10,a:'center'});y+=5.5;txt('Neovia - por pessoas, com pessoas, para pessoas!',W/2,y,{s:9.5,b:true,c:[196,16,16],a:'center'});
+    const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);txt(`${k}/${n}`,W-M,H-4,{s:7,c:MUT,a:'right'});txt('Localizador de Estacas',M,H-4,{s:7,c:MUT})}
     return doc.output('blob')}
   $('rvPdf').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Gerando PDF…';
     let blob;try{blob=await makePdf()}catch(e){msg.textContent='Não foi possível gerar o PDF ('+(e.message||e)+'). Use Imprimir e escolha salvar como PDF.';return}
