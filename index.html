@@ -1188,7 +1188,8 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .fstage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
 #fCanvas{display:block;max-width:100%;max-height:100%}
 #fVideo{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.ftop{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:10px 12px 18px;background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,0))}
+.ftop{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:8px 12px;height:58px;box-sizing:border-box;background:#000}
+.fstage{padding-top:58px;box-sizing:border-box}
 .ftop h1{margin:0;font:700 14px var(--body);letter-spacing:.12em;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #fMsg{position:absolute;top:70px;left:0;right:0;z-index:6}
 .fempty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;color:#C9D1CC;font-size:15px;line-height:1.45}
@@ -1222,8 +1223,41 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .gi span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);font:600 11px var(--body);padding:3px 6px}
 .gi i{position:absolute;top:6px;right:6px;font:700 10px var(--body);font-style:normal;border-radius:5px;padding:2px 6px;background:#C8101A}
 .gi i.ok{background:#1E7A4C}
-.gi button{position:absolute;top:6px;left:6px;border:0;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;font:700 13px var(--body);padding:2px 7px;cursor:pointer}
-#fBusy{position:absolute;inset:0;z-index:15;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font:600 16px var(--body)}
+#fCanvas{cursor:pointer;touch-action:manipulation}
+.fctl2{position:absolute;left:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.fbtn{display:inline-flex;align-items:center;gap:7px;min-height:44px;max-width:44vw;border-radius:22px;border:1px solid rgba(255,255,255,.28);background:rgba(10,12,11,.62);color:#fff;font:600 13px var(--body);padding:0 13px 0 11px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.fbtn svg{width:19px;height:19px;flex:none}.fbtn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fbtn.on{border-color:#F2B705;color:#FFE9B0}
+.fhint{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(10,12,11,.55);color:#fff;font:600 12.5px var(--body);border-radius:999px;padding:6px 12px;pointer-events:none;transition:opacity .6s;white-space:nowrap}
+.fhint.off{opacity:0}
+.fmsg2{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:7;width:max-content;max-width:min(560px,calc(100% - 24px));box-sizing:border-box;border-radius:10px;padding:7px 12px;font:500 13px/1.35 var(--body);cursor:pointer}
+.fmsg2 b{font-weight:700;margin-right:4px}
+.fmsg2.bad{background:rgba(61,21,18,.92);color:#FFD9D5}.fmsg2.warn{background:rgba(58,44,8,.92);color:#FFE9B0}.fmsg2.info{background:rgba(16,38,63,.92);color:#CFE3FF}
+.fbusy{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:8px;background:rgba(10,12,11,.75);color:#fff;font:600 13px var(--body);border-radius:999px;padding:7px 13px;pointer-events:none}
+.fbusy i{width:12px;height:12px;border-radius:50%;border:2px solid #fff;border-right-color:transparent;animation:fspin .8s linear infinite}@keyframes fspin{to{transform:rotate(360deg)}}
+.fok{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:7;background:rgba(30,122,76,.92);color:#fff;font:700 13px var(--body);border-radius:999px;padding:7px 14px;pointer-events:none;white-space:nowrap}
+.fflash{position:absolute;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}.fflash.go{opacity:.55;transition:none}
+.nbox{padding:18px 16px 16px}.nbox h2{margin:0 0 4px;font:700 18px var(--body)}
+.nbox textarea{width:100%;box-sizing:border-box;min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.4 var(--body);padding:10px 12px;resize:vertical}
+.ncount{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;font:500 12.5px var(--body);color:var(--muted)}
+.linkBtn{border:0;background:none;color:#C8101A;font:600 13.5px var(--body);padding:6px 0;cursor:pointer}
+.nbtns{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+.delBtn{min-height:48px;border-radius:12px;border:0;background:#C8101A;color:#fff;font:700 15px var(--body);cursor:pointer;padding:0 12px}
+.delBtn:disabled,#fGalSave:disabled{opacity:.38;cursor:default}
+.gact{display:flex;gap:8px}.gmenu{min-width:44px;font-size:20px;line-height:1}
+.gbar{position:relative}
+.gpop{position:absolute;right:12px;top:58px;z-index:3;background:#1A1F1C;border:1px solid #333B36;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:6px;min-width:240px}
+.gpop button{display:block;width:100%;text-align:left;min-height:44px;border:0;background:none;color:#fff;font:600 14.5px var(--body);border-radius:8px;padding:0 12px;cursor:pointer}
+.gpop button:hover{background:#262C29}
+.gsel{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:0 12px 8px}
+.gsel button{min-height:38px;border-radius:999px;border:1px solid #3A423D;background:#141816;color:#fff;font:600 13px var(--body);padding:0 12px;cursor:pointer}
+.gsel b{margin-left:auto;font:700 13px var(--body);color:#F2B705}
+.gi{cursor:pointer;outline:3px solid transparent;outline-offset:-3px;transition:outline-color .12s}
+.gi.sel{outline-color:#F2B705}
+.gi .ck{position:absolute;top:6px;left:6px;width:28px;height:28px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font:700 16px var(--body);color:#000}
+.gi.sel .ck{background:#F2B705;border-color:#F2B705}.gi.sel .ck::after{content:'✓'}
+.gi .gdel{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:8px;border:0;background:#C8101A;color:#fff;font:700 15px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.gi i{top:auto;right:auto;left:6px;bottom:26px}
 @media (max-width:900px){
   #pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
   #panel{border-left:0;border-top:1px solid var(--line);height:46px;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);transition:height .24s cubic-bezier(.2,.8,.2,1)}
@@ -1262,7 +1296,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 29/09/2026 15:26 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 29/09/2026 17:40 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1357,35 +1391,39 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 <!-- ===== 4. Foto georreferenciada ===== -->
 <section class="page" id="pFoto" data-page="foto" hidden>
   <div class="fstage" id="fStage">
-    <canvas id="fCanvas" aria-label="Prévia da câmera com marcas-d'água"></canvas>
+    <canvas id="fCanvas" aria-label="Prévia da câmera com marcas-d'água. Toque na imagem para fotografar."></canvas>
     <video id="fVideo" playsinline muted autoplay></video>
     <div class="fempty" id="fEmpty" hidden></div>
     <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><button type="button" class="fgal" id="fGalBtn" aria-label="Fotos guardadas no app">Fotos <b id="fGalN">0</b></button><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
-    <div class="msg" id="fMsg" hidden></div>
-    <div id="fBusy" hidden>Obtendo localização da foto…</div>
-  </div>
-  <div class="fbottom">
-    <div class="fnote"><label for="fNote">Nota</label><input id="fNote" maxlength="400" autocomplete="off" placeholder="ex.: FF faixa 1 decrescente"></div>
-    <div class="fctl">
-      <div class="fsmall" id="fInfo"></div>
-      <button class="shutter" id="fShot" type="button" aria-label="Capturar foto"></button>
-      <label class="fpick" for="fFile">Câmera do<br>aparelho</label>
+    <div class="fctl2" id="fCtl">
+      <button type="button" class="fbtn" id="fNoteBtn" aria-label="Adicionar nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span id="fNoteLbl">Nota</span></button>
+      <label class="fbtn" for="fFile" id="fNative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Câmera do aparelho</span></label>
       <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
     </div>
+    <div class="fhint" id="fHint">Toque na imagem para fotografar</div>
+    <div class="fmsg2" id="fMsg" hidden></div>
+    <div class="fbusy" id="fBusy" hidden><i></i>Gravando foto…</div>
+    <div class="fok" id="fOk" hidden></div>
+    <div class="fflash" id="fFlash"></div>
   </div>
   <div id="fGal" hidden>
-    <div class="gbar"><b>Fotos guardadas no app</b><button type="button" class="ghostBtn" id="fGalClose">Fechar</button></div>
-    <p class="rmsg" id="fGalMsg" style="padding:0 12px">Cada foto tirada fica guardada aqui automaticamente. Toque em "Salvar todas na galeria" e escolha <b>Salvar Imagens</b> para gravar de uma vez no app Fotos.</p>
+    <div class="gbar"><b>Fotos</b><span class="gact"><button type="button" class="ghostBtn gmenu" id="fGalMenuBtn" aria-haspopup="true" aria-expanded="false">⋯</button><button type="button" class="ghostBtn" id="fGalClose">Fechar</button></span>
+      <div class="gpop" id="fGalMenu" hidden><button type="button" id="fGalNote">Nota para as próximas capturas</button></div></div>
+    <div class="gsel"><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · 15 min</button><button type="button" id="gSelNone">Selecionar nenhuma</button><b id="gSelN">0 selecionadas</b></div>
+    <p class="rmsg" id="fGalMsg" style="padding:0 12px 8px">Cada foto tirada fica guardada aqui automaticamente. Selecione as fotos e toque em "Salvar selecionadas" para gravar no aparelho.</p>
     <div class="ggrid" id="fGalGrid"></div>
-    <div class="rbar"><div class="rbtns"><button class="ghostBtn" type="button" id="fGalClear">Limpar enviadas</button><button class="bigBtn" type="button" id="fGalSave">Salvar todas na galeria</button></div></div>
+    <div class="rbar"><div class="rbtns"><button class="delBtn" type="button" id="fGalDel" disabled>Excluir selecionadas</button><button class="bigBtn" type="button" id="fGalSave" disabled>Salvar selecionadas</button></div></div>
   </div>
-  <div id="fReview" hidden>
-    <div class="rimg"><img id="fImg" alt="Foto capturada com as marcas-d'água"></div>
-    <div class="rbar">
-      <p class="rmsg" id="fRevMsg"></p>
-      <div class="rbtns"><button class="ghostBtn" type="button" id="fRedo">Refazer</button><button class="bigBtn" type="button" id="fSave">Salvar na galeria</button></div>
-      <p class="rmsg" id="fSaveMsg">Dica: no iPhone você também pode tocar e segurar a foto e escolher "Salvar em Fotos".</p>
-    </div>
+  <div class="modal" id="noteModal" hidden role="dialog" aria-modal="true" aria-labelledby="nmT">
+    <div class="mbox nbox"><h2 id="nmT">Nota para as próximas capturas</h2>
+      <p class="msub">Sai em cada foto tirada a partir de agora, até você alterar ou limpar. Não muda fotos já guardadas.</p>
+      <textarea id="fNote" maxlength="400" rows="4" placeholder="ex.: FF faixa 1 decrescente"></textarea>
+      <div class="ncount"><button type="button" class="linkBtn" id="nmClear">Limpar nota</button><span id="nmN">0/400</span></div>
+      <div class="nbtns"><button type="button" class="ghostBtn" id="nmCancel">Cancelar</button><button type="button" class="bigBtn" id="nmApply">Aplicar</button></div></div>
+  </div>
+  <div class="modal" id="confModal" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfT">
+    <div class="mbox nbox"><h2 id="cfT">Excluir fotos</h2><p class="msub" id="cfTxt"></p>
+      <div class="nbtns"><button type="button" class="ghostBtn" id="cfNo">Cancelar</button><button type="button" class="delBtn" id="cfYes">Excluir</button></div></div>
   </div>
 </section>
 
@@ -2498,8 +2536,17 @@ renderGps(Loc.gps);
   const LOGO_NEO=LOGOS.neo,LOGO_VIA=LOGOS.via;
   const imgNeo=new Image(),imgVia=new Image();imgNeo.src=LOGO_NEO;imgVia.src=LOGO_VIA;
   const video=$('fVideo'),cv=$('fCanvas'),ctx=cv.getContext('2d');
-  let stream=null,raf=0,live=null,liveT=0,busy=false,lastBlob=null,lastName='',lastURL=null;
-  $('fNote').value=store.get('fotoNote','');$('fNote').addEventListener('input',()=>store.set('fotoNote',$('fNote').value));
+  let stream=null,raf=0,live=null,liveT=0,busy=false,lastShot=0;
+  // nota aplicada: vale para as próximas capturas até ser alterada ou limpa (câmera e galeria usam o mesmo texto)
+  let NOTE=store.get('fotoNote','')||'';
+  function noteUi(){$('fNoteLbl').textContent=NOTE?'Nota: '+NOTE:'Adicionar nota';$('fNoteBtn').classList.toggle('on',!!NOTE);live=null}
+  function openNote(){$('fNote').value=NOTE;$('nmN').textContent=NOTE.length+'/400';$('noteModal').hidden=false;setTimeout(()=>$('fNote').focus(),60)}
+  $('fNote').addEventListener('input',()=>$('nmN').textContent=$('fNote').value.length+'/400');
+  $('nmClear').onclick=()=>{$('fNote').value='';$('nmN').textContent='0/400';$('fNote').focus()};
+  $('nmCancel').onclick=()=>$('noteModal').hidden=true;
+  $('nmApply').onclick=()=>{NOTE=$('fNote').value.trim();store.set('fotoNote',NOTE);noteUi();$('noteModal').hidden=true};
+  $('noteModal').addEventListener('click',e=>{if(e.target.id==='noteModal')$('noteModal').hidden=true});
+  $('fNoteBtn').onclick=openNote;noteUi();
   const pad2=n=>String(n).padStart(2,'0');
   const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
   // estaca pela mesma fonte e lógica da página Localização estaca
@@ -2515,7 +2562,7 @@ renderGps(Loc.gps);
     lines.push({k:'Data',v:fmtDate(date)});
     const st=stakeFor(fix);lines.push({k:'Estaca',v:st.txt,warn:st.warn});
     lines.push({k:'Rodovia',v:'BR-277'});
-    const note=$('fNote').value.trim();if(note)lines.push({k:'Nota',v:note,wrap:true});
+    if(NOTE)lines.push({k:'Nota',v:NOTE,wrap:true});
     return {lines,stake:st,low,fix}}
   function liveFix(){const g=Loc.gps,st=Loc.st;if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=5000)return {lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix};return null}
   // posição do momento da foto: usa leitura com até 3 s; senão pede uma nova ao GPS
@@ -2525,10 +2572,10 @@ renderGps(Loc.gps);
     return new Promise(res=>{let done=false;const end=v=>{if(!done){done=true;res(v)}};
       // a primeira leitura nova que chegar (acompanhamento ou pedido avulso)
       on('position',s=>{if(!done&&s.src==='gps'&&g.lastFix>=t0)end(cur())});
-      if('geolocation' in navigator)navigator.geolocation.getCurrentPosition(p=>end({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()}),()=>{},{enableHighAccuracy:true,maximumAge:0,timeout:7000});
+      if('geolocation' in navigator)navigator.geolocation.getCurrentPosition(p=>end({lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,t:Date.now()}),()=>{},{enableHighAccuracy:true,maximumAge:0,timeout:3000});
       setTimeout(()=>{if(done)return;const age=g.lastFix?Math.round((Date.now()-g.lastFix)/1000):Infinity;
         // parado, o GPS pode não emitir leitura nova: aceita a última de até 20 s e registra a idade
-        if(st.mode==='gps'&&age<=20)end({...cur(),stale:age});else end(null)},7000)})}
+        if(st.mode==='gps'&&age<=20)end({...cur(),stale:age});else end(null)},3000)})}
   function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
   function wrap(g,text,maxW,maxLines){const words=[];text.split(/\s+/).forEach(w=>{while(g.measureText(w).width>maxW&&w.length>1){let k=w.length-1;while(k>1&&g.measureText(w.slice(0,k)).width>maxW)k--;words.push(w.slice(0,k));w=w.slice(k)}words.push(w)});const out=[];let cur='';
     for(const w of words){const tt=cur?cur+' '+w:w;if(g.measureText(tt).width<=maxW||!cur)cur=tt;else{out.push(cur);cur=w}}if(cur)out.push(cur);
@@ -2559,19 +2606,22 @@ renderGps(Loc.gps);
     g.textBaseline='middle';g.font=L.font;L.rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp+fs*0.35,y+bp*0.75+L.lhT*(k+0.5))});g.restore()}
   function compose(g,src,W,H,info){g.drawImage(src,0,0,W,H);watermark(g,W,H,info)}
   // prévia ao vivo: mesma função de desenho da foto salva
-  function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth||busy)return;
+  function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth)return;
     const st=$('fStage'),dpr=Math.min(2,window.devicePixelRatio||1),vw=video.videoWidth,vh=video.videoHeight;
-    const sc=Math.min(st.clientWidth/vw,st.clientHeight/vh);const cw=Math.round(vw*sc*dpr),ch=Math.round(vh*sc*dpr);
+    const sc=Math.min(st.clientWidth/vw,(st.clientHeight-58)/vh);const cw=Math.round(vw*sc*dpr),ch=Math.round(vh*sc*dpr);
     if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch;cv.style.width=cw/dpr+'px';cv.style.height=ch/dpr+'px'}
     const now=Date.now();if(!live||now-liveT>500){live=infoFrom(liveFix(),new Date());liveT=now}
     compose(ctx,video,cw,ch,live)}
-  function msg(kind,title,text){const m=$('fMsg');if(!kind){m.hidden=true;return}m.className='msg '+kind;m.innerHTML=`<div><b>${title}</b>${text}</div>`;m.hidden=false}
+  let msgKey='',msgT=0;
+  // aviso compacto no topo, abaixo da barra: some sozinho e não cobre os logotipos
+  function msg(kind,title,text){const m=$('fMsg');if(!kind){m.hidden=true;msgKey='';return}const k=kind+title;if(k===msgKey)return;msgKey=k;
+    m.className='fmsg2 '+kind;m.innerHTML=`<b>${title}</b>${text}`;m.hidden=false;$('fHint').classList.add('off');clearTimeout(msgT);msgT=setTimeout(()=>{m.hidden=true},kind==='bad'?9000:6000)}
+  $('fMsg').onclick=()=>$('fMsg').hidden=true;
   function gpsUi(){const g=Loc.gps,f=liveFix();const el=$('fGps');
     if(f){el.className='status '+(f.acc>20?'wait':'on');$('fGpsTxt').textContent=`GPS ±${Math.round(f.acc)} m`}
     else if(g.status==='waiting'){el.className='status wait';$('fGpsTxt').textContent='Buscando GPS'}
     else if(g.status==='error'&&g.err&&g.err.code==='denied'){el.className='status err';$('fGpsTxt').textContent='GPS negado'}
     else if(g.on){el.className='status err';$('fGpsTxt').textContent='Sem sinal'}else{el.className='status';$('fGpsTxt').textContent='GPS desligado'}
-    const s=stakeFor(f);$('fInfo').innerHTML=f?`Estaca<b>${s.name||'—'}</b>${s.warn?s.txt:''}`:`Estaca<b>—</b>sem GPS`;
     if(!stream&&!$('fEmpty').hidden)return;
     if(g.status==='error'&&g.err&&g.err.code==='denied')msg('bad','Localização negada.',' A foto sairá sem coordenadas e sem estaca. Libere a localização do Safari em Ajustes para registrar a posição.');
     else if(f&&f.acc>20)msg('warn','Precisão baixa do GPS.',` ±${Math.round(f.acc)} m no momento. A foto registrará essa precisão.`);
@@ -2581,63 +2631,76 @@ renderGps(Loc.gps);
   async function startCam(){$('fEmpty').hidden=true;
     if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){camFail('Este navegador não dá acesso direto à câmera.');return}
     try{stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:3840},height:{ideal:2160}}});
-      video.srcObject=stream;await video.play().catch(()=>{});cancelAnimationFrame(raf);loop();$('fShot').disabled=false}
+      video.srcObject=stream;await video.play().catch(()=>{});cancelAnimationFrame(raf);loop();setTimeout(()=>$('fHint').classList.add('off'),4000)}
     catch(e){camFail(e&&e.name==='NotAllowedError'?'A permissão da câmera foi negada. Libere a câmera do Safari em Ajustes (ou em "aA" › Ajustes do Site). No visualizador do Claude a câmera não é liberada; use o endereço publicado no GitHub Pages.':'Não foi possível abrir a câmera ('+(e&&e.name||'erro')+').')}}
-  function camFail(t){stream=null;$('fShot').disabled=true;cancelAnimationFrame(raf);ctx.clearRect(0,0,cv.width,cv.height);
+  function camFail(t){stream=null;$('fHint').classList.add('off');cancelAnimationFrame(raf);ctx.clearRect(0,0,cv.width,cv.height);
     $('fEmpty').innerHTML=`<b>Câmera indisponível</b><span>${t}</span><span>Você ainda pode usar a câmera do aparelho: a foto volta para cá e recebe as marcas-d'água.</span><label class="bigBtn" for="fFile" style="padding:0 22px">Abrir câmera do aparelho</label>`;$('fEmpty').hidden=false}
   function stopCam(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null}
-  async function finish(src,W,H,date){busy=true;$('fBusy').hidden=false;
-    const fix=await freshFix();const info=infoFrom(fix,date);
-    const out=document.createElement('canvas');out.width=W;out.height=H;const g=out.getContext('2d');compose(g,src,W,H,info);
-    $('fBusy').hidden=true;
-    out.toBlob(b=>{busy=false;if(!b){$('fRevMsg').textContent='Não foi possível gerar a imagem.';return}lastBlob=b;
-      const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';lastName=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
-      if(lastURL)URL.revokeObjectURL(lastURL);lastURL=URL.createObjectURL(b);$('fImg').src=lastURL;
-      const rm=$('fRevMsg');rm.className='rmsg'+(!fix||info.low||info.stake.warn?' warn':'');
-      rm.textContent=fix&&fix.stale&&!info.low?`Sem leitura nova do GPS; usada a última posição, de ${fix.stale} s antes da foto (registrado na imagem).`:!fix?'Foto sem localização: o GPS não respondeu. Coordenadas e estaca ficaram como "indisponível".':info.low?`Localização com baixa precisão (±${Math.round(fix.acc)} m), registrada na foto.`:info.stake.warn?`Estaca: ${info.stake.txt}.`:`Estaca ${info.stake.txt} · GPS ±${Math.round(fix.acc)} m · ${W}×${H} px`;
-      $('fSaveMsg').className='rmsg';$('fSaveMsg').textContent='Dica: no iPhone você também pode tocar e segurar a foto e escolher "Salvar em Fotos".';
-      $('fReview').hidden=false;stopCam();storeLast();
-      if(navigator.userActivation?navigator.userActivation.isActive:true)saveCurrent(true)},'image/jpeg',0.95)}
-  $('fShot').onclick=()=>{if(busy||!video.videoWidth)return;const date=new Date(),W=video.videoWidth,H=video.videoHeight;
-    const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);finish(frame,W,H,date)};
-  $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
-    img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date);URL.revokeObjectURL(u)};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
-  $('fRedo').onclick=()=>{$('fReview').hidden=true;lastBlob=null;startCam()};
-  // guarda cada foto no próprio app (IndexedDB) para não se perder e permitir salvar várias de uma vez
+  // captura: grava direto na galeria interna "Fotos", sem prévia nem compartilhamento; a câmera segue ativa
+  function okToast(t){const o=$('fOk');o.textContent=t;o.hidden=false;clearTimeout(okToast.h);okToast.h=setTimeout(()=>o.hidden=true,2200)}
+  async function finish(src,W,H,date){busy=true;$('fBusy').hidden=false;$('fOk').hidden=true;
+    try{const fix=await freshFix();const info=infoFrom(fix,date);
+      const out=document.createElement('canvas');out.width=W;out.height=H;compose(out.getContext('2d'),src,W,H,info);
+      const b=await new Promise(r=>out.toBlob(r,'image/jpeg',0.95));if(!b)throw new Error('imagem');
+      const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';
+      const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
+      await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null});
+      await galCount();
+      okToast(`✓ Foto guardada${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
+    catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
+    finally{busy=false;$('fBusy').hidden=true}}
+  function shoot(){const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
+    const date=new Date(),W=video.videoWidth,H=video.videoHeight;const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);
+    const fl=$('fFlash');fl.classList.add('go');requestAnimationFrame(()=>requestAnimationFrame(()=>fl.classList.remove('go')));
+    $('fHint').classList.add('off');finish(frame,W,H,date)}
+  // toque em qualquer ponto da imagem (canvas ou fundo do palco); botões, menus e avisos não disparam
+  $('fStage').addEventListener('click',e=>{const t=e.target;if(t!==$('fCanvas')&&t!==$('fStage'))return;if(!$('noteModal').hidden)return;shoot()});
+  $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||busy)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
+    img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date).then(()=>URL.revokeObjectURL(u))};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
+  // cada foto fica no próprio app (IndexedDB) até o usuário excluir
   const DB=(()=>{let dbp=null;const open=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
     const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const x=db.transaction('fotos',mode);const st=x.objectStore('fotos');const out=fn(st);x.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);x.onerror=()=>rej(x.error)})};
     return {add:o=>tx('readwrite',s=>s.add(o)),all:()=>tx('readonly',s=>s.getAll()),put:o=>tx('readwrite',s=>s.put(o)),del:id=>tx('readwrite',s=>s.delete(id))}})();
-  let lastId=null;
-  async function galCount(){try{const a=await DB.all();const n=a.filter(f=>!f.saved).length;$('fGalN').textContent=n;return a}catch(e){$('fGalN').textContent='–';return []}}
+  async function galCount(){try{const a=await DB.all();$('fGalN').textContent=a.length;return a}catch(e){$('fGalN').textContent='–';return []}}
   galCount();
-  async function storeLast(){try{lastId=await DB.add({name:lastName,blob:lastBlob,t:Date.now(),saved:false});galCount()}catch(e){lastId=null}}
-  async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)){f.saved=true;await DB.put(f)}}catch(e){}galCount()}
-  $('fSave').onclick=()=>saveCurrent(false);
-  async function saveCurrent(auto){if(!lastBlob)return;const sm=$('fSaveMsg');const file=new File([lastBlob],lastName,{type:'image/jpeg'});
-    if(auto&&!(navigator.canShare&&navigator.canShare({files:[file]})))return;
-    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]});sm.className='rmsg ok';sm.textContent='Se você tocou em "Salvar Imagem", a foto está no app Fotos. Ela também fica guardada em "Fotos" aqui no app.';if(lastId!=null)markSaved([lastId]);return}
-      catch(e){if(e&&e.name==='AbortError'){sm.className='rmsg warn';sm.textContent='A folha foi fechada sem salvar. A foto está guardada no app; toque em "Salvar na galeria" e escolha "Salvar Imagem".';return}
-        if(auto&&e&&e.name==='NotAllowedError'){sm.className='rmsg';sm.textContent='Foto guardada no app. Toque em "Salvar na galeria" e escolha "Salvar Imagem" para enviar ao app Fotos.';return}}}
-    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]});sm.className='rmsg';sm.textContent='Compartilhamento concluído. Se você escolheu "Salvar Imagem", a foto está no app Fotos; confira lá.';return}
-      catch(e){if(e&&e.name==='AbortError'){sm.className='rmsg warn';sm.textContent='Compartilhamento cancelado: a foto ainda não foi salva. Toque em Salvar e escolha "Salvar Imagem".';return}}}
-    try{const a=document.createElement('a');a.href=lastURL;a.download=lastName;document.body.appendChild(a);a.click();a.remove();
-      sm.className='rmsg warn';sm.textContent='O navegador não permite gravar direto na galeria. Foi solicitado o download do arquivo; confira em Arquivos › Downloads e use Compartilhar › Salvar Imagem. Ou toque e segure a foto acima e escolha "Salvar em Fotos".'}
-    catch(e){sm.className='rmsg warn';sm.textContent='Não foi possível salvar por aqui. Toque e segure a foto acima e escolha "Salvar em Fotos".'}}
-  async function openGal(){const a=await galCount();const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=a.length?a.slice().reverse().map(f=>`<div class="gi" data-id="${f.id}"><img src="${URL.createObjectURL(f.blob)}" alt=""><i class="${f.saved?'ok':''}">${f.saved?'enviada':'pendente'}</i><button type="button" data-del="${f.id}" aria-label="Excluir">✕</button><span>${new Date(f.t).toLocaleString('pt-BR')}</span></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
-    grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{await DB.del(+b.dataset.del);openGal()});
-    $('fGal').hidden=false;stopCam()}
+  /* ---------- galeria "Fotos": seleção, exclusão e exportação ---------- */
+  const SEL=new Set();let GAL=[];
+  function selUi(){const n=SEL.size;$('gSelN').textContent=n===1?'1 selecionada':n+' selecionadas';
+    $('fGalDel').disabled=!n;$('fGalSave').disabled=!n;$('fGalDel').textContent=n?`Excluir selecionadas (${n})`:'Excluir selecionadas';$('fGalSave').textContent=n?`Salvar selecionadas (${n})`:'Salvar selecionadas';
+    $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
+  async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
+    const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><img src="${URL.createObjectURL(f.blob)}" alt=""><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button><i class="${f.saved?'ok':''}">${f.saved?'salva no aparelho':'só no app'}</i><span>${new Date(f.t).toLocaleString('pt-BR')}${f.stake?' · '+f.stake:''}</span></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
+    grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
+    grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
+    selUi();$('fGal').hidden=false;stopCam()}
+  function confirmDel(n,txt){return new Promise(res=>{$('cfTxt').textContent=txt||`${n} foto${n>1?'s serão removidas':' será removida'} do armazenamento do app. Essa ação não pode ser desfeita.`;
+    $('cfYes').textContent=n>1?`Excluir ${n} fotos`:'Excluir';$('confModal').hidden=false;const done=v=>{$('confModal').hidden=true;res(v)};
+    $('cfYes').onclick=()=>done(true);$('cfNo').onclick=()=>done(false);$('confModal').onclick=e=>{if(e.target.id==='confModal')done(false)}})}
+  $('gSelAll').onclick=()=>{GAL.forEach(f=>SEL.add(f.id));selUi()};
+  $('gSelRec').onclick=()=>{const lim=Date.now()-15*60000;SEL.clear();GAL.forEach(f=>{if(f.t>=lim)SEL.add(f.id)});selUi();if(!SEL.size)$('fGalMsg').textContent='Nenhuma foto tirada nos últimos 15 minutos.'};
+  $('gSelNone').onclick=()=>{SEL.clear();selUi()};
   $('fGalBtn').onclick=openGal;
-  $('fGalClose').onclick=()=>{$('fGal').hidden=true;if($('fReview').hidden)startCam()};
-  $('fGalClear').onclick=async()=>{const a=await DB.all();for(const f of a)if(f.saved)await DB.del(f.id);openGal()};
-  $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=(await DB.all()).filter(f=>!f.saved);if(!a.length){m.textContent='Não há fotos pendentes.';return}
+  $('fGalClose').onclick=()=>{$('fGal').hidden=true;$('fGalMenu').hidden=true;startCam()};
+  $('fGalMenuBtn').onclick=()=>{const m=$('fGalMenu');m.hidden=!m.hidden;$('fGalMenuBtn').setAttribute('aria-expanded',!m.hidden)};
+  $('fGalNote').onclick=()=>{$('fGalMenu').hidden=true;openNote()};
+  $('fGalDel').onclick=async()=>{const ids=[...SEL];if(!ids.length)return;if(!await confirmDel(ids.length))return;
+    for(const id of ids)await DB.del(id);SEL.clear();$('fGalMsg').textContent=`${ids.length} foto${ids.length>1?'s excluídas':' excluída'} do app.`;openGal()};
+  async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)&&!f.saved){f.saved=true;await DB.put(f)}}catch(e){}}
+  $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=GAL.filter(f=>SEL.has(f.id));if(!a.length)return;
     const files=a.map(f=>new File([f.blob],f.name,{type:'image/jpeg'}));
-    if(!(navigator.canShare&&navigator.canShare({files}))){m.textContent='Este navegador não permite salvar várias fotos de uma vez. Abra cada foto e toque em Salvar.';return}
-    try{await navigator.share({files});await markSaved(a.map(f=>f.id));m.textContent=`Se você tocou em "Salvar ${files.length} Imagens", elas estão no app Fotos.`;openGal()}
-    catch(e){m.textContent=e&&e.name==='AbortError'?'Cancelado: as fotos continuam pendentes.':'Não foi possível abrir o salvar ('+(e.message||e.name)+').'}};
+    if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files});await markSaved(a.map(f=>f.id));
+        m.textContent=`Se você tocou em "Salvar ${files.length>1?files.length+' Imagens':'Imagem'}", ${files.length>1?'elas estão':'ela está'} no app Fotos. As fotos continuam guardadas aqui até você excluir.`;openGal()}
+      catch(e){m.textContent=e&&e.name==='AbortError'?'Cancelado: nada foi salvo no aparelho.':'Não foi possível abrir o salvar ('+(e.message||e.name)+').'}return}
+    // sem folha de compartilhamento (computador): baixa cada arquivo
+    try{for(const f of files){const u=URL.createObjectURL(f);const el=document.createElement('a');el.href=u;el.download=f.name;document.body.appendChild(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);await new Promise(r=>setTimeout(r,250))}
+      m.textContent=`Download de ${files.length} foto${files.length>1?'s':''} solicitado ao navegador; confira a pasta de downloads. As fotos continuam guardadas aqui.`}
+    catch(e){m.textContent='O navegador bloqueou o download.'}};
   Router.onInit('foto',()=>{});
-  on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if($('fReview').hidden)startCam();gpsUi()}else stopCam()});
-  document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if($('fReview').hidden)startCam()});
+  const galOpen=()=>!$('fGal').hidden;
+  on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if(!galOpen())startCam();gpsUi()}else stopCam()});
+  document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if(!galOpen())startCam()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('noteModal').hidden=true;$('fGalMenu').hidden=true}});
 })();
 
 /* ------------------------------ Início ------------------------------ */
@@ -2647,7 +2710,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='29/09/2026 15:26';
+  const CUR_VER='29/09/2026 17:40';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
