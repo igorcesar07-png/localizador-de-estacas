@@ -637,7 +637,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <div id="fBusy" hidden>Obtendo localização da foto…</div>
   </div>
   <div class="fbottom">
-    <div class="fnote"><label for="fNote">Nota</label><input id="fNote" maxlength="140" autocomplete="off" placeholder="ex.: FF faixa 1 decrescente"></div>
+    <div class="fnote"><label for="fNote">Nota</label><input id="fNote" maxlength="400" autocomplete="off" placeholder="ex.: FF faixa 1 decrescente"></div>
     <div class="fctl">
       <div class="fsmall" id="fInfo"></div>
       <button class="shutter" id="fShot" type="button" aria-label="Capturar foto"></button>
@@ -1657,28 +1657,32 @@ renderGps(Loc.gps);
         // parado, o GPS pode não emitir leitura nova: aceita a última de até 20 s e registra a idade
         if(st.mode==='gps'&&age<=20)end({...cur(),stale:age});else end(null)},7000)})}
   function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
-  function wrap(g,text,maxW,maxLines){const words=text.split(/\s+/);const out=[];let cur='';
+  function wrap(g,text,maxW,maxLines){const words=[];text.split(/\s+/).forEach(w=>{while(g.measureText(w).width>maxW&&w.length>1){let k=w.length-1;while(k>1&&g.measureText(w.slice(0,k)).width>maxW)k--;words.push(w.slice(0,k));w=w.slice(k)}words.push(w)});const out=[];let cur='';
     for(const w of words){const tt=cur?cur+' '+w:w;if(g.measureText(tt).width<=maxW||!cur)cur=tt;else{out.push(cur);cur=w}}if(cur)out.push(cur);
     if(out.length>maxLines){out.length=maxLines;let l=out[maxLines-1];while(l.length&&g.measureText(l+'…').width>maxW)l=l.slice(0,-1);out[maxLines-1]=l+'…'}return out}
   // marcas-d'água, proporcionais ao menor lado (foto vertical ou horizontal)
-  function watermark(g,W,H,info){const u=Math.min(W,H),m=Math.round(u*0.03),land=W>H;
-    // logotipos sobre placa branca, proporções preservadas
-    const lh=u*(land?0.075:0.07),pp=lh*0.22;
-    const plate=(img,x,y,alignRight)=>{if(!img.complete||!img.naturalWidth)return;const lw=lh*img.naturalWidth/img.naturalHeight;const pw=lw+pp*2,ph=lh+pp*2;const px=alignRight?x-pw:x;
-      g.save();g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=u*0.012;g.fillStyle='rgba(255,255,255,.94)';rr(g,px,y,pw,ph,pp*0.9);g.fill();g.restore();
-      g.imageSmoothingQuality='high';g.drawImage(img,px+pp,y+pp,lw,lh)};
-    plate(imgNeo,m,m,false);plate(imgVia,W-m,m,true);
-    // bloco de informações (canto inferior direito)
-    const fs=Math.max(12,u*(land?0.03:0.031)),lhT=fs*1.38,bp=fs*0.6,maxW=W*(land?0.46:0.8);
-    const font=`600 ${fs}px Barlow, "Helvetica Neue", Arial, sans-serif`,hfont=`700 ${fs*1.02}px Barlow, "Helvetica Neue", Arial, sans-serif`;
-    g.font=font;const rows=[];
-    for(const l of info.lines){const pre=`${l.k} : `;if(l.wrap){const ww=wrap(g,pre+l.v,maxW-bp*2,3);ww.forEach(t=>rows.push({t,warn:l.warn}))}else{let t=pre+l.v;while(g.measureText(t).width>maxW-bp*2&&t.length>4)t=t.slice(0,-2)+'…';rows.push({t,warn:l.warn})}}
-    const head='Neovia · Via Araucária';g.font=hfont;let bw=g.measureText(head).width;g.font=font;rows.forEach(r=>bw=Math.max(bw,g.measureText(r.t).width));bw=Math.min(maxW,bw+bp*2);
-    const hh=lhT*1.1,bh=hh+rows.length*lhT+bp*0.8,x=W-m-bw,y=H-m-bh;
-    g.save();g.fillStyle='rgba(0,0,0,.62)';rr(g,x,y,bw,bh,fs*0.35);g.fill();g.fillStyle='rgba(0,0,0,.55)';rr(g,x,y,bw,hh,fs*0.35);g.fill();
-    g.fillStyle='#F2B705';g.fillRect(x+bp,y+hh*0.3,fs*0.28,hh*0.4);
-    g.textBaseline='middle';g.fillStyle='#FFFFFF';g.font=hfont;g.fillText(head,x+bp+fs*0.55,y+hh/2);
-    g.font=font;rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp,y+hh+lhT*(k+0.5)+bp*0.2)});g.restore()}
+  // marcas-d'água com padrão fixo, pensado para foto horizontal:
+  // logos em quadros de mesmo tamanho (contain), fundo branco translúcido, bloco de dados com largura fixa
+  function watermark(g,W,H,info){const land=W>=H,U=Math.min(W,H),m=Math.round(U*0.045);
+    // logos: quadro padrão (altura e largura iguais para as duas marcas)
+    const bh=Math.round(U*(land?0.105:0.085)),bw=Math.round(bh*3.1),pad=Math.round(bh*0.14),rad=Math.round(bh*0.16);
+    const plate=(img,x,y)=>{g.save();g.shadowColor='rgba(0,0,0,.18)';g.shadowBlur=U*0.008;g.fillStyle='rgba(255,255,255,.72)';rr(g,x,y,bw,bh,rad);g.fill();g.restore();
+      if(!img.complete||!img.naturalWidth)return;const iw=bw-2*pad,ih=bh-2*pad,ar=img.naturalWidth/img.naturalHeight;let w=iw,h=iw/ar;if(h>ih){h=ih;w=ih*ar}
+      g.imageSmoothingQuality='high';g.drawImage(img,x+(bw-w)/2,y+(bh-h)/2,w,h)};
+    plate(imgNeo,m,m);plate(imgVia,W-m-bw,m);
+    // bloco de informações: largura fixa, altura conforme o conteúdo, ancorado no canto inferior direito
+    const bwInfo=Math.round(land?Math.max(W*0.36,U*0.62):W*0.74),bp=Math.round(U*0.02);
+    let fs=Math.max(12,U*0.029);const maxH=H-2*m-bh-m;
+    const layout=fs=>{const font=`600 ${fs}px Barlow, "Helvetica Neue", Arial, sans-serif`,hfont=`700 ${fs*1.02}px Barlow, "Helvetica Neue", Arial, sans-serif`,lhT=fs*1.34;
+      g.font=font;const rows=[];const tw=bwInfo-2*bp;
+      for(const l of info.lines){wrap(g,`${l.k} : ${l.v}`,tw,l.wrap?8:4).forEach(tx=>rows.push({t:tx,warn:l.warn}))}
+      const hh=lhT*1.12,h=hh+rows.length*lhT+bp*0.9;return {font,hfont,lhT,rows,hh,h}};
+    let L=layout(fs);while(L.h>maxH&&fs>11){fs*=0.94;L=layout(fs)} // só reduz se não couber na altura da foto
+    const x=W-m-bwInfo,y=H-m-L.h;
+    g.save();g.fillStyle='rgba(0,0,0,.62)';rr(g,x,y,bwInfo,L.h,fs*0.35);g.fill();g.fillStyle='rgba(0,0,0,.55)';rr(g,x,y,bwInfo,L.hh,fs*0.35);g.fill();
+    g.fillStyle='#C8101A';g.fillRect(x+bp,y+L.hh*0.28,fs*0.28,L.hh*0.44);
+    g.textBaseline='middle';g.fillStyle='#FFFFFF';g.font=L.hfont;g.fillText('Neovia · Via Araucária',x+bp+fs*0.6,y+L.hh/2);
+    g.font=L.font;L.rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp,y+L.hh+L.lhT*(k+0.5)+bp*0.2)});g.restore()}
   function compose(g,src,W,H,info){g.drawImage(src,0,0,W,H);watermark(g,W,H,info)}
   // prévia ao vivo: mesma função de desenho da foto salva
   function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth||busy)return;
