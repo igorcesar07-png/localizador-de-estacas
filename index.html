@@ -924,6 +924,13 @@ table.q td.pano small{display:block;font:500 11.5px var(--body);color:var(--mute
 table.q tr.inc td{background:var(--warn-bg)!important}
 table.q tr.inc td:first-child{box-shadow:inset 4px 0 0 var(--warn)}
 table.q tr.exc td{color:var(--muted)}
+table.q tr.off td{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(120,120,120,.6)}
+table.q tr.off td.pano,table.q tr.off td:nth-child(2){text-decoration:none}
+table.q input.rprog{width:22px;height:22px;accent-color:var(--ok)}
+table.q td.wcell{white-space:nowrap}
+table.q input.rw{width:74px;min-height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 14px var(--body);text-align:right;padding:0 6px}
+table.q input.rw.cust{border-color:var(--me);box-shadow:inset 0 0 0 1px var(--me)}
+table.q .rwreset{margin-left:4px;border:0;background:none;color:var(--me);font:700 16px var(--body);cursor:pointer;padding:2px 4px}
 table.q td.miss{color:var(--warn);font-weight:700}
 table.q tfoot td{background:var(--plate)!important;color:var(--plate-ink);font-weight:700;border-bottom:0}
 table.q tfoot td.big2{font:700 18px var(--cond)}
@@ -945,6 +952,18 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px 16px}
 .mgrid .fld{grid-column:span 1}
 .mgrid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mbox{width:min(640px,100%)}
+.drow{display:flex;gap:6px}.drow input{flex:1;min-width:0}.drow button{min-height:50px;padding:0 12px;font-size:13px}
+.hmx{display:grid;gap:6px;padding:8px 12px 12px}
+.hmx .hh,.hmx .hr{display:grid;grid-template-columns:92px repeat(3,minmax(0,1fr));gap:6px;align-items:center}
+.hmx .hh span{font:600 11.5px var(--body);color:var(--muted);text-align:center;line-height:1.15}
+.hmx .hh.u{margin-top:6px}
+.hmx .hr b{font:700 13px var(--body)}
+.hmx input{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 6px;width:100%;box-sizing:border-box;text-align:center;min-width:0}
+.hmx input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 25%,transparent)}
+#rfTempoMsg{min-height:132px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.45 var(--body);padding:10px 12px;resize:vertical;width:100%;box-sizing:border-box;overflow:hidden}
+.mgrid select[aria-invalid="true"],#rfTempoMsg[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 25%,transparent)}
+@media (max-width:520px){.mgrid.g2{grid-template-columns:1fr}.mgrid.g2 .fld{grid-column:1 / -1}.hmx .hh,.hmx .hr{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.hmx .hh span:first-child{display:none}.hmx .hr b{grid-column:1 / -1;margin-top:2px}.hmx .hr > span{display:none}.hmx input{font-size:16px;padding:0 4px}.modal{padding:8px}}
 .mset{border:1px solid var(--line);border-radius:12px;margin:0 16px 12px;padding:0}
 .mset legend{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 6px;margin-left:10px}
 .mset .mgrid{padding:6px 12px 12px}
@@ -1099,7 +1118,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 28/09/2026 23:44 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1219,25 +1238,22 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
   <form class="mbox" id="rfForm" novalidate>
     <h2 id="rfT">Dados da programação</h2>
     <p class="msub">Preencha para gerar a programação. Todos os campos são obrigatórios.</p>
-    <div class="mgrid">
-      <div class="fld"><label for="rfData">Data da programação <b>*</b></label><div style="display:flex;gap:6px"><input id="rfData" type="date" style="flex:1;min-width:0"><button type="button" class="secondary" id="rfNext" style="min-height:50px;padding:0 10px;font-size:13px">+1 dia</button></div><span class="hint" id="rfDataHint"></span></div>
+    <div class="mgrid g2">
+      <div class="fld"><label for="rfData">Data <b>*</b></label><div class="drow"><input id="rfData" type="date"><button type="button" class="secondary" id="rfNext">+1 dia</button></div><span class="hint" id="rfDataHint"></span></div>
       <div class="fld"><label for="rfEquipe">Equipe <b>*</b></label><select id="rfEquipe"><option value="">Selecione…</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select></div>
       <div class="fld w2"><label for="rfObra">Obra <b>*</b></label><select id="rfObra"><option value="">Selecione…</option><option>Restauração BR-277 – Blocos 02 e 03</option><option>Restauração BR-373 – Bloco 04</option></select><span class="hint" id="rfObraHint"></span></div>
     </div>
-    <fieldset class="mset"><legend>Usina</legend><div class="mgrid">
-      <div class="fld"><label for="rfUPrep">Preparação da usina <b>*</b></label><input id="rfUPrep" type="time"></div>
-      <div class="fld"><label for="rfUIni">Início da usinagem <b>*</b></label><input id="rfUIni" type="time"></div></div></fieldset>
-    <fieldset class="mset"><legend>Equipe de sinalização</legend><div class="mgrid g3">
-      <div class="fld"><label for="rfSCafe">Café da manhã <b>*</b></label><input id="rfSCafe" type="time"></div>
-      <div class="fld"><label for="rfSDds">DDS <b>*</b></label><input id="rfSDds" type="time"></div>
-      <div class="fld"><label for="rfSSai">Saída para o trecho <b>*</b></label><input id="rfSSai" type="time"></div></div></fieldset>
-    <fieldset class="mset"><legend>Equipe de serviço</legend><div class="mgrid g3">
-      <div class="fld"><label for="rfECafe">Café da manhã <b>*</b></label><input id="rfECafe" type="time"></div>
-      <div class="fld"><label for="rfEDds">DDS <b>*</b></label><input id="rfEDds" type="time"></div>
-      <div class="fld"><label for="rfESai">Saída para o trecho <b>*</b></label><input id="rfESai" type="time"></div></div></fieldset>
-    <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid">
-      <div class="fld"><label for="rfTempo">Status da previsão <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
-      <div class="fld w2"><label for="rfTempoMsg">Mensagem da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="3" maxlength="240" style="min-height:78px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.35 var(--body);padding:10px 12px;resize:vertical;width:100%;box-sizing:border-box"></textarea><span class="hint">Preenchida conforme o status: estável ou instável. Pode complementar ou trocar o texto.</span></div></div></fieldset>
+    <fieldset class="mset"><legend>Horários</legend>
+      <div class="hmx" role="table" aria-label="Horários das equipes">
+        <div class="hh" role="row"><span></span><span>Café da manhã</span><span>DDS</span><span>Saída p/ trecho</span></div>
+        <div class="hr" role="row"><b>Sinalização</b><input id="rfSCafe" type="time" aria-label="Sinalização – café da manhã"><input id="rfSDds" type="time" aria-label="Sinalização – DDS"><input id="rfSSai" type="time" aria-label="Sinalização – saída para o trecho"></div>
+        <div class="hr" role="row"><b>Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
+        <div class="hh u" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
+        <div class="hr" role="row"><b>Usina</b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
+      </div></fieldset>
+    <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid" style="grid-template-columns:1fr">
+      <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
+      <div class="fld w2"><label for="rfTempoMsg">Detalhes da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="5" maxlength="600"></textarea><span class="hint">Começa com a frase padrão (estável ou instável) conforme o status. Complete ou troque o texto; ele vai inteiro para o relatório.</span></div></div></fieldset>
     <div class="pend" id="rfPend" hidden></div>
     <div class="mfoot"><button class="secondary" type="button" id="rfCancel">Cancelar</button><button class="primary" type="submit">Gerar programação</button></div>
   </form>
@@ -1723,7 +1739,7 @@ renderGps(Loc.gps);
   const filled=v=>v!==''&&v!=null;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
-    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1772,10 +1788,11 @@ renderGps(Loc.gps);
       const hid=S.show[p.code]===false;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
-      const len=b-a,w=num(S.w[L0.grp]),excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]);
+      const ow=S.rowW[p.tag],wBase=num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
+      const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]),off=S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
-      rows.push({p,L0,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
+      rows.push({p,L0,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
     // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
     rows.forEach(r=>{const dec=r.L0.side==='D';r.ini=dec?r.b:r.a;r.fim=dec?r.a:r.b;r.pIni=dec?Data.endName(r.p.i1):R[r.p.i0][0];r.pFim=dec?R[r.p.i0][0]:Data.endName(r.p.i1)});
     const ordem=S.ordem==='auto'?(S.sent==='C'?'asc':S.sent==='D'?'desc':'exec'):S.ordem;
@@ -1787,12 +1804,14 @@ renderGps(Loc.gps);
     const scope=`${S.pista==='ALL'?'todas as faixas':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
     const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}. Marque de novo em Cadastro de larguras e espessuras.</div>`:'';
     if(!rows.length){LAST=null;out.innerHTML=hidTxt+`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
-    const valid=rows.filter(r=>!r.excl),inc=valid.filter(r=>r.miss.length),comp=valid.filter(r=>!r.miss.length),nExcl=rows.length-valid.length;
+    // só os segmentos marcados para execução entram nos totais e na programação
+    const act=rows.filter(r=>!r.off),nOff=rows.length-act.length;
+    const valid=act.filter(r=>!r.excl),inc=valid.filter(r=>r.miss.length),comp=valid.filter(r=>!r.miss.length),nExcl=act.length-valid.length;
     const sum=(arr,k)=>arr.reduce((s,r)=>s+(r[k]||0),0);
-    const totLen=sum(rows,'len'),totA=sum(comp,'area'),totV=sum(comp,'vol'),totT=dens>0?sum(comp,'t'):null;
+    const totLen=sum(act,'len'),totA=sum(comp,'area'),totV=sum(comp,'vol'),totT=dens>0?sum(comp,'t'):null;
     const partial=inc.length>0,perdaT=(totT!=null&&perda>0)?totT*perda/100:null;
     const fmt=(v,d)=>v==null?'—':nf(v,d);const pB=partial?' <span class="badge warn">parcial</span>':'';
-    const bySol=new Map();for(const r of rows){const k=r.p.code;if(!bySol.has(k))bySol.set(k,{info:r.p.info,n:0,len:0,area:0,vol:0,t:0,inc:0,excl:r.excl});const o=bySol.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.vol+=r.vol;o.t+=r.t||0}
+    const bySol=new Map();for(const r of act){const k=r.p.code;if(!bySol.has(k))bySol.set(k,{info:r.p.info,n:0,len:0,area:0,vol:0,t:0,inc:0,excl:r.excl});const o=bySol.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.vol+=r.vol;o.t+=r.t||0}
     const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
     let h=hidTxt;
@@ -1800,14 +1819,14 @@ renderGps(Loc.gps);
     if(partial||dens==null){const det=[missW.length?`Falta largura: ${missW.join(', ')}.`:'',missE.length?`Falta espessura de CBUQ: ${missE.join(', ')}.`:'',dens==null?'Sem densidade, as toneladas não são calculadas.':''].filter(Boolean).join(' ');
       h+=`<div class="alert warn"><b>${partial?`Resultado incompleto: ${inc.length} de ${valid.length} panos têm dados ausentes e não entram nos totais.`:'Informe a densidade para obter as toneladas de CBUQ.'}</b>${det} Preencha em "Cadastro de larguras e espessuras".</div>`}
     h+=`<div class="kpis">
-      <div class="kpi"><span>Panos</span><b>${rows.length}</b><div class="sub">${comp.length} somados${inc.length?` · ${inc.length} com dados ausentes`:''}${nExcl?` · ${nExcl} sem CBUQ`:''}</div></div>
+      <div class="kpi"><span>Panos programados</span><b>${act.length}</b><div class="sub">${nOff?`${nOff} desconsiderado${nOff>1?'s':''} · `:''}${comp.length} somados${inc.length?` · ${inc.length} com dados ausentes`:''}${nExcl?` · ${nExcl} sem CBUQ`:''}</div></div>
       <div class="kpi"><span>Área total${pB}</span><b>${partial&&!comp.length?'—':fmt(totA,1)}<small>m²</small></b><div class="sub">${nf(totLen,0)} m de panos no trecho</div></div>
       <div class="kpi"><span>Volume total${pB}</span><b>${partial&&!comp.length?'—':fmt(totV,2)}<small>m³</small></b><div class="sub">espessura de cada solução</div></div>
       <div class="kpi main"><span>CBUQ total${pB}</span><b>${totT==null||(partial&&!comp.length)?'—':nf(totT,2)}<small>t</small></b><div class="sub">${totT==null?'informe a densidade':`densidade ${nf(dens,3)} t/m³`}${perdaT!=null?`<br><b style="color:var(--accent)">+ ${nf(perdaT,2)} t de perdas (${nf(perda,1)}%) → ${nf(totT+perdaT,2)} t</b>`:''}</div></div></div>`;
     h+=`<div class="card"><h2>Resumo por solução</h2><div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Solução</th><th>Panos</th><th>Comprimento<small>m</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${sol.map(o=>`<tr class="${o.excl?'exc':o.inc?'inc':''}"><td class="l sticky">${tag(o.info)} <span style="color:var(--muted);font-size:12.5px">${o.info.desc}</span></td><td>${o.n}</td><td>${nf(o.len,1)}</td>
         ${o.excl?'<td class="l" colspan="3"><span class="badge muted">não leva CBUQ</span></td>':o.inc===o.n?`<td class="miss" colspan="3" style="text-align:left">dados ausentes em ${o.inc} pano${o.inc>1?'s':''}</td>`:`<td>${nf(o.area,1)}${o.inc?` <span class="badge warn">${o.inc} sem dados</span>`:''}</td><td>${nf(o.vol,2)}</td><td>${dens>0?nf(o.t,2):'—'}</td>`}</tr>`).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td>${rows.length}</td><td>${nf(totLen,1)}</td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div></div>`;
+      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td>${act.length}</td><td>${nf(totLen,1)}</td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div></div>`;
     h+=`<div class="card"><h2>Panos de ${nIn[0]} a ${nIn[1]} · ${scope}</h2>
       <div class="ordbar"><label for="cOrdem">Ordenar segmentos</label><select id="cOrdem">
         <option value="auto"${S.ordem==='auto'?' selected':''}>Pelo sentido selecionado</option>
@@ -1815,20 +1834,27 @@ renderGps(Loc.gps);
         <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
         <span>${ordTxt}</span></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
-        <th class="l sticky">Pano</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
-      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.excl?'exc':r.miss.length?'inc':''}">
-        <td class="l sticky pano">${r.p.tag}<small>${r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small></td>
+        <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
+      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
+        <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small></td>
+        <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
         <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>
         <td>${Data.nameAt(r.ini)}</td><td>${Data.nameAt(r.fim)}</td><td>${nf(r.len,1)}</td>
         ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
-        <td class="${r.w==null?'miss':''}">${r.w==null?'sem largura':nf(r.w,2)}</td>
+        <td class="wcell"><input type="number" class="rw${r.wCustom?' cust':''}" inputmode="decimal" step="0.01" min="0" value="${r.w!=null?r.w:''}" placeholder="—" aria-label="Largura do pano ${r.p.tag} em metros">${r.wCustom?`<button type="button" class="rwreset" title="Voltar à largura padrão (${r.wBase!=null?nf(r.wBase,2):'—'} m)">↺</button>`:''}</td>
         <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
-      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02).</div></div>`;
-    LAST={rows,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()]};
+      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
+      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação.</div></div>`;
+    LAST={rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()]};
+    const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
     out.innerHTML=h;
+    [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
+    out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw'),rs=tr.querySelector('.rwreset');
+      cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};
+      if(wi)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
+      if(rs)rs.onclick=()=>{delete S.rowW[tg];save();calc(false)}});
     const so=$('cOrdem');if(so)so.onchange=()=>{S.ordem=so.value;save();calc(false)};
     if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
 
@@ -1846,7 +1872,8 @@ renderGps(Loc.gps);
   function autoMsg(){const cur=RFF.tempoMsg.value.trim();if(!RFF.tempo.value)return;const def=isUnstable(RFF.tempo.value)?MSG_INST:MSG_EST;
     // troca só a frase padrão; texto digitado pelo usuário é mantido
     if(!cur||cur===MSG_EST||cur===MSG_INST)RFF.tempoMsg.value=def;else if(cur.startsWith(MSG_EST)||cur.startsWith(MSG_INST))RFF.tempoMsg.value=def+cur.slice(MSG_EST.length)}
-  RFF.tempo.addEventListener('change',autoMsg);if(RFF.tempo.value&&!RFF.tempoMsg.value)autoMsg();
+  const grow=()=>{const e=RFF.tempoMsg;e.style.height='auto';e.style.height=Math.max(132,e.scrollHeight+2)+'px'};RFF.tempoMsg.addEventListener('input',grow);
+  RFF.tempo.addEventListener('change',()=>{autoMsg();grow()});if(RFF.tempo.value&&!RFF.tempoMsg.value)autoMsg();
   $('rfNext').onclick=()=>{RFF.data.value=addDay(RFF.data.value||todayISO());RFF.data.removeAttribute('aria-invalid');$('rfDataHint').textContent=''};
   Object.entries(RFF).forEach(([k,el])=>{const h=()=>{el.removeAttribute('aria-invalid');obraHint()};el.addEventListener('input',h);el.addEventListener('change',h)});
   function obraHint(){$('rfObraHint').textContent=/BR-373/.test(RFF.obra.value)?'Atenção: os panos desta calculadora são do R08 da BR-277 (Blocos 2 e 3).':''}
@@ -1855,7 +1882,7 @@ renderGps(Loc.gps);
   function openForm(){if(S.done)calc(false);
     if(!LAST||!LAST.rows.length){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
       if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
-    $('rfPend').hidden=true;$('repForm').hidden=false;setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
+    $('rfPend').hidden=true;$('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
   $('cRep').onclick=openForm;
   $('rfCancel').onclick=()=>$('repForm').hidden=true;
   $('repForm').addEventListener('click',e=>{if(e.target.id==='repForm')$('repForm').hidden=true});
@@ -1893,7 +1920,7 @@ renderGps(Loc.gps);
       horarios:[{title:'Equipe de sinalização',items:[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]},
                 {title:'Equipe de serviço',items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
                 {title:'Usina',items:[['Preparação da usina',I.uPrep],['Início da usinagem',I.uIni]]}],
-      start:`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code} - ${first.p.info.desc}). Depois siga a ordem numerada.`,
+      start:`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`,
       warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
       sides,count:P.seq.length,
       total:`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`,
@@ -1911,7 +1938,7 @@ renderGps(Loc.gps);
     const n=M.sides.reduce((a,s)=>a+s.panos.length,0);if(n!==M.count||!n)miss.push('Sequência de panos');
     M.sides.forEach(s=>s.panos.forEach(p=>{chk(p.ini,`Pano ${p.ord} – estaca inicial`);chk(p.fim,`Pano ${p.ord} – estaca final`);chk(p.qty,`Pano ${p.ord} – quantidade`)}));
     return miss}
-  function showReport(){const M=reportModel();const miss=validateModel(M);
+  function showReport(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
     if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
     let h=`<div class="rh"><img src="${LOGOS.neo}" alt="Neovia"><h1>${M.title}<small>${esc(M.subtitle)}</small></h1><img class="r" src="${LOGOS.via}" alt="Via Araucária"></div>
@@ -1931,7 +1958,7 @@ renderGps(Loc.gps);
   $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
   $('rvPrint').onclick=()=>{try{window.print()}catch(e){}};
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
-  async function makePdf(){const M=reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
+  async function makePdf(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     const {jsPDF}=window.jspdf;
     const W=108,H=192,M0=6,CW=W-2*M0;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
@@ -1945,13 +1972,16 @@ renderGps(Loc.gps);
     // escreve texto com quebra automática e devolve a altura usada
     const para=(s,x,yy,w,size,o={})=>{const ls=lines(s,w,size,o.b);doc.setTextColor(...(o.c||INK));ls.forEach((l,k)=>doc.text(l,o.a==='right'?x+w:o.a==='center'?x+w/2:x,yy+size*PT+k*lhOf(size),o.a?{align:o.a}:undefined));return ls.length*lhOf(size)};
     const hPara=(s,w,size,b)=>lines(s,w,size,b).length*lhOf(size);
-    let y=0;const bottom=H-10;
-    const newPage=()=>{doc.addPage([W,H],'portrait');doc.setFillColor(...PL);doc.rect(0,0,W,9,'F');para(`Programação ${M.date} · ${M.equipe}`,M0,2.2,CW,7.5,{b:true,c:WH});y=13};
+    let y=0;const bottom=H-10;let aN=1,aV=1;const lg=8;
+    // cabeçalho: logos, título, subtítulo e linha divisória (igual em todas as páginas)
+    const header=()=>{doc.addImage(LOGOS.neo,'PNG',M0,M0,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M0-lg*aV,M0,lg*aV,lg,'via','FAST');
+      let yy=M0+lg+2;yy+=para(M.title,M0,yy,CW,14,{b:true,a:'center'})+0.8;yy+=para(M.subtitle,M0,yy,CW,7.5,{c:MUT,a:'center'})+1.5;
+      doc.setDrawColor(...INK);doc.setLineWidth(0.8);doc.line(M0,yy,W-M0,yy);return yy+3.5};
+    const newPage=()=>{doc.addPage([W,H],'portrait');y=header()};
     const need=h=>{if(y+h>bottom)newPage()};
     const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
-    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);const lg=8;
-    doc.addImage(LOGOS.neo,'PNG',M0,M0,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M0-lg*aV,M0,lg*aV,lg,'via','FAST');
-    y=M0+lg+2;y+=para(M.title,M0,y,CW,14,{b:true,a:'center'})+0.8;y+=para(M.subtitle,M0,y,CW,7.5,{c:MUT,a:'center'})+3;
+    aN=await imgSize(LOGOS.neo);aV=await imgSize(LOGOS.via);
+    y=header();
     // 1. data, equipe, obra
     {const pad=4,w=CW-2*pad;const h=pad+hPara(M.date,w,12,true)+2+lhOf(6.5)+hPara(M.equipe,w,13,true)+1.5+lhOf(6.5)+hPara(M.obra,w,9.5,false)+pad;
       need(h);doc.setFillColor(...PL);doc.roundedRect(M0,y,CW,h,2,2,'F');let yy=y+pad;
