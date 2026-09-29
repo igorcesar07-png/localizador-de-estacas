@@ -1077,6 +1077,8 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
 .ngo{margin-top:14px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;background:#FDEDEE;border:2px solid var(--nr);border-radius:10px;padding:10px 12px}
 .ngo .n{background:var(--nr);color:#fff;font:700 28px/1 var(--cond);border-radius:8px;padding:8px 10px}
 .ngo span{color:var(--nr)}.ngo p{margin:2px 0 0;font:700 15px/1.35 var(--body)}
+.nleg{font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:#6B6B6B;margin:-2px 0 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.nleg span{color:#fff;border-radius:5px;padding:2px 7px;letter-spacing:0}
 .nwarn{background:var(--nl);border:1px dashed var(--ng);border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px}
 .nside{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin:14px 0 6px;background:var(--nl);border-left:5px solid var(--nr);padding:6px 10px;border-radius:0 6px 6px 0}
 .nside b{font:700 14px var(--body);letter-spacing:.08em;text-transform:uppercase}.nside span{font-size:12px;color:var(--ng)}
@@ -1173,7 +1175,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 28/09/2026 23:55 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 29/09/2026 00:00 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1957,6 +1959,9 @@ renderGps(Loc.gps);
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
   const ordTxt=n=>n+'º';
+  // cor da etiqueta de espessura: 10 cm vermelho, 6 cm laranja, 3 cm verde, outras em grafite
+  const ESP_COR={10:'#B00E17',6:'#C95F00',3:'#1E7A4C'};
+  const espColor=e=>e==null?null:(ESP_COR[Math.round(e*10)/10]||'#4A4A4A');
   const tempoCls=s=>/temporal|forte/i.test(s)?'bad':/chuva|garoa/i.test(s)?'rain':/nublado/i.test(s)?'cloud':'sun';
   const TEMPO_RGB={bad:[[253,232,230],[192,57,43]],rain:[[226,238,252],[26,115,232]],cloud:[[236,239,236],[86,96,90]],sun:[[255,244,219],[183,121,31]]};
   function cellVals(r){return {ext:nf(r.len,1),larg:r.excl||r.w==null?(r.excl?'-':'sem largura'):nf(r.w,2),area:r.area==null?'-':nf(r.area,1),esp:r.excl?'-':r.e==null?'sem espessura':nf(r.e,1),t:r.excl?'não leva CBUQ':r.miss.length||r.t==null?'-':nf(r.t,2)}}
@@ -1967,7 +1972,7 @@ renderGps(Loc.gps);
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,
-        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,
+        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:espColor(r.excl?null:r.e),
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
         qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc})}
     const tc=tempoCls(I.tempo);
@@ -2007,11 +2012,11 @@ renderGps(Loc.gps);
       <div class="ntp${M.tempo.unst?' un':''}">${ICON[M.tempo.cls]}<div><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <h3 class="nsec">Horários</h3><div class="nhr">${M.horarios.map(b=>`<div class="nhb"><h4>${b.title}</h4>${b.items.map(([k,v])=>`<div class="it"><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`).join('')}</div>
       <div class="ngo"><div class="n">1º</div><div><span>Início da execução</span><p>${esc(M.start)}</p></div></div>
-      <h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3>${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
+      <h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3><div class="nleg">Espessura: <span style="background:#B00E17">10 cm</span><span style="background:#C95F00">6 cm</span><span style="background:#1E7A4C">3 cm</span><span style="background:#4A4A4A">outras</span></div>${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
     for(const s of M.sides){h+=`<div class="nside"><b>${s.title}</b><span>${s.sub}</span></div>`;
       for(const p of s.panos)h+=`<div class="npc${p.inc?' inc':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
         <div class="l"><b>${p.lane}</b> ${pill(p)} <span>${esc(p.desc)}</span></div>
-        <div class="ch"><span class="esp${p.espOk?'':' no'}">Espessura <b>${p.esp}</b></span><span class="${p.largOk?'':'no'}">Largura <b>${p.larg}</b></span><span>Extensão <b>${p.ext}</b></span><span>Área <b>${p.area}</b></span></div></div>
+        <div class="ch"><span class="esp${p.espOk?'':' no'}"${p.espOk?` style="background:${p.espColor};border-color:${p.espColor}"`:''}>Espessura <b>${p.esp}</b></span><span class="${p.largOk?'':'no'}">Largura <b>${p.larg}</b></span><span>Extensão <b>${p.ext}</b></span><span>Área <b>${p.area}</b></span></div></div>
         <div class="q">${p.unit?`<b>${p.qty}</b><small>${p.unit}</small>`:`<small>${p.qty}</small>`}</div></div>`}
     h+=`<div class="ntot">${esc(M.total)}</div><h3 class="nsec">Resumo da programação</h3><div class="nsum">${M.tiles.map(([k,v,d])=>`<div class="${d?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
     if(M.perda)h+=`<p class="nperda">${M.perda}</p>`;
@@ -2019,20 +2024,24 @@ renderGps(Loc.gps);
       <p class="nnote">${esc(M.note)}</p><div class="nclose"><p>${M.close[0]}</p><p><b>${M.close[1]}</b></p></div>`;
     // cabeçalho no <thead>: a impressão repete em todas as páginas
     $('repDoc').innerHTML=`<table class="ptab"><thead><tr><td>${head}</td></tr></thead><tbody><tr><td>${h}</td></tr></tbody></table>`;
-    $('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0}
+    $('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0;if(!miss.length)preparePdf()}
   $('rvClose').onclick=()=>$('repView').hidden=true;
   $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
-  const isStandalone=()=>window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
-  $('rvPrint').onclick=async()=>{const msg=$('rvMsg');
-    if(isStandalone()){ // no app da Tela de Início o iOS ignora window.print(): imprime pelo PDF
-      msg.hidden=false;msg.textContent='Preparando o PDF para impressão…';
-      try{const blob=await makePdf();const file=new File([blob],pdfName(),{type:'application/pdf'});
-        if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Programação de serviços'});msg.textContent='Na folha de compartilhamento, toque em "Imprimir" para enviar à impressora.'}
-        else msg.textContent='Este modo não permite imprimir. Abra o site no Safari e toque em Imprimir.'}
-      catch(e){msg.textContent=e&&e.name==='AbortError'?'Impressão cancelada.':'Não foi possível preparar a impressão ('+(e.message||e)+').'}
-      return}
-    if(typeof window.print!=='function'){msg.hidden=false;msg.textContent='Este navegador não oferece impressão. Use Gerar PDF.';return}
-    msg.hidden=true;window.print()};
+  const isMobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  // O PDF é preparado assim que a pré-visualização abre: o toque em Imprimir/Gerar PDF usa o arquivo pronto
+  function preparePdf(){PROG.pdfP=makePdf().catch(e=>{PROG.pdfErr=e;return null})}
+  async function getPdf(){if(!PROG.pdfP)preparePdf();const b=await PROG.pdfP;if(!b)throw PROG.pdfErr||new Error('falha ao gerar');return b}
+  $('rvPrint').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Preparando a impressão…';
+    let blob;try{blob=await getPdf()}catch(e){msg.textContent='Não foi possível preparar a impressão ('+(e.message||e)+').';return}
+    const file=new File([blob],pdfName(),{type:'application/pdf'});
+    if(isMobile()){ // celular: o iOS/Android imprimem pela folha de compartilhamento
+      if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Programação de serviços'});msg.textContent='Se escolheu Imprimir na folha de compartilhamento, confira a impressora.';}
+        catch(e){msg.textContent=e&&e.name==='AbortError'?'Impressão cancelada. Toque em Imprimir e escolha a opção "Imprimir" na folha que abrir.':'Não foi possível abrir a impressão ('+(e.message||e)+').'}return}
+      const u=URL.createObjectURL(blob);const w=window.open(u,'_blank');msg.textContent=w?'O PDF foi aberto em outra aba: use Compartilhar › Imprimir.':'Permita pop-ups ou use Gerar PDF e imprima pelo arquivo.';return}
+    // computador: imprime o PDF por um quadro oculto
+    const u=URL.createObjectURL(blob);let fr=$('printFrame');if(fr)fr.remove();fr=document.createElement('iframe');fr.id='printFrame';fr.style.cssText='position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
+    fr.onload=()=>{try{fr.contentWindow.focus();fr.contentWindow.print();msg.textContent='Janela de impressão aberta.'}catch(e){const w=window.open(u,'_blank');msg.textContent=w?'O PDF abriu em outra aba; imprima por lá (Ctrl+P).':'Permita pop-ups ou use Gerar PDF.'}};
+    fr.src=u;document.body.appendChild(fr)};
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
   const pdfName=()=>{const I=PROG.info;return `Programacao_${I.data}_${I.equipe.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_')}.pdf`};
   async function makePdf(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
@@ -2086,6 +2095,9 @@ renderGps(Loc.gps);
       let yy=y+3;yy+=para('INÍCIO DA EXECUÇÃO',M0+18,yy,w,6.5,{b:true,c:RED})+0.5;para(M.start,M0+18,yy,w,9.5,{b:true});y+=h+3}
     // 4. sequência
     secT('Sequência de execução',`${M.count} panos`);
+    {font(6.5,true);doc.setTextColor(...MUT);doc.text('ESPESSURA:',M0,y+2.8);let lx=M0+doc.getTextWidth('ESPESSURA:')+2;
+      for(const [lbl,c] of [['10 cm','#B00E17'],['6 cm','#C95F00'],['3 cm','#1E7A4C'],['outras','#4A4A4A']]){font(7,true);const w=doc.getTextWidth(lbl)+3;doc.setFillColor(...hex(c));doc.roundedRect(lx,y,w,4,0.8,0.8,'F');doc.setTextColor(...WH);doc.text(lbl,lx+1.5,y+2.9);lx+=w+1.5}
+      y+=6}
     if(M.warn){const h=hPara(M.warn,CW-5,7.5,false)+4;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:MUT,dash:true,r:1.2});para(M.warn,M0+2.5,y+2,CW-5,7.5,{});y+=h+2}
     const chipsLayout=(p,x,w)=>{ // chips: espessura (destaque), largura, extensão, área; quebra de linha automática
       const items=[['ESPESSURA',p.esp,'esp',p.espOk],['LARGURA',p.larg,'',p.largOk],['EXTENSÃO',p.ext,'',true],['ÁREA',p.area,'',true]];const out=[];let cx=x,cy=0;
@@ -2105,7 +2117,7 @@ renderGps(Loc.gps);
           doc.setFillColor(...hex(p.color));doc.roundedRect(px,ly-2.9,tw,3.8,0.8,0.8,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,px+tw/2,ly,{align:'center'});font(8.5,false);doc.setTextColor(...MUT);doc.text(post,px+tw,ly)});
         yy+=hL+1.8;
         for(const c of CL.out){const cy=yy+c.dy;const esp=c.cls==='esp';
-          if(esp&&c.ok)box(c.x,cy,c.w,c.h,{fill:RED,r:1});else box(c.x,cy,c.w,c.h,{fill:WH,stroke:esp?RED:LINE,dash:!c.ok,r:1});
+          if(esp&&c.ok)box(c.x,cy,c.w,c.h,{fill:hex(p.espColor),r:1});else box(c.x,cy,c.w,c.h,{fill:WH,stroke:esp?RED:LINE,dash:!c.ok,r:1});
           font(6,true);doc.setTextColor(...(esp?(c.ok?WH:RED):MUT));doc.text(c.k,c.x+1.6,cy+3.6);font(esp?9.5:8.5,true);doc.setTextColor(...(esp?(c.ok?WH:RED):INK));doc.text(clean(c.v),c.x+2.6+c.kw,cy+3.8)}
         const big=!!p.unit;para(p.qty,W-M0-3-qw,y+(big?3.5:5),qw,big?13.5:8,{b:true,a:'right',c:big?INK:MUT});if(big)para(p.unit,W-M0-3-qw,y+10.2,qw,6.5,{c:MUT,a:'right'});
         y+=h+2}}
@@ -2129,7 +2141,7 @@ renderGps(Loc.gps);
     const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);para(`${k}/${n}`,M0,H-6.5,CW,7,{c:MUT,a:'right'});para('Neovia Engenharia · Localizador de Estacas',M0,H-6.5,CW,7,{c:MUT})}
     return doc.output('blob')}
   $('rvPdf').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Gerando PDF…';
-    let blob;try{blob=await makePdf()}catch(e){msg.textContent='Não foi possível gerar o PDF ('+(e.message||e)+'). Use Imprimir e escolha salvar como PDF.';return}
+    let blob;try{blob=await getPdf()}catch(e){msg.textContent='Não foi possível gerar o PDF ('+(e.message||e)+'). Use Imprimir e escolha salvar como PDF.';return}
     const name=pdfName();const file=new File([blob],name,{type:'application/pdf'});
     if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Programação de serviços'});msg.textContent='PDF gerado e compartilhamento concluído.';return}
       catch(e){if(e&&e.name==='AbortError'){msg.textContent='PDF gerado; compartilhamento cancelado. Toque em Gerar PDF de novo para enviar ou salvar em Arquivos.';return}}}
