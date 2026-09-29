@@ -982,6 +982,18 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .rclose{margin-top:20px;border-top:2px solid #141715;padding-top:12px;text-align:center;font-size:15px}
 .rclose p{margin:4px 0}
 .rclose b{color:#C41010}
+.rid{margin-top:12px;background:#111412;color:#fff;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column}
+.rid .d{color:#F2B705;font:700 20px var(--cond);text-transform:uppercase;margin-bottom:6px}
+.rid span{font:700 10.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#A9B3AD;margin-top:4px}
+.rid .e{font:700 22px var(--cond)}.rid .o{font:500 15px var(--body)}
+.rtempo{flex-direction:column;align-items:flex-start}.rtempo em{line-height:1.4}
+.rhb{border:1px solid #CFD6CF;border-left:5px solid #F2B705;border-radius:6px;padding:8px 10px;margin-bottom:8px}
+.rhb h4{margin:0 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase}
+.rhg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rhg span{display:block;font-size:11.5px;color:#56605A}.rhg b{font:700 24px var(--cond)}
+.rsum .dk{background:#111412;color:#fff;border-color:#111412}.rsum .dk span{color:#F2B705}
+.rsol{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border-bottom:1px solid #DDE2DD;padding:7px 0}
+.rsol b{display:block;font-size:13.5px}.rsol span{font-size:12px;color:#56605A}.rsol strong{font:700 18px var(--cond);white-space:nowrap}
 .rside{margin:14px 0 6px;font:700 13px var(--body);letter-spacing:.08em;text-transform:uppercase;border-left:5px solid #F2B705;padding:4px 8px;background:#F2F4F0}
 .rside span{font-weight:500;letter-spacing:0;text-transform:none;color:#56605A;margin-left:6px}
 .pcard{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;border:1px solid #CFD6CF;border-radius:8px;padding:8px 10px;margin-bottom:6px}
@@ -1208,7 +1220,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
     <h2 id="rfT">Dados da programação</h2>
     <p class="msub">Preencha para gerar a programação. Todos os campos são obrigatórios.</p>
     <div class="mgrid">
-      <div class="fld"><label for="rfData">Data da programação <b>*</b></label><input id="rfData" type="date"></div>
+      <div class="fld"><label for="rfData">Data da programação <b>*</b></label><div style="display:flex;gap:6px"><input id="rfData" type="date" style="flex:1;min-width:0"><button type="button" class="secondary" id="rfNext" style="min-height:50px;padding:0 10px;font-size:13px">+1 dia</button></div><span class="hint" id="rfDataHint"></span></div>
       <div class="fld"><label for="rfEquipe">Equipe <b>*</b></label><select id="rfEquipe"><option value="">Selecione…</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select></div>
       <div class="fld w2"><label for="rfObra">Obra <b>*</b></label><select id="rfObra"><option value="">Selecione…</option><option>Restauração BR-277 – Blocos 02 e 03</option><option>Restauração BR-373 – Bloco 04</option></select><span class="hint" id="rfObraHint"></span></div>
     </div>
@@ -1225,7 +1237,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
       <div class="fld"><label for="rfESai">Saída para o trecho <b>*</b></label><input id="rfESai" type="time"></div></div></fieldset>
     <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid">
       <div class="fld"><label for="rfTempo">Status da previsão <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
-      <div class="fld"><label for="rfTempoObs">Detalhes <em>(opcional)</em></label><input id="rfTempoObs" type="text" autocomplete="off" maxlength="90" placeholder="ex.: 30% de chuva após 15h"></div></div></fieldset>
+      <div class="fld w2"><label for="rfTempoMsg">Mensagem da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="3" maxlength="240" style="min-height:78px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.35 var(--body);padding:10px 12px;resize:vertical;width:100%;box-sizing:border-box"></textarea><span class="hint">Preenchida conforme o status: estável ou instável. Pode complementar ou trocar o texto.</span></div></div></fieldset>
     <div class="pend" id="rfPend" hidden></div>
     <div class="mfoot"><button class="secondary" type="button" id="rfCancel">Cancelar</button><button class="primary" type="submit">Gerar programação</button></div>
   </form>
@@ -1821,11 +1833,22 @@ renderGps(Loc.gps);
     if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
 
   /* ---------- Relatório da programação ---------- */
-  const RF=store.get('prog',{});
-  const RFF={data:$('rfData'),obra:$('rfObra'),equipe:$('rfEquipe'),uPrep:$('rfUPrep'),uIni:$('rfUIni'),sCafe:$('rfSCafe'),sDds:$('rfSDds'),sSai:$('rfSSai'),eCafe:$('rfECafe'),eDds:$('rfEDds'),eSai:$('rfESai'),tempo:$('rfTempo')};
-  const RFL={data:'Data da programação',obra:'Obra',equipe:'Equipe',uPrep:'Preparação da usina',uIni:'Início da usinagem',sCafe:'Sinalização – café da manhã',sDds:'Sinalização – DDS',sSai:'Sinalização – saída para o trecho',eCafe:'Serviço – café da manhã',eDds:'Serviço – DDS',eSai:'Serviço – saída para o trecho',tempo:'Status da previsão do tempo'};
-  Object.entries(RFF).forEach(([k,el])=>{if(k!=='data'&&k!=='tempo'&&RF[k])el.value=RF[k];const h=()=>{el.removeAttribute('aria-invalid');obraHint()};el.addEventListener('input',h);el.addEventListener('change',h)});
-  if(RF.tempoObs)$('rfTempoObs').value='';
+  const RFF={data:$('rfData'),obra:$('rfObra'),equipe:$('rfEquipe'),uPrep:$('rfUPrep'),uIni:$('rfUIni'),sCafe:$('rfSCafe'),sDds:$('rfSDds'),sSai:$('rfSSai'),eCafe:$('rfECafe'),eDds:$('rfEDds'),eSai:$('rfESai'),tempo:$('rfTempo'),tempoMsg:$('rfTempoMsg')};
+  const RFL={data:'Data da programação',obra:'Obra',equipe:'Equipe',uPrep:'Preparação da usina',uIni:'Início da usinagem',sCafe:'Sinalização – café da manhã',sDds:'Sinalização – DDS',sSai:'Sinalização – saída para o trecho',eCafe:'Serviço – café da manhã',eDds:'Serviço – DDS',eSai:'Serviço – saída para o trecho',tempo:'Status da previsão do tempo',tempoMsg:'Mensagem da previsão do tempo'};
+  const MSG_EST='A previsão do tempo está estável. Seguiremos monitorando.',MSG_INST='A previsão do tempo está instável. Seguiremos monitorando.';
+  const isUnstable=s=>/chuva|garoa|temporal/i.test(s);
+  const addDay=(iso,n=1)=>{const [y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d+n);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`};
+  const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+  // base: última programação emitida; a data avança para o dia seguinte
+  const LASTP=store.get('progLast',null)||store.get('prog',{});
+  Object.keys(RFF).forEach(k=>{if(k!=='data'&&LASTP[k]!=null)RFF[k].value=LASTP[k]});
+  if(LASTP.data){RFF.data.value=addDay(LASTP.data);$('rfDataHint').textContent=`Pré-preenchida a partir da programação de ${LASTP.data.split('-').reverse().join('/')}.`}
+  function autoMsg(){const cur=RFF.tempoMsg.value.trim();if(!RFF.tempo.value)return;const def=isUnstable(RFF.tempo.value)?MSG_INST:MSG_EST;
+    // troca só a frase padrão; texto digitado pelo usuário é mantido
+    if(!cur||cur===MSG_EST||cur===MSG_INST)RFF.tempoMsg.value=def;else if(cur.startsWith(MSG_EST)||cur.startsWith(MSG_INST))RFF.tempoMsg.value=def+cur.slice(MSG_EST.length)}
+  RFF.tempo.addEventListener('change',autoMsg);if(RFF.tempo.value&&!RFF.tempoMsg.value)autoMsg();
+  $('rfNext').onclick=()=>{RFF.data.value=addDay(RFF.data.value||todayISO());RFF.data.removeAttribute('aria-invalid');$('rfDataHint').textContent=''};
+  Object.entries(RFF).forEach(([k,el])=>{const h=()=>{el.removeAttribute('aria-invalid');obraHint()};el.addEventListener('input',h);el.addEventListener('change',h)});
   function obraHint(){$('rfObraHint').textContent=/BR-373/.test(RFF.obra.value)?'Atenção: os panos desta calculadora são do R08 da BR-277 (Blocos 2 e 3).':''}
   obraHint();
   let PROG=null;
@@ -1840,7 +1863,7 @@ renderGps(Loc.gps);
     const miss=Object.keys(RFF).filter(k=>!RFF[k].value.trim());
     Object.keys(RFF).forEach(k=>RFF[k].setAttribute('aria-invalid',miss.includes(k)?'true':'false'));
     if(miss.length){$('rfPend').innerHTML=`<b>Campos pendentes:</b> ${miss.map(k=>RFL[k]).join(', ')}.`;$('rfPend').hidden=false;RFF[miss[0]].focus();return}
-    const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());info.tempoObs=$('rfTempoObs').value.trim();const keep={...info};delete keep.data;delete keep.tempo;delete keep.tempoObs;store.set('prog',keep);
+    const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());store.set('progLast',info);
     $('repForm').hidden=true;buildProg(info);showReport()});
   // sequência de execução: crescente da menor para a maior estaca, depois decrescente da maior para a menor
   function buildProg(info){const L=LAST;const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
@@ -1855,117 +1878,140 @@ renderGps(Loc.gps);
   const tempoCls=s=>/temporal|forte/i.test(s)?'bad':/chuva|garoa/i.test(s)?'rain':/nublado/i.test(s)?'cloud':'sun';
   const TEMPO_RGB={bad:[[253,232,230],[192,57,43]],rain:[[226,238,252],[26,115,232]],cloud:[[236,239,236],[86,96,90]],sun:[[255,244,219],[183,121,31]]};
   function cellVals(r){return {ext:nf(r.len,1),larg:r.excl||r.w==null?(r.excl?'-':'sem largura'):nf(r.w,2),area:r.area==null?'-':nf(r.area,1),esp:r.excl?'-':r.e==null?'sem espessura':nf(r.e,1),t:r.excl?'não leva CBUQ':r.miss.length||r.t==null?'-':nf(r.t,2)}}
-  function showReport(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
-    const totT=L.totT;const partial=L.partial;
-    let h=`<div class="rh"><img src="${LOGOS.neo}" alt="Neovia"><h1>PROGRAMAÇÃO DE SERVIÇOS<small>BR-277 · trecho ${esc(L.nIn[0])} a ${esc(L.nIn[1])} · ${esc(L.scope)}</small></h1><img class="r" src="${LOGOS.via}" alt="Via Araucária"></div>
-      <div class="rinfo"><div><span>Obra</span><b>${esc(I.obra)}</b></div><div><span>Data</span><b>${dateBR(I.data)}</b></div><div><span>Equipe</span><b>${esc(I.equipe)}</b></div></div>
-      <div class="rtempo ${tempoCls(I.tempo)}"><span>Previsão do tempo</span><b>${esc(I.tempo)}</b>${I.tempoObs?`<em>${esc(I.tempoObs)}</em>`:''}</div>
-      <div class="rteams">
-        <div><h4>Usina</h4><dl><dt>Preparação da usina</dt><dd>${esc(I.uPrep)}</dd><dt>Início da usinagem</dt><dd>${esc(I.uIni)}</dd></dl></div>
-        <div><h4>Equipe de sinalização</h4><dl><dt>Café da manhã</dt><dd>${esc(I.sCafe)}</dd><dt>DDS</dt><dd>${esc(I.sDds)}</dd><dt>Saída para o trecho</dt><dd>${esc(I.sSai)}</dd></dl></div>
-        <div><h4>Equipe de serviço</h4><dl><dt>Café da manhã</dt><dd>${esc(I.eCafe)}</dd><dt>DDS</dt><dd>${esc(I.eDds)}</dd><dt>Saída para o trecho</dt><dd>${esc(I.eSai)}</dd></dl></div>
-      </div>
-      <div class="rstart"><span class="n">1º</span><div>Começar pela <b>pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}</b>, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}). Depois siga a ordem da tabela.</div></div>`;
-    if(partial||L.dens==null)h+=`<div class="rwarn"><b>Atenção:</b> ${L.inc.length} pano(s) sem largura ou espessura cadastrada; os totais consideram apenas os panos completos.</div>`;
-    h+=`<h3>Sequência de execução dos panos</h3>`;let lastSide=null;
-    for(const r of P.seq){if(r.L0.side!==lastSide){lastSide=r.L0.side;h+=`<div class="rside">Pista ${SIDE[lastSide].toLowerCase()} <span>${lastSide==='C'?'estacas da menor para a maior':'estacas da maior para a menor'}</span></div>`}
-      const v=cellVals(r),inf=r.p.info,inc=!r.excl&&r.miss.length;
-      h+=`<div class="pcard${inc?' inc':''}"><div class="po">${ordTxt(r.ord)}</div><div class="pb"><div class="pe">${Data.nameAt(r.ini)} <i>até</i> ${Data.nameAt(r.fim)}</div>
-        <div class="pl">${SIDE[r.L0.side]} · ${r.L0.name} <span class="tag sm" style="background:${inf.color};color:${inf.ink}">${inf.code}</span> ${inf.desc}</div>
-        <div class="pm">${v.ext} m · larg. ${v.larg}${r.w!=null?' m':''} · ${v.area}${r.area!=null?' m²':''} · esp. ${v.esp}${r.e!=null?' cm':''}</div></div>
-        <div class="pt">${r.excl?'<small>não leva CBUQ</small>':inc||r.t==null?'<small>sem dados</small>':`${v.t}<small>t</small>`}</div></div>`}
-    h+=`<div class="ptot">Total${partial?' parcial':''}: <b>${P.seq.length} panos</b> · ${nf(L.totLen,0)} m · <b>${totT==null?'-':nf(totT,2)+' t'}</b></div>`;
-    h+=`<h3>Resumo da programação</h3><div class="rsum"><div><span>Panos</span><b>${P.seq.length}</b></div><div><span>Extensão programada</span><b>${nf(L.totLen,1)} m</b></div><div><span>Área total</span><b>${nf(L.totA,1)} m²</b></div><div><span>CBUQ previsto</span><b>${totT==null?'-':nf(totT,2)+' t'}</b></div></div>`;
-    if(L.perdaT!=null)h+=`<p class="rnote" style="font-size:13px;color:#141715"><b>Com perdas de ${nf(L.perda,1)}%:</b> + ${nf(L.perdaT,2)} t, total ${nf(totT+L.perdaT,2)} t.</p>`;
-    h+=`<h3>Totais por solução / serviço</h3><div class="rtw"><table class="rt"><thead><tr><th class="l">Solução / serviço</th><th>Panos</th><th>Extensão<small>m</small></th><th>Área<small>m²</small></th><th>Quantidade<small>t CBUQ</small></th></tr></thead><tbody>
-      ${P.sol.map(o=>`<tr class="${o.inc?'inc':''}"><td class="l">${tag(o.info)} ${o.info.desc}</td><td>${o.n}</td><td>${nf(o.len,1)}</td><td>${o.excl?'-':nf(o.area,1)}</td><td>${o.excl?'não leva CBUQ':(o.inc?`${nf(o.t,2)} (${o.inc} sem dados)`:nf(o.t,2))}</td></tr>`).join('')}
-      </tbody><tfoot><tr><td class="l">Total</td><td>${P.seq.length}</td><td>${nf(L.totLen,1)}</td><td>${nf(L.totA,1)}</td><td>${totT==null?'-':nf(totT,2)}</td></tr></tfoot></table></div>`;
-    h+=`<p class="rnote">Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}. Pista crescente: estacas da menor para a maior; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parcialmente dentro do trecho entram só com a parte interna.${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.</p>`;
-    h+=`<div class="rclose"><p>Estamos à disposição. Bom trabalho a todos!</p><p><b>Neovia — por pessoas, com pessoas, para pessoas!</b></p></div>`;
-    $('repDoc').innerHTML=h;$('rvMsg').hidden=true;$('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0}
+  // Modelo único do relatório: a pré-visualização e o PDF são desenhados a partir dele
+  function reportModel(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
+    const sides=[];let cur=null;
+    for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};sides.push(cur)}
+      const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
+      cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
+        meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,
+        qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc})}
+    const tc=tempoCls(I.tempo);
+    const M={title:'PROGRAMAÇÃO DE SERVIÇOS',subtitle:`BR-277 · trecho ${L.nIn[0]} a ${L.nIn[1]} · ${L.scope}`,
+      date:dateBR(I.data),equipe:I.equipe,obra:I.obra,
+      tempo:{status:I.tempo,msg:I.tempoMsg,cls:tc,label:isUnstable(I.tempo)?'instável':'estável'},
+      horarios:[{title:'Equipe de sinalização',items:[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]},
+                {title:'Equipe de serviço',items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
+                {title:'Usina',items:[['Preparação da usina',I.uPrep],['Início da usinagem',I.uIni]]}],
+      start:`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code} - ${first.p.info.desc}). Depois siga a ordem numerada.`,
+      warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
+      sides,count:P.seq.length,
+      total:`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`,
+      tiles:[['Panos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]],
+      perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
+      sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
+        val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
+      note:`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}. Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      close:['Estamos à disposição. Bom trabalho a todos!','Neovia — por pessoas, com pessoas, para pessoas!']};
+    return M}
+  // validação: todos os campos da programação precisam chegar ao relatório
+  function validateModel(M){const miss=[];const chk=(v,l)=>{if(v==null||String(v).trim()===''||/undefined|null|NaN/.test(String(v)))miss.push(l)};
+    chk(M.date,'Data');chk(M.equipe,'Equipe');chk(M.obra,'Obra');chk(M.tempo.status,'Previsão do tempo');chk(M.tempo.msg,'Mensagem da previsão');
+    M.horarios.forEach(b=>b.items.forEach(([k,v])=>chk(v,`${b.title} – ${k}`)));
+    const n=M.sides.reduce((a,s)=>a+s.panos.length,0);if(n!==M.count||!n)miss.push('Sequência de panos');
+    M.sides.forEach(s=>s.panos.forEach(p=>{chk(p.ini,`Pano ${p.ord} – estaca inicial`);chk(p.fim,`Pano ${p.ord} – estaca final`);chk(p.qty,`Pano ${p.ord} – quantidade`)}));
+    return miss}
+  function showReport(){const M=reportModel();const miss=validateModel(M);
+    if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
+    const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
+    let h=`<div class="rh"><img src="${LOGOS.neo}" alt="Neovia"><h1>${M.title}<small>${esc(M.subtitle)}</small></h1><img class="r" src="${LOGOS.via}" alt="Via Araucária"></div>
+      <div class="rid"><b class="d">${esc(M.date)}</b><span>Equipe</span><b class="e">${esc(M.equipe)}</b><span>Obra</span><b class="o">${esc(M.obra)}</b></div>
+      <div class="rtempo ${M.tempo.cls}"><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><em>${esc(M.tempo.msg)}</em></div>
+      <h3>Horários</h3>${M.horarios.map(b=>`<div class="rhb"><h4>${b.title}</h4><div class="rhg">${b.items.map(([k,v])=>`<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>`).join('')}
+      <div class="rstart"><span class="n">1º</span><div>${esc(M.start)}</div></div>
+      <h3>Sequência de execução <span style="float:right;letter-spacing:0">${M.count} panos</span></h3>${M.warn?`<div class="rwarn">${esc(M.warn)}</div>`:''}`;
+    for(const s of M.sides){h+=`<div class="rside">${s.title}<span>${s.sub}</span></div>`;
+      for(const p of s.panos)h+=`<div class="pcard${p.inc?' inc':''}"><div class="po">${p.ord}</div><div class="pb"><div class="pe">${p.ini} <i>até</i> ${p.fim}</div><div class="pl">${p.lane} ${pill(p)} ${esc(p.desc)}</div><div class="pm">${p.meta}</div></div><div class="pt">${p.qty}${p.unit?`<small>${p.unit}</small>`:''}</div></div>`}
+    h+=`<div class="ptot">${esc(M.total)}</div><h3>Resumo da programação</h3><div class="rsum">${M.tiles.map(([k,v,d])=>`<div class="${d?'dk':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+    if(M.perda)h+=`<p class="rnote" style="font-size:13px;color:#141715"><b>${M.perda}</b></p>`;
+    h+=`<h3>Por solução</h3>${M.sol.map(o=>`<div class="rsol">${pill(o)}<div><b>${esc(o.desc)}</b><span>${o.line}</span></div><strong>${o.val}</strong></div>`).join('')}
+      <p class="rnote">${esc(M.note)}</p><div class="rclose"><p>${M.close[0]}</p><p><b>${M.close[1]}</b></p></div>`;
+    $('repDoc').innerHTML=h;$('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0}
   $('rvClose').onclick=()=>$('repView').hidden=true;
   $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
   $('rvPrint').onclick=()=>{try{window.print()}catch(e){}};
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
-  async function makePdf(){const P=PROG,L=P.L,I=P.info;
+  async function makePdf(){const M=reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     const {jsPDF}=window.jspdf;
-    // página retrato na proporção de celular (9:16); ao imprimir, amplia para A4 sem cortes
-    const W=108,H=192,M=6,CW=W-2*M;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
-    const INK=[20,23,21],MUT=[86,96,90],LINE=[207,214,207],ACC=[242,183,5],PL=[17,20,18];
-    const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>');
+    const W=108,H=192,M0=6,CW=W-2*M0;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
+    const INK=[20,23,21],MUT=[86,96,90],LINE=[207,214,207],ACC=[242,183,5],PL=[17,20,18],WH=[255,255,255];
+    const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/×/g,'x').replace(/÷/g,'/').replace(/m²/g,'m2').replace(/m³/g,'m3');
     const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-    let y=0,page=1;
-    const txt=(s,x,yy,o={})=>{doc.setFont('helvetica',o.b?'bold':'normal');doc.setFontSize(o.s||10);doc.setTextColor(...(o.c||INK));doc.text(clean(s),x,yy,o.a?{align:o.a}:undefined)};
-    const newPage=()=>{doc.addPage([W,H],'portrait');page++;y=M+2;
-      doc.setFillColor(...PL);doc.rect(0,0,W,9,'F');txt(`Programação ${dateBR(I.data)} · ${I.equipe}`,M,5.8,{s:7.5,c:[255,255,255],b:true});y=14};
-    const need=h=>{if(y+h>H-10)newPage()};
+    const PT=0.3528; // mm por ponto
+    const font=(s,b)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(s)};
+    const lines=(s,w,size,b)=>{font(size,b);return doc.splitTextToSize(clean(s),w)};
+    const lhOf=size=>size*PT*1.28;
+    // escreve texto com quebra automática e devolve a altura usada
+    const para=(s,x,yy,w,size,o={})=>{const ls=lines(s,w,size,o.b);doc.setTextColor(...(o.c||INK));ls.forEach((l,k)=>doc.text(l,o.a==='right'?x+w:o.a==='center'?x+w/2:x,yy+size*PT+k*lhOf(size),o.a?{align:o.a}:undefined));return ls.length*lhOf(size)};
+    const hPara=(s,w,size,b)=>lines(s,w,size,b).length*lhOf(size);
+    let y=0;const bottom=H-10;
+    const newPage=()=>{doc.addPage([W,H],'portrait');doc.setFillColor(...PL);doc.rect(0,0,W,9,'F');para(`Programação ${M.date} · ${M.equipe}`,M0,2.2,CW,7.5,{b:true,c:WH});y=13};
+    const need=h=>{if(y+h>bottom)newPage()};
     const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
-    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);
-    // cabeçalho
-    const lh=8;doc.addImage(LOGOS.neo,'PNG',M,M,lh*aN,lh,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M-lh*aV,M,lh*aV,lh,'via','FAST');
-    y=M+lh+6;txt('PROGRAMAÇÃO DE SERVIÇOS',W/2,y,{s:14,b:true,a:'center'});y+=4.5;
-    txt(`BR-277 · trecho ${L.nIn[0]} a ${L.nIn[1]}`,W/2,y,{s:8,c:MUT,a:'center'});y+=3;
-    // 1. obra, data e equipe
-    doc.setFillColor(...PL);doc.roundedRect(M,y,CW,27,2,2,'F');
-    txt(dateBR(I.data).toUpperCase(),M+4,y+7,{s:12,b:true,c:ACC});
-    txt('EQUIPE',M+4,y+13,{s:6.5,b:true,c:[169,179,173]});txt(I.equipe,M+4,y+18,{s:13,b:true,c:[255,255,255]});
-    txt('OBRA',M+4,y+22.5,{s:6.5,b:true,c:[169,179,173]});txt(I.obra,M+14,y+22.6,{s:8.5,c:[255,255,255]});y+=30;
-    // 2. previsão do tempo (com ícone simples)
-    const tc=tempoCls(I.tempo),[bg,fg]=TEMPO_RGB[tc];doc.setFillColor(...bg);doc.setDrawColor(...fg);doc.setLineWidth(0.7);doc.roundedRect(M,y,CW,15,2,2,'FD');
-    const ix=M+8,iy=y+7.5;
-    if(tc==='sun'){doc.setFillColor(242,183,5);doc.circle(ix,iy,2.6,'F');doc.setDrawColor(242,183,5);doc.setLineWidth(0.6);for(let k=0;k<8;k++){const a=k*Math.PI/4;doc.line(ix+Math.cos(a)*3.6,iy+Math.sin(a)*3.6,ix+Math.cos(a)*4.8,iy+Math.sin(a)*4.8)}}
-    else{doc.setFillColor(tc==='cloud'?150:120,tc==='cloud'?158:130,tc==='cloud'?152:140);doc.circle(ix-1.8,iy,2.2,'F');doc.circle(ix+0.6,iy-1.2,2.8,'F');doc.circle(ix+2.8,iy+0.3,2,'F');doc.rect(ix-1.8,iy,4.6,2.2,'F');
-      if(tc==='rain'||tc==='bad'){doc.setDrawColor(26,115,232);doc.setLineWidth(0.6);[-1.5,0.5,2.5].forEach(dx=>doc.line(ix+dx,iy+3.2,ix+dx-0.7,iy+5.2))}
-      if(tc==='bad'){doc.setFillColor(242,183,5);doc.triangle(ix+0.8,iy+2.4,ix-0.6,iy+5.6,ix+0.6,iy+5.2,'F');doc.triangle(ix+0.6,iy+5.2,ix+1.6,iy+4.6,ix-0.2,iy+7.6,'F')}}
-    txt('PREVISÃO DO TEMPO',M+16,y+5.2,{s:6.5,b:true,c:fg});txt(I.tempo,M+16,y+10.8,{s:13,b:true,c:fg});
-    if(I.tempoObs){doc.setFontSize(8);const lines=doc.splitTextToSize(clean(I.tempoObs),CW-60);txt(lines[0],W-M-3,y+10.5,{s:8,c:fg,a:'right'})}
-    y+=18;
-    // 3. horários operacionais
-    txt('HORÁRIOS',M,y+3,{s:8,b:true,c:MUT});y+=5;
-    const hblk=(title,items)=>{const bh=16;need(bh+2);doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,bh,1.5,1.5,'S');
-      doc.setFillColor(...ACC);doc.rect(M,y,1.4,bh,'F');txt(title,M+4,y+4.6,{s:7,b:true});
-      const cw=(CW-6)/items.length;items.forEach(([k,v],n)=>{const x=M+4+n*cw;txt(k,x,y+9,{s:6.5,c:MUT});txt(v,x,y+14,{s:14,b:true})});y+=bh+2};
-    hblk('EQUIPE DE SINALIZAÇÃO',[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída p/ trecho',I.sSai]]);
-    hblk('EQUIPE DE SERVIÇO',[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída p/ trecho',I.eSai]]);
-    hblk('USINA',[['Preparação',I.uPrep],['Início da usinagem',I.uIni]]);
-    // 4. sequência de execução
-    y+=2;need(24);txt('SEQUÊNCIA DE EXECUÇÃO',M,y+3,{s:8,b:true,c:MUT});txt(`${P.seq.length} panos`,W-M,y+3,{s:8,b:true,c:MUT,a:'right'});y+=5;
-    if(L.partial){need(8);doc.setFillColor(255,244,219);doc.roundedRect(M,y,CW,7,1.2,1.2,'F');txt(`Atenção: ${L.inc.length} pano(s) sem largura ou espessura; fora dos totais.`,M+2.5,y+4.6,{s:7,c:[140,90,10],b:true});y+=9}
-    let lastSide=null;
-    for(const r of P.seq){
-      if(r.L0.side!==lastSide){lastSide=r.L0.side;need(28);doc.setFillColor(242,244,240);doc.rect(M,y,CW,7,'F');doc.setFillColor(...ACC);doc.rect(M,y,1.4,7,'F');
-        txt(`PISTA ${SIDE[lastSide].toUpperCase()}`,M+4,y+4.8,{s:8.5,b:true});txt(lastSide==='C'?'da menor para a maior estaca':'da maior para a menor estaca',W-M-2,y+4.8,{s:7,c:MUT,a:'right'});y+=9}
-      const ch=19;need(ch+2);const v=cellVals(r),inf=r.p.info,inc=!r.excl&&r.miss.length;
-      if(inc){doc.setFillColor(255,244,219)}else doc.setFillColor(255,255,255);doc.setDrawColor(...(inc?[227,160,8]:LINE));doc.setLineWidth(0.3);doc.roundedRect(M,y,CW,ch,1.8,1.8,'FD');
-      doc.setFillColor(...PL);doc.roundedRect(M+2,y+2,13,ch-4,1.5,1.5,'F');txt(ordTxt(r.ord),M+8.5,y+ch/2+2.2,{s:14,b:true,c:ACC,a:'center'});
-      const x=M+18;txt(`${Data.nameAt(r.ini)}  a  ${Data.nameAt(r.fim)}`,x,y+6.2,{s:12.5,b:true});
-      txt(`${SIDE[r.L0.side]} · ${r.L0.name}`,x,y+11,{s:8.5});
-      doc.setFontSize(8.5);const lw=doc.getTextWidth(clean(`${SIDE[r.L0.side]} · ${r.L0.name}`));
-      doc.setFont('helvetica','bold');doc.setFontSize(7.5);const tw=doc.getTextWidth(inf.code)+3;doc.setFillColor(...hex(inf.color));doc.roundedRect(x+lw+2,y+8.2,tw,3.9,0.8,0.8,'F');
-      txt(inf.code,x+lw+2+tw/2,y+11,{s:7.5,b:true,c:hex(inf.ink),a:'center'});
-      txt(`${v.ext} m · ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · ${r.area!=null?nf(r.area,0)+' m2':'-'} · ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,x,y+15.6,{s:7,c:MUT});
-      const tt=r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2);txt(tt,W-M-3,y+8,{s:r.excl||inc||r.t==null?8:13,b:true,a:'right',c:r.excl||inc?MUT:INK});
-      if(!(r.excl||inc||r.t==null))txt('t CBUQ',W-M-3,y+12,{s:6.5,c:MUT,a:'right'});
-      y+=ch+2}
-    // 5. quantitativos
-    y+=2;need(46);txt('RESUMO DA PROGRAMAÇÃO',M,y+3,{s:8,b:true,c:MUT});y+=5;
-    const tile=(x,yy,w,k,v,dark)=>{if(dark){doc.setFillColor(...PL);doc.roundedRect(x,yy,w,15,1.8,1.8,'F')}else{doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(x,yy,w,15,1.8,1.8,'S')}
-      txt(k,x+3,yy+5,{s:6.5,b:true,c:dark?ACC:MUT});txt(v,x+3,yy+12,{s:13,b:true,c:dark?[255,255,255]:INK})};
-    const tw2=(CW-3)/2;tile(M,y,tw2,'PANOS',String(P.seq.length));tile(M+tw2+3,y,tw2,'EXTENSÃO',nf(L.totLen,0)+' m');y+=17;
-    tile(M,y,tw2,'ÁREA'+(L.partial?' (parcial)':''),nf(L.totA,0)+' m2');tile(M+tw2+3,y,tw2,'CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true);y+=17;
-    if(L.perdaT!=null){need(7);txt(`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`,M,y+3,{s:8.5,b:true});y+=6}
-    need(8);txt('POR SOLUÇÃO',M,y+3,{s:7,b:true,c:MUT});y+=5;
-    for(const o of P.sol){need(8);doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.line(M,y+6.5,W-M,y+6.5);
-      doc.setFont('helvetica','bold');doc.setFontSize(7.5);const tw=doc.getTextWidth(o.info.code)+3;doc.setFillColor(...hex(o.info.color));doc.roundedRect(M,y+1.2,tw,4,0.8,0.8,'F');
-      txt(o.info.code,M+tw/2,y+4.1,{s:7.5,b:true,c:hex(o.info.ink),a:'center'});txt(`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,0)} m`,M+tw+2,y+4.3,{s:8});
-      txt(o.excl?'sem CBUQ':o.inc===o.n?'sem dados':(o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'),W-M,y+4.3,{s:9,b:true,a:'right',c:o.excl||o.inc===o.n?MUT:INK});y+=7}
+    const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);const lg=8;
+    doc.addImage(LOGOS.neo,'PNG',M0,M0,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M0-lg*aV,M0,lg*aV,lg,'via','FAST');
+    y=M0+lg+2;y+=para(M.title,M0,y,CW,14,{b:true,a:'center'})+0.8;y+=para(M.subtitle,M0,y,CW,7.5,{c:MUT,a:'center'})+3;
+    // 1. data, equipe, obra
+    {const pad=4,w=CW-2*pad;const h=pad+hPara(M.date,w,12,true)+2+lhOf(6.5)+hPara(M.equipe,w,13,true)+1.5+lhOf(6.5)+hPara(M.obra,w,9.5,false)+pad;
+      need(h);doc.setFillColor(...PL);doc.roundedRect(M0,y,CW,h,2,2,'F');let yy=y+pad;
+      yy+=para(M.date.toUpperCase(),M0+pad,yy,w,12,{b:true,c:ACC})+2;yy+=para('EQUIPE',M0+pad,yy,w,6.5,{b:true,c:[169,179,173]});yy+=para(M.equipe,M0+pad,yy,w,13,{b:true,c:WH})+1.5;
+      yy+=para('OBRA',M0+pad,yy,w,6.5,{b:true,c:[169,179,173]});para(M.obra,M0+pad,yy,w,9.5,{c:WH});y+=h+3}
+    // 2. previsão do tempo (altura dinâmica, sem sobreposição)
+    {const [bg,fg]=TEMPO_RGB[M.tempo.cls];const pad=3.5,tx=M0+17,w=W-M0-pad-tx;
+      const h=Math.max(16,pad+lhOf(6.5)+hPara(M.tempo.status,w,13,true)+1+hPara(M.tempo.msg,w,9,false)+pad);need(h);
+      doc.setFillColor(...bg);doc.setDrawColor(...fg);doc.setLineWidth(0.7);doc.roundedRect(M0,y,CW,h,2,2,'FD');
+      const ix=M0+8.5,iy=y+Math.min(h/2,9),tc=M.tempo.cls;
+      if(tc==='sun'){doc.setFillColor(242,183,5);doc.circle(ix,iy,2.6,'F');doc.setDrawColor(242,183,5);doc.setLineWidth(0.6);for(let k=0;k<8;k++){const a=k*Math.PI/4;doc.line(ix+Math.cos(a)*3.6,iy+Math.sin(a)*3.6,ix+Math.cos(a)*4.8,iy+Math.sin(a)*4.8)}}
+      else{const g=tc==='cloud'?[150,158,152]:[120,130,140];doc.setFillColor(...g);doc.circle(ix-1.8,iy,2.2,'F');doc.circle(ix+0.6,iy-1.2,2.8,'F');doc.circle(ix+2.8,iy+0.3,2,'F');doc.rect(ix-1.8,iy,4.6,2.2,'F');
+        if(tc==='rain'||tc==='bad'){doc.setDrawColor(26,115,232);doc.setLineWidth(0.6);[-1.5,0.5,2.5].forEach(dx=>doc.line(ix+dx,iy+3.2,ix+dx-0.7,iy+5.2))}
+        if(tc==='bad'){doc.setFillColor(242,183,5);doc.triangle(ix+0.8,iy+2.4,ix-0.6,iy+5.6,ix+0.6,iy+5.2,'F');doc.triangle(ix+0.6,iy+5.2,ix+1.6,iy+4.6,ix-0.2,iy+7.6,'F')}}
+      let yy=y+pad;yy+=para(`PREVISÃO DO TEMPO · ${M.tempo.label.toUpperCase()}`,tx,yy,w,6.5,{b:true,c:fg});yy+=para(M.tempo.status,tx,yy,w,13,{b:true,c:fg})+1;para(M.tempo.msg,tx,yy,w,9,{c:fg});y+=h+3}
+    // 3. horários
+    need(8);y+=para('HORÁRIOS',M0,y,CW,8,{b:true,c:MUT})+1.5;
+    for(const b of M.horarios){const n=b.items.length,cw=(CW-6)/n;let lab=0;b.items.forEach(([k])=>lab=Math.max(lab,hPara(k,cw-2,6.5,false)));
+      const h=3+lhOf(7)+2+lab+lhOf(14)+2.5;need(h+2);doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(M0,y,CW,h,1.5,1.5,'S');doc.setFillColor(...ACC);doc.rect(M0,y,1.4,h,'F');
+      para(b.title.toUpperCase(),M0+4,y+2.5,CW-8,7,{b:true});const yb=y+3+lhOf(7)+2;
+      b.items.forEach(([k,v],i)=>{const x=M0+4+i*cw;para(k,x,yb,cw-2,6.5,{c:MUT});para(v,x,yb+lab,cw-2,14,{b:true})});y+=h+2}
+    // início
+    {const w=CW-22,h=Math.max(13,hPara(M.start,w,9,true)+6);need(h+2);doc.setFillColor(255,244,219);doc.setDrawColor(227,160,8);doc.setLineWidth(0.4);doc.roundedRect(M0,y,CW,h,1.8,1.8,'FD');
+      doc.setFillColor(...PL);doc.roundedRect(M0+2.5,y+(h-9)/2,12,9,1.2,1.2,'F');para('1º',M0+2.5,y+(h-9)/2+1.8,12,13,{b:true,c:ACC,a:'center'});para(M.start,M0+18,y+3,w,9,{b:true});y+=h+3}
+    // 4. sequência
+    need(10);para('SEQUÊNCIA DE EXECUÇÃO',M0,y,CW/2,8,{b:true,c:MUT});para(`${M.count} panos`,M0,y,CW,8,{b:true,c:MUT,a:'right'});y+=lhOf(8)+1.5;
+    if(M.warn){const h=hPara(M.warn,CW-5,7.5,true)+4;need(h);doc.setFillColor(255,244,219);doc.roundedRect(M0,y,CW,h,1.2,1.2,'F');para(M.warn,M0+2.5,y+2,CW-5,7.5,{b:true,c:[140,90,10]});y+=h+2}
+    for(const s of M.sides){need(9+24);doc.setFillColor(242,244,240);doc.rect(M0,y,CW,7,'F');doc.setFillColor(...ACC);doc.rect(M0,y,1.4,7,'F');
+      para(s.title.toUpperCase(),M0+4,y+1.6,CW/2,8.5,{b:true});para(s.sub,M0,y+2,CW-2,7,{c:MUT,a:'right'});y+=9;
+      for(const p of s.panos){const x=M0+18,qw=22,w=W-M0-3-qw-x;
+        const hE=hPara(`${p.ini}  a  ${p.fim}`,w,12.5,true),laneTxt=`${p.lane}  [${p.code}]  ${p.desc}`,hL=hPara(laneTxt,w,8.5,false),hM=hPara(p.meta,w,7,false);
+        const h=Math.max(19,3+hE+1+hL+1+hM+3);need(h+2);
+        doc.setFillColor(...(p.inc?[255,244,219]:WH));doc.setDrawColor(...(p.inc?[227,160,8]:LINE));doc.setLineWidth(0.3);doc.roundedRect(M0,y,CW,h,1.8,1.8,'FD');
+        doc.setFillColor(...PL);doc.roundedRect(M0+2,y+2,13,h-4,1.5,1.5,'F');para(p.ord,M0+2,y+h/2-3,13,14,{b:true,c:ACC,a:'center'});
+        let yy=y+3;yy+=para(`${p.ini}  a  ${p.fim}`,x,yy,w,12.5,{b:true})+1;
+        // linha da pista/faixa com a etiqueta colorida da solução
+        const ls=lines(laneTxt,w,8.5,false);ls.forEach((l,k)=>{const ly=yy+8.5*PT+k*lhOf(8.5);const tag=`[${p.code}]`;const ix2=l.indexOf(tag);doc.setTextColor(...INK);font(8.5,false);
+          if(ix2<0){doc.text(l,x,ly);return}const pre=l.slice(0,ix2),post=l.slice(ix2+tag.length);doc.text(pre,x,ly);const px=x+doc.getTextWidth(pre);font(7.5,true);const tw=doc.getTextWidth(p.code)+2.6;
+          doc.setFillColor(...hex(p.color));doc.roundedRect(px,ly-2.9,tw,3.8,0.8,0.8,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,px+tw/2,ly,{align:'center'});font(8.5,false);doc.setTextColor(...INK);doc.text(post,px+tw,ly)});
+        yy+=hL+1;para(p.meta,x,yy,w,7,{c:MUT});
+        const big=!!p.unit;para(p.qty,W-M0-3-qw,y+(big?4:5.5),qw,big?13:8,{b:true,a:'right',c:big?INK:MUT});if(big)para(p.unit,W-M0-3-qw,y+10.5,qw,6.5,{c:MUT,a:'right'});
+        y+=h+2}}
+    {const h=hPara(M.total,CW-6,9,true)+5;need(h);doc.setFillColor(...PL);doc.roundedRect(M0,y,CW,h,1.5,1.5,'F');para(M.total,M0+3,y+2.5,CW-6,9,{b:true,c:WH});y+=h+4}
+    // 5. resumo
+    need(44);y+=para('RESUMO DA PROGRAMAÇÃO',M0,y,CW,8,{b:true,c:MUT})+1.5;
+    const tw2=(CW-3)/2;M.tiles.forEach(([k,v,dk],i)=>{const x=M0+(i%2)*(tw2+3),yy=y+Math.floor(i/2)*17;
+      if(dk){doc.setFillColor(...PL);doc.roundedRect(x,yy,tw2,15,1.8,1.8,'F')}else{doc.setDrawColor(...LINE);doc.setLineWidth(0.3);doc.roundedRect(x,yy,tw2,15,1.8,1.8,'S')}
+      para(k.toUpperCase(),x+3,yy+2,tw2-5,6.5,{b:true,c:dk?ACC:MUT});para(v,x+3,yy+6.8,tw2-5,12.5,{b:true,c:dk?WH:INK})});y+=Math.ceil(M.tiles.length/2)*17;
+    if(M.perda){const h=hPara(M.perda,CW,8.5,true)+2;need(h);y+=para(M.perda,M0,y,CW,8.5,{b:true})+2}
+    need(8);y+=para('POR SOLUÇÃO',M0,y,CW,7,{b:true,c:MUT})+1;
+    for(const o of M.sol){font(7.5,true);const tw=doc.getTextWidth(o.code)+2.6,x=M0+tw+2.5,vw=22,w=W-M0-vw-x;
+      const h=Math.max(8,hPara(o.desc,w,8.5,true)+hPara(o.line,w,7,false)+3);need(h);
+      doc.setFillColor(...hex(o.color));doc.roundedRect(M0,y+1.5,tw,4,0.8,0.8,'F');para(o.code,M0,y+1.5,tw,7.5,{b:true,c:hex(o.ink),a:'center'});
+      let yy=y+1;yy+=para(o.desc,x,yy,w,8.5,{b:true});para(o.line,x,yy,w,7,{c:MUT});para(o.val,W-M0-vw,y+1,vw,9,{b:true,a:'right',c:/sem/.test(o.val)?MUT:INK});
+      doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.line(M0,y+h,W-M0,y+h);y+=h+1}
     // 6. observações e mensagem final
-    y+=3;doc.setFontSize(6.5);const note=clean(`Quantidade (t) = extensão x largura x espessura (cm) / 100 x densidade ${L.dens?nf(L.dens,3)+' t/m3':'(não informada)'}. Crescente: da menor para a maior estaca; decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${L.partial?' * soluções com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) fora desta programação.`:''} Fonte: R08 Unifilar B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')}.`);
-    const nl=doc.splitTextToSize(note,CW);need(nl.length*2.8+20);doc.setFont('helvetica','normal');doc.setTextColor(...MUT);doc.text(nl,M,y+2);y+=nl.length*2.8+5;
-    doc.setDrawColor(...INK);doc.setLineWidth(0.5);doc.line(M,y,W-M,y);y+=6;
-    txt('Estamos à disposição. Bom trabalho a todos!',W/2,y,{s:10,a:'center'});y+=5.5;txt('Neovia - por pessoas, com pessoas, para pessoas!',W/2,y,{s:9.5,b:true,c:[196,16,16],a:'center'});
-    const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);txt(`${k}/${n}`,W-M,H-4,{s:7,c:MUT,a:'right'});txt('Localizador de Estacas',M,H-4,{s:7,c:MUT})}
+    y+=2;{const h=hPara(M.note,CW,6.8,false);need(h+2);y+=para(M.note,M0,y,CW,6.8,{c:MUT})+4}
+    need(20);doc.setDrawColor(...INK);doc.setLineWidth(0.5);doc.line(M0,y,W-M0,y);y+=3;
+    y+=para(M.close[0],M0,y,CW,10,{a:'center'})+1.5;para(M.close[1],M0,y,CW,9.5,{b:true,c:[196,16,16],a:'center'});
+    const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);para(`${k}/${n}`,M0,H-6.5,CW,7,{c:MUT,a:'right'});para('Localizador de Estacas',M0,H-6.5,CW,7,{c:MUT})}
     return doc.output('blob')}
   $('rvPdf').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Gerando PDF…';
     let blob;try{blob=await makePdf()}catch(e){msg.textContent='Não foi possível gerar o PDF ('+(e.message||e)+'). Use Imprimir e escolha salvar como PDF.';return}
