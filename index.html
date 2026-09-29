@@ -1177,6 +1177,18 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .rbtns{display:grid;grid-template-columns:1fr 2fr;gap:10px}
 .rmsg{font-size:14px;line-height:1.4;color:#C9D1CC;margin:0}
 .rmsg.warn{color:#FFE9B0}.rmsg.ok{color:#9CF0C2}
+.fgal{min-height:40px;border-radius:10px;border:1px solid #3A423D;background:#1A1F1C;color:#fff;font:700 13px var(--body);padding:0 10px;cursor:pointer;white-space:nowrap}
+.fgal b{display:inline-block;min-width:20px;background:#C8101A;border-radius:10px;padding:1px 6px;margin-left:4px}
+#fGal{position:absolute;inset:0;z-index:25;background:#000;display:flex;flex-direction:column}
+.gbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
+.gbar b{font:700 14px var(--body);letter-spacing:.1em;text-transform:uppercase}
+.ggrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:0 12px 12px;align-content:start}
+.gi{position:relative;border-radius:8px;overflow:hidden;background:#111}
+.gi img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gi span{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);font:600 11px var(--body);padding:3px 6px}
+.gi i{position:absolute;top:6px;right:6px;font:700 10px var(--body);font-style:normal;border-radius:5px;padding:2px 6px;background:#C8101A}
+.gi i.ok{background:#1E7A4C}
+.gi button{position:absolute;top:6px;left:6px;border:0;border-radius:6px;background:rgba(0,0,0,.6);color:#fff;font:700 13px var(--body);padding:2px 7px;cursor:pointer}
 #fBusy{position:absolute;inset:0;z-index:15;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font:600 16px var(--body)}
 @media (max-width:900px){
   #pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
@@ -1214,7 +1226,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 29/09/2026 00:27 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 29/09/2026 05:53 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1306,7 +1318,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <canvas id="fCanvas" aria-label="Prévia da câmera com marcas-d'água"></canvas>
     <video id="fVideo" playsinline muted autoplay></video>
     <div class="fempty" id="fEmpty" hidden></div>
-    <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
+    <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><button type="button" class="fgal" id="fGalBtn" aria-label="Fotos guardadas no app">Fotos <b id="fGalN">0</b></button><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
     <div class="msg" id="fMsg" hidden></div>
     <div id="fBusy" hidden>Obtendo localização da foto…</div>
   </div>
@@ -1318,6 +1330,12 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
       <label class="fpick" for="fFile">Câmera do<br>aparelho</label>
       <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
     </div>
+  </div>
+  <div id="fGal" hidden>
+    <div class="gbar"><b>Fotos guardadas no app</b><button type="button" class="ghostBtn" id="fGalClose">Fechar</button></div>
+    <p class="rmsg" id="fGalMsg" style="padding:0 12px">Cada foto tirada fica guardada aqui automaticamente. Toque em "Salvar todas na galeria" e escolha <b>Salvar Imagens</b> para gravar de uma vez no app Fotos.</p>
+    <div class="ggrid" id="fGalGrid"></div>
+    <div class="rbar"><div class="rbtns"><button class="ghostBtn" type="button" id="fGalClear">Limpar enviadas</button><button class="bigBtn" type="button" id="fGalSave">Salvar todas na galeria</button></div></div>
   </div>
   <div id="fReview" hidden>
     <div class="rimg"><img id="fImg" alt="Foto capturada com as marcas-d'água"></div>
@@ -2396,18 +2414,45 @@ renderGps(Loc.gps);
       const rm=$('fRevMsg');rm.className='rmsg'+(!fix||info.low||info.stake.warn?' warn':'');
       rm.textContent=fix&&fix.stale&&!info.low?`Sem leitura nova do GPS; usada a última posição, de ${fix.stale} s antes da foto (registrado na imagem).`:!fix?'Foto sem localização: o GPS não respondeu. Coordenadas e estaca ficaram como "indisponível".':info.low?`Localização com baixa precisão (±${Math.round(fix.acc)} m), registrada na foto.`:info.stake.warn?`Estaca: ${info.stake.txt}.`:`Estaca ${info.stake.txt} · GPS ±${Math.round(fix.acc)} m · ${W}×${H} px`;
       $('fSaveMsg').className='rmsg';$('fSaveMsg').textContent='Dica: no iPhone você também pode tocar e segurar a foto e escolher "Salvar em Fotos".';
-      $('fReview').hidden=false;stopCam()},'image/jpeg',0.95)}
+      $('fReview').hidden=false;stopCam();storeLast();
+      if(navigator.userActivation?navigator.userActivation.isActive:true)saveCurrent(true)},'image/jpeg',0.95)}
   $('fShot').onclick=()=>{if(busy||!video.videoWidth)return;const date=new Date(),W=video.videoWidth,H=video.videoHeight;
     const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);finish(frame,W,H,date)};
   $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
     img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date);URL.revokeObjectURL(u)};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
   $('fRedo').onclick=()=>{$('fReview').hidden=true;lastBlob=null;startCam()};
-  $('fSave').onclick=async()=>{if(!lastBlob)return;const sm=$('fSaveMsg');const file=new File([lastBlob],lastName,{type:'image/jpeg'});
+  // guarda cada foto no próprio app (IndexedDB) para não se perder e permitir salvar várias de uma vez
+  const DB=(()=>{let dbp=null;const open=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+    const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const x=db.transaction('fotos',mode);const st=x.objectStore('fotos');const out=fn(st);x.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);x.onerror=()=>rej(x.error)})};
+    return {add:o=>tx('readwrite',s=>s.add(o)),all:()=>tx('readonly',s=>s.getAll()),put:o=>tx('readwrite',s=>s.put(o)),del:id=>tx('readwrite',s=>s.delete(id))}})();
+  let lastId=null;
+  async function galCount(){try{const a=await DB.all();const n=a.filter(f=>!f.saved).length;$('fGalN').textContent=n;return a}catch(e){$('fGalN').textContent='–';return []}}
+  galCount();
+  async function storeLast(){try{lastId=await DB.add({name:lastName,blob:lastBlob,t:Date.now(),saved:false});galCount()}catch(e){lastId=null}}
+  async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)){f.saved=true;await DB.put(f)}}catch(e){}galCount()}
+  $('fSave').onclick=()=>saveCurrent(false);
+  async function saveCurrent(auto){if(!lastBlob)return;const sm=$('fSaveMsg');const file=new File([lastBlob],lastName,{type:'image/jpeg'});
+    if(auto&&!(navigator.canShare&&navigator.canShare({files:[file]})))return;
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]});sm.className='rmsg ok';sm.textContent='Se você tocou em "Salvar Imagem", a foto está no app Fotos. Ela também fica guardada em "Fotos" aqui no app.';if(lastId!=null)markSaved([lastId]);return}
+      catch(e){if(e&&e.name==='AbortError'){sm.className='rmsg warn';sm.textContent='A folha foi fechada sem salvar. A foto está guardada no app; toque em "Salvar na galeria" e escolha "Salvar Imagem".';return}
+        if(auto&&e&&e.name==='NotAllowedError'){sm.className='rmsg';sm.textContent='Foto guardada no app. Toque em "Salvar na galeria" e escolha "Salvar Imagem" para enviar ao app Fotos.';return}}}
     if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file]});sm.className='rmsg';sm.textContent='Compartilhamento concluído. Se você escolheu "Salvar Imagem", a foto está no app Fotos; confira lá.';return}
       catch(e){if(e&&e.name==='AbortError'){sm.className='rmsg warn';sm.textContent='Compartilhamento cancelado: a foto ainda não foi salva. Toque em Salvar e escolha "Salvar Imagem".';return}}}
     try{const a=document.createElement('a');a.href=lastURL;a.download=lastName;document.body.appendChild(a);a.click();a.remove();
       sm.className='rmsg warn';sm.textContent='O navegador não permite gravar direto na galeria. Foi solicitado o download do arquivo; confira em Arquivos › Downloads e use Compartilhar › Salvar Imagem. Ou toque e segure a foto acima e escolha "Salvar em Fotos".'}
-    catch(e){sm.className='rmsg warn';sm.textContent='Não foi possível salvar por aqui. Toque e segure a foto acima e escolha "Salvar em Fotos".'}};
+    catch(e){sm.className='rmsg warn';sm.textContent='Não foi possível salvar por aqui. Toque e segure a foto acima e escolha "Salvar em Fotos".'}}
+  async function openGal(){const a=await galCount();const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
+    grid.innerHTML=a.length?a.slice().reverse().map(f=>`<div class="gi" data-id="${f.id}"><img src="${URL.createObjectURL(f.blob)}" alt=""><i class="${f.saved?'ok':''}">${f.saved?'enviada':'pendente'}</i><button type="button" data-del="${f.id}" aria-label="Excluir">✕</button><span>${new Date(f.t).toLocaleString('pt-BR')}</span></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
+    grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{await DB.del(+b.dataset.del);openGal()});
+    $('fGal').hidden=false;stopCam()}
+  $('fGalBtn').onclick=openGal;
+  $('fGalClose').onclick=()=>{$('fGal').hidden=true;if($('fReview').hidden)startCam()};
+  $('fGalClear').onclick=async()=>{const a=await DB.all();for(const f of a)if(f.saved)await DB.del(f.id);openGal()};
+  $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=(await DB.all()).filter(f=>!f.saved);if(!a.length){m.textContent='Não há fotos pendentes.';return}
+    const files=a.map(f=>new File([f.blob],f.name,{type:'image/jpeg'}));
+    if(!(navigator.canShare&&navigator.canShare({files}))){m.textContent='Este navegador não permite salvar várias fotos de uma vez. Abra cada foto e toque em Salvar.';return}
+    try{await navigator.share({files});await markSaved(a.map(f=>f.id));m.textContent=`Se você tocou em "Salvar ${files.length} Imagens", elas estão no app Fotos.`;openGal()}
+    catch(e){m.textContent=e&&e.name==='AbortError'?'Cancelado: as fotos continuam pendentes.':'Não foi possível abrir o salvar ('+(e.message||e.name)+').'}};
   Router.onInit('foto',()=>{});
   on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if($('fReview').hidden)startCam();gpsUi()}else stopCam()});
   document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if($('fReview').hidden)startCam()});
