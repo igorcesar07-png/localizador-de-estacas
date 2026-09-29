@@ -872,6 +872,7 @@ canvas#reti{width:100%;height:190px;display:block;border-radius:8px;background:v
 .fld input,.fld select{min-height:50px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 18px var(--body);padding:0 12px;min-width:0;width:100%;box-sizing:border-box}
 .fld input.km{font:700 22px var(--cond);letter-spacing:.02em}
 .fld input[aria-invalid="true"]{border-color:var(--bad);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 25%,transparent)}
+.fld .hint{font-size:12px;color:var(--muted)}
 .fld .err{font-size:12.5px;color:var(--bad);font-weight:600}
 .actions{grid-column:1 / -1;display:flex;gap:10px;flex-wrap:wrap}
 .primary{min-height:52px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:700 16px var(--body);padding:0 24px;cursor:pointer}
@@ -1066,7 +1067,7 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
           <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000"><span class="err" id="eKmB"></span></div>
           <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option></select></div>
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
-          <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="informe"><span class="err" id="eDens"></span></div>
+          <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
           <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
         </div>
@@ -1077,11 +1078,12 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
         <div class="cad">
           <div>
             <h3>Largura por pista (m)</h3>
-            <p class="note" style="margin:0 0 10px">O R08 não traz largura das faixas. Informe a largura de projeto de cada pista; sem ela o pano fica sinalizado e não entra no total.</p>
+            <p class="note" style="margin:0 0 10px">O R08 não traz largura das faixas. Valores padrão: 3,60 m para faixa 1 e faixa 2/3 e 2,50 m para acostamento; edite se o trecho tiver outra largura. Campo vazio deixa o pano sinalizado e fora do total.</p>
+            <button type="button" class="secondary" id="cRestore" style="min-height:44px;margin-bottom:10px">Restaurar padrões (larguras e densidade)</button>
             <div class="wgrid">
-              <div class="fld"><label for="wF1">Faixa 1</label><input id="wF1" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
-              <div class="fld"><label for="wF23">Faixa 2/3</label><input id="wF23" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
-              <div class="fld"><label for="wAC">Acostamento</label><input id="wAC" type="number" inputmode="decimal" step="0.01" min="0" placeholder="não informada"></div>
+              <div class="fld"><label for="wF1">Faixa 1</label><input id="wF1" type="number" inputmode="decimal" step="0.01" min="0" placeholder="3,60"></div>
+              <div class="fld"><label for="wF23">Faixa 2/3</label><input id="wF23" type="number" inputmode="decimal" step="0.01" min="0" placeholder="3,60"></div>
+              <div class="fld"><label for="wAC">Acostamento</label><input id="wAC" type="number" inputmode="decimal" step="0.01" min="0" placeholder="2,50"></div>
             </div>
           </div>
           <div>
@@ -1521,8 +1523,11 @@ renderGps(Loc.gps);
   const PAVE_CODES=Data.CODES.slice().sort((a,b)=>{const fa=Data.FAM_ORDER.indexOf(Data.info(a).fam),fb=Data.FAM_ORDER.indexOf(Data.info(b).fam);return fa-fb||a.localeCompare(b,'pt',{numeric:true})});
   const DEF_ESP={FF:6,FE:10,FS:3};
   const saved=store.get('calc',null)||{};
-  const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:saved.dens??'',perda:saved.perda??'',
-    w:Object.assign({F1:'',F23:'',AC:''},saved.w||{}),esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+  const DEF_DENS='2.528',DEF_W={F1:'3.6',F23:'3.6',AC:'2.5'};
+  const filled=v=>v!==''&&v!=null;
+  const sw=saved.w||{};
+  const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1540,6 +1545,7 @@ renderGps(Loc.gps);
     const parts=[];if(missW)parts.push(`${missW} largura${missW>1?'s':''}`);if(missE)parts.push(`${missE} espessura${missE>1?'s':''}`);
     $('cCadFlag').textContent=parts.length?parts.join(' e ')+' sem valor':'completo';$('cCadFlag').style.color=parts.length?'':'var(--ok)'}
   cadFlag();
+  $('cRestore').onclick=()=>{S.dens=DEF_DENS;F.dens.value=DEF_DENS;['F1','F23','AC'].forEach(k=>{S.w[k]=DEF_W[k];$('w'+k).value=DEF_W[k]});save();cadFlag();if(S.done)calc(false)};
   if(!['F1','F23','AC'].every(k=>num(S.w[k])>0))$('cCad').open=true;
   $('cForm').addEventListener('submit',e=>{e.preventDefault();S.done=true;save();calc(true)});
   $('cHere').onclick=()=>{const r=Loc.st.r;if(!r||r.outside){fieldErr('eKmA','Sem posição no trecho. Ative o GPS em Localização estaca.');return}

@@ -9,7 +9,7 @@ Aplicativo web para acompanhamento em campo do projeto de restauração da BR-27
 ## Dados
 - Estacas e coordenadas: `B2B3_KMZ_Estaca.kmz`, com 6.961 estacas de 164+700 a 303+800 e hodômetro contínuo a cada 20 m. O comprimento de cada km varia de 900 a 1.120 m.
 - Soluções: R08 Unifilar de Soluções B2+B3 BR-277.
-- A largura das faixas não consta na base. Ela é informada na calculadora, no cadastro de larguras e espessuras, e fica salva no aparelho.
+- A largura das faixas não consta na base. A calculadora usa por padrão 3,60 m para faixa 1 e faixa 2/3 e 2,50 m para acostamento, e densidade de 2,528 t/m³. Todos os valores podem ser editados e ficam salvos no aparelho.
 
 ## Uso
 Abra o endereço do GitHub Pages no Safari e permita a localização. Para instalar no iPhone: Compartilhar → Adicionar à Tela de Início. Depois de instalado, funciona offline para os dados e para os trechos de mapa já visualizados.
