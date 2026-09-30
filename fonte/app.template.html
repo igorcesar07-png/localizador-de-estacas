@@ -540,7 +540,41 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .rmsg.warn{color:#FFE9B0}.rmsg.ok{color:#9CF0C2}
 .fgal{min-height:40px;border-radius:10px;border:1px solid #3A423D;background:#1A1F1C;color:#fff;font:700 13px var(--body);padding:0 10px;cursor:pointer;white-space:nowrap}
 .fgal b{display:inline-block;min-width:20px;background:#C8101A;border-radius:10px;padding:1px 6px;margin-left:4px}
-#fGal{position:absolute;inset:0;z-index:25;background:#000;display:flex;flex-direction:column}
+#fGal{position:absolute;inset:0;z-index:25;background:#000;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+.gtop{position:relative;display:flex;align-items:center;gap:8px;padding:6px 8px;min-height:52px;box-sizing:border-box;border-bottom:1px solid #1E2421}
+.gtt{flex:1;min-width:0;font:700 15px var(--body);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gtt small{font:600 13px var(--body);letter-spacing:0;text-transform:none;color:#A9B3AD;margin-left:4px}
+.gib{flex:none;width:44px;height:40px;border-radius:10px;border:1px solid #3A423D;background:#141816;color:#fff;font:700 20px/1 var(--body);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}.gib svg{width:20px;height:20px}
+.gsb{flex:none;height:40px;border-radius:10px;border:1px solid #3A423D;background:#141816;color:#fff;font:600 14px var(--body);padding:0 12px;cursor:pointer}
+#fGal .gpop{top:calc(100% + 4px);right:8px}
+#fGal .ggrid{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:8px;align-content:start;grid-auto-rows:max-content}
+#fGal .gimg,#fGal .gcap{flex:none}
+#fGal .gi{position:relative;border-radius:10px;overflow:hidden;background:#141816;outline:3px solid transparent;outline-offset:-3px;cursor:pointer;display:flex;flex-direction:column}
+#fGal .gi.sel{outline-color:#F2B705;background:#2A2408}
+#fGal .gimg{position:relative}
+#fGal .gi img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+#fGal .gcap{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 7px 6px;font:600 11.5px/1.25 var(--body);color:#DDE3DF;position:static;background:none}
+#fGal .gcap span{position:static;background:none;padding:0;font:inherit;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#fGal .gcap span b{display:block;font:700 13px var(--cond);color:#fff;letter-spacing:.02em}#fGal .gcap span small{display:block;font:500 11px var(--body);color:#A9B3AD}
+#fGal .gcap i{position:static;flex:none;font:700 10px var(--body);font-style:normal;border-radius:5px;padding:2px 6px;background:#5A2020;color:#FFD9D5}
+#fGal .gcap i.ok{background:#1E5A3C;color:#C9F2DA}
+#fGal .gfoot{border-top:1px solid #1E2421;background:#0A0C0B;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+#fGal .ginfo{max-height:32vh;overflow-y:auto;padding:2px 4px 8px;display:grid;gap:6px}
+#fGal .ginfo .rmsg{font-size:13px}
+#fGal .gmsg{margin:0 4px 6px;font:500 13px/1.35 var(--body);color:#FFE9B0}
+#fGal .gact2{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}
+.ginfoBtn{min-height:46px;min-width:0;border:0;background:none;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:center;padding:0 4px;cursor:pointer;position:relative}
+.ginfoBtn b{font:700 14px var(--body);color:#F2B705;white-space:nowrap}.ginfoBtn span{font:500 11.5px var(--body);color:#A9B3AD;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ginfoBtn i{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-style:normal;color:#A9B3AD;font-size:16px}
+.ginfoBtn{padding-right:24px}
+#fGal .gact2 .delBtn,#fGal .gact2 .bigBtn{min-height:46px;padding:0 16px;font-size:15px;white-space:nowrap}
+#fGal .gact2 .bigBtn{min-width:110px}
+@media (orientation:landscape) and (max-height:520px){
+  .gtop{min-height:44px;padding:3px 8px}.gib,.gsb{height:36px}
+  #fGal .ggrid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;padding:6px}
+  #fGal .gfoot{padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px))}
+  #fGal .gact2 .delBtn,#fGal .gact2 .bigBtn,.ginfoBtn{min-height:40px}
+  #fGal .ginfo{max-height:38vh}}
+@media (min-width:900px){#fGal .ggrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
 .gbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
 .gbar b{font:700 14px var(--body);letter-spacing:.1em;text-transform:uppercase}
 .ggrid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:0 12px 12px;align-content:start}
@@ -733,12 +767,24 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <div class="fflash" id="fFlash"></div>
   </div>
   <div id="fGal" hidden>
-    <div class="gbar"><b>Fotos</b><span class="gact"><button type="button" class="ghostBtn gmenu" id="fGalMenuBtn" aria-haspopup="true" aria-expanded="false">⋯</button><button type="button" class="ghostBtn" id="fGalClose">Fechar</button></span>
-      <div class="gpop" id="fGalMenu" hidden><button type="button" id="fGalNote">Nota para as próximas capturas</button></div></div>
-    <div class="gsel"><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · 15 min</button><button type="button" id="gSelNone">Selecionar nenhuma</button><button type="button" id="gSelPend">Não salvas no aparelho</button><b id="gSelN">0 selecionadas</b></div>
-    <p class="rmsg" id="fGalPend" style="padding:0 12px 6px"></p><p class="rmsg" id="fGalMsg" style="padding:0 12px 8px">Cada foto tirada fica guardada aqui automaticamente. Selecione as fotos e toque em "Salvar selecionadas" para gravar no aparelho.</p>
+    <div class="gtop">
+      <button type="button" class="gib" id="fGalClose" aria-label="Fechar e voltar para a câmera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <b class="gtt">Fotos <small id="gTot"></small></b>
+      <button type="button" class="gsb" id="gSelBtn" aria-haspopup="true" aria-expanded="false">Selecionar ▾</button>
+      <button type="button" class="gib" id="fGalMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mais opções">⋯</button>
+      <div class="gpop" id="gSelMenu" hidden><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · últimos 15 min</button><button type="button" id="gSelPend">Não salvas no aparelho</button><button type="button" id="gSelNone">Selecionar nenhuma</button></div>
+      <div class="gpop" id="fGalMenu" hidden><button type="button" id="fGalNote">Nota para as próximas capturas</button></div>
+    </div>
     <div class="ggrid" id="fGalGrid"></div>
-    <div class="rbar"><div class="rbtns"><button class="delBtn" type="button" id="fGalDel" disabled>Excluir selecionadas</button><button class="bigBtn" type="button" id="fGalSave" disabled>Salvar selecionadas</button></div></div>
+    <div class="gfoot">
+      <div class="ginfo" id="gInfo" hidden><p class="rmsg" id="fGalPend"></p><p class="rmsg">Cada foto tirada fica guardada aqui. Toque nas fotos para selecionar e use "Salvar" para gravar no aparelho (no iPhone, escolha "Salvar Imagens"). As fotos continuam aqui até você excluir.</p></div>
+      <p class="gmsg" id="fGalMsg" hidden></p>
+      <div class="gact2">
+        <button type="button" class="ginfoBtn" id="gInfoBtn" aria-expanded="false" aria-controls="gInfo"><b id="gSelN">0 selecionadas</b><span id="gPendMini"></span><i aria-hidden="true">ⓘ</i></button>
+        <button class="delBtn" type="button" id="fGalDel" disabled>Excluir</button>
+        <button class="bigBtn" type="button" id="fGalSave" disabled>Salvar</button>
+      </div>
+    </div>
   </div>
   <div class="modal" id="noteModal" hidden role="dialog" aria-modal="true" aria-labelledby="nmT">
     <div class="mbox nbox"><h2 id="nmT">Nota para as próximas capturas</h2>
@@ -1995,14 +2041,15 @@ renderGps(Loc.gps);
   /* ---------- galeria "Fotos": seleção, exclusão e exportação ---------- */
   const SEL=new Set();let GAL=[];
   function selUi(){const n=SEL.size;$('gSelN').textContent=n===1?'1 selecionada':n+' selecionadas';
-    $('fGalDel').disabled=!n;$('fGalSave').disabled=!n;$('fGalDel').textContent=n?`Excluir selecionadas (${n})`:'Excluir selecionadas';$('fGalSave').textContent=n?`Salvar selecionadas (${n})`:'Salvar selecionadas';
+    $('fGalDel').disabled=!n;$('fGalSave').disabled=!n;$('fGalDel').textContent='Excluir';$('fGalSave').textContent=n?`Salvar (${n})`:'Salvar';
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
   async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><img src="${URL.createObjectURL(f.blob)}" alt=""><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button><i class="${f.saved?'ok':''}">${f.saved?'salva no aparelho':'só no app'}</i><span>${new Date(f.t).toLocaleString('pt-BR')}${f.stake?' · '+f.stake:''}</span></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b><small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
-    const np=GAL.filter(f=>!f.saved).length;$('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: toque em "Não salvas no aparelho" e depois em "Salvar selecionadas" › Salvar Imagens.`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
+    const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=GAL.length?`(${GAL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
+    $('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: use Selecionar ▾ › "Não salvas no aparelho" e depois "Salvar".`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
     selUi();$('fGal').hidden=false;stopCam()}
   function confirmDel(n,txt){return new Promise(res=>{$('cfTxt').textContent=txt||`${n} foto${n>1?'s serão removidas':' será removida'} do armazenamento do app. Essa ação não pode ser desfeita.`;
     $('cfYes').textContent=n>1?`Excluir ${n} fotos`:'Excluir';$('confModal').hidden=false;const done=v=>{$('confModal').hidden=true;res(v)};
@@ -2012,9 +2059,16 @@ renderGps(Loc.gps);
   $('gSelNone').onclick=()=>{SEL.clear();selUi()};
   $('gSelPend').onclick=()=>{SEL.clear();GAL.forEach(f=>{if(!f.saved)SEL.add(f.id)});selUi();if(!SEL.size)$('fGalMsg').textContent='Todas as fotos já foram salvas no aparelho.'};
   $('fGalBtn').onclick=openGal;
-  $('fGalClose').onclick=()=>{$('fGal').hidden=true;$('fGalMenu').hidden=true;startCam()};
-  $('fGalMenuBtn').onclick=()=>{const m=$('fGalMenu');m.hidden=!m.hidden;$('fGalMenuBtn').setAttribute('aria-expanded',!m.hidden)};
-  $('fGalNote').onclick=()=>{$('fGalMenu').hidden=true;openNote()};
+  const pops=[['gSelBtn','gSelMenu'],['fGalMenuBtn','fGalMenu']];
+  const closePops=()=>pops.forEach(([b,m])=>{$(m).hidden=true;$(b).setAttribute('aria-expanded','false')});
+  pops.forEach(([b,m])=>{$(b).onclick=e=>{e.stopPropagation();const open=$(m).hidden;closePops();$(m).hidden=!open;$(b).setAttribute('aria-expanded',open)}});
+  ['gSelAll','gSelRec','gSelPend','gSelNone'].forEach(id=>$(id).addEventListener('click',closePops));
+  $('fGal').addEventListener('click',e=>{if(!e.target.closest('.gpop'))closePops()});
+  $('fGalClose').onclick=()=>{$('fGal').hidden=true;closePops();startCam()};
+  $('gInfoBtn').onclick=()=>{const g=$('gInfo');g.hidden=!g.hidden;$('gInfoBtn').setAttribute('aria-expanded',!g.hidden)};
+  // mensagens de retorno: uma linha na barra inferior que some sozinha (não empurra nem cobre as fotos permanentemente)
+  let gmT=0;new MutationObserver(()=>{const m=$('fGalMsg');if(!m.textContent.trim())return;m.hidden=false;clearTimeout(gmT);gmT=setTimeout(()=>{m.hidden=true},6000)}).observe($('fGalMsg'),{childList:true,characterData:true,subtree:true});
+  $('fGalNote').onclick=()=>{closePops();openNote()};
   $('fGalDel').onclick=async()=>{const ids=[...SEL];if(!ids.length)return;if(!await confirmDel(ids.length))return;
     for(const id of ids)await DB.del(id);SEL.clear();$('fGalMsg').textContent=`${ids.length} foto${ids.length>1?'s excluídas':' excluída'} do app.`;openGal()};
   async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)&&!f.saved){f.saved=true;await DB.put(f)}}catch(e){}}
