@@ -756,6 +756,10 @@ button{font-family:inherit}
 .bigBtn{min-height:58px;border-radius:14px;border:0;background:#F2B705;color:#141715;font:700 17px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px}
 .bigBtn.stop{background:#262C28;color:#fff;border:1px solid #3A423D}
 .bigBtn svg{width:22px;height:22px}
+.backBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;border-radius:12px;border:1.5px solid #9AA39D;background:#FFFFFF;color:#1A1A1A;font:700 15px var(--body);padding:0 16px 0 12px;cursor:pointer;white-space:nowrap}
+.backBtn svg{width:18px;height:18px;flex:none}.backBtn span{color:inherit}
+.backBtn:active{background:#EEF1EF}
+.backBtn.dark{background:#141816;color:#FFFFFF;border-color:#4A534E;min-height:40px}.backBtn.dark:active{background:#222825}
 .ghostBtn{min-height:58px;border-radius:14px;border:1px solid #3A423D;background:transparent;color:#fff;font:600 15px var(--body);padding:0 16px;cursor:pointer}
 @media (orientation:landscape) and (max-height:500px){
   .locMain{flex-direction:row;flex-wrap:wrap;gap:0 24px}.lbl{width:100%}.track{width:100%;max-width:640px;margin-top:6px}
@@ -1331,6 +1335,16 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 @media (orientation:landscape) and (max-height:520px){#layModal .mbox{max-height:calc(100% - 8px);overflow:auto}.lopts{grid-template-columns:1fr 1fr}.lopt canvas{max-height:30vh;width:auto;margin:0 auto}#layModal .msub{display:none}#layModal h2{margin-bottom:8px}.lopts{margin:0 0 10px}}.nbox h2{margin:0 0 4px;font:700 18px var(--body)}
 .nbox textarea{width:100%;box-sizing:border-box;min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.4 var(--body);padding:10px 12px;resize:vertical}
 .ncount{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;font:500 12.5px var(--body);color:var(--muted)}
+.nhist{margin:0 0 12px;border-top:1px solid var(--line);padding-top:10px}
+.nhh{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.nhh b{font:700 13px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.nhh b span{letter-spacing:0;font-weight:600}
+#nhQ{width:100%;box-sizing:border-box;min-height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px var(--body);padding:0 12px;margin-bottom:6px}
+.nhl{max-height:30vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
+.nhi{display:flex;align-items:stretch;border-bottom:1px solid var(--line)}.nhi:last-child{border-bottom:0}
+.nhi button.use{flex:1;min-width:0;text-align:left;border:0;background:none;color:var(--ink);font:500 14.5px/1.35 var(--body);padding:10px 12px;cursor:pointer}
+.nhi button.use small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.nhi button.use:active,.nhi.cur button.use{background:var(--surface-2)}.nhi.cur button.use{box-shadow:inset 3px 0 0 #C8101A}
+.nhi button.del{flex:none;width:46px;border:0;border-left:1px solid var(--line);background:none;color:#C8101A;font:700 16px var(--body);cursor:pointer}
+.nhe{padding:12px;color:var(--muted);font-size:13.5px}
 .linkBtn{border:0;background:none;color:#C8101A;font:600 13.5px var(--body);padding:6px 0;cursor:pointer}
 .nbtns{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
 .delBtn{min-height:48px;border-radius:12px;border:0;background:#C8101A;color:#fff;font:700 15px var(--body);cursor:pointer;padding:0 12px}
@@ -1388,7 +1402,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 10:18 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 10:54 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1522,12 +1536,12 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="rf2" style="margin:8px 0"><div class="fld"><label for="rcDate">Data de execução</label><input id="rcDate" type="date"></div><div class="fld"><label for="rcObs">Observação (opcional)</label><input id="rcObs" maxlength="200"></div></div>
       <div class="ncount"><span><button type="button" class="linkBtn" id="rcAll">Marcar todos</button> · <button type="button" class="linkBtn" id="rcNone">Desmarcar todos</button></span></div>
       <div class="rclist" id="rcList"></div>
-      <div class="nbtns"><button type="button" class="ghostBtn" id="rcCancel">Cancelar</button><button type="button" class="bigBtn" id="rcOk">Concluir programação</button></div></div>
+      <div class="nbtns"><button type="button" class="backBtn" id="rcCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="bigBtn" id="rcOk">Concluir programação</button></div></div>
   </div>
   <div class="modal" id="rImp" hidden role="dialog" aria-modal="true" aria-labelledby="riT">
     <div class="mbox nbox"><h2 id="riT">Importar planilha</h2><div id="riBody"></div>
       <label class="rci" style="margin:10px 0"><input type="checkbox" id="riRep" checked><span>Substituir a importação anterior<small>desmarque para somar aos registros já importados</small></span></label>
-      <div class="nbtns"><button type="button" class="ghostBtn" id="riCancel">Cancelar</button><button type="button" class="bigBtn" id="riOk">Importar</button></div></div>
+      <div class="nbtns"><button type="button" class="backBtn" id="riCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="bigBtn" id="riOk">Importar</button></div></div>
   </div>
 </section>
 
@@ -1556,7 +1570,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </div>
   <div id="fGal" hidden>
     <div class="gtop">
-      <button type="button" class="gib" id="fGalClose" aria-label="Fechar e voltar para a câmera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button type="button" class="backBtn dark" id="fGalClose" aria-label="Voltar para a câmera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button>
       <b class="gtt">Fotos <small id="gTot"></small></b>
       <button type="button" class="gsb" id="gSelBtn" aria-haspopup="true" aria-expanded="false">Selecionar ▾</button>
       <button type="button" class="gib" id="fGalMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mais opções">⋯</button>
@@ -1579,7 +1593,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <p class="msub">Sai em cada foto tirada a partir de agora, até você alterar ou limpar. Não muda fotos já guardadas.</p>
       <textarea id="fNote" maxlength="400" rows="4" placeholder="ex.: FF faixa 1 decrescente"></textarea>
       <div class="ncount"><button type="button" class="linkBtn" id="nmClear">Limpar nota</button><span id="nmN">0/400</span></div>
-      <div class="nbtns"><button type="button" class="ghostBtn" id="nmCancel">Cancelar</button><button type="button" class="bigBtn" id="nmApply">Aplicar</button></div></div>
+      <div class="nhist"><div class="nhh"><b>Notas salvas <span id="nhN"></span></b></div>
+        <input type="search" id="nhQ" placeholder="Pesquisar notas salvas" autocomplete="off" aria-label="Pesquisar notas salvas">
+        <div class="nhl" id="nhList"></div></div>
+      <div class="nbtns"><button type="button" class="backBtn" id="nmCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="bigBtn" id="nmApply">Aplicar</button></div></div>
   </div>
   <div class="modal" id="layModal" hidden role="dialog" aria-modal="true" aria-labelledby="lmT">
     <div class="mbox nbox lbox"><h2 id="lmT">Layout da foto</h2><p class="msub">Vale para as próximas fotos até você trocar. Só muda o fundo das logos.</p>
@@ -1591,7 +1608,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </div>
   <div class="modal" id="confModal" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfT">
     <div class="mbox nbox"><h2 id="cfT">Excluir fotos</h2><p class="msub" id="cfTxt"></p>
-      <div class="nbtns"><button type="button" class="ghostBtn" id="cfNo">Cancelar</button><button type="button" class="delBtn" id="cfYes">Excluir</button></div></div>
+      <div class="nbtns"><button type="button" class="backBtn" id="cfNo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="delBtn" id="cfYes">Excluir</button></div></div>
   </div>
 </section>
 
@@ -1621,11 +1638,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
       <div class="fld w2"><label for="rfTempoMsg">Detalhes da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="5" maxlength="600"></textarea><span class="hint">Começa com a frase padrão (estável ou instável) conforme o status. Complete ou troque o texto; ele vai inteiro para o relatório.</span></div></div></fieldset>
     <div class="pend" id="rfPend" hidden></div>
-    <div class="mfoot"><button class="secondary" type="button" id="rfCancel">Cancelar</button><button class="primary" type="submit">Gerar programação</button></div>
+    <div class="mfoot"><button class="backBtn" type="button" id="rfCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button class="primary" type="submit">Gerar programação</button></div>
   </form>
 </div>
 <div id="repView" hidden>
-  <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" id="rvClose">Fechar</button></div>
+  <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" class="backBtn" id="rvClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button></div>
   <div class="rmsg2" id="rvMsg" hidden></div>
   <div class="rscroll"><div id="repDoc"></div></div>
 </div>
@@ -2716,11 +2733,26 @@ renderGps(Loc.gps);
   const SENTS=['Crescente','Decrescente'],FAIXAS=['Faixa 1','Faixa 2','Faixa 2/3','Faixa 3','Acostamento'];
   let SENT=SENTS.includes(store.get('fotoSent',''))?store.get('fotoSent'):'Crescente',FAIXA=FAIXAS.includes(store.get('fotoFaixa',''))?store.get('fotoFaixa'):'Faixa 1';
   function noteUi(){$('fNoteLbl').textContent=NOTE?'Nota: '+NOTE:'Adicionar nota';$('fNoteBtn').classList.toggle('on',!!NOTE);live=null}
-  function openNote(){$('fNote').value=NOTE;$('nmN').textContent=NOTE.length+'/400';$('noteModal').hidden=false;setTimeout(()=>$('fNote').focus(),60)}
-  $('fNote').addEventListener('input',()=>$('nmN').textContent=$('fNote').value.length+'/400');
+  // histórico de notas: sem duplicar textos iguais (ignora maiúsculas, acentos e espaços extras)
+  const nkey=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+  const Notes={all:()=>{const a=store.get('fotoNotes',[]);return Array.isArray(a)?a:[]},
+    add(t){t=(t||'').replace(/\s+/g,' ').trim();if(!t)return;const k=nkey(t);const a=Notes.all().filter(x=>nkey(x.t)!==k);const old=Notes.all().find(x=>nkey(x.t)===k);
+      a.unshift({t,n:(old?old.n:0)+1,last:Date.now()});store.set('fotoNotes',a.slice(0,300))},
+    del(t){const k=nkey(t);store.set('fotoNotes',Notes.all().filter(x=>nkey(x.t)!==k))}};
+  const escN=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function renderNotes(){const q=nkey($('nhQ').value||''),cur=nkey($('fNote').value||''),all=Notes.all();
+    const list=q?all.filter(x=>nkey(x.t).includes(q)):all;$('nhN').textContent=all.length?`(${all.length})`:'';
+    $('nhList').innerHTML=list.length?list.map((x,i)=>`<div class="nhi${nkey(x.t)===cur?' cur':''}"><button type="button" class="use" data-i="${i}">${escN(x.t)}<small>usada ${x.n}× · ${new Date(x.last).toLocaleDateString('pt-BR')}</small></button><button type="button" class="del" data-i="${i}" aria-label="Excluir nota salva">✕</button></div>`).join('')
+      :`<div class="nhe">${all.length?'Nenhuma nota salva com esse texto.':'As notas aplicadas ficam salvas aqui para usar de novo.'}</div>`;
+    $('nhList').querySelectorAll('.use').forEach(b=>b.onclick=()=>{const t=list[+b.dataset.i].t;$('fNote').value=t;$('nmN').textContent=t.length+'/400';renderNotes()});
+    $('nhList').querySelectorAll('.del').forEach(b=>b.onclick=()=>{const t=list[+b.dataset.i].t;if(!confirm('Excluir esta nota salva?\n\n'+t))return;Notes.del(t);renderNotes()})}
+  $('nhQ').addEventListener('input',renderNotes);
+  if(NOTE&&!Notes.all().some(x=>nkey(x.t)===nkey(NOTE)))Notes.add(NOTE);
+  function openNote(){$('fNote').value=NOTE;$('nmN').textContent=NOTE.length+'/400';$('nhQ').value='';renderNotes();$('noteModal').hidden=false;setTimeout(()=>$('fNote').focus(),60)}
+  $('fNote').addEventListener('input',()=>{$('nmN').textContent=$('fNote').value.length+'/400';renderNotes()});
   $('nmClear').onclick=()=>{$('fNote').value='';$('nmN').textContent='0/400';$('fNote').focus()};
   $('nmCancel').onclick=()=>$('noteModal').hidden=true;
-  $('nmApply').onclick=()=>{NOTE=$('fNote').value.trim();store.set('fotoNote',NOTE);noteUi();$('noteModal').hidden=true};
+  $('nmApply').onclick=()=>{NOTE=$('fNote').value.trim();store.set('fotoNote',NOTE);if(NOTE)Notes.add(NOTE);noteUi();$('noteModal').hidden=true};
   $('noteModal').addEventListener('click',e=>{if(e.target.id==='noteModal')$('noteModal').hidden=true});
   $('fNoteBtn').onclick=openNote;noteUi();
   function layUi(){$('fLayLbl').textContent=LAYOUT==='trans'?'Layout 2':'Layout 1';document.querySelectorAll('.lopt').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lay===LAYOUT))}
@@ -2840,6 +2872,7 @@ renderGps(Loc.gps);
       const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';
       const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
       await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
+      if(sel.note)Notes.add(sel.note);
       await galCount();
       okToast(`✓ Guardada em Fotos do app${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
@@ -2865,7 +2898,7 @@ renderGps(Loc.gps);
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
   async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg" style="grid-column:1 / -1">Nenhuma foto guardada ainda.</p>';
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
     const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=GAL.length?`(${GAL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
@@ -3281,7 +3314,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto','relatorios'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 10:18';
+  const CUR_VER='30/09/2026 10:54';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
