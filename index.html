@@ -1183,6 +1183,48 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .sr-sol{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.sr-sol > span{border:1px solid var(--nb);border-radius:6px;padding:2px 6px;font-size:11.5px}
 .sr-note{margin:6px 0 0;font-size:10.5px;color:var(--ng);line-height:1.35}.sr-close{margin-top:8px;border-top:2px solid var(--nk);padding-top:5px;text-align:center;font-size:12.5px}.sr-close b{color:var(--nr)}
 @media (max-width:700px){.sr-top,.sr-mid{grid-template-columns:1fr}.sr-sum{grid-template-columns:repeat(2,minmax(0,1fr))}.sr-h img{height:22px}.sr-h h1{font-size:15px}}
+/* ===== página 5: relatórios ===== */
+#pRel{display:flex;flex-direction:column;background:var(--ground)}
+#pRel .topbar{background:var(--plate);color:var(--plate-ink)}
+.rquick{margin-left:auto;font:500 12.5px var(--body);color:var(--plate-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rquick b{color:var(--plate-ink)}
+#rOut{min-width:0;display:grid;gap:16px}#pRel .cwrap > *{min-width:0}
+.rcnt{float:right;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
+.rfil{padding:10px 16px 16px;display:grid;gap:12px}
+.rf2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.rf2 .fld{grid-column:auto}
+.rf2 .fld input,.rf2 .fld select{font-size:16px;min-height:46px}.rf2 .fld input.km{font-size:19px}
+.rgrp h3{margin:0 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.rgrp h3 button{border:0;background:none;color:var(--ink);font:700 12px var(--body);text-decoration:underline;cursor:pointer;padding:0 2px;text-transform:none;letter-spacing:0}
+.rchips{display:flex;flex-wrap:wrap;gap:6px}
+.rchip{display:inline-flex;align-items:center;gap:6px;min-height:40px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 13px var(--body);padding:0 12px;cursor:pointer}
+.rchip i{width:12px;height:12px;border-radius:3px;flex:none}
+.rchip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.ract{display:flex;flex-wrap:wrap;gap:10px}.ract .primary,.ract .secondary{min-height:46px}
+.rexe{padding:0 16px 16px;display:grid;gap:18px}.rexe h3{margin:0 0 6px;font:700 14px var(--body)}
+.rpg{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:var(--surface)}
+.rpg.done{background:var(--surface-2)}.rpg b{display:block;font-size:14px}.rpg small{color:var(--muted);font-size:12.5px}.rpg > span{display:flex;gap:6px;flex:none}
+.primary.sm,.secondary.sm{min-height:40px;padding:0 12px;font-size:13.5px}
+.rgsum{padding:12px 16px 16px;display:grid;gap:14px}
+.rgsum .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.rbar2{display:flex;height:12px;border-radius:6px;overflow:hidden;background:#E3E7E4}.rbar2 i{display:block;height:100%}
+.rprog2 .rph{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px;font-size:13px}.rprog2 .rph span{color:var(--muted)}
+.rleg,.rstat{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted);margin-top:6px}.rleg i,.rstat i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}.rstat b{color:var(--ink)}
+.rins{margin:0;padding-left:18px;font-size:14px;line-height:1.45}.rins li{margin:2px 0}
+.rdists{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px}.rdist{min-width:0}
+.rdist h3{margin:0 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rdr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}
+.rdr .rl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rdr .rl i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.rdr .rv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.rdr .rv small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.rdr .rtrack{grid-column:1 / -1}.rdr .rbar2{height:7px}
+table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
+.rst{display:inline-block;color:#fff;font:700 11px var(--body);border-radius:5px;padding:2px 7px;white-space:nowrap}
+.rexp{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--ground) 30%)}
+.rexp .primary{min-height:52px}
+.rclist{max-height:44vh;overflow-y:auto;border:1px solid var(--line);border-radius:10px;margin-bottom:12px}
+.rci{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px}.rci:last-child{border-bottom:0}
+.rci input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin-top:1px}.rci small{display:block;color:var(--muted);font-size:12.5px}
+.kv3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}.kv3 div{background:var(--surface-2);border-radius:10px;padding:8px 10px}.kv3 span{display:block;font:600 11px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.kv3 b{font:700 22px var(--cond)}
+.rerr{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--bad);max-height:26vh;overflow:auto}
+@media (max-width:700px){.rgsum .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.rquick{display:none}}
 /* ===== página 4: foto georreferenciada ===== */
 #pFoto{background:#000;color:#fff;display:flex;flex-direction:column;overflow:hidden}
 .fstage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
@@ -1337,8 +1379,9 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
+    <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 08:42 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 09:29 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1428,6 +1471,57 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
       </div>
     </div>
   </aside>
+</section>
+
+<!-- ===== 5. Relatórios ===== -->
+<section class="page" id="pRel" data-page="relatorios" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Relatórios</h1><span class="rquick" id="rQuick"></span></div>
+  <div class="cscroll">
+    <div class="cwrap">
+      <div class="card"><h2>Filtros <em class="rcnt" id="rFCount"></em></h2>
+        <div class="rfil">
+          <div class="rf2"><div class="fld"><label for="rObra">Obra</label><select id="rObra"><option>Restauração BR-277 – Blocos 02 e 03</option></select></div>
+            <div class="fld"><label for="rRod">Rodovia</label><select id="rRod"><option>BR-277/PR</option></select></div>
+            <div class="fld"><label for="rBloco">Bloco do contrato</label><select id="rBloco"><option value="ALL">Blocos 2 e 3</option><option value="B2">Bloco 2</option><option value="B3">Bloco 3</option></select></div></div>
+          <div class="rf2"><div class="fld"><label for="rKmA">Km / estaca inicial</label><input class="km" id="rKmA" inputmode="text" autocomplete="off" placeholder="164+700"></div>
+            <div class="fld"><label for="rKmB">Km / estaca final</label><input class="km" id="rKmB" inputmode="text" autocomplete="off" placeholder="303+800"></div></div>
+          <div class="rgrp"><h3>Sentido</h3><div class="rchips" id="rSent"></div></div>
+          <div class="rgrp"><h3>Faixa <span><button type="button" data-rall="faixa">Todas</button></span></h3><div class="rchips" id="rFaixa"></div></div>
+          <div class="rgrp"><h3>Tipo de serviço <span><button type="button" data-rall="tipo">Todos</button></span></h3><div class="rchips" id="rTipo"></div></div>
+          <div class="rgrp"><h3>Solução <span><button type="button" data-rall="sol">Todas</button> · <button type="button" data-rall="sol" data-v="none">Nenhuma</button></span></h3><div class="rchips" id="rSol"></div></div>
+          <div class="rgrp"><h3>Espessura <span><button type="button" data-rall="esp">Todas</button></span></h3><div class="rchips" id="rEsp"></div></div>
+          <div class="rgrp"><h3>Status do pano <span><button type="button" data-rall="status">Todos</button></span></h3><div class="rchips" id="rStatus"></div></div>
+          <div class="rf2"><div class="fld"><label for="rDA">Período: de</label><input id="rDA" type="date"></div><div class="fld"><label for="rDB">até</label><input id="rDB" type="date"></div>
+            <div class="fld"><label for="rDBase">Considerar datas de</label><select id="rDBase"><option value="any">Programação ou execução</option><option value="exec">Execução</option><option value="prog">Programação</option></select></div></div>
+          <div class="rgrp"><h3>Dados de execução</h3><div class="rchips" id="rFonte"></div></div>
+          <div class="ract"><button type="button" class="secondary" id="rClear">Limpar filtros</button></div>
+        </div>
+      </div>
+      <details class="card" id="rExec"><summary><span>Execução · programações e planilha</span><span class="flag" id="rExecSum" style="color:var(--muted)"></span></summary>
+        <div class="rexe">
+          <div><h3>Programações registradas</h3><p class="note" style="margin:0 0 8px">Cada programação emitida na Calculadora fica registrada como <b>programado</b>. Toque em <b>Concluir</b> para marcar os panos executados, com a data de execução.</p><div id="rProgs"></div></div>
+          <div><h3>Planilha de execução</h3><p class="note" style="margin:0 0 8px">Baixe a planilha padrão com os panos do filtro atual, preencha Status, datas e observações e importe de volta.</p>
+            <div class="ract"><button type="button" class="secondary" id="rTpl">Baixar planilha padrão</button><button type="button" class="primary" id="rImpBtn">Importar planilha</button><input type="file" id="rImpFile" accept=".xlsx,.xls,.csv" hidden></div>
+            <p class="note" id="rImpInfo" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImpDel" hidden>Remover dados importados</button></div>
+        </div>
+      </details>
+      <div class="alert info" id="rMsg" hidden></div>
+      <div id="rOut"></div>
+      <div class="rexp"><button type="button" class="primary" id="rPdf">Gerar PDF</button><button type="button" class="primary" id="rXls" style="background:#1E7A4C">Gerar Excel</button></div>
+    </div>
+  </div>
+  <div class="modal" id="rConc" hidden role="dialog" aria-modal="true" aria-labelledby="rcT">
+    <div class="mbox nbox"><h2 id="rcT">Concluir programação</h2><p class="msub">Marque os panos que foram executados. Os desmarcados deixam de contar como programados.</p>
+      <div class="rf2" style="margin:8px 0"><div class="fld"><label for="rcDate">Data de execução</label><input id="rcDate" type="date"></div><div class="fld"><label for="rcObs">Observação (opcional)</label><input id="rcObs" maxlength="200"></div></div>
+      <div class="ncount"><span><button type="button" class="linkBtn" id="rcAll">Marcar todos</button> · <button type="button" class="linkBtn" id="rcNone">Desmarcar todos</button></span></div>
+      <div class="rclist" id="rcList"></div>
+      <div class="nbtns"><button type="button" class="ghostBtn" id="rcCancel">Cancelar</button><button type="button" class="bigBtn" id="rcOk">Concluir programação</button></div></div>
+  </div>
+  <div class="modal" id="rImp" hidden role="dialog" aria-modal="true" aria-labelledby="riT">
+    <div class="mbox nbox"><h2 id="riT">Importar planilha</h2><div id="riBody"></div>
+      <label class="rci" style="margin:10px 0"><input type="checkbox" id="riRep" checked><span>Substituir a importação anterior<small>desmarque para somar aos registros já importados</small></span></label>
+      <div class="nbtns"><button type="button" class="ghostBtn" id="riCancel">Cancelar</button><button type="button" class="bigBtn" id="riOk">Importar</button></div></div>
+  </div>
 </section>
 
 <!-- ===== 4. Foto georreferenciada ===== -->
@@ -1739,7 +1833,7 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','calculadora','foto'];const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','calculadora','foto','relatorios'];const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -2262,7 +2356,10 @@ renderGps(Loc.gps);
     const by=new Map();for(const r of seq){const k=r.p.code;if(!by.has(k))by.set(k,{info:r.p.info,n:0,len:0,area:0,t:0,inc:0,excl:r.excl});const o=by.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.t+=r.t||0}
     const sol=[...by.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const dseq=L.drn.rows.slice();dseq.forEach((r,k)=>r.ord=seq.length+k+1);
-    PROG={info,seq,dseq,sol,L,made:new Date()}}
+    PROG={info,seq,dseq,sol,L,made:new Date()};
+    // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
+    try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,created:Date.now(),concluded:false,
+      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code}))})}catch(e){}}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
   const ordTxt=n=>n+'º';
@@ -2793,14 +2890,379 @@ renderGps(Loc.gps);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('noteModal').hidden=true;$('layModal').hidden=true;$('fGalMenu').hidden=true}});
 })();
 
+
+/* =====================================================================
+   PÁGINA 5 — Relatórios (filtros → panos → indicadores → resumo → detalhe → PDF/Excel)
+   ===================================================================== */
+(function RelPage(){
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)&&(src.includes('xlsx')?window.XLSX:src.includes('autotable')?(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable):window.jspdf)){res();return}
+    const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar a biblioteca (sem internet?)'));document.head.appendChild(s)});
+  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const JSPDF_URL='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',AT_URL='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+  const OBRA='Restauração BR-277 – Blocos 02 e 03',RODOVIA='BR-277/PR';
+  const STATUS={nao:'Não executado',prog:'Programado',and:'Em execução',exec:'Executado'};
+  const ST_COLOR={nao:'#9AA19D',prog:'#1A73E8',and:'#E08A00',exec:'#1E7A4C'};
+  const FAIXAS=[['F1','Faixa 1'],['F23','Faixa 2/3'],['AC','Acostamento'],['DRN','Dreno']];
+  const iso=d=>d?String(d).slice(0,10):'';
+  const br=d=>d?iso(d).split('-').reverse().join('/'):'';
+  const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+
+  /* ---------- cadastro da calculadora (larguras, espessuras, densidade) ---------- */
+  function cadastro(){const c=store.get('calc',null)||{};const num=v=>{if(v===''||v==null)return null;const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:null};
+    const w={F1:num((c.w||{}).F1)??3.6,F23:num((c.w||{}).F23)??3.6,AC:num((c.w||{}).AC)??2.5};
+    const esp=Object.assign({FF:6,FE:10,FS:3},c.esp||{});const dens=num(c.dens)??2.528;
+    return {w,esp:k=>num(esp[k]),excl:k=>!!(c.excl||{})[k],rowW:t=>num((c.rowW||{})[t]),dens}}
+
+  /* ---------- registros de execução (programações emitidas + planilha importada) ---------- */
+  const Rec={progs:()=>store.get('execProgs',[]),execs:()=>store.get('execRecs',[]),
+    saveProgs:v=>store.set('execProgs',v),saveExecs:v=>store.set('execRecs',v)};
+  window.ExecStore={saveProg(p){const old=Rec.progs().find(x=>x.id===p.id);if(old&&old.concluded)p=Object.assign(p,{concluded:true,execDate:old.execDate,nExec:old.nExec});const a=Rec.progs().filter(x=>x.id!==p.id);a.push(p);a.sort((x,y)=>x.data<y.data?1:-1);Rec.saveProgs(a);emit('exec',1)}};
+  // união de intervalos e interseção
+  function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const out=[];for(const x of iv){const l=out[out.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else out.push([x[0],x[1]])}return out}
+  const clipLen=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
+  function indexRecords(){const byL=Array.from({length:8},()=>({ex:[],pr:[],an:[]}));
+    for(const r of Rec.execs()){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
+    for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
+    return byL}
+
+  /* ---------- estado dos filtros ---------- */
+  const FAM_ALL=Data.FAM_ORDER.filter(f=>PANOS.some(p=>p.info.fam===f));
+  const DEF={bloco:'ALL',kmA:'',kmB:'',sent:'ALL',faixa:FAIXAS.map(f=>f[0]),tipo:['PAV','DRN'],sol:FAM_ALL.slice(),esp:null,status:Object.keys(STATUS),dA:'',dB:'',dBase:'any',fonte:'rec'};
+  let F=Object.assign({},DEF,store.get('relF',{}));
+  const saveF=()=>store.set('relF',F);
+
+  /* ---------- consulta: filtros → panos → quantidades → status ---------- */
+  let RES=null;
+  function query(){const C=cadastro(),idx=F.fonte==='rec'?indexRecords():null;const errs=[];
+    let s0=Data.ODO0,s1=Data.ODO_END,kA=null,kB=null;
+    if(F.kmA.trim()){const r=Data.parseKm(F.kmA);if(r.err)errs.push('Km inicial: '+r.err);else{kA=r;s0=r.s}}
+    if(F.kmB.trim()){const r=Data.parseKm(F.kmB);if(r.err)errs.push('Km final: '+r.err);else{kB=r;s1=r.s}}
+    if(s0>s1)[s0,s1]=[s1,s0];
+    const rows=[];
+    for(const p of PANOS){const L0=LANES[p.L],drn=L0.grp==='DRN';
+      if(F.bloco!=='ALL'&&'B'+R[p.i0][4]!==F.bloco)continue;
+      if(F.sent!=='ALL'&&L0.side!==F.sent)continue;
+      if(!F.faixa.includes(L0.grp))continue;
+      if(!F.tipo.includes(drn?'DRN':'PAV'))continue;
+      if(!F.sol.includes(p.info.fam))continue;
+      const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,s0),b=Math.min(pb,s1);if(b-a<=1e-6)continue;
+      const len=b-a,dec=L0.side==='D';
+      let w=null,e=null,excl=false;
+      if(!drn){excl=C.excl(p.code);w=C.rowW(p.tag)??C.w[L0.grp];e=excl?null:C.esp(p.code)}
+      const espKey=drn?(p.info.esp||'-'):excl?'sem CBUQ':e>0?nf(e,e%1?1:0)+' cm':'sem espessura';
+      if(F.esp&&!F.esp.includes(espKey))continue;
+      const area=!drn&&w>0?len*w:null,vol=area!=null&&e>0?area*e/100:null,t=vol!=null&&C.dens>0?vol*C.dens:null;
+      // execução
+      let exLen=0,prLen=0,anLen=0,dProg=[],dExec=[],obs=[],tExecRec=0,tExecHas=false,srcs=new Set();
+      if(idx){const o=idx[p.L];const hit=r=>Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
+        const ex=o.ex.filter(hit),pr=o.pr.filter(hit),an=o.an.filter(hit);
+        const exU=unite(ex.map(r=>[r.a,r.b]));exLen=clipLen(exU,a,b);
+        const prU=unite(pr.map(r=>[r.a,r.b]));prLen=Math.max(0,clipLen(prU,a,b)-clipLen(exU.map(x=>[Math.max(x[0],a),Math.min(x[1],b)]).filter(x=>x[1]>x[0]),a,b)*0);
+        // programado: parte programada que ainda não foi executada
+        prLen=0;for(const x of prU){const xa=Math.max(a,x[0]),xb=Math.min(b,x[1]);if(xb<=xa)continue;prLen+=(xb-xa)-clipLen(exU,xa,xb)}
+        anLen=clipLen(unite(an.map(r=>[r.a,r.b])),a,b);
+        for(const r of [...ex,...an]){if(r.dateExec)dExec.push(r.dateExec);if(r.dateProg)dProg.push(r.dateProg);if(r.obs)obs.push(r.obs);srcs.add(r.src);
+          if(r.tons!=null&&isFinite(r.tons)){const f=(Math.min(b,r.b)-Math.max(a,r.a))/Math.max(1e-6,r.b-r.a);tExecRec+=r.tons*f;tExecHas=true}}
+        for(const r of pr){if(r.dateProg)dProg.push(r.dateProg);if(r.obs)obs.push(r.obs);srcs.add(r.src)}}
+      const st=exLen>=len-0.5?'exec':exLen>0.5||anLen>0.5?'and':prLen>0.5?'prog':'nao';
+      if(!F.status.includes(st))continue;
+      // período: pelas datas de programação e/ou execução
+      if(F.dA||F.dB){const ds=F.dBase==='exec'?dExec:F.dBase==='prog'?dProg:[...dExec,...dProg];
+        if(!ds.some(d=>(!F.dA||iso(d)>=F.dA)&&(!F.dB||iso(d)<=F.dB)))continue}
+      const per=len>0?1/len:0,tUnit=t!=null?t*per:null;
+      const tExec=drn||t==null?null:(tExecHas?tExecRec:exLen*tUnit),tProg=drn||t==null?null:prLen*tUnit;
+      const minmax=a=>{if(!a.length)return '';const s=[...new Set(a.map(iso))].sort();return s.length>1?br(s[0])+' a '+br(s[s.length-1]):br(s[0])};
+      rows.push({p,L0,drn,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,ini:Data.nameAt(dec?b:a),fim:Data.nameAt(dec?a:b),w,e,excl,espKey,area,vol,t,
+        exLen,prLen,saldo:Math.max(0,len-exLen),tExec,tProg,tSaldo:t!=null?Math.max(0,t-(tExec||0)):null,st,dProg:minmax(dProg),dExec:minmax(dExec),obs:[...new Set(obs)].join(' · '),src:[...srcs].map(s=>s==='prog'?'programação':'planilha').join(', ')})}
+    // ordem: sentido crescente (menor → maior), depois decrescente (maior → menor), faixa 1 → acostamento → dreno
+    const LO={2:0,1:1,0:2,6:3,3:0,4:1,5:2,7:3};
+    rows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.a-y.a:y.b-x.b)||LO[x.p.L]-LO[y.p.L]);
+    RES={rows,errs,s0,s1,kA,kB,C,fonte:F.fonte,made:new Date()};RES.sum=summarize(rows);return RES}
+
+  function summarize(rows){const pav=rows.filter(r=>!r.drn),drn=rows.filter(r=>r.drn);
+    const S=(arr,k)=>arr.reduce((s,r)=>s+(r[k]||0),0);
+    const out={n:rows.length,nPav:pav.length,nDrn:drn.length,len:S(pav,'len'),ex:S(pav,'exLen'),pr:S(pav,'prLen'),t:S(pav,'t'),tEx:S(pav,'tExec'),tPr:S(pav,'tProg'),
+      semT:pav.filter(r=>r.t==null&&!r.excl).length,area:S(pav,'area'),vol:S(pav,'vol'),
+      dLen:S(drn,'len'),dEx:S(drn,'exLen'),dPr:S(drn,'prLen'),st:{}};
+    out.saldo=Math.max(0,out.len-out.ex);out.tSaldo=Math.max(0,out.t-out.tEx);out.pct=out.len?out.ex/out.len*100:0;out.dPct=out.dLen?out.dEx/out.dLen*100:0;
+    for(const k of Object.keys(STATUS))out.st[k]=rows.filter(r=>r.st===k).length;
+    const group=(arr,key,label)=>{const m=new Map();for(const r of arr){const k=key(r);if(!m.has(k))m.set(k,{k,label:label(r),n:0,len:0,ex:0,pr:0,t:0,tEx:0,color:r.p.info.color});const o=m.get(k);o.n++;o.len+=r.len;o.ex+=r.exLen;o.pr+=r.prLen;o.t+=r.t||0;o.tEx+=r.tExec||0}return [...m.values()]};
+    out.bySol=group(pav,r=>r.p.info.code,r=>`${r.p.info.code} – ${r.p.info.desc}`).sort((a,b)=>b.len-a.len);
+    out.byFaixa=group(rows,r=>r.L0.grp,r=>r.L0.grp==='DRN'?'Dreno':Data.GRP[r.L0.grp]).sort((a,b)=>['F1','F23','AC','DRN'].indexOf(a.k)-['F1','F23','AC','DRN'].indexOf(b.k));
+    out.bySent=group(pav,r=>r.L0.side,r=>SIDE[r.L0.side]);
+    out.byEsp=group(pav,r=>r.espKey,r=>r.espKey).sort((a,b)=>b.len-a.len);
+    out.byDrn=group(drn,r=>r.p.info.code,r=>`${r.p.info.code} – ${r.p.info.desc}`);
+    // leituras rápidas, só com o que existe no recorte
+    const ins=[];if(out.nPav){ins.push(`${nf(out.pct,1)}% da extensão de pavimento do recorte está executada (${fmtKm(out.ex)} de ${fmtKm(out.len)}).`);
+      const top=out.bySol.slice().sort((a,b)=>(b.len-b.ex)-(a.len-a.ex))[0];if(top&&top.len-top.ex>0)ins.push(`Maior saldo a executar: ${top.label} com ${fmtKm(top.len-top.ex)}${top.t?` (≈ ${nf(Math.max(0,top.t-top.tEx),1)} t)`:''}.`);
+      if(out.pr>0)ins.push(`${fmtKm(out.pr)} programados e ainda não executados.`);
+      if(out.semT)ins.push(`${out.semT} pano(s) sem largura ou espessura no cadastro da calculadora: ficam fora das toneladas.`)}
+    if(out.nDrn)ins.push(`Drenagem: ${fmtM(out.dEx)} executados de ${fmtM(out.dLen)} (${nf(out.dPct,1)}%).`);
+    if(!rows.length)ins.push('Nenhum pano atende aos filtros.');
+    out.ins=ins;return out}
+
+  /* ---------- descrição dos filtros aplicados ---------- */
+  function filtersText(){const t=[];t.push(`Obra: ${OBRA}`,`Rodovia: ${RODOVIA}`);
+    if(F.bloco!=='ALL')t.push('Bloco: '+F.bloco);
+    t.push(`Trecho: ${RES.kA?RES.kA.name:Data.nameAt(Data.ODO0)} a ${RES.kB?RES.kB.name:Data.nameAt(Data.ODO_END)}`);
+    t.push('Sentido: '+(F.sent==='ALL'?'ambos':SIDE[F.sent].toLowerCase()));
+    if(F.faixa.length<FAIXAS.length)t.push('Faixa: '+FAIXAS.filter(f=>F.faixa.includes(f[0])).map(f=>f[1]).join(', '));
+    if(F.tipo.length<2)t.push('Serviço: '+(F.tipo.includes('PAV')?'pavimentação':'drenagem'));
+    if(F.sol.length<FAM_ALL.length)t.push('Solução: '+F.sol.join(', '));
+    if(F.esp)t.push('Espessura: '+F.esp.join(', '));
+    if(F.status.length<4)t.push('Status: '+F.status.map(k=>STATUS[k].toLowerCase()).join(', '));
+    if(F.dA||F.dB)t.push(`Período (${F.dBase==='exec'?'execução':F.dBase==='prog'?'programação':'programação ou execução'}): ${F.dA?br(F.dA):'início'} a ${F.dB?br(F.dB):'hoje'}`);
+    t.push(F.fonte==='rec'?'Execução: registros do app (programações e planilha)':'Execução: somente dados do projeto (sem registros)');
+    return t}
+
+  /* ---------- interface ---------- */
+  const chips=(id,opts,sel,multi)=>{$(id).innerHTML=opts.map(([k,t,sw])=>`<button type="button" class="rchip" data-k="${esc(k)}" aria-pressed="${multi?sel.includes(k):sel===k}">${sw?`<i style="background:${sw}"></i>`:''}${esc(t)}</button>`).join('')};
+  function espOptions(){const C=cadastro(),set=new Set();for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN')continue;const ex=C.excl(p.code),e=ex?null:C.esp(p.code);set.add(ex?'sem CBUQ':e>0?nf(e,e%1?1:0)+' cm':'sem espessura')}
+    return [...set].sort((a,b)=>(parseFloat(b)||-1)-(parseFloat(a)||-1))}
+  function renderFilters(){
+    $('rBloco').value=F.bloco;$('rKmA').value=F.kmA;$('rKmB').value=F.kmB;$('rDA').value=F.dA;$('rDB').value=F.dB;$('rDBase').value=F.dBase;
+    chips('rSent',[['ALL','Ambos'],['C','Crescente'],['D','Decrescente']],F.sent,false);
+    chips('rFaixa',FAIXAS,F.faixa,true);
+    chips('rTipo',[['PAV','Pavimentação'],['DRN','Drenagem']],F.tipo,true);
+    chips('rSol',FAM_ALL.map(f=>{const inf=Data.info(f==='REC'?'RECe25':f==='PA'?'PA3,0':f==='RP'?'RPe25':f);return [f,`${f} · ${Data.FAM[f].desc}`,inf.color]}),F.sol,true);
+    const eo=espOptions();chips('rEsp',eo.map(e=>[e,e]),F.esp||eo,true);
+    chips('rStatus',Object.entries(STATUS).map(([k,t])=>[k,t,ST_COLOR[k]]),F.status,true);
+    chips('rFonte',[['rec','Registros de execução'],['proj','Somente projeto']],F.fonte,false);
+    const n=(F.bloco!=='ALL')+(!!F.kmA||!!F.kmB)+(F.sent!=='ALL')+(F.faixa.length<4)+(F.tipo.length<2)+(F.sol.length<FAM_ALL.length)+(!!F.esp)+(F.status.length<4)+(!!F.dA||!!F.dB);
+    $('rFCount').textContent=n?`${n} filtro${n>1?'s':''} ativo${n>1?'s':''}`:'sem filtros'}
+  function bindChips(id,key,multi,all){$(id).onclick=e=>{const b=e.target.closest('.rchip');if(!b)return;const k=b.dataset.k;
+    if(!multi){F[key]=k}else{let cur=F[key]||(all?all():[]);cur=cur.includes(k)?cur.filter(x=>x!==k):[...cur,k];F[key]=cur;if(key==='esp'&&cur.length===espOptions().length)F.esp=null}
+    saveF();refresh()}}
+  bindChips('rSent','sent',false);bindChips('rFaixa','faixa',true);bindChips('rTipo','tipo',true);bindChips('rSol','sol',true);bindChips('rEsp','esp',true,espOptions);bindChips('rStatus','status',true);bindChips('rFonte','fonte',false);
+  document.querySelectorAll('[data-rall]').forEach(b=>b.onclick=()=>{const k=b.dataset.rall;const v=b.dataset.v;
+    if(k==='faixa')F.faixa=v==='none'?[]:FAIXAS.map(f=>f[0]);if(k==='sol')F.sol=v==='none'?[]:FAM_ALL.slice();if(k==='esp')F.esp=v==='none'?[]:null;if(k==='status')F.status=v==='none'?[]:Object.keys(STATUS);if(k==='tipo')F.tipo=['PAV','DRN'];saveF();refresh()});
+  [['rBloco','bloco'],['rDBase','dBase']].forEach(([id,k])=>$(id).onchange=()=>{F[k]=$(id).value;saveF();refresh()});
+  [['rKmA','kmA'],['rKmB','kmB'],['rDA','dA'],['rDB','dB']].forEach(([id,k])=>{let t=0;const h=()=>{F[k]=$(id).value;saveF();clearTimeout(t);t=setTimeout(refresh,350)};$(id).addEventListener('input',h);$(id).addEventListener('change',h)});
+  $('rClear').onclick=()=>{const fonte=F.fonte;F=Object.assign({},DEF,{fonte});saveF();refresh()};
+
+  const bar=(parts,total)=>`<div class="rbar2">${parts.map(([v,c,t])=>v>0&&total>0?`<i style="width:${(v/total*100).toFixed(2)}%;background:${c}" title="${esc(t)}"></i>`:'').join('')}</div>`;
+  function distTable(title,arr,unit){if(!arr.length)return '';const max=Math.max(...arr.map(o=>o.len));
+    return `<div class="rdist"><h3>${title}</h3>${arr.map(o=>`<div class="rdr"><span class="rl">${o.color&&title.includes('solução')?`<i style="background:${o.color}"></i>`:''}${esc(o.label)}</span>
+      <span class="rv">${unit==='m'?fmtM(o.len):fmtKm(o.len)}<small>${o.n} pano${o.n>1?'s':''}${o.len?` · ${nf(o.ex/o.len*100,0)}% exec.`:''}</small></span>
+      <div class="rtrack" style="width:${(o.len/max*100).toFixed(1)}%">${bar([[o.ex,ST_COLOR.exec,'executado'],[o.pr,ST_COLOR.prog,'programado'],[o.len-o.ex-o.pr,'#C9CFCB','saldo']],o.len)}</div></div>`).join('')}</div>`}
+  const LIM=300;
+  function render(){const r=RES,s=r.sum,out=$('rOut');
+    let h=r.errs.length?`<div class="alert warn"><b>Confira os filtros.</b>${esc(r.errs.join(' '))}</div>`:'';
+    const noRec=F.fonte==='proj';
+    h+=`<div class="card"><h2>Resumo gerencial</h2><div class="rgsum">
+      <div class="kpis">
+        <div class="kpi"><span>Panos</span><b>${s.n}</b><div class="sub">${s.nPav} pavimento${s.nDrn?` · ${s.nDrn} drenagem`:''}</div></div>
+        <div class="kpi"><span>Extensão total</span><b>${nf(s.len/1000,3)}<small>km</small></b><div class="sub">pavimento · área ${nf(s.area,0)} m²</div></div>
+        <div class="kpi"><span>Executada</span><b>${noRec?'—':nf(s.ex/1000,3)}<small>${noRec?'':'km'}</small></b><div class="sub">${noRec?'sem registros (somente projeto)':nf(s.pct,1)+'% executado'}</div></div>
+        <div class="kpi"><span>Programada</span><b>${noRec?'—':nf(s.pr/1000,3)}<small>${noRec?'':'km'}</small></b><div class="sub">programada e não executada</div></div>
+        <div class="kpi"><span>Saldo a executar</span><b>${nf(s.saldo/1000,3)}<small>km</small></b><div class="sub">${noRec?'100% do recorte':nf(100-s.pct,1)+'% restante'}</div></div>
+        <div class="kpi main"><span>CBUQ total</span><b>${nf(s.t,1)}<small>t</small></b><div class="sub">densidade ${nf(r.C.dens,3)} t/m³${s.semT?` · ${s.semT} sem dados`:''}</div></div>
+        <div class="kpi"><span>Toneladas executadas</span><b>${noRec?'—':nf(s.tEx,1)}<small>${noRec?'':'t'}</small></b><div class="sub">programadas ${noRec?'—':nf(s.tPr,1)+' t'}</div></div>
+        <div class="kpi"><span>Saldo de toneladas</span><b>${nf(s.tSaldo,1)}<small>t</small></b><div class="sub">volume ${nf(s.vol,1)} m³</div></div>
+      </div>
+      ${s.nPav?`<div class="rprog2"><div class="rph"><b>Andamento do pavimento</b><span>${noRec?'sem registros de execução':`${nf(s.pct,1)}% executado · ${nf(s.len?s.pr/s.len*100:0,1)}% programado · ${nf(s.len?(s.len-s.ex-s.pr)/s.len*100:0,1)}% a executar`}</span></div>${bar([[s.ex,ST_COLOR.exec,'executado'],[s.pr,ST_COLOR.prog,'programado'],[s.len-s.ex-s.pr,'#C9CFCB','a executar']],s.len)}
+        <div class="rleg"><span><i style="background:${ST_COLOR.exec}"></i>Executado</span><span><i style="background:${ST_COLOR.prog}"></i>Programado</span><span><i style="background:#C9CFCB"></i>A executar</span></div></div>`:''}
+      ${s.nDrn?`<div class="rprog2"><div class="rph"><b>Drenagem</b><span>${fmtM(s.dLen)} no recorte${noRec?'':` · ${fmtM(s.dEx)} executados · ${fmtM(s.dPr)} programados`}</span></div>${bar([[s.dEx,ST_COLOR.exec,'executado'],[s.dPr,ST_COLOR.prog,'programado'],[s.dLen-s.dEx-s.dPr,'#C9CFCB','a executar']],s.dLen)}</div>`:''}
+      <div class="rstat">${Object.entries(STATUS).map(([k,t])=>`<span><i style="background:${ST_COLOR[k]}"></i>${t}: <b>${s.st[k]}</b></span>`).join('')}</div>
+      <ul class="rins">${s.ins.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="rdists">${distTable('Por solução',s.bySol)}${distTable('Por faixa',s.byFaixa.filter(o=>o.k!=='DRN'))}${distTable('Por sentido',s.bySent)}${distTable('Por espessura',s.byEsp)}${distTable('Drenagem por tipo',s.byDrn,'m')}</div>
+    </div></div>`;
+    const rows=r.rows.slice(0,LIM);
+    h+=`<div class="card"><h2>Relação dos panos <em class="rcnt">${r.rows.length} registro${r.rows.length!==1?'s':''}${r.rows.length>LIM?` · mostrando ${LIM} (o PDF e o Excel trazem todos)`:''}</em></h2>
+      <div class="tscroll" style="margin-top:10px"><table class="q rq"><thead><tr><th class="l sticky">Pano</th><th class="l">Status</th><th class="l">Sentido · faixa</th><th class="l">Solução</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th>Largura<small>m</small></th><th>Esp.<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>Previsto<small>t</small></th><th>Executado<small>m</small></th><th>Executado<small>t</small></th><th class="l">Data prog.</th><th class="l">Data exec.</th><th class="l">Observações</th></tr></thead><tbody>
+      ${rows.map(x=>`<tr><td class="l sticky pano">${x.p.tag}<small>${x.partial?'parcial no recorte':'pano inteiro'} · B${R[x.p.i0][4]}</small></td>
+        <td class="l"><span class="rst" style="background:${ST_COLOR[x.st]}">${STATUS[x.st]}</span></td><td class="l">${SIDE[x.L0.side]} · ${x.drn?'Dreno':x.L0.name}</td>
+        <td class="l"><span class="tag sm" style="background:${x.p.info.color};color:${x.p.info.ink}">${x.p.info.code}</span> <span style="color:var(--muted);font-size:12.5px">${esc(x.p.info.desc)}</span></td>
+        <td>${x.ini}</td><td>${x.fim}</td><td>${nf(x.len,0)}</td><td>${x.drn?'—':x.w!=null?nf(x.w,2):'—'}</td><td>${x.drn?esc(x.p.info.esp||'—'):x.e!=null?nf(x.e,1):x.excl?'s/ CBUQ':'—'}</td><td>${x.area!=null?nf(x.area,1):'—'}</td><td>${x.vol!=null?nf(x.vol,2):'—'}</td><td>${x.t!=null?nf(x.t,2):'—'}</td>
+        <td>${noRec?'—':nf(x.exLen,0)}</td><td>${noRec||x.tExec==null?'—':nf(x.tExec,2)}</td><td class="l">${x.dProg||'—'}</td><td class="l">${x.dExec||'—'}</td><td class="l ro">${esc(x.obs)||'—'}</td></tr>`).join('')}
+      </tbody><tfoot><tr><td class="l sticky">Total</td><td class="l" colspan="5">${r.rows.length} registros</td><td>${nf(s.len+s.dLen,0)}</td><td></td><td></td><td>${nf(s.area,1)}</td><td>${nf(s.vol,2)}</td><td class="big2">${nf(s.t,2)}</td><td>${noRec?'—':nf(s.ex+s.dEx,0)}</td><td>${noRec?'—':nf(s.tEx,2)}</td><td colspan="3"></td></tr></tfoot></table></div>
+      <div class="tnote">Quantidades calculadas com o cadastro da Calculadora de programação (larguras, espessuras e densidade). Panos parcialmente dentro do trecho entram só com a parte interna. Status pelos registros: executado (toda a extensão executada), em execução (parte executada), programado (em programação emitida e não concluída), não executado. No decrescente a estaca inicial é a maior.</div></div>`;
+    out.innerHTML=h;
+    $('rQuick').innerHTML=`<b>${s.n}</b> panos · <b>${nf(s.len/1000,2)} km</b> · <b>${nf(s.t,0)} t</b>${noRec?'':` · <b>${nf(s.pct,0)}%</b> exec.`}`}
+  function refresh(){renderFilters();query();render();renderExec()}
+
+  /* ---------- programações registradas: concluir ou não ---------- */
+  function renderExec(){const ps=Rec.progs(),ex=Rec.execs(),imp=ex.filter(r=>r.src==='planilha'),fromProg=ex.filter(r=>r.src==='prog');
+    $('rImpInfo').textContent=imp.length?`${imp.length} registro${imp.length>1?'s':''} importado${imp.length>1?'s':''} da planilha${store.get('execImpAt','')?' em '+store.get('execImpAt',''):''}.`:'Nenhuma planilha importada.';
+    $('rImpDel').hidden=!imp.length;
+    $('rProgs').innerHTML=ps.length?ps.map(p=>`<div class="rpg${p.concluded?' done':''}"><div><b>${br(p.data)} · ${esc(p.equipe)}</b><small>${p.items.length} segmento${p.items.length>1?'s':''} · ${fmtM(p.items.reduce((s,i)=>s+(i.b-i.a),0))} · ${p.concluded?`concluída em ${br(p.execDate)} (${p.nExec} executado${p.nExec!==1?'s':''})`:'aberta (programado)'}</small></div>
+      <span>${p.concluded?`<button type="button" class="secondary sm" data-reopen="${esc(p.id)}">Reabrir</button>`:`<button type="button" class="primary sm" data-conc="${esc(p.id)}">Concluir</button>`}<button type="button" class="secondary sm" data-pdel="${esc(p.id)}" aria-label="Excluir registro">✕</button></span></div>`).join(''):'<p class="note" style="margin:0">Nenhuma programação registrada. Elas entram aqui automaticamente quando você emite o relatório na Calculadora de programação.</p>';
+    $('rProgs').querySelectorAll('[data-conc]').forEach(b=>b.onclick=()=>openConclude(b.dataset.conc));
+    $('rProgs').querySelectorAll('[data-reopen]').forEach(b=>b.onclick=()=>{if(!confirm('Reabrir a programação? Os panos marcados como executados por ela voltam a ficar como programados.'))return;
+      const id=b.dataset.reopen;Rec.saveExecs(Rec.execs().filter(r=>r.progId!==id));Rec.saveProgs(Rec.progs().map(p=>p.id===id?Object.assign({},p,{concluded:false,execDate:null,nExec:0}):p));refresh()});
+    $('rProgs').querySelectorAll('[data-pdel]').forEach(b=>b.onclick=()=>{if(!confirm('Excluir o registro desta programação e das execuções marcadas por ela?'))return;
+      const id=b.dataset.pdel;Rec.saveExecs(Rec.execs().filter(r=>r.progId!==id));Rec.saveProgs(Rec.progs().filter(p=>p.id!==id));refresh()});
+    $('rExecSum').textContent=`${ps.filter(p=>!p.concluded).length} aberta(s) · ${ps.filter(p=>p.concluded).length} concluída(s) · ${imp.length} da planilha`}
+  let CUR=null;
+  function openConclude(id){const p=Rec.progs().find(x=>x.id===id);if(!p)return;CUR=p;
+    $('rcT').textContent=`Concluir programação de ${br(p.data)}`;$('rcDate').value=p.data;$('rcObs').value='';
+    $('rcList').innerHTML=p.items.map((it,k)=>{const P=PANOS.find(q=>q.tag===it.tag),dec=LANES[it.L].side==='D';return `<label class="rci"><input type="checkbox" data-k="${k}" checked><span><b>${esc(it.tag)}</b> ${P?`<span class="tag sm" style="background:${P.info.color};color:${P.info.ink}">${P.info.code}</span>`:''}<small>${SIDE[LANES[it.L].side]} · ${LANES[it.L].name} · ${Data.nameAt(dec?it.b:it.a)} a ${Data.nameAt(dec?it.a:it.b)} · ${fmtM(it.b-it.a)}</small></span></label>`}).join('');
+    $('rConc').hidden=false}
+  $('rcAll').onclick=()=>$('rcList').querySelectorAll('input').forEach(c=>c.checked=true);
+  $('rcNone').onclick=()=>$('rcList').querySelectorAll('input').forEach(c=>c.checked=false);
+  $('rcCancel').onclick=()=>$('rConc').hidden=true;
+  $('rConc').addEventListener('click',e=>{if(e.target.id==='rConc')$('rConc').hidden=true});
+  $('rcOk').onclick=()=>{const p=CUR;if(!p)return;const date=$('rcDate').value||p.data,obs=$('rcObs').value.trim();
+    const ks=[...$('rcList').querySelectorAll('input:checked')].map(c=>+c.dataset.k);
+    const ex=Rec.execs().filter(r=>r.progId!==p.id);ks.forEach(k=>{const it=p.items[k];ex.push({L:it.L,a:it.a,b:it.b,tag:it.tag,st:'exec',dateExec:date,dateProg:p.data,obs,src:'prog',progId:p.id})});
+    Rec.saveExecs(ex);Rec.saveProgs(Rec.progs().map(x=>x.id===p.id?Object.assign({},x,{concluded:true,execDate:date,nExec:ks.length}):x));$('rConc').hidden=true;refresh()};
+
+  /* ---------- planilha padrão e importação ---------- */
+  const HEAD=['Pano','Sentido','Faixa','Solução','Estaca inicial','Estaca final','Extensão (m)','Status','Data de programação','Data de execução','Toneladas executadas','Observações'];
+  async function saveBlob(blob,name,mime){const file=new File([blob],name,{type:mime});
+    if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return 'shared'}catch(e){if(e&&e.name==='AbortError')return 'cancel'}}
+    const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);return 'download'}
+  const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`};
+  function msgR(t,kind){const m=$('rMsg');m.className='alert '+(kind||'info');m.innerHTML=t;m.hidden=false;clearTimeout(msgR.h);msgR.h=setTimeout(()=>m.hidden=true,9000)}
+  $('rTpl').onclick=async()=>{try{await loadScript(XLSX_URL);const X=window.XLSX;
+      const rows=RES.rows.map(x=>[x.p.tag,SIDE[x.L0.side],x.drn?'Dreno':x.L0.name,x.p.info.code,x.ini,x.fim,Math.round(x.len),'','','','','']);
+      const ws=X.utils.aoa_to_sheet([HEAD,...rows]);ws['!cols']=[14,12,12,10,12,12,11,14,16,16,14,40].map(w=>({wch:w}));
+      const ins=X.utils.aoa_to_sheet([['Planilha padrão de execução — Localizador de Estacas · '+RODOVIA],[],
+        ['Como preencher'],['1. Cada linha é um pano (ou parte dele). Não altere a coluna Pano.'],
+        ['2. Status: Executado, Em execução, Programado ou Não executado. Linhas sem status são ignoradas.'],
+        ['3. Execução parcial: ajuste Estaca inicial e Estaca final para o trecho executado (formato 234+160). No decrescente a inicial é a maior.'],
+        ['4. Datas no formato dd/mm/aaaa.'],['5. Toneladas executadas é opcional: sem valor, o app calcula pela extensão executada e pelo cadastro da calculadora.'],
+        ['6. Para registrar um trecho sem pano, deixe Pano vazio e preencha Sentido (Crescente/Decrescente), Faixa (Faixa 1, Faixa 2/3, Acostamento, Dreno), Estaca inicial e final.'],
+        [],['Salve e importe em Relatórios › Execução › Importar planilha.']]);ins['!cols']=[{wch:110}];
+      const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Execução');X.utils.book_append_sheet(wb,ins,'Instruções');
+      const out=X.write(wb,{bookType:'xlsx',type:'array'});const r=await saveBlob(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Planilha_execucao_BR277_${stamp()}.xlsx`,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      msgR(r==='cancel'?'Download cancelado.':`Planilha padrão gerada com os ${rows.length} panos do filtro atual. Preencha Status e datas e importe de volta.`)}
+    catch(e){msgR('Não foi possível gerar a planilha: '+esc(e.message||e),'warn')}};
+  const normTxt=s=>String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+  function parseDate(v){if(v==null||v==='')return null;if(v instanceof Date&&!isNaN(v))return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+    const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);if(m){const y=m[3].length===2?'20'+m[3]:m[3];return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`}
+    m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];return 'ERR'}
+  const TAGIDX=new Map(PANOS.map(p=>[p.tag,p]));
+  function laneOf(sent,faixa){const s=normTxt(sent).startsWith('d')?'D':normTxt(sent).startsWith('c')?'C':null;const f=normTxt(faixa);
+    const g=f.includes('dren')?'DRN':f.includes('acost')||f==='ac'?'AC':f.includes('2')||f.includes('3')?'F23':f.includes('1')?'F1':null;if(!s||!g)return -1;return LANES.findIndex(L=>L.side===s&&L.grp===g)}
+  let PEND=null;
+  $('rImpBtn').onclick=()=>$('rImpFile').click();
+  $('rImpFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+    try{await loadScript(XLSX_URL);const X=window.XLSX;const wb=X.read(await f.arrayBuffer(),{cellDates:true});
+      const sh=wb.Sheets['Execução']||wb.Sheets[wb.SheetNames[0]];const aoa=X.utils.sheet_to_json(sh,{header:1,defval:'',raw:true});
+      if(!aoa.length)throw new Error('planilha vazia');const hd=aoa[0].map(normTxt);const col=n=>hd.indexOf(normTxt(n));
+      const ci={pano:col('Pano'),sent:col('Sentido'),fx:col('Faixa'),ini:col('Estaca inicial'),fim:col('Estaca final'),st:col('Status'),dp:col('Data de programação'),de:col('Data de execução'),t:col('Toneladas executadas'),obs:col('Observações')};
+      if(ci.st<0||(ci.pano<0&&(ci.ini<0||ci.fim<0)))throw new Error('cabeçalho diferente da planilha padrão (faltam as colunas Status, Pano ou Estaca inicial/final)');
+      const recs=[],errs=[];let ign=0;
+      aoa.slice(1).forEach((row,k)=>{const ln=k+2,get=i=>i>=0?row[i]:'';const stT=normTxt(get(ci.st));
+        if(!stT||stT.startsWith('nao')){ign++;return}
+        const st=stT.startsWith('exec')?'exec':stT.startsWith('em ')||stT.includes('andamento')?'and':stT.startsWith('prog')?'prog':null;if(!st){errs.push(`linha ${ln}: status "${get(ci.st)}" não reconhecido`);return}
+        let L=-1,a=null,b=null;const tag=String(get(ci.pano)).trim();
+        if(tag){const P=TAGIDX.get(tag);if(!P){errs.push(`linha ${ln}: pano ${tag} não existe no projeto`);return}L=P.L;a=ODO[P.i0];b=ODO[P.i1]+20}
+        else{L=laneOf(get(ci.sent),get(ci.fx));if(L<0){errs.push(`linha ${ln}: sentido/faixa não reconhecidos`);return}}
+        const si=String(get(ci.ini)).trim(),sf=String(get(ci.fim)).trim();
+        if(si||sf){const A=Data.parseKm(si),B=Data.parseKm(sf);if(A.err||B.err){errs.push(`linha ${ln}: estaca inválida (${A.err||B.err})`);return}
+          let x=Math.min(A.s,B.s),y=Math.max(A.s,B.s);if(a!=null){x=Math.max(a,x);y=Math.min(b,y);if(y-x<=1e-6){errs.push(`linha ${ln}: estacas fora do pano ${tag}`);return}}a=x;b=y}
+        else if(a==null){errs.push(`linha ${ln}: informe Estaca inicial e final`);return}
+        const dp=parseDate(get(ci.dp)),de=parseDate(get(ci.de));if(dp==='ERR'||de==='ERR'){errs.push(`linha ${ln}: data inválida (use dd/mm/aaaa)`);return}
+        const tv=get(ci.t);const tons=tv===''||tv==null?null:parseFloat(String(tv).replace(',','.'));if(tons!=null&&!isFinite(tons)){errs.push(`linha ${ln}: toneladas inválidas`);return}
+        recs.push({L,a,b,tag:tag||null,st,dateProg:dp,dateExec:st==='exec'?(de||dp):de,tons:st==='exec'?tons:null,obs:String(get(ci.obs)).trim(),src:'planilha'})});
+      PEND=recs;const nE=recs.filter(r=>r.st==='exec').length,nA=recs.filter(r=>r.st==='and').length,nP=recs.filter(r=>r.st==='prog').length;
+      $('riT').textContent=`Importar ${f.name}`;
+      $('riBody').innerHTML=`<div class="kv3"><div><span>Executados</span><b>${nE}</b></div><div><span>Em execução</span><b>${nA}</b></div><div><span>Programados</span><b>${nP}</b></div></div>
+        <p class="msub" style="padding:0">${ign} linha(s) sem status ou "Não executado" ignoradas.${errs.length?` <b style="color:var(--bad)">${errs.length} linha(s) com erro não serão importadas:</b>`:''}</p>
+        ${errs.length?`<ul class="rerr">${errs.slice(0,40).map(t=>`<li>${esc(t)}</li>`).join('')}${errs.length>40?`<li>… e mais ${errs.length-40}</li>`:''}</ul>`:''}`;
+      $('riOk').disabled=!recs.length;$('rImp').hidden=false}
+    catch(err){msgR('Não foi possível ler a planilha: '+esc(err.message||err),'warn')}};
+  $('riCancel').onclick=()=>{$('rImp').hidden=true;PEND=null};
+  $('rImp').addEventListener('click',e=>{if(e.target.id==='rImp'){$('rImp').hidden=true;PEND=null}});
+  $('riOk').onclick=()=>{if(!PEND)return;const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha');ex=ex.concat(PEND);Rec.saveExecs(ex);
+    const d=new Date();store.set('execImpAt',d.toLocaleString('pt-BR'));$('rImp').hidden=true;msgR(`${PEND.length} registro(s) importado(s).`);PEND=null;refresh()};
+  $('rImpDel').onclick=()=>{if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'));refresh()};
+
+  /* ---------- Excel ---------- */
+  function detailAoa(){const noRec=RES.fonte==='proj';const H=['Pano','Rodovia','Bloco','Sentido','Faixa','Tipo de serviço','Solução','Descrição','Estaca inicial','Estaca final','Extensão (m)','Parcial no recorte','Largura (m)','Espessura (cm)','Área (m²)','Volume (m³)','Previsto (t)','Status','Extensão executada (m)','Extensão programada (m)','Saldo (m)','Executado (t)','Programado (t)','Saldo (t)','Data de programação','Data de execução','Origem do registro','Observações','Marco km','Página do PDF'];
+    const r2=v=>v==null?'':Math.round(v*100)/100;
+    return [H,...RES.rows.map(x=>[x.p.tag,RODOVIA,'B'+R[x.p.i0][4],SIDE[x.L0.side],x.drn?'Dreno':x.L0.name,x.drn?'Drenagem':'Pavimentação',x.p.info.code,x.p.info.desc,x.ini,x.fim,r2(x.len),x.partial?'sim':'não',
+      x.drn?'':r2(x.w),x.drn?(x.p.info.esp||''):x.excl?'sem CBUQ':r2(x.e),r2(x.area),r2(x.vol),r2(x.t),STATUS[x.st],noRec?'':r2(x.exLen),noRec?'':r2(x.prLen),r2(x.saldo),noRec?'':r2(x.tExec),noRec?'':r2(x.tProg),r2(x.tSaldo),x.dProg,x.dExec,x.src,x.obs,R[x.p.i0][5],R[x.p.i0][8]])]}
+  $('rXls').onclick=async()=>{const b=$('rXls');b.disabled=true;try{await loadScript(XLSX_URL);const X=window.XLSX,s=RES.sum,noRec=RES.fonte==='proj';
+      const sumA=[['RELATÓRIO GERENCIAL — '+RODOVIA],['Obra',OBRA],['Emitido em',new Date().toLocaleString('pt-BR')],[],['Filtros aplicados'],...filtersText().map(t=>['',t]),[],
+        ['Indicador','Valor','Unidade'],['Panos',s.n,''],['Panos de pavimento',s.nPav,''],['Panos de drenagem',s.nDrn,''],['Extensão total (pavimento)',Math.round(s.len),'m'],['Extensão executada',noRec?'':Math.round(s.ex),'m'],['Extensão programada',noRec?'':Math.round(s.pr),'m'],['Saldo a executar',Math.round(s.saldo),'m'],
+        ['Percentual executado',noRec?'':Math.round(s.pct*10)/10,'%'],['Percentual restante',noRec?'':Math.round((100-s.pct)*10)/10,'%'],['Área',Math.round(s.area),'m²'],['Volume',Math.round(s.vol*100)/100,'m³'],
+        ['CBUQ total previsto',Math.round(s.t*100)/100,'t'],['CBUQ executado',noRec?'':Math.round(s.tEx*100)/100,'t'],['CBUQ programado',noRec?'':Math.round(s.tPr*100)/100,'t'],['Saldo de CBUQ',Math.round(s.tSaldo*100)/100,'t'],['Densidade usada',RES.C.dens,'t/m³'],
+        ['Drenagem no recorte',Math.round(s.dLen),'m'],['Drenagem executada',noRec?'':Math.round(s.dEx),'m'],[],
+        ...Object.entries(STATUS).map(([k,t])=>['Panos '+t.toLowerCase(),s.st[k],'']),[],
+        ['Leituras do recorte'],...s.ins.map(t=>['',t]),[]];
+      const dist=(title,arr,unit)=>arr.length?[[title,'Panos','Extensão ('+unit+')','Executado ('+unit+')','% executado','Previsto (t)','Executado (t)'],...arr.map(o=>[o.label,o.n,Math.round(o.len),noRec?'':Math.round(o.ex),noRec||!o.len?'':Math.round(o.ex/o.len*1000)/10,unit==='m'?'':Math.round(o.t*100)/100,unit==='m'||noRec?'':Math.round(o.tEx*100)/100]),[]]:[];
+      const aoa=[...sumA,...dist('Por solução',s.bySol,'m'),...dist('Por faixa',s.byFaixa,'m'),...dist('Por sentido',s.bySent,'m'),...dist('Por espessura',s.byEsp,'m'),...dist('Drenagem por tipo',s.byDrn,'m')];
+      const ws1=X.utils.aoa_to_sheet(aoa);ws1['!cols']=[{wch:34},{wch:44},{wch:14},{wch:14},{wch:12},{wch:13},{wch:13}];
+      const det=detailAoa();const tot=['TOTAL','','','','','','','','','',Math.round((s.len+s.dLen)*100)/100,'','','',Math.round(s.area*100)/100,Math.round(s.vol*100)/100,Math.round(s.t*100)/100,'',noRec?'':Math.round((s.ex+s.dEx)*100)/100,noRec?'':Math.round((s.pr+s.dPr)*100)/100,'',noRec?'':Math.round(s.tEx*100)/100,noRec?'':Math.round(s.tPr*100)/100,Math.round(s.tSaldo*100)/100];
+      const ws2=X.utils.aoa_to_sheet([...det,tot]);ws2['!cols']=det[0].map((h,i)=>({wch:i===7||i===27?30:Math.max(10,h.length+2)}));ws2['!autofilter']={ref:X.utils.encode_range({s:{r:0,c:0},e:{r:det.length-1,c:det[0].length-1}})};
+      const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws1,'Resumo');X.utils.book_append_sheet(wb,ws2,'Detalhamento dos Panos');
+      const out=X.write(wb,{bookType:'xlsx',type:'array'});const r=await saveBlob(new Blob([out]),`Relatorio_BR277_${stamp()}.xlsx`,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      msgR(r==='cancel'?'Exportação cancelada.':`Excel gerado: ${RES.rows.length} panos, abas Resumo e Detalhamento dos Panos.`)}
+    catch(e){msgR('Não foi possível gerar o Excel: '+esc(e.message||e),'warn')}finally{b.disabled=false}};
+
+  /* ---------- PDF (A4 paisagem, identidade Neovia) ---------- */
+  $('rPdf').onclick=async()=>{const b=$('rPdf');b.disabled=true;msgR('Gerando PDF…');try{await loadScript(JSPDF_URL);await loadScript(AT_URL);const blob=await makePdf();
+      const r=await saveBlob(blob,`Relatorio_BR277_${stamp()}.pdf`,'application/pdf');msgR(r==='cancel'?'PDF gerado; envio cancelado.':'PDF gerado.')}
+    catch(e){msgR('Não foi possível gerar o PDF: '+esc(e.message||e),'warn')}finally{b.disabled=false}};
+  async function makePdf(){const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});const W=297,H=210,M=10,CW=W-2*M;
+    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],WH=[255,255,255];
+    const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+    const clean=s=>String(s==null?'':s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/≈/g,'~').replace(/m²/g,'m2').replace(/m³/g,'m3').replace(/·/g,'-');
+    const font=(z,bd)=>{doc.setFont('helvetica',bd?'bold':'normal');doc.setFontSize(z)};
+    const txt=(s,x,y,o={})=>{font(o.z||9,o.b);doc.setTextColor(...(o.c||INK));const ls=o.w?doc.splitTextToSize(clean(s),o.w):[clean(s)];doc.text(ls,x,y,o.a?{align:o.a}:undefined);return ls.length*(o.z||9)*0.3528*1.25};
+    const imgAR=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.onerror=()=>r(3);im.src=src});
+    const aN=await imgAR(LOGOS.neo),aV=await imgAR(LOGOS.via);const s=RES.sum,noRec=RES.fonte==='proj';const emitido=new Date().toLocaleString('pt-BR');
+    const header=()=>{const lh=9;doc.addImage(LOGOS.neo,'PNG',M,M-2,lh*aN,lh,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-M-lh*aV,M-2,lh*aV,lh,'via','FAST');
+      txt('RELATÓRIO GERENCIAL DA OBRA',W/2,M+3,{z:15,b:true,a:'center'});txt(`${OBRA} · ${RODOVIA} · emitido em ${emitido}`,W/2,M+8.5,{z:8,c:MUT,a:'center'});
+      doc.setFillColor(...RED);doc.rect(M,M+11,CW,0.8,'F');return M+16};
+    let y=header();
+    // filtros aplicados
+    {const ft=filtersText().join('   |   ');font(7.5);const ls=doc.splitTextToSize(clean(ft),CW-6);const h=ls.length*3.3+7;doc.setFillColor(...LIGHT);doc.roundedRect(M,y,CW,h,1.5,1.5,'F');
+      txt('FILTROS APLICADOS',M+3,y+4,{z:6.5,b:true,c:MUT});font(7.5);doc.setTextColor(...INK);doc.text(ls,M+3,y+7.8);y+=h+4}
+    // resumo gerencial: cartões
+    txt('RESUMO GERENCIAL',M,y+3,{z:10,b:true});doc.setFillColor(...RED);doc.rect(M,y+4.5,18,0.7,'F');y+=8;
+    const tiles=[['Panos',String(s.n),`${s.nPav} pav.${s.nDrn?' · '+s.nDrn+' dren.':''}`],['Extensão total',nf(s.len/1000,3)+' km','pavimento'],['Executada',noRec?'-':nf(s.ex/1000,3)+' km',noRec?'somente projeto':nf(s.pct,1)+'%'],
+      ['Programada',noRec?'-':nf(s.pr/1000,3)+' km','não executada'],['Saldo',nf(s.saldo/1000,3)+' km',noRec?'100%':nf(100-s.pct,1)+'% restante'],['CBUQ total',nf(s.t,1)+' t',`dens. ${nf(RES.C.dens,3)}`],
+      ['CBUQ executado',noRec?'-':nf(s.tEx,1)+' t',noRec?'':'programado '+nf(s.tPr,1)+' t'],['Saldo CBUQ',nf(s.tSaldo,1)+' t','a executar']];
+    {const n=tiles.length,g=2.5,tw=(CW-(n-1)*g)/n,th=17;tiles.forEach(([k,v,sub],i)=>{const x=M+i*(tw+g),hl=i===5;
+      doc.setFillColor(...(hl?RED:WH));doc.setDrawColor(...(hl?RED:LINE));doc.setLineWidth(0.3);doc.roundedRect(x,y,tw,th,1.5,1.5,hl?'F':'FD');
+      txt(k.toUpperCase(),x+2.5,y+4.5,{z:6.3,b:true,c:hl?WH:MUT});txt(v,x+2.5,y+10.8,{z:12,b:true,c:hl?WH:INK});txt(sub,x+2.5,y+14.8,{z:6.3,c:hl?WH:MUT})});y+=th+5}
+    // barra de andamento
+    const pbar=(x,yy,w,h,parts,total)=>{doc.setFillColor(...LINE);doc.rect(x,yy,w,h,'F');let cx=x;for(const [v,c] of parts){if(v<=0||total<=0)continue;const ww=w*v/total;doc.setFillColor(...hex(c));doc.rect(cx,yy,ww,h,'F');cx+=ww}};
+    if(s.nPav){txt('Andamento do pavimento',M,y+3,{z:8,b:true});txt(noRec?'sem registros de execução':`${nf(s.pct,1)}% executado · ${nf(s.len?s.pr/s.len*100:0,1)}% programado · ${nf(s.len?(s.len-s.ex-s.pr)/s.len*100:0,1)}% a executar`,M+CW,y+3,{z:7.5,c:MUT,a:'right'});
+      pbar(M,y+5,CW,4,[[s.ex,ST_COLOR.exec],[s.pr,ST_COLOR.prog]],s.len);y+=13}
+    if(s.nDrn){txt('Drenagem',M,y+3,{z:8,b:true});txt(`${fmtM(s.dLen)} no recorte${noRec?'':` · ${fmtM(s.dEx)} executados · ${fmtM(s.dPr)} programados`}`,M+CW,y+3,{z:7.5,c:MUT,a:'right'});pbar(M,y+5,CW,3,[[s.dEx,ST_COLOR.exec],[s.dPr,ST_COLOR.prog]],s.dLen);y+=12}
+    // status + leituras
+    {let x=M;font(7.5,true);for(const [k,t] of Object.entries(STATUS)){const lb=`${t}: ${s.st[k]}`;doc.setFillColor(...hex(ST_COLOR[k]));doc.circle(x+1.3,y+1.6,1.2,'F');doc.setTextColor(...INK);doc.text(clean(lb),x+3.5,y+2.6);x+=doc.getTextWidth(clean(lb))+10}y+=6}
+    for(const t of s.ins){y+=txt('• '+t,M,y+3,{z:8,w:CW})+0.6}y+=3;
+    // distribuições em 2 colunas com barras
+    const dist=(title,arr,x,yy,w,unit)=>{if(!arr.length)return yy;txt(title.toUpperCase(),x,yy+3,{z:7,b:true,c:MUT});yy+=5;const max=Math.max(...arr.map(o=>o.len));
+      for(const o of arr){if(yy>H-16){doc.addPage();yy=header()}txt(o.label,x,yy+3,{z:7.5,w:w*0.42});txt(`${unit==='m'?fmtM(o.len):fmtKm(o.len)} · ${o.n} p.${noRec||!o.len?'':` · ${nf(o.ex/o.len*100,0)}%`}`,x+w,yy+3,{z:7,c:MUT,a:'right'});
+        const bx=x+w*0.43,bw=(w*0.33)*(o.len/max);pbar(bx,yy+0.8,bw,2.8,[[o.ex,ST_COLOR.exec],[o.pr,ST_COLOR.prog]],o.len);yy+=5.2}return yy+3};
+    {const cw=(CW-8)/2;if(y>H-50){doc.addPage();y=header()}const y0=y;let yl=dist('Por solução',s.bySol,M,y0,cw);yl=dist('Por espessura',s.byEsp,M,yl,cw);
+      let yr=dist('Por faixa',s.byFaixa.filter(o=>o.k!=='DRN'),M+cw+8,y0,cw);yr=dist('Por sentido',s.bySent,M+cw+8,yr,cw);yr=dist('Drenagem por tipo',s.byDrn,M+cw+8,yr,cw,'m');y=Math.max(yl,yr)}
+    // detalhamento
+    doc.addPage();y=header();txt('DETALHAMENTO DOS PANOS',M,y+3,{z:10,b:true});txt(`${RES.rows.length} registros`,M+CW,y+3,{z:8,c:MUT,a:'right'});doc.setFillColor(...RED);doc.rect(M,y+4.5,18,0.7,'F');y+=8;
+    const body=RES.rows.map(x=>[x.p.tag,x.L0.side==='C'?'Cresc.':'Decr.',x.drn?'Dreno':x.L0.name.replace('Acostamento','Acost.'),{content:x.p.info.code,raw:x},x.ini,x.fim,nf(x.len,0),x.drn?'-':x.w!=null?nf(x.w,2):'-',x.drn?clean(x.p.info.esp||'-'):x.e!=null?nf(x.e,1):x.excl?'s/CBUQ':'-',x.area!=null?nf(x.area,1):'-',x.t!=null?nf(x.t,2):'-',
+      {content:STATUS[x.st],st:x.st},noRec?'-':nf(x.exLen,0),noRec||x.tExec==null?'-':nf(x.tExec,2),x.dProg||'-',x.dExec||'-',clean(x.obs)||'-']);
+    const startPg=doc.getNumberOfPages();
+    doc.autoTable({startY:y,margin:{left:M,right:M,top:M+16,bottom:12},head:[['Pano','Sentido','Faixa','Solução','Est. inicial','Est. final','Ext. (m)','Larg. (m)','Esp. (cm)','Área (m2)','Previsto (t)','Status','Exec. (m)','Exec. (t)','Data prog.','Data exec.','Observações']],body,
+      foot:[['TOTAL','','','','','',nf(s.len+s.dLen,0),'','',nf(s.area,1),nf(s.t,2),'',noRec?'-':nf(s.ex+s.dEx,0),noRec?'-':nf(s.tEx,2),'','','']],
+      theme:'grid',styles:{font:'helvetica',fontSize:6.8,cellPadding:1.1,lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},headStyles:{fillColor:INK,textColor:WH,fontStyle:'bold',fontSize:6.5,halign:'center'},footStyles:{fillColor:LIGHT,textColor:INK,fontStyle:'bold'},
+      alternateRowStyles:{fillColor:[250,250,250]},columnStyles:{0:{fontStyle:'bold',cellWidth:21},3:{cellWidth:13,halign:'center'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right'},7:{halign:'right'},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',fontStyle:'bold'},11:{cellWidth:18,halign:'center'},12:{halign:'right'},13:{halign:'right'},16:{cellWidth:40}},
+      didParseCell:d=>{if(d.section==='body'&&d.cell.raw&&d.cell.raw.st){d.cell.styles.fillColor=hex(ST_COLOR[d.cell.raw.st]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}
+        if(d.section==='body'&&d.cell.raw&&d.cell.raw.raw){const inf=d.cell.raw.raw.p.info;d.cell.styles.fillColor=hex(inf.color);d.cell.styles.textColor=hex(inf.ink);d.cell.styles.fontStyle='bold'}},
+      didDrawPage:()=>{if(doc.internal.getCurrentPageInfo().pageNumber>startPg)header()}});
+    const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);txt(`${k}/${n}`,W-M,H-5,{z:7,c:MUT,a:'right'});txt('Neovia Engenharia · Localizador de Estacas · quantidades pelo cadastro da Calculadora de programação',M,H-5,{z:7,c:MUT})}
+    return doc.output('blob')}
+
+  on('exec',()=>{if(Router.cur()==='relatorios')refresh()});
+  Router.onInit('relatorios',refresh);
+  on('page',p=>{if(p==='relatorios')refresh()});
+})();
+
 /* ------------------------------ Início ------------------------------ */
 (function boot(){
   const f=Data.parseKm('196+610');const i=Math.floor((f.s-ODO[0])/20);
   Loc.set((LAT[i]+LAT[i+1])/2+0.00002,(LON[i]+LON[i+1])/2,5,null,null,'init','exemplo');
-  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
+  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto','relatorios'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 08:42';
+  const CUR_VER='30/09/2026 09:29';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
