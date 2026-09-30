@@ -1338,7 +1338,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 08:35 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 08:42 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2634,7 +2634,7 @@ renderGps(Loc.gps);
     lines.push({k:'Data e hora',v:fmtDate(date)});
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
-    lines.push({k:'Rodovia',v:'BR-277'});
+    lines.push({k:'Rodovia',v:'BR-277/PR'});
     const st=stakeFor(fix);lines.push({k:'Localização',v:st.txt,warn:st.warn});
     if(NOTE)lines.push({k:'Nota',v:NOTE,wrap:true});
     return {lines,stake:st,low,fix}}
@@ -2800,7 +2800,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 08:35';
+  const CUR_VER='30/09/2026 08:42';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

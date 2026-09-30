@@ -1960,7 +1960,7 @@ renderGps(Loc.gps);
     lines.push({k:'Data e hora',v:fmtDate(date)});
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
-    lines.push({k:'Rodovia',v:'BR-277'});
+    lines.push({k:'Rodovia',v:'BR-277/PR'});
     const st=stakeFor(fix);lines.push({k:'Localização',v:st.txt,warn:st.warn});
     if(NOTE)lines.push({k:'Nota',v:NOTE,wrap:true});
     return {lines,stake:st,low,fix}}
