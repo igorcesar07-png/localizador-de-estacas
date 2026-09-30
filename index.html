@@ -1192,7 +1192,6 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 #pRel .topbar{background:var(--plate);color:var(--plate-ink)}
 .rquick{margin-left:auto;font:500 12.5px var(--body);color:var(--plate-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rquick b{color:var(--plate-ink)}
 #rOut{min-width:0;display:grid;gap:16px}#pRel .cwrap > *{min-width:0}
-.card > h2{display:flow-root}
 .rcnt{float:right;font-style:normal;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
 .rfil{padding:10px 16px 16px;display:grid;gap:12px}
 .rf2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.rf2 .fld{grid-column:auto}
@@ -1221,6 +1220,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .rdr .rv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}.rdr .rv small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
 .rdr .rtrack{grid-column:1 / -1}.rdr .rbar2{height:7px}
 table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
+.rmot{display:block;font-size:11px;color:var(--muted);white-space:normal;min-width:150px;max-width:210px}
 .rst{display:inline-block;color:#fff;font:700 11px var(--body);border-radius:5px;padding:2px 7px;white-space:nowrap}
 .rexp{position:sticky;bottom:0;z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--ground) 30%)}
 .rexp .primary{min-height:52px}
@@ -1228,12 +1228,6 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 .rci{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px}.rci:last-child{border-bottom:0}
 .rci input{width:22px;height:22px;flex:none;accent-color:var(--ok);margin-top:1px}.rci small{display:block;color:var(--muted);font-size:12.5px}
 .kv3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}.kv3 div{background:var(--surface-2);border-radius:10px;padding:8px 10px}.kv3 span{display:block;font:600 11px var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}.kv3 b{font:700 22px var(--cond)}
-.fx{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;margin:4px 0 8px}.fx th{background:var(--surface-2);color:var(--muted);font-weight:700;text-align:left;padding:5px 4px}.fx td{padding:5px 4px;border-top:1px solid var(--line)}.fx tr.up td{background:#FDECEC}.fx tr.dn td{background:#FFF4DC}
-.fl{margin:4px 0 8px;padding-left:18px;font-size:13.5px;line-height:1.4}.fdl{display:grid;grid-template-columns:auto 1fr;gap:0;margin:6px 0;font-size:13.5px}.fdl dt{color:var(--muted);padding:5px 10px 5px 0;border-bottom:1px solid var(--line)}.fdl dd{margin:0;padding:5px 0;border-bottom:1px solid var(--line);font-weight:600;text-align:right}
-#rFicha h4{margin:12px 0 4px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.rwarn{border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}.rwarn summary{cursor:pointer;font-weight:700}
-.rvh{margin:10px 0 2px;font:700 13px var(--body);color:var(--bad)}.rvh.wn{color:#8A5A00}.rerr.wn{color:#6B4A00}
-tr.rrow{cursor:pointer}
 .rerr{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--bad);max-height:26vh;overflow:auto}
 @media (max-width:700px){.rgsum .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.rquick{display:none}}
 /* ===== página 4: foto georreferenciada ===== */
@@ -1409,7 +1403,7 @@ tr.rrow{cursor:pointer}
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 14:36 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 14:45 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1519,6 +1513,7 @@ tr.rrow{cursor:pointer}
           <div class="rgrp"><h3>Solução <span><button type="button" data-rall="sol">Todas</button> · <button type="button" data-rall="sol" data-v="none">Nenhuma</button></span></h3><div class="rchips" id="rSol"></div></div>
           <div class="rgrp"><h3>Espessura <span><button type="button" data-rall="esp">Todas</button></span></h3><div class="rchips" id="rEsp"></div></div>
           <div class="rgrp"><h3>Status do pano <span><button type="button" data-rall="status">Todos</button></span></h3><div class="rchips" id="rStatus"></div></div>
+          <div class="rgrp"><h3>RMP <span><button type="button" data-rall="rmp">Todos</button></span></h3><div class="rchips" id="rRmpF"></div></div>
           <div class="rf2"><div class="fld"><label for="rDA">Período: de</label><input id="rDA" type="date"></div><div class="fld"><label for="rDB">até</label><input id="rDB" type="date"></div>
             <div class="fld"><label for="rDBase">Considerar datas de</label><select id="rDBase"><option value="any">Programação ou execução</option><option value="exec">Execução</option><option value="prog">Programação</option></select></div></div>
           <div class="rgrp"><h3>Dados de execução</h3><div class="rchips" id="rFonte"></div></div>
@@ -1530,13 +1525,11 @@ tr.rrow{cursor:pointer}
           <div><h3>Programações registradas</h3><p class="note" style="margin:0 0 8px">Cada programação emitida na Calculadora fica registrada como <b>programado</b>. Toque em <b>Concluir</b> para marcar os panos executados, com a data de execução.</p><div id="rProgs"></div></div>
           <div><h3>Planilha de execução</h3><p class="note" style="margin:0 0 8px">Baixe a planilha padrão com os panos do filtro atual, preencha Status, datas e observações e importe de volta.</p>
             <div class="ract"><button type="button" class="secondary" id="rTpl">Baixar planilha padrão</button><button type="button" class="primary" id="rImpBtn">Importar planilha</button><input type="file" id="rImpFile" accept=".xlsx,.xls,.csv" hidden></div>
-            <p class="note" id="rImpInfo" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImpDel" hidden>Remover dados importados</button>
-            <p class="note" id="rImp2Info" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImp2Del" hidden>Remover subtrechos e RMPs importados</button></div>
+            <p class="note" id="rImpInfo" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImpDel" hidden>Remover dados importados</button></div>
         </div>
       </details>
       <div class="alert info" id="rMsg" hidden></div>
       <div id="rOut"></div>
-      <div class="card" id="rRmp"></div>
       <div class="rexp"><button type="button" class="primary" id="rPdf">Gerar PDF</button><button type="button" class="primary" id="rXls" style="background:#1E7A4C">Gerar Excel</button></div>
     </div>
   </div>
@@ -1546,15 +1539,6 @@ tr.rrow{cursor:pointer}
       <div class="ncount"><span><button type="button" class="linkBtn" id="rcAll">Marcar todos</button> · <button type="button" class="linkBtn" id="rcNone">Desmarcar todos</button></span></div>
       <div class="rclist" id="rcList"></div>
       <div class="nbtns"><button type="button" class="backBtn" id="rcCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="bigBtn" id="rcOk">Concluir programação</button></div></div>
-  </div>
-  <div class="modal" id="rImp2" hidden role="dialog" aria-modal="true" aria-labelledby="ri2T">
-    <div class="mbox nbox" style="max-height:calc(100% - 16px);overflow:auto"><h2 id="ri2T">Validar planilha</h2><div id="ri2Body"></div>
-      <p class="msub" style="padding:0;margin:8px 0">Importar substitui os subtrechos, leituras e RMPs importados antes.</p>
-      <div class="nbtns"><button type="button" class="backBtn" id="ri2Cancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button type="button" class="bigBtn" id="ri2Ok">Importar</button></div></div>
-  </div>
-  <div class="modal" id="rFicha" hidden role="dialog" aria-modal="true" aria-labelledby="rfT">
-    <div class="mbox nbox" style="max-height:calc(100% - 16px);overflow:auto"><h2 id="rfT">Segmento</h2><div id="rfB"></div>
-      <div class="nbtns" style="grid-template-columns:1fr;margin-top:12px"><button type="button" class="backBtn" id="rfClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button></div></div>
   </div>
   <div class="modal" id="rImp" hidden role="dialog" aria-modal="true" aria-labelledby="riT">
     <div class="mbox nbox"><h2 id="riT">Importar planilha</h2><div id="riBody"></div>
@@ -2993,13 +2977,13 @@ renderGps(Loc.gps);
   const clipLen=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
   function indexRecords(){const byL=Array.from({length:8},()=>({ex:[],pr:[],an:[]}));
     for(const r of Rec.execs()){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
-    {const D=store.get('rmpData',null);if(D&&D.subs)for(const x of D.subs){const o=byL[x.L];if(o)o.ex.push({L:x.L,a:x.a,b:x.b,fam:x.fam,st:'exec',dateExec:x.date,obs:x.obs,tons:x.tons,src:'planilha'})}}
     for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
     return byL}
 
   /* ---------- estado dos filtros ---------- */
   const FAM_ALL=Data.FAM_ORDER.filter(f=>PANOS.some(p=>p.info.fam===f));
-  const DEF={bloco:'ALL',kmA:'',kmB:'',sent:'ALL',faixa:FAIXAS.map(f=>f[0]),tipo:['PAV','DRN'],sol:FAM_ALL.slice(),esp:null,status:Object.keys(STATUS),dA:'',dB:'',dBase:'any',fonte:'rec'};
+  const RMPT={sim:'Sim',nao:'Não',sd:'Sem dados',na:'Sem execução'},RMPC={sim:'#C8101A',nao:'#1E7A4C',sd:'#56605A',na:'#9AA19D'};
+  const DEF={rmp:['sim','nao','sd','na'],bloco:'ALL',kmA:'',kmB:'',sent:'ALL',faixa:FAIXAS.map(f=>f[0]),tipo:['PAV','DRN'],sol:FAM_ALL.slice(),esp:null,status:Object.keys(STATUS),dA:'',dB:'',dBase:'any',fonte:'rec'};
   let F=Object.assign({},DEF,store.get('relF',{}));
   const saveF=()=>store.set('relF',F);
 
@@ -3025,18 +3009,24 @@ renderGps(Loc.gps);
       if(F.esp&&!F.esp.includes(espKey))continue;
       const area=!drn&&w>0?len*w:null,vol=area!=null&&e>0?area*e/100:null,t=vol!=null&&C.dens>0?vol*C.dens:null;
       // execução
-      let exLen=0,prLen=0,anLen=0,dProg=[],dExec=[],obs=[],tExecRec=0,tExecHas=false,srcs=new Set();
-      if(idx){const o=idx[p.L];const hit=r=>(!r.fam||r.fam===p.info.fam)&&Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
+      let exLen=0,prLen=0,anLen=0,dProg=[],dExec=[],obs=[],tExecRec=0,tExecHas=false,srcs=new Set(),espEx=[],excM=0;
+      if(idx){const o=idx[p.L];const hit=r=>Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
         const ex=o.ex.filter(hit),pr=o.pr.filter(hit),an=o.an.filter(hit);
         const exU=unite(ex.map(r=>[r.a,r.b]));exLen=clipLen(exU,a,b);
         const prU=unite(pr.map(r=>[r.a,r.b]));prLen=Math.max(0,clipLen(prU,a,b)-clipLen(exU.map(x=>[Math.max(x[0],a),Math.min(x[1],b)]).filter(x=>x[1]>x[0]),a,b)*0);
         // programado: parte programada que ainda não foi executada
         prLen=0;for(const x of prU){const xa=Math.max(a,x[0]),xb=Math.min(b,x[1]);if(xb<=xa)continue;prLen+=(xb-xa)-clipLen(exU,xa,xb)}
         anLen=clipLen(unite(an.map(r=>[r.a,r.b])),a,b);
-        for(const r of [...ex,...an]){if(r.dateExec)dExec.push(r.dateExec);if(r.dateProg)dProg.push(r.dateProg);if(r.obs)obs.push(r.obs);srcs.add(r.src);
+        for(const r of [...ex,...an]){if(r.esp!=null)espEx.push(r.esp);if(r.exc&&(!r.tag||r.tag===p.tag))excM+=r.exc;if(r.dateExec)dExec.push(r.dateExec);if(r.dateProg)dProg.push(r.dateProg);if(r.obs)obs.push(r.obs);srcs.add(r.src);
           if(r.tons!=null&&isFinite(r.tons)){const f=(Math.min(b,r.b)-Math.max(a,r.a))/Math.max(1e-6,r.b-r.a);tExecRec+=r.tons*f;tExecHas=true}}
         for(const r of pr){if(r.dateProg)dProg.push(r.dateProg);if(r.obs)obs.push(r.obs);srcs.add(r.src)}}
       const st=exLen>=len-0.5?'exec':exLen>0.5||anLen>0.5?'and':prLen>0.5?'prog':'nao';
+      // RMP (Sim/Não): espessura executada acima da de projeto ou execução além do pano (> 5 m)
+      const eP=drn?null:espProjOf(p),eMax=espEx.length?Math.max(...espEx):null,mot=[];
+      if(!drn&&eMax!=null&&eP!=null&&eMax>eP)mot.push(`espessura ${nf(eMax,eMax%1?1:0)} cm > projeto ${nf(eP,eP%1?1:0)} cm`);
+      if(excM>TOL_M)mot.push(`execução ${fmtM(excM)} além do pano`);
+      const rmp=mot.length?'sim':(exLen>0.5||anLen>0.5)?(drn||(eMax!=null&&eP!=null)?'nao':'sd'):'na';
+      if(F.rmp&&!F.rmp.includes(rmp))continue;
       if(!F.status.includes(st))continue;
       // período: pelas datas de programação e/ou execução
       if(F.dA||F.dB){const ds=F.dBase==='exec'?dExec:F.dBase==='prog'?dProg:[...dExec,...dProg];
@@ -3044,7 +3034,7 @@ renderGps(Loc.gps);
       const per=len>0?1/len:0,tUnit=t!=null?t*per:null;
       const tExec=drn||t==null?null:(tExecHas?tExecRec:exLen*tUnit),tProg=drn||t==null?null:prLen*tUnit;
       const minmax=a=>{if(!a.length)return '';const s=[...new Set(a.map(iso))].sort();return s.length>1?br(s[0])+' a '+br(s[s.length-1]):br(s[0])};
-      rows.push({p,L0,drn,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,ini:Data.nameAt(dec?b:a),fim:Data.nameAt(dec?a:b),w,e,excl,espKey,area,vol,t,
+      rows.push({p,L0,drn,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,ini:Data.nameAt(dec?b:a),fim:Data.nameAt(dec?a:b),w,e,excl,espKey,area,vol,t,eP,espEx:[...new Set(espEx)],rmp,rmpMot:mot.join('; '),
         exLen,prLen,saldo:Math.max(0,len-exLen),tExec,tProg,tSaldo:t!=null?Math.max(0,t-(tExec||0)):null,st,dProg:minmax(dProg),dExec:minmax(dExec),obs:[...new Set(obs)].join(' · '),src:[...srcs].map(s=>s==='prog'?'programação':'planilha').join(', ')})}
     // ordem: sentido crescente (menor → maior), depois decrescente (maior → menor), faixa 1 → acostamento → dreno
     const LO={2:0,1:1,0:2,6:3,3:0,4:1,5:2,7:3};
@@ -3058,6 +3048,7 @@ renderGps(Loc.gps);
       dLen:S(drn,'len'),dEx:S(drn,'exLen'),dPr:S(drn,'prLen'),st:{}};
     out.saldo=Math.max(0,out.len-out.ex);out.tSaldo=Math.max(0,out.t-out.tEx);out.pct=out.len?out.ex/out.len*100:0;out.dPct=out.dLen?out.dEx/out.dLen*100:0;
     for(const k of Object.keys(STATUS))out.st[k]=rows.filter(r=>r.st===k).length;
+    out.rmp={};for(const k of ['sim','nao','sd','na'])out.rmp[k]=rows.filter(r=>r.rmp===k).length;
     const group=(arr,key,label)=>{const m=new Map();for(const r of arr){const k=key(r);if(!m.has(k))m.set(k,{k,label:label(r),n:0,len:0,ex:0,pr:0,t:0,tEx:0,color:r.p.info.color});const o=m.get(k);o.n++;o.len+=r.len;o.ex+=r.exLen;o.pr+=r.prLen;o.t+=r.t||0;o.tEx+=r.tExec||0}return [...m.values()]};
     out.bySol=group(pav,r=>r.p.info.code,r=>`${r.p.info.code} – ${r.p.info.desc}`).sort((a,b)=>b.len-a.len);
     out.byFaixa=group(rows,r=>r.L0.grp,r=>r.L0.grp==='DRN'?'Dreno':Data.GRP[r.L0.grp]).sort((a,b)=>['F1','F23','AC','DRN'].indexOf(a.k)-['F1','F23','AC','DRN'].indexOf(b.k));
@@ -3069,6 +3060,7 @@ renderGps(Loc.gps);
       const top=out.bySol.slice().sort((a,b)=>(b.len-b.ex)-(a.len-a.ex))[0];if(top&&top.len-top.ex>0)ins.push(`Maior saldo a executar: ${top.label} com ${fmtKm(top.len-top.ex)}${top.t?` (≈ ${nf(Math.max(0,top.t-top.tEx),1)} t)`:''}.`);
       if(out.pr>0)ins.push(`${fmtKm(out.pr)} programados e ainda não executados.`);
       if(out.semT)ins.push(`${out.semT} pano(s) sem largura ou espessura no cadastro da calculadora: ficam fora das toneladas.`)}
+    if(out.rmp.sim)ins.push(`${out.rmp.sim} pano(s) com RMP = Sim (espessura acima do projeto ou execução além do pano).`);if(out.rmp.sd)ins.push(`${out.rmp.sd} pano(s) executado(s) sem espessura executada ou de projeto: RMP não verificado.`);
     if(out.nDrn)ins.push(`Drenagem: ${fmtM(out.dEx)} executados de ${fmtM(out.dLen)} (${nf(out.dPct,1)}%).`);
     if(!rows.length)ins.push('Nenhum pano atende aos filtros.');
     out.ins=ins;return out}
@@ -3083,6 +3075,7 @@ renderGps(Loc.gps);
     if(F.sol.length<FAM_ALL.length)t.push('Solução: '+F.sol.join(', '));
     if(F.esp)t.push('Espessura: '+F.esp.join(', '));
     if(F.status.length<4)t.push('Status: '+F.status.map(k=>STATUS[k].toLowerCase()).join(', '));
+    if(F.rmp&&F.rmp.length<4)t.push('RMP: '+F.rmp.map(k=>RMPT[k].toLowerCase()).join(', '));
     if(F.dA||F.dB)t.push(`Período (${F.dBase==='exec'?'execução':F.dBase==='prog'?'programação':'programação ou execução'}): ${F.dA?br(F.dA):'início'} a ${F.dB?br(F.dB):'hoje'}`);
     t.push(F.fonte==='rec'?'Execução: registros do app (programações e planilha)':'Execução: somente dados do projeto (sem registros)');
     return t}
@@ -3099,15 +3092,16 @@ renderGps(Loc.gps);
     chips('rSol',FAM_ALL.map(f=>{const inf=Data.info(f==='REC'?'RECe25':f==='PA'?'PA3,0':f==='RP'?'RPe25':f);return [f,`${f} · ${Data.FAM[f].desc}`,inf.color]}),F.sol,true);
     const eo=espOptions();chips('rEsp',eo.map(e=>[e,e]),F.esp||eo,true);
     chips('rStatus',Object.entries(STATUS).map(([k,t])=>[k,t,ST_COLOR[k]]),F.status,true);
+    if(!F.rmp)F.rmp=DEF.rmp.slice();chips('rRmpF',Object.entries(RMPT).map(([k,t])=>[k,'RMP: '+t,RMPC[k]]),F.rmp,true);
     chips('rFonte',[['rec','Registros de execução'],['proj','Somente projeto']],F.fonte,false);
-    const n=(F.bloco!=='ALL')+(!!F.kmA||!!F.kmB)+(F.sent!=='ALL')+(F.faixa.length<4)+(F.tipo.length<2)+(F.sol.length<FAM_ALL.length)+(!!F.esp)+(F.status.length<4)+(!!F.dA||!!F.dB);
+    const n=(F.bloco!=='ALL')+(!!F.kmA||!!F.kmB)+(F.sent!=='ALL')+(F.faixa.length<4)+(F.tipo.length<2)+(F.sol.length<FAM_ALL.length)+(!!F.esp)+(F.status.length<4)+((F.rmp||DEF.rmp).length<4)+(!!F.dA||!!F.dB);
     $('rFCount').textContent=n?`${n} filtro${n>1?'s':''} ativo${n>1?'s':''}`:'sem filtros'}
   function bindChips(id,key,multi,all){$(id).onclick=e=>{const b=e.target.closest('.rchip');if(!b)return;const k=b.dataset.k;
     if(!multi){F[key]=k}else{let cur=F[key]||(all?all():[]);cur=cur.includes(k)?cur.filter(x=>x!==k):[...cur,k];F[key]=cur;if(key==='esp'&&cur.length===espOptions().length)F.esp=null}
     saveF();refresh()}}
-  bindChips('rSent','sent',false);bindChips('rFaixa','faixa',true);bindChips('rTipo','tipo',true);bindChips('rSol','sol',true);bindChips('rEsp','esp',true,espOptions);bindChips('rStatus','status',true);bindChips('rFonte','fonte',false);
+  bindChips('rSent','sent',false);bindChips('rFaixa','faixa',true);bindChips('rTipo','tipo',true);bindChips('rSol','sol',true);bindChips('rEsp','esp',true,espOptions);bindChips('rStatus','status',true);bindChips('rRmpF','rmp',true);bindChips('rFonte','fonte',false);
   document.querySelectorAll('[data-rall]').forEach(b=>b.onclick=()=>{const k=b.dataset.rall;const v=b.dataset.v;
-    if(k==='faixa')F.faixa=v==='none'?[]:FAIXAS.map(f=>f[0]);if(k==='sol')F.sol=v==='none'?[]:FAM_ALL.slice();if(k==='esp')F.esp=v==='none'?[]:null;if(k==='status')F.status=v==='none'?[]:Object.keys(STATUS);if(k==='tipo')F.tipo=['PAV','DRN'];saveF();refresh()});
+    if(k==='faixa')F.faixa=v==='none'?[]:FAIXAS.map(f=>f[0]);if(k==='sol')F.sol=v==='none'?[]:FAM_ALL.slice();if(k==='esp')F.esp=v==='none'?[]:null;if(k==='status')F.status=v==='none'?[]:Object.keys(STATUS);if(k==='rmp')F.rmp=DEF.rmp.slice();if(k==='tipo')F.tipo=['PAV','DRN'];saveF();refresh()});
   [['rBloco','bloco'],['rDBase','dBase']].forEach(([id,k])=>$(id).onchange=()=>{F[k]=$(id).value;saveF();refresh()});
   [['rKmA','kmA'],['rKmB','kmB'],['rDA','dA'],['rDB','dB']].forEach(([id,k])=>{let t=0;const h=()=>{F[k]=$(id).value;saveF();clearTimeout(t);t=setTimeout(refresh,350)};$(id).addEventListener('input',h);$(id).addEventListener('change',h)});
   $('rClear').onclick=()=>{const fonte=F.fonte;F=Object.assign({},DEF,{fonte});saveF();refresh()};
@@ -3136,27 +3130,28 @@ renderGps(Loc.gps);
         <div class="rleg"><span><i style="background:${ST_COLOR.exec}"></i>Executado</span><span><i style="background:${ST_COLOR.prog}"></i>Programado</span><span><i style="background:#C9CFCB"></i>A executar</span></div></div>`:''}
       ${s.nDrn?`<div class="rprog2"><div class="rph"><b>Drenagem</b><span>${fmtM(s.dLen)} no recorte${noRec?'':` · ${fmtM(s.dEx)} executados · ${fmtM(s.dPr)} programados`}</span></div>${bar([[s.dEx,ST_COLOR.exec,'executado'],[s.dPr,ST_COLOR.prog,'programado'],[s.dLen-s.dEx-s.dPr,'#C9CFCB','a executar']],s.dLen)}</div>`:''}
       <div class="rstat">${Object.entries(STATUS).map(([k,t])=>`<span><i style="background:${ST_COLOR[k]}"></i>${t}: <b>${s.st[k]}</b></span>`).join('')}</div>
+      ${noRec?'':`<div class="rstat"><b style="color:var(--ink)">RMP</b>${Object.entries(RMPT).map(([k,t])=>`<span><i style="background:${RMPC[k]}"></i>${t}: <b>${s.rmp[k]}</b></span>`).join('')}</div>`}
       <ul class="rins">${s.ins.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
       <div class="rdists">${distTable('Por solução',s.bySol)}${distTable('Por faixa',s.byFaixa.filter(o=>o.k!=='DRN'))}${distTable('Por sentido',s.bySent)}${distTable('Por espessura',s.byEsp)}${distTable('Drenagem por tipo',s.byDrn,'m')}</div>
     </div></div>`;
     const rows=r.rows.slice(0,LIM);
     h+=`<div class="card"><h2>Relação dos panos <em class="rcnt">${r.rows.length} registro${r.rows.length!==1?'s':''}${r.rows.length>LIM?` · mostrando ${LIM} (o PDF e o Excel trazem todos)`:''}</em></h2>
-      <div class="tscroll" style="margin-top:10px"><table class="q rq"><thead><tr><th class="l sticky">Pano</th><th class="l">Status</th><th class="l">Sentido · faixa</th><th class="l">Solução</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th>Largura<small>m</small></th><th>Esp.<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>Previsto<small>t</small></th><th>Executado<small>m</small></th><th>Executado<small>t</small></th><th class="l">Data prog.</th><th class="l">Data exec.</th><th class="l">Observações</th></tr></thead><tbody>
+      <div class="tscroll" style="margin-top:10px"><table class="q rq"><thead><tr><th class="l sticky">Pano</th><th class="l">Status</th><th class="l">RMP</th><th class="l">Sentido · faixa</th><th class="l">Solução</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th>Largura<small>m</small></th><th>Esp. proj.<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>Previsto<small>t</small></th><th>Esp. exec.<small>cm</small></th><th>Executado<small>m</small></th><th>Executado<small>t</small></th><th class="l">Data prog.</th><th class="l">Data exec.</th><th class="l">Observações</th></tr></thead><tbody>
       ${rows.map(x=>`<tr><td class="l sticky pano">${x.p.tag}<small>${x.partial?'parcial no recorte':'pano inteiro'} · B${R[x.p.i0][4]}</small></td>
-        <td class="l"><span class="rst" style="background:${ST_COLOR[x.st]}">${STATUS[x.st]}</span></td><td class="l">${SIDE[x.L0.side]} · ${x.drn?'Dreno':x.L0.name}</td>
+        <td class="l"><span class="rst" style="background:${ST_COLOR[x.st]}">${STATUS[x.st]}</span></td><td class="l">${noRec||x.rmp==='na'?'—':`<span class="rst" style="background:${RMPC[x.rmp]}" title="${esc(x.rmpMot)}">${RMPT[x.rmp]}</span>${x.rmpMot?`<small class="rmot">${esc(x.rmpMot)}</small>`:''}`}</td><td class="l">${SIDE[x.L0.side]} · ${x.drn?'Dreno':x.L0.name}</td>
         <td class="l"><span class="tag sm" style="background:${x.p.info.color};color:${x.p.info.ink}">${x.p.info.code}</span> <span style="color:var(--muted);font-size:12.5px">${esc(x.p.info.desc)}</span></td>
-        <td>${x.ini}</td><td>${x.fim}</td><td>${nf(x.len,0)}</td><td>${x.drn?'—':x.w!=null?nf(x.w,2):'—'}</td><td>${x.drn?esc(x.p.info.esp||'—'):x.e!=null?nf(x.e,1):x.excl?'s/ CBUQ':'—'}</td><td>${x.area!=null?nf(x.area,1):'—'}</td><td>${x.vol!=null?nf(x.vol,2):'—'}</td><td>${x.t!=null?nf(x.t,2):'—'}</td>
-        <td>${noRec?'—':nf(x.exLen,0)}</td><td>${noRec||x.tExec==null?'—':nf(x.tExec,2)}</td><td class="l">${x.dProg||'—'}</td><td class="l">${x.dExec||'—'}</td><td class="l ro">${esc(x.obs)||'—'}</td></tr>`).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total</td><td class="l" colspan="5">${r.rows.length} registros</td><td>${nf(s.len+s.dLen,0)}</td><td></td><td></td><td>${nf(s.area,1)}</td><td>${nf(s.vol,2)}</td><td class="big2">${nf(s.t,2)}</td><td>${noRec?'—':nf(s.ex+s.dEx,0)}</td><td>${noRec?'—':nf(s.tEx,2)}</td><td colspan="3"></td></tr></tfoot></table></div>
+        <td>${x.ini}</td><td>${x.fim}</td><td>${nf(x.len,0)}</td><td>${x.drn?'—':x.w!=null?nf(x.w,2):'—'}</td><td>${x.drn?esc(x.p.info.esp||'—'):x.eP!=null?nf(x.eP,x.eP%1?1:0):x.e!=null?nf(x.e,1):x.excl?'s/ CBUQ':'—'}</td><td>${x.area!=null?nf(x.area,1):'—'}</td><td>${x.vol!=null?nf(x.vol,2):'—'}</td><td>${x.t!=null?nf(x.t,2):'—'}</td>
+        <td>${noRec||!x.espEx.length?'—':x.espEx.map(v=>nf(v,v%1?1:0)).join(' / ')}</td><td>${noRec?'—':nf(x.exLen,0)}</td><td>${noRec||x.tExec==null?'—':nf(x.tExec,2)}</td><td class="l">${x.dProg||'—'}</td><td class="l">${x.dExec||'—'}</td><td class="l ro">${esc(x.obs)||'—'}</td></tr>`).join('')}
+      </tbody><tfoot><tr><td class="l sticky">Total</td><td class="l" colspan="6">${r.rows.length} registros · ${noRec?'':s.rmp.sim+' com RMP'}</td><td>${nf(s.len+s.dLen,0)}</td><td></td><td></td><td>${nf(s.area,1)}</td><td>${nf(s.vol,2)}</td><td class="big2">${nf(s.t,2)}</td><td></td><td>${noRec?'—':nf(s.ex+s.dEx,0)}</td><td>${noRec?'—':nf(s.tEx,2)}</td><td colspan="3"></td></tr></tfoot></table></div>
       <div class="tnote">Quantidades calculadas com o cadastro da Calculadora de programação (larguras, espessuras e densidade). Panos parcialmente dentro do trecho entram só com a parte interna. Status pelos registros: executado (toda a extensão executada), em execução (parte executada), programado (em programação emitida e não concluída), não executado. No decrescente a estaca inicial é a maior.</div></div>`;
     out.innerHTML=h;
     $('rQuick').innerHTML=`<b>${s.n}</b> panos · <b>${nf(s.len/1000,2)} km</b> · <b>${nf(s.t,0)} t</b>${noRec?'':` · <b>${nf(s.pct,0)}%</b> exec.`}`}
-  function refresh(){renderFilters();query();render();renderExec();renderRmp()}
+  function refresh(){renderFilters();query();render();renderExec()}
 
   /* ---------- programações registradas: concluir ou não ---------- */
   function renderExec(){const ps=Rec.progs(),ex=Rec.execs(),imp=ex.filter(r=>r.src==='planilha'),fromProg=ex.filter(r=>r.src==='prog');
     $('rImpInfo').textContent=imp.length?`${imp.length} registro${imp.length>1?'s':''} importado${imp.length>1?'s':''} da planilha${store.get('execImpAt','')?' em '+store.get('execImpAt',''):''}.`:'Nenhuma planilha importada.';
-    $('rImpDel').hidden=!imp.length;{const D=store.get('rmpData',null);$('rImp2Info').textContent=D?`Subtrechos: ${D.subs.length} · leituras: ${D.reads.length} · RMPs: ${D.rmps.length} (${D.file||''}, ${D.at||''}).`:'';$('rImp2Del').hidden=!D}
+    $('rImpDel').hidden=!imp.length;
     $('rProgs').innerHTML=ps.length?ps.map(p=>`<div class="rpg${p.concluded?' done':''}"><div><b>${br(p.data)} · ${esc(p.equipe)}</b><small>${p.items.length} segmento${p.items.length>1?'s':''} · ${fmtM(p.items.reduce((s,i)=>s+(i.b-i.a),0))} · ${p.concluded?`concluída em ${br(p.execDate)} (${p.nExec} executado${p.nExec!==1?'s':''})`:'aberta (programado)'}</small></div>
       <span>${p.concluded?`<button type="button" class="secondary sm" data-reopen="${esc(p.id)}">Reabrir</button>`:`<button type="button" class="primary sm" data-conc="${esc(p.id)}">Concluir</button>`}<button type="button" class="secondary sm" data-pdel="${esc(p.id)}" aria-label="Excluir registro">✕</button></span></div>`).join(''):'<p class="note" style="margin:0">Nenhuma programação registrada. Elas entram aqui automaticamente quando você emite o relatório na Calculadora de programação.</p>';
     $('rProgs').querySelectorAll('[data-conc]').forEach(b=>b.onclick=()=>openConclude(b.dataset.conc));
@@ -3180,25 +3175,31 @@ renderGps(Loc.gps);
     Rec.saveExecs(ex);Rec.saveProgs(Rec.progs().map(x=>x.id===p.id?Object.assign({},x,{concluded:true,execDate:date,nExec:ks.length}):x));$('rConc').hidden=true;refresh()};
 
   /* ---------- planilha padrão e importação ---------- */
-  const HEAD=['Pano','Sentido','Faixa','Solução','Estaca inicial','Estaca final','Extensão (m)','Status','Data de programação','Data de execução','Toneladas executadas','Observações'];
+  const HEAD=['Pano','Sentido','Faixa','Solução','Estaca inicial','Estaca final','Extensão (m)','Espessura de projeto (cm)','Status','Espessura executada (cm)','Data de programação','Data de execução','Toneladas executadas','Observações'];
+  const R08ESP=p=>{const e=p.info.esp;if(!e||!/cm$/.test(e))return null;const n=parseFloat(e.replace(',','.'));return isFinite(n)?n:null};
+  const espProjOf=p=>{const r=R08ESP(p);if(r!=null)return r;const u=store.get('espProj',{})[p.tag];return u!=null?u:null};
+  const TOL_M=5;
   async function saveBlob(blob,name,mime){const file=new File([blob],name,{type:mime});
     if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return 'shared'}catch(e){if(e&&e.name==='AbortError')return 'cancel'}}
     const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);return 'download'}
   const stamp=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`};
   function msgR(t,kind){const m=$('rMsg');m.className='alert '+(kind||'info');m.innerHTML=t;m.hidden=false;clearTimeout(msgR.h);msgR.h=setTimeout(()=>m.hidden=true,9000)}
   $('rTpl').onclick=async()=>{try{await loadScript(XLSX_URL);const X=window.XLSX;
-      const rows=RES.rows.map(x=>[x.p.tag,SIDE[x.L0.side],x.drn?'Dreno':x.L0.name,x.p.info.code,x.ini,x.fim,Math.round(x.len),'','','','','']);
-      const ws=X.utils.aoa_to_sheet([HEAD,...rows]);ws['!cols']=[14,12,12,10,12,12,11,14,16,16,14,40].map(w=>({wch:w}));
+      const rows=RES.rows.map(x=>[x.p.tag,SIDE[x.L0.side],x.drn?'Dreno':x.L0.name,x.p.info.code,Data.nameAt(x.L0.side==='D'?ODO[x.p.i1]+20:ODO[x.p.i0]),Data.nameAt(x.L0.side==='D'?ODO[x.p.i0]:ODO[x.p.i1]+20),Math.round(ODO[x.p.i1]+20-ODO[x.p.i0]),x.drn?'':espProjOf(x.p)??'','','','','','','']);
+      const ws=X.utils.aoa_to_sheet([HEAD,...rows]);ws['!cols']=[14,12,12,10,12,12,11,14,14,14,16,16,14,40].map(w=>({wch:w}));
       const ins=X.utils.aoa_to_sheet([['Planilha padrão de execução — Localizador de Estacas · '+RODOVIA],[],
         ['Como preencher'],['1. Cada linha é um pano (ou parte dele). Não altere a coluna Pano.'],
         ['2. Status: Executado, Em execução, Programado ou Não executado. Linhas sem status são ignoradas.'],
-        ['3. Execução parcial: ajuste Estaca inicial e Estaca final para o trecho executado (formato 234+160). No decrescente a inicial é a maior.'],
-        ['4. Datas no formato dd/mm/aaaa.'],['5. Toneladas executadas é opcional: sem valor, o app calcula pela extensão executada e pelo cadastro da calculadora.'],
-        ['6. Para registrar um trecho sem pano, deixe Pano vazio e preencha Sentido (Crescente/Decrescente), Faixa (Faixa 1, Faixa 2/3, Acostamento, Dreno), Estaca inicial e final.'],
+        ['3. Espessura executada (cm): informe a espessura aplicada. Se passar da Espessura de projeto, o app marca RMP = Sim.'],
+        ['4. Espessura de projeto (cm) vem do R08 (FF 6, FE 10, FS 3). Onde estiver vazia (REC, RP, PA, RF), preencha para o app poder comparar.'],
+        ['5. Executou além das estacas do pano (mais de 5 m)? Informe as estacas reais: o app marca RMP = Sim por extensão.'],
+        ['6. Execução parcial: ajuste Estaca inicial e Estaca final para o trecho executado (formato 234+160). No decrescente a inicial é a maior.'],
+        ['7. Datas no formato dd/mm/aaaa.'],['8. Toneladas executadas é opcional: sem valor, o app calcula pela extensão executada e pelo cadastro da calculadora.'],
+        ['9. Para registrar um trecho sem pano, deixe Pano vazio e preencha Sentido (Crescente/Decrescente), Faixa (Faixa 1, Faixa 2/3, Acostamento, Dreno), Estaca inicial e final.'],
         [],['Salve e importe em Relatórios › Execução › Importar planilha.']]);ins['!cols']=[{wch:110}];
       const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Execução');X.utils.book_append_sheet(wb,ins,'Instruções');
       const out=X.write(wb,{bookType:'xlsx',type:'array'});const r=await saveBlob(new Blob([out],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),`Planilha_execucao_BR277_${stamp()}.xlsx`,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      msgR(r==='cancel'?'Download cancelado.':`Planilha padrão gerada com os ${rows.length} panos do filtro atual. Preencha Status e datas e importe de volta.`)}
+      msgR(r==='cancel'?'Download cancelado.':`Planilha padrão gerada com os ${rows.length} panos do filtro atual. Preencha Status, espessura executada e datas e importe de volta.`)}
     catch(e){msgR('Não foi possível gerar a planilha: '+esc(e.message||e),'warn')}};
   const normTxt=s=>String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
   function parseDate(v){if(v==null||v==='')return null;if(v instanceof Date&&!isNaN(v))return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
@@ -3207,29 +3208,32 @@ renderGps(Loc.gps);
   const TAGIDX=new Map(PANOS.map(p=>[p.tag,p]));
   function laneOf(sent,faixa){const s=normTxt(sent).startsWith('d')?'D':normTxt(sent).startsWith('c')?'C':null;const f=normTxt(faixa);
     const g=f.includes('dren')?'DRN':f.includes('acost')||f==='ac'?'AC':f.includes('2')||f.includes('3')?'F23':f.includes('1')?'F1':null;if(!s||!g)return -1;return LANES.findIndex(L=>L.side===s&&L.grp===g)}
-  let PEND=null;
+  let PEND=null,PEND_ESP={};
   $('rImpBtn').onclick=()=>$('rImpFile').click();
   $('rImpFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
     try{await loadScript(XLSX_URL);const X=window.XLSX;const wb=X.read(await f.arrayBuffer(),{cellDates:true});
-      if(isNewModel(wb)){await importNew(X,wb,f.name);return}
       const sh=wb.Sheets['Execução']||wb.Sheets[wb.SheetNames[0]];const aoa=X.utils.sheet_to_json(sh,{header:1,defval:'',raw:true});
       if(!aoa.length)throw new Error('planilha vazia');const hd=aoa[0].map(normTxt);const col=n=>hd.indexOf(normTxt(n));
-      const ci={pano:col('Pano'),sent:col('Sentido'),fx:col('Faixa'),ini:col('Estaca inicial'),fim:col('Estaca final'),st:col('Status'),dp:col('Data de programação'),de:col('Data de execução'),t:col('Toneladas executadas'),obs:col('Observações')};
+      const ci={pano:col('Pano'),sent:col('Sentido'),fx:col('Faixa'),ini:col('Estaca inicial'),fim:col('Estaca final'),st:col('Status'),dp:col('Data de programação'),de:col('Data de execução'),t:col('Toneladas executadas'),obs:col('Observações'),ep:col('Espessura de projeto (cm)'),ee:col('Espessura executada (cm)')};const espUp={};
       if(ci.st<0||(ci.pano<0&&(ci.ini<0||ci.fim<0)))throw new Error('cabeçalho diferente da planilha padrão (faltam as colunas Status, Pano ou Estaca inicial/final)');
       const recs=[],errs=[];let ign=0;
       aoa.slice(1).forEach((row,k)=>{const ln=k+2,get=i=>i>=0?row[i]:'';const stT=normTxt(get(ci.st));
         if(!stT||stT.startsWith('nao')){ign++;return}
         const st=stT.startsWith('exec')?'exec':stT.startsWith('em ')||stT.includes('andamento')?'and':stT.startsWith('prog')?'prog':null;if(!st){errs.push(`linha ${ln}: status "${get(ci.st)}" não reconhecido`);return}
-        let L=-1,a=null,b=null;const tag=String(get(ci.pano)).trim();
+        let L=-1,a=null,b=null,exc=0;const tag=String(get(ci.pano)).trim();
         if(tag){const P=TAGIDX.get(tag);if(!P){errs.push(`linha ${ln}: pano ${tag} não existe no projeto`);return}L=P.L;a=ODO[P.i0];b=ODO[P.i1]+20}
         else{L=laneOf(get(ci.sent),get(ci.fx));if(L<0){errs.push(`linha ${ln}: sentido/faixa não reconhecidos`);return}}
         const si=String(get(ci.ini)).trim(),sf=String(get(ci.fim)).trim();
         if(si||sf){const A=Data.parseKm(si),B=Data.parseKm(sf);if(A.err||B.err){errs.push(`linha ${ln}: estaca inválida (${A.err||B.err})`);return}
-          let x=Math.min(A.s,B.s),y=Math.max(A.s,B.s);if(a!=null){x=Math.max(a,x);y=Math.min(b,y);if(y-x<=1e-6){errs.push(`linha ${ln}: estacas fora do pano ${tag}`);return}}a=x;b=y}
+          let x=Math.min(A.s,B.s),y=Math.max(A.s,B.s);const full=y-x;if(a!=null){x=Math.max(a,x);y=Math.min(b,y);if(y-x<=1e-6){errs.push(`linha ${ln}: estacas fora do pano ${tag}`);return}}exc=Math.max(0,full-(y-x));a=x;b=y}
         else if(a==null){errs.push(`linha ${ln}: informe Estaca inicial e final`);return}
         const dp=parseDate(get(ci.dp)),de=parseDate(get(ci.de));if(dp==='ERR'||de==='ERR'){errs.push(`linha ${ln}: data inválida (use dd/mm/aaaa)`);return}
         const tv=get(ci.t);const tons=tv===''||tv==null?null:parseFloat(String(tv).replace(',','.'));if(tons!=null&&!isFinite(tons)){errs.push(`linha ${ln}: toneladas inválidas`);return}
-        recs.push({L,a,b,tag:tag||null,st,dateProg:dp,dateExec:st==='exec'?(de||dp):de,tons:st==='exec'?tons:null,obs:String(get(ci.obs)).trim(),src:'planilha'})});
+        const num=v=>v===''||v==null?null:parseFloat(String(v).replace(',','.'));const ee=num(get(ci.ee)),ep=num(get(ci.ep));
+        if(ee!=null&&!(isFinite(ee)&&ee>0)){errs.push(`linha ${ln}: espessura executada inválida`);return}
+        if(tag&&ep!=null&&isFinite(ep)&&ep>0&&R08ESP(TAGIDX.get(tag))==null)espUp[tag]=ep;
+        recs.push({L,a,b,tag:tag||null,st,dateProg:dp,dateExec:st==='exec'?(de||dp):de,tons:st==='exec'?tons:null,esp:ee,exc,obs:String(get(ci.obs)).trim(),src:'planilha'})});
+      PEND_ESP=espUp;
       PEND=recs;const nE=recs.filter(r=>r.st==='exec').length,nA=recs.filter(r=>r.st==='and').length,nP=recs.filter(r=>r.st==='prog').length;
       $('riT').textContent=`Importar ${f.name}`;
       $('riBody').innerHTML=`<div class="kv3"><div><span>Executados</span><b>${nE}</b></div><div><span>Em execução</span><b>${nA}</b></div><div><span>Programados</span><b>${nP}</b></div></div>
@@ -3239,20 +3243,21 @@ renderGps(Loc.gps);
     catch(err){msgR('Não foi possível ler a planilha: '+esc(err.message||err),'warn')}};
   $('riCancel').onclick=()=>{$('rImp').hidden=true;PEND=null};
   $('rImp').addEventListener('click',e=>{if(e.target.id==='rImp'){$('rImp').hidden=true;PEND=null}});
-  $('riOk').onclick=()=>{if(!PEND)return;const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha');ex=ex.concat(PEND);Rec.saveExecs(ex);
+  $('riOk').onclick=()=>{if(!PEND)return;if(Object.keys(PEND_ESP).length)store.set('espProj',Object.assign(store.get('espProj',{}),PEND_ESP));const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha');ex=ex.concat(PEND);Rec.saveExecs(ex);
     const d=new Date();store.set('execImpAt',d.toLocaleString('pt-BR'));$('rImp').hidden=true;msgR(`${PEND.length} registro(s) importado(s).`);PEND=null;refresh()};
   $('rImpDel').onclick=()=>{if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'));refresh()};
 
   /* ---------- Excel ---------- */
-  function detailAoa(){const noRec=RES.fonte==='proj';const H=['Pano','Rodovia','Bloco','Sentido','Faixa','Tipo de serviço','Solução','Descrição','Estaca inicial','Estaca final','Extensão (m)','Parcial no recorte','Largura (m)','Espessura (cm)','Área (m²)','Volume (m³)','Previsto (t)','Status','Extensão executada (m)','Extensão programada (m)','Saldo (m)','Executado (t)','Programado (t)','Saldo (t)','Data de programação','Data de execução','Origem do registro','Observações','Marco km','Página do PDF'];
+  function detailAoa(){const noRec=RES.fonte==='proj';const H=['Pano','Rodovia','Bloco','Sentido','Faixa','Tipo de serviço','Solução','Descrição','Estaca inicial','Estaca final','Extensão (m)','Parcial no recorte','Largura (m)','Espessura (cm)','Área (m²)','Volume (m³)','Previsto (t)','Status','Espessura de projeto (cm)','Espessura executada (cm)','RMP','Motivo do RMP','Extensão executada (m)','Extensão programada (m)','Saldo (m)','Executado (t)','Programado (t)','Saldo (t)','Data de programação','Data de execução','Origem do registro','Observações','Marco km','Página do PDF'];
     const r2=v=>v==null?'':Math.round(v*100)/100;
     return [H,...RES.rows.map(x=>[x.p.tag,RODOVIA,'B'+R[x.p.i0][4],SIDE[x.L0.side],x.drn?'Dreno':x.L0.name,x.drn?'Drenagem':'Pavimentação',x.p.info.code,x.p.info.desc,x.ini,x.fim,r2(x.len),x.partial?'sim':'não',
-      x.drn?'':r2(x.w),x.drn?(x.p.info.esp||''):x.excl?'sem CBUQ':r2(x.e),r2(x.area),r2(x.vol),r2(x.t),STATUS[x.st],noRec?'':r2(x.exLen),noRec?'':r2(x.prLen),r2(x.saldo),noRec?'':r2(x.tExec),noRec?'':r2(x.tProg),r2(x.tSaldo),x.dProg,x.dExec,x.src,x.obs,R[x.p.i0][5],R[x.p.i0][8]])]}
+      x.drn?'':r2(x.w),x.drn?(x.p.info.esp||''):x.excl?'sem CBUQ':r2(x.e),r2(x.area),r2(x.vol),r2(x.t),STATUS[x.st],x.drn?'':x.eP??'',noRec?'':x.espEx.join(' / '),noRec||x.rmp==='na'?'':RMPT[x.rmp],noRec?'':x.rmpMot,noRec?'':r2(x.exLen),noRec?'':r2(x.prLen),r2(x.saldo),noRec?'':r2(x.tExec),noRec?'':r2(x.tProg),r2(x.tSaldo),x.dProg,x.dExec,x.src,x.obs,R[x.p.i0][5],R[x.p.i0][8]])]}
   $('rXls').onclick=async()=>{const b=$('rXls');b.disabled=true;try{await loadScript(XLSX_URL);const X=window.XLSX,s=RES.sum,noRec=RES.fonte==='proj';
       const sumA=[['RELATÓRIO GERENCIAL — '+RODOVIA],['Obra',OBRA],['Emitido em',new Date().toLocaleString('pt-BR')],[],['Filtros aplicados'],...filtersText().map(t=>['',t]),[],
         ['Indicador','Valor','Unidade'],['Panos',s.n,''],['Panos de pavimento',s.nPav,''],['Panos de drenagem',s.nDrn,''],['Extensão total (pavimento)',Math.round(s.len),'m'],['Extensão executada',noRec?'':Math.round(s.ex),'m'],['Extensão programada',noRec?'':Math.round(s.pr),'m'],['Saldo a executar',Math.round(s.saldo),'m'],
         ['Percentual executado',noRec?'':Math.round(s.pct*10)/10,'%'],['Percentual restante',noRec?'':Math.round((100-s.pct)*10)/10,'%'],['Área',Math.round(s.area),'m²'],['Volume',Math.round(s.vol*100)/100,'m³'],
         ['CBUQ total previsto',Math.round(s.t*100)/100,'t'],['CBUQ executado',noRec?'':Math.round(s.tEx*100)/100,'t'],['CBUQ programado',noRec?'':Math.round(s.tPr*100)/100,'t'],['Saldo de CBUQ',Math.round(s.tSaldo*100)/100,'t'],['Densidade usada',RES.C.dens,'t/m³'],
+        ['Panos com RMP = Sim',noRec?'':s.rmp.sim,''],['Panos com RMP = Não',noRec?'':s.rmp.nao,''],['Panos executados sem dados para verificar RMP',noRec?'':s.rmp.sd,''],
         ['Drenagem no recorte',Math.round(s.dLen),'m'],['Drenagem executada',noRec?'':Math.round(s.dEx),'m'],[],
         ...Object.entries(STATUS).map(([k,t])=>['Panos '+t.toLowerCase(),s.st[k],'']),[],
         ['Leituras do recorte'],...s.ins.map(t=>['',t]),[]];
@@ -3262,9 +3267,6 @@ renderGps(Loc.gps);
       const det=detailAoa();const tot=['TOTAL','','','','','','','','','',Math.round((s.len+s.dLen)*100)/100,'','','',Math.round(s.area*100)/100,Math.round(s.vol*100)/100,Math.round(s.t*100)/100,'',noRec?'':Math.round((s.ex+s.dEx)*100)/100,noRec?'':Math.round((s.pr+s.dPr)*100)/100,'',noRec?'':Math.round(s.tEx*100)/100,noRec?'':Math.round(s.tPr*100)/100,Math.round(s.tSaldo*100)/100];
       const ws2=X.utils.aoa_to_sheet([...det,tot]);ws2['!cols']=det[0].map((h,i)=>({wch:i===7||i===27?30:Math.max(10,h.length+2)}));ws2['!autofilter']={ref:X.utils.encode_range({s:{r:0,c:0},e:{r:det.length-1,c:det[0].length-1}})};
       const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws1,'Resumo');X.utils.book_append_sheet(wb,ws2,'Detalhamento dos Panos');
-      {const Q=rmpAoa();if(Q&&Q.L.length){const w3=X.utils.aoa_to_sheet(Q.seg);w3['!cols']=Q.seg[0].map(h=>({wch:Math.max(11,Math.min(34,h.length+2))}));X.utils.book_append_sheet(wb,w3,'Projeto x Execução');
-        const w4=X.utils.aoa_to_sheet(Q.alt);w4['!cols']=Q.alt[0].map(h=>({wch:Math.max(11,h.length+2)}));X.utils.book_append_sheet(wb,w4,'Alterações de espessura');
-        const w5=X.utils.aoa_to_sheet(Q.sub);w5['!cols']=Q.sub[0].map(h=>({wch:Math.max(11,h.length+2)}));X.utils.book_append_sheet(wb,w5,'Subtrechos')}}
       const out=X.write(wb,{bookType:'xlsx',type:'array'});const r=await saveBlob(new Blob([out]),`Relatorio_BR277_${stamp()}.xlsx`,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       msgR(r==='cancel'?'Exportação cancelada.':`Excel gerado: ${RES.rows.length} panos, abas Resumo e Detalhamento dos Panos.`)}
     catch(e){msgR('Não foi possível gerar o Excel: '+esc(e.message||e),'warn')}finally{b.disabled=false}};
@@ -3302,7 +3304,7 @@ renderGps(Loc.gps);
       pbar(M,y+5,CW,4,[[s.ex,ST_COLOR.exec],[s.pr,ST_COLOR.prog]],s.len);y+=13}
     if(s.nDrn){txt('Drenagem',M,y+3,{z:8,b:true});txt(`${fmtM(s.dLen)} no recorte${noRec?'':` · ${fmtM(s.dEx)} executados · ${fmtM(s.dPr)} programados`}`,M+CW,y+3,{z:7.5,c:MUT,a:'right'});pbar(M,y+5,CW,3,[[s.dEx,ST_COLOR.exec],[s.dPr,ST_COLOR.prog]],s.dLen);y+=12}
     // status + leituras
-    {let x=M;font(7.5,true);for(const [k,t] of Object.entries(STATUS)){const lb=`${t}: ${s.st[k]}`;doc.setFillColor(...hex(ST_COLOR[k]));doc.circle(x+1.3,y+1.6,1.2,'F');doc.setTextColor(...INK);doc.text(clean(lb),x+3.5,y+2.6);x+=doc.getTextWidth(clean(lb))+10}y+=6}
+    {let x=M;font(7.5,true);for(const [k,t] of Object.entries(STATUS).concat(noRec?[]:Object.entries(RMPT).map(([k,t])=>['r_'+k,'RMP '+t]))){const cc=k.startsWith('r_')?RMPC[k.slice(2)]:ST_COLOR[k],nv=k.startsWith('r_')?s.rmp[k.slice(2)]:s.st[k];const lb=`${t}: ${nv}`;doc.setFillColor(...hex(cc));doc.circle(x+1.3,y+1.6,1.2,'F');doc.setTextColor(...INK);doc.text(clean(lb),x+3.5,y+2.6);x+=doc.getTextWidth(clean(lb))+8;if(x>W-M-40){x=M;y+=5}}y+=6}
     for(const t of s.ins){y+=txt('• '+t,M,y+3,{z:8,w:CW})+0.6}y+=3;
     // distribuições em 2 colunas com barras
     const dist=(title,arr,x,yy,w,unit)=>{if(!arr.length)return yy;txt(title.toUpperCase(),x,yy+3,{z:7,b:true,c:MUT});yy+=5;const max=Math.max(...arr.map(o=>o.len));
@@ -3313,250 +3315,18 @@ renderGps(Loc.gps);
     // detalhamento
     doc.addPage();y=header();txt('DETALHAMENTO DOS PANOS',M,y+3,{z:10,b:true});txt(`${RES.rows.length} registros`,M+CW,y+3,{z:8,c:MUT,a:'right'});doc.setFillColor(...RED);doc.rect(M,y+4.5,18,0.7,'F');y+=8;
     const body=RES.rows.map(x=>[x.p.tag,x.L0.side==='C'?'Cresc.':'Decr.',x.drn?'Dreno':x.L0.name.replace('Acostamento','Acost.'),{content:x.p.info.code,raw:x},x.ini,x.fim,nf(x.len,0),x.drn?'-':x.w!=null?nf(x.w,2):'-',x.drn?clean(x.p.info.esp||'-'):x.e!=null?nf(x.e,1):x.excl?'s/CBUQ':'-',x.area!=null?nf(x.area,1):'-',x.t!=null?nf(x.t,2):'-',
-      {content:STATUS[x.st],st:x.st},noRec?'-':nf(x.exLen,0),noRec||x.tExec==null?'-':nf(x.tExec,2),x.dProg||'-',x.dExec||'-',clean(x.obs)||'-']);
+      {content:STATUS[x.st],st:x.st},noRec||!x.espEx.length?'-':x.espEx.map(v=>nf(v,v%1?1:0)).join('/'),{content:noRec||x.rmp==='na'?'-':RMPT[x.rmp],rm:noRec||x.rmp==='na'?null:x.rmp},noRec?'-':nf(x.exLen,0),noRec||x.tExec==null?'-':nf(x.tExec,2),x.dProg||'-',x.dExec||'-',clean(x.obs)||'-']);
     const startPg=doc.getNumberOfPages();
-    doc.autoTable({startY:y,margin:{left:M,right:M,top:M+16,bottom:12},head:[['Pano','Sentido','Faixa','Solução','Est. inicial','Est. final','Ext. (m)','Larg. (m)','Esp. (cm)','Área (m2)','Previsto (t)','Status','Exec. (m)','Exec. (t)','Data prog.','Data exec.','Observações']],body,
-      foot:[['TOTAL','','','','','',nf(s.len+s.dLen,0),'','',nf(s.area,1),nf(s.t,2),'',noRec?'-':nf(s.ex+s.dEx,0),noRec?'-':nf(s.tEx,2),'','','']],
+    doc.autoTable({startY:y,margin:{left:M,right:M,top:M+16,bottom:12},head:[['Pano','Sentido','Faixa','Solução','Est. inicial','Est. final','Ext. (m)','Larg. (m)','Esp. proj. (cm)','Área (m2)','Previsto (t)','Status','Esp. exec. (cm)','RMP','Exec. (m)','Exec. (t)','Data prog.','Data exec.','Observações']],body,
+      foot:[['TOTAL','','','','','',nf(s.len+s.dLen,0),'','',nf(s.area,1),nf(s.t,2),'','',noRec?'-':s.rmp.sim+' Sim',noRec?'-':nf(s.ex+s.dEx,0),noRec?'-':nf(s.tEx,2),'','','']],
       theme:'grid',styles:{font:'helvetica',fontSize:6.8,cellPadding:1.1,lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},headStyles:{fillColor:INK,textColor:WH,fontStyle:'bold',fontSize:6.5,halign:'center'},footStyles:{fillColor:LIGHT,textColor:INK,fontStyle:'bold'},
-      alternateRowStyles:{fillColor:[250,250,250]},columnStyles:{0:{fontStyle:'bold',cellWidth:21},3:{cellWidth:13,halign:'center'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right'},7:{halign:'right'},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',fontStyle:'bold'},11:{cellWidth:18,halign:'center'},12:{halign:'right'},13:{halign:'right'},16:{cellWidth:40}},
-      didParseCell:d=>{if(d.section==='body'&&d.cell.raw&&d.cell.raw.st){d.cell.styles.fillColor=hex(ST_COLOR[d.cell.raw.st]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}
+      alternateRowStyles:{fillColor:[250,250,250]},columnStyles:{0:{fontStyle:'bold',cellWidth:21},3:{cellWidth:13,halign:'center'},4:{halign:'right'},5:{halign:'right'},6:{halign:'right'},7:{halign:'right'},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',fontStyle:'bold'},11:{cellWidth:18,halign:'center'},12:{halign:'right'},13:{cellWidth:11,halign:'center'},14:{halign:'right'},15:{halign:'right'},18:{cellWidth:32}},
+      didParseCell:d=>{if(d.section==='body'&&d.cell.raw&&d.cell.raw.rm){d.cell.styles.fillColor=hex(RMPC[d.cell.raw.rm]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}
+        if(d.section==='body'&&d.cell.raw&&d.cell.raw.st){d.cell.styles.fillColor=hex(ST_COLOR[d.cell.raw.st]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}
         if(d.section==='body'&&d.cell.raw&&d.cell.raw.raw){const inf=d.cell.raw.raw.p.info;d.cell.styles.fillColor=hex(inf.color);d.cell.styles.textColor=hex(inf.ink);d.cell.styles.fontStyle='bold'}},
       didDrawPage:()=>{if(doc.internal.getCurrentPageInfo().pageNumber>startPg)header()}});
-    {const Q=rmpAoa();if(Q&&Q.L.length){doc.addPage();let yy=header();txt('PROJETO × EXECUÇÃO · RMP',M,yy+3,{z:10,b:true});txt(`${Q.L.length} segmentos com registro · tolerância 5 m no comprimento, nenhuma na espessura`,M+CW,yy+3,{z:8,c:MUT,a:'right'});doc.setFillColor(...RED);doc.rect(M,yy+4.5,18,0.7,'F');yy+=8;
-      const pg0=doc.getNumberOfPages();
-      doc.autoTable({startY:yy,margin:{left:M,right:M,top:M+16,bottom:12},head:[['Segmento','Faixa','Sol.','Limites de projeto','Prev. (m)','Dentro (m)','Rest. (m)','Fora (m)','%','Esp. proj.','Execução','RMP','Motivos / pendências']],
-        body:Q.L.map(r=>[r.tag,`${r.p.L<3||r.p.L===6?'C':'D'} · ${r.drn?'Dreno':LANES[r.L].name.replace('Acostamento','Acost.')}`,r.p.info.code,clean(nmDir(r.L,ODO[r.p.i0],ODO[r.p.i1]+20)),nf(r.len,0),nf(r.dentro,0),nf(r.rest,0),nf(r.fora,0),nf(r.pct,0),r.drn?'-':r.ep==null?'s/ dado':cmf(r.ep),{content:EXST[r.st],ex:r.st},{content:RCAT[r.cat],rc:r.cat},clean([...r.need.map(n=>n.txt+(n.ok?' (RMP '+n.rmps.join(', ')+')':' - sem RMP')),...r.low.map(a=>`espessura menor ${cmf(a.ep)}>${cmf(a.e)} cm em ${fmtM(a.b-a.a)} - analisar`),...r.insuf.map(x=>'dados insuficientes: '+x)].join('; ')||'-')]),
-        theme:'grid',styles:{font:'helvetica',fontSize:6.6,cellPadding:1,lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},headStyles:{fillColor:INK,textColor:WH,fontStyle:'bold',fontSize:6.4,halign:'center'},
-        columnStyles:{0:{fontStyle:'bold',cellWidth:20},4:{halign:'right'},5:{halign:'right'},6:{halign:'right'},7:{halign:'right'},8:{halign:'right'},10:{cellWidth:17,halign:'center'},11:{cellWidth:26,halign:'center'},12:{cellWidth:70}},
-        didParseCell:d=>{const c=d.cell.raw;if(d.section==='body'&&c&&c.ex){d.cell.styles.fillColor=hex(EXC[c.ex]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}if(d.section==='body'&&c&&c.rc){d.cell.styles.fillColor=hex(RCC[c.rc]);d.cell.styles.textColor=WH;d.cell.styles.fontStyle='bold'}},
-        didDrawPage:()=>{if(doc.internal.getCurrentPageInfo().pageNumber>pg0)header()}})}}
     const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);txt(`${k}/${n}`,W-M,H-5,{z:7,c:MUT,a:'right'});txt('Neovia Engenharia · Localizador de Estacas · quantidades pelo cadastro da Calculadora de programação',M,H-5,{z:7,c:MUT})}
     return doc.output('blob')}
-
-
-  /* =================== Projeto × Execução · RMP (modelo de subtrechos) =================== */
-  const TOL_M=5,TOL_CM=0; // tolerâncias definidas: 5 m no comprimento, nenhuma na espessura
-  const RM={get:()=>store.get('rmpData',null),set:v=>store.set('rmpData',v)};
-  const famOf=code=>{if(!code)return null;const c=String(code).trim();if(c==='DR'||c==='DP')return c;if(Data.CODES.includes(c))return Data.info(c).fam;
-    const u=c.toUpperCase();for(const k of ['FF','FE','FS','REC','PA','RP','RF','DR','DP'])if(u===k)return k;return null};
-  const R08ESP=p=>{const e=p.info.esp;if(!e||!/cm$/.test(e))return null;const n=parseFloat(e.replace(',','.'));return isFinite(n)?n:null};
-  function espProj(p,D){const r=R08ESP(p);if(r!=null)return {v:r,src:'R08'};const u=D&&D.projEsp?D.projEsp[p.tag]:null;return u!=null?{v:u,src:'Informada'}:{v:null,src:null}}
-  const isDrn=p=>LANES[p.L].grp==='DRN';
-  const nmDir=(L,a,b)=>{const d=LANES[L].side==='D';return `${Data.nameAt(d?b:a)} → ${Data.nameAt(d?a:b)}`};
-  const cmf=v=>v==null?'—':nf(v,v%1?1:0);
-
-  // intervalos
-  const uni=iv=>{iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const o=[];for(const x of iv){const l=o[o.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else o.push([x[0],x[1]])}return o};
-  const inter=(U,a,b)=>U.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
-  const minus=(a,b,U)=>{let out=[[a,b]];for(const [x,y] of U){const n=[];for(const [p,q] of out){if(y<=p||x>=q){n.push([p,q]);continue}if(x>p)n.push([p,x]);if(y<q)n.push([y,q])}out=n}return out.filter(z=>z[1]-z[0]>1e-6)};
-
-  /* ---------- análise: cada segmento do R08 contra os subtrechos da mesma faixa ---------- */
-  let AN=null;
-  function analyze(){const D=RM.get();if(!D||!D.subs){AN=null;return null}
-    const rmpSet=new Map((D.rmps||[]).map(r=>[r.id,r]));
-    const byLane=Array.from({length:8},()=>[]);for(const p of PANOS)byLane[p.L].push(p);
-    const subsL=Array.from({length:8},()=>[]);for(const s of D.subs)subsL[s.L].push(s);
-    const readsL=Array.from({length:8},()=>[]);for(const r of (D.reads||[]))readsL[r.L].push(r);
-    const seg=new Map();const get=p=>{if(!seg.has(p.tag))seg.set(p.tag,{p,len:ODO[p.i1]+20-ODO[p.i0],a:ODO[p.i0],b:ODO[p.i1]+20,esp:espProj(p,D),pieces:[],foraList:[],troca:[],reads:[],subIds:new Set()});return seg.get(p.tag)};
-    const outside=[]; // subtrechos sem nenhum segmento de projeto na faixa
-    for(let L=0;L<8;L++){const segs=byLane[L];if(!subsL[L].length&&!readsL[L].length)continue;
-      const famU={};for(const p of segs){(famU[p.info.fam]=famU[p.info.fam]||[]).push([ODO[p.i0],ODO[p.i1]+20])}for(const k in famU)famU[k]=uni(famU[k]);
-      const allU=uni(segs.map(p=>[ODO[p.i0],ODO[p.i1]+20]));
-      for(const s of subsL[L]){const same=segs.filter(p=>p.info.fam===s.fam&&Math.min(s.b,ODO[p.i1]+20)-Math.max(s.a,ODO[p.i0])>1e-6);
-        for(const p of same){const g=get(p);g.subIds.add(s.id);g.pieces.push({a:Math.max(s.a,g.a),b:Math.min(s.b,g.b),e:s.esp,sub:s})}
-        // parte fora de qualquer segmento da mesma solução
-        const outs=minus(s.a,s.b,famU[s.fam]||[]);
-        for(const [x,y] of outs){const other=segs.filter(p=>p.info.fam!==s.fam&&Math.min(y,ODO[p.i1]+20)-Math.max(x,ODO[p.i0])>1e-6);
-          for(const p of other){const g=get(p);const xa=Math.max(x,g.a),xb=Math.min(y,g.b);g.troca.push({a:xa,b:xb,sub:s});g.subIds.add(s.id)}
-          const noProj=minus(x,y,allU);
-          if(same.length){ // extensão excedente atribuída ao segmento da mesma solução mais próximo
-            for(const [u,v] of [[x,y]]){let best=null,bd=Infinity;for(const p of same){const d=Math.min(Math.abs(u-(ODO[p.i1]+20)),Math.abs(v-ODO[p.i0]));if(d<bd){bd=d;best=p}}get(best).foraList.push({a:u,b:v,sub:s,over:other.length?[...new Set(other.map(q=>q.info.code))].join(', '):null})}}
-          else for(const [u,v] of noProj)outside.push({a:u,b:v,sub:s})}}
-      for(const r of readsL[L]){const p=segs.find(q=>r.s>=ODO[q.i0]-1e-6&&r.s<ODO[q.i1]+20);if(p)get(p).reads.push(r);else outside.push({read:r})}}
-    const res=[];
-    for(const g of seg.values()){const p=g.p,drn=isDrn(p);
-      g.pieces.sort((x,y)=>x.a-y.a||x.b-y.b);const pcs=[];let end=-Infinity;const overl=[];
-      for(const q of g.pieces){let a=q.a;if(a<end-1e-6){overl.push({a,b:Math.min(end,q.b),sub:q.sub});a=end}if(q.b-a>1e-6){pcs.push({a,b:q.b,e:q.e,sub:q.sub});end=Math.max(end,q.b)}}
-      const U=uni(pcs.map(q=>[q.a,q.b]));const dentro=inter(U,g.a,g.b);const rest=Math.max(0,g.len-dentro);
-      const fora=g.foraList.reduce((s,x)=>s+(x.b-x.a),0),troca=uni(g.troca.map(x=>[x.a,x.b])).reduce((s,x)=>s+x[1]-x[0],0);
-      const st=dentro>=g.len-TOL_M?'exec':dentro>0?'and':'nao';
-      // espessura: trechos contínuos com o mesmo par projeto × executado
-      const alts=[],low=[],insuf=[];const ep=g.esp.v;
-      if(!drn){if(ep==null&&pcs.length)insuf.push('Espessura de projeto (cm) do segmento '+p.tag+(p.info.fam==='RF'?' (solução RF sem descrição no R08)':''));
-        else{let cur=null;for(const q of pcs){const d=q.e-ep;const kind=Math.abs(d)<=TOL_CM?null:d>0?'up':'down';
-            if(kind&&cur&&cur.kind===kind&&cur.e===q.e&&q.a<=cur.b+1e-6){cur.b=q.b;cur.subs.add(q.sub.id);if(q.sub.rmp)cur.rmps.add(q.sub.rmp);if(q.sub.motivo)cur.mot.add(q.sub.motivo)}
-            else{cur=kind?{kind,a:q.a,b:q.b,e:q.e,ep,subs:new Set([q.sub.id]),rmps:new Set(q.sub.rmp?[q.sub.rmp]:[]),mot:new Set(q.sub.motivo?[q.sub.motivo]:[])}:null;if(cur)(kind==='up'?alts:low).push(cur)}}}}
-      // transição prevista: segmento vizinho da mesma faixa com espessura de projeto diferente
-      const nb=[PANO_AT[p.L][p.i0-1],PANO_AT[p.L][p.i1+1]].filter(x=>x!=null&&x>=0).map(i=>PANOS[i]);
-      const trans=drn||ep==null?[]:nb.filter(q=>{const e2=espProj(q,D).v;return e2!=null&&e2!==ep}).map(q=>({at:q.i0<p.i0?ODO[p.i0]:ODO[p.i1]+20,other:q.tag,e2:espProj(q,D).v}));
-      // leituras de campo divergentes do subtrecho que cobre a estaca
-      const readDiv=g.reads.filter(r=>{const q=pcs.find(x=>r.s>=x.a-1e-6&&r.s<=x.b+1e-6);return q&&r.esp!=null&&Math.abs(r.esp-q.e)>TOL_CM}).map(r=>({r,sub:pcs.find(x=>r.s>=x.a-1e-6&&r.s<=x.b+1e-6)}));
-      // situação do RMP
-      const need=[];const rmpOf=subs=>[...new Set(subs.map(s=>s.rmp).filter(Boolean))];
-      if(fora>TOL_M){const r=rmpOf(g.foraList.map(x=>x.sub));const ov=[...new Set(g.foraList.map(x=>x.over).filter(Boolean))];need.push({k:'ext',txt:`extensão excedente ${fmtM(fora)}${ov.length?` (sobre solução prevista ${ov.join(', ')})`:''}`,m:fora,rmps:r})}
-      for(const a of alts)need.push({k:'esp',txt:`aumento de espessura +${cmf(a.e-a.ep)} cm em ${fmtM(a.b-a.a)}`,m:a.b-a.a,rmps:[...a.rmps],a});
-      if(troca>TOL_M){const r=rmpOf(g.troca.map(x=>x.sub));need.push({k:'sol',txt:`troca de solução em ${fmtM(troca)} (executado ${[...new Set(g.troca.map(x=>x.sub.code))].join(', ')})`,m:troca,rmps:r})}
-      need.forEach(n=>{n.linked=n.rmps.filter(x=>rmpSet.has(x));n.missing=n.rmps.filter(x=>!rmpSet.has(x));n.ok=n.rmps.length>0});
-      const rmpsLinked=[...new Set(need.flatMap(n=>n.linked))];const semRmp=need.filter(n=>!n.ok).length;
-      const cat=need.some(n=>!n.ok)?'semrmp':need.length?'vinc':low.length?'div':insuf.length?'ins':'ok';
-      res.push({p,tag:p.tag,L:p.L,drn,len:g.len,dentro,rest,fora,troca,pct:g.len?Math.min(100,dentro/g.len*100):0,st,ep,epSrc:g.esp.src,pcs,alts,low,insuf,trans,readDiv,reads:g.reads,need,rmpsLinked,semRmp,cat,overl,subIds:[...g.subIds],foraList:g.foraList})}
-    const order=new Map(PANOS.map((p,i)=>[p.tag,i]));res.sort((x,y)=>order.get(x.tag)-order.get(y.tag));
-    AN={res,byTag:new Map(res.map(r=>[r.tag,r])),outside,D,rmpSet};return AN}
-
-  /* ---------- modelo novo de planilha ---------- */
-  const H_EXE=['ID da linha','Tipo do registro','Pano executado','Segmento de projeto','Sentido','Faixa','Solução executada','Estaca inicial','Estaca final','Extensão (m)','Espessura executada (cm)','Data de execução','Motivo da alteração','Nº do RMP','Toneladas executadas','Observações'];
-  const H_PRJ=['Pano (segmento)','Rodovia','Bloco','Sentido','Faixa','Solução','Estaca inicial','Estaca final','Extensão (m)','Espessura de projeto (cm)','Origem da espessura'];
-  const H_RMP=['Nº do RMP','Data','Tipo','Motivo','Situação do documento','Trechos afetados'];
-  const TIPOS=['Subtrecho executado','Leitura de campo'],RMP_TIPOS=['Extensão','Espessura','Solução','Outro'];
-  const MOTIVOS=['Recalque / deformação','Trincamento','Espessura insuficiente do revestimento','Ajuste de greide','Solicitação da fiscalização','Outro'];
-  async function downloadNewTemplate(){try{await loadScript(XLSX_URL);const X=window.XLSX;const D=RM.get();
-      const segs=(RES&&RES.rows.length?RES.rows.map(r=>r.p):PANOS);
-      const prj=segs.map(p=>{const L0=LANES[p.L],e=espProj(p,D);return [p.tag,'BR-277/PR','B'+R[p.i0][4],SIDE[L0.side],isDrn(p)?'Dreno':L0.name,p.info.code,Data.nameAt(L0.side==='D'?ODO[p.i1]+20:ODO[p.i0]),Data.nameAt(L0.side==='D'?ODO[p.i0]:ODO[p.i1]+20),Math.round(ODO[p.i1]+20-ODO[p.i0]),isDrn(p)?'':e.v??'',isDrn(p)?'não se aplica (drenagem)':e.src||'']});
-      const ex=[['EX-001','Subtrecho executado','EX-PANO-A','','Decrescente','Faixa 1','FE','235+200','234+900',300,10,'29/09/2026','','','','EXEMPLO — não é importado'],
-        ['EX-002','Subtrecho executado','EX-PANO-A','','Decrescente','Faixa 1','FE','234+900','234+800',100,12,'29/09/2026','Recalque / deformação','EX-RMP-01','','EXEMPLO — espessura mudou: nova linha'],
-        ['EX-003','Leitura de campo','EX-PANO-A','','Decrescente','Faixa 1','FE','234+860','',"",11,'29/09/2026','','','','EXEMPLO — leitura isolada não conta como alteração']];
-      const wsE=X.utils.aoa_to_sheet([H_EXE,...ex]);wsE['!cols']=H_EXE.map((h,i)=>({wch:[10,20,16,16,12,12,11,12,12,11,13,14,24,12,12,40][i]}));
-      const wsP=X.utils.aoa_to_sheet([H_PRJ,...prj]);wsP['!cols']=[16,11,7,12,12,9,12,12,11,14,26].map(w=>({wch:w}));
-      const wsR=X.utils.aoa_to_sheet([H_RMP,['EX-RMP-01','29/09/2026','Espessura','EXEMPLO — aumento de espessura por recalque','Em elaboração','EX-PANO-A 234+900 a 234+800']]);wsR['!cols']=[14,12,12,40,18,34].map(w=>({wch:w}));
-      const codes=[...Data.CODES,'DR','DP'];const mx=Math.max(codes.length,MOTIVOS.length);
-      const lst=[['Sentido','Faixa','Solução','Tipo do registro','Tipo de RMP','Motivo da alteração']];for(let i=0;i<mx;i++)lst.push([['Crescente','Decrescente'][i]||'',['Faixa 1','Faixa 2/3','Acostamento','Dreno'][i]||'',codes[i]||'',TIPOS[i]||'',RMP_TIPOS[i]||'',MOTIVOS[i]||'']);
-      const wsL=X.utils.aoa_to_sheet(lst);wsL['!cols']=[{wch:12},{wch:12},{wch:10},{wch:20},{wch:12},{wch:36}];
-      const ins=[['Planilha de execução por subtrecho — Localizador de Estacas · BR-277/PR'],[],
-        ['Unidades: estacas no formato 234+160 · extensão em metros (m) · espessura em centímetros (cm) · datas dd/mm/aaaa.'],[],
-        ['ABA EXECUÇÃO — uma linha por subtrecho de espessura uniforme'],
-        ['• Se a espessura mudou dentro do pano, abra outra linha a partir da estaca da mudança (não use a média).'],
-        ['• Tipo do registro: "Subtrecho executado" ou "Leitura de campo". Leitura = uma estaca só; não conta como alteração de projeto.'],
-        ['• Sentido, Faixa e Solução executada: use os valores da aba Listas. Faixa 2 ou Faixa 3 contam como Faixa 2/3 (R08).'],
-        ['• No decrescente a estaca inicial é a maior. Extensão (m) é conferida pelas estacas (tolerância de 5 m).'],
-        ['• Segmento de projeto é opcional: o app encontra pelo intervalo de estacas.'],
-        ['• Nº do RMP: preencha quando a linha tiver alteração (espessura, extensão ou solução). O número deve existir na aba RMP.'],
-        [],['ABA PROJETO — gerada pelo app. Só complete "Espessura de projeto (cm)" onde estiver vazia (REC, RP, PA, RF). FF, FE e FS vêm do R08.'],
-        ['ABA RMP — um registro por RMP: número, data, tipo, motivo e situação do documento.'],[],
-        ['Linhas com ID começando por EX- são exemplos e são ignoradas. Apague-as ou deixe como estão.'],
-        ['Regras: extensão fora dos limites acima de 5 m ou espessura executada maior que a de projeto (sem tolerância) indicam RMP necessário. Espessura menor é destacada para análise.']];
-      const wsI=X.utils.aoa_to_sheet(ins);wsI['!cols']=[{wch:120}];
-      const wb=X.utils.book_new();[['Instruções',wsI],['Projeto',wsP],['Execução',wsE],['RMP',wsR],['Listas',wsL]].forEach(([n,w])=>X.utils.book_append_sheet(wb,w,n));
-      const out=X.write(wb,{bookType:'xlsx',type:'array'});const r=await saveBlob(new Blob([out]),`Planilha_execucao_RMP_BR277_${stamp()}.xlsx`,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      msgR(r==='cancel'?'Download cancelado.':`Planilha padrão gerada: abas Instruções, Projeto (${prj.length} segmentos do filtro), Execução, RMP e Listas.`)}
-    catch(e){msgR('Não foi possível gerar a planilha: '+esc(e.message||e),'warn')}}
-  $('rTpl').onclick=downloadNewTemplate;
-
-  const isNewModel=wb=>wb.SheetNames.includes('RMP')||(()=>{const sh=wb.Sheets['Execução'];if(!sh)return false;const h=(window.XLSX.utils.sheet_to_json(sh,{header:1})[0]||[]).map(normTxt);return h.includes(normTxt('Tipo do registro'))})();
-  const aoaOf=(X,wb,name)=>{const sh=wb.Sheets[name];return sh?X.utils.sheet_to_json(sh,{header:1,defval:'',raw:true}):null};
-  let PEND2=null;
-  function parseNew(X,wb){const err=[],warn=[],info=[];const ex=aoaOf(X,wb,'Execução');if(!ex||!ex.length)throw new Error('aba Execução não encontrada');
-    const hd=ex[0].map(normTxt);const c=n=>hd.indexOf(normTxt(n));const need=['ID da linha','Tipo do registro','Sentido','Faixa','Solução executada','Estaca inicial','Espessura executada (cm)','Data de execução'];
-    const miss=need.filter(n=>c(n)<0);if(miss.length)throw new Error('faltam colunas na aba Execução: '+miss.join(', '));
-    const subs=[],reads=[],ids=new Map(),sig=new Map();let nEx=0;
-    ex.slice(1).forEach((row,k)=>{const ln=k+2,g=n=>{const i=c(n);return i>=0?row[i]:''};const id=String(g('ID da linha')).trim();
-      if(!row.some(v=>String(v).trim()!==''))return;if(/^EX-/i.test(id)){nEx++;return}
-      const E=t=>err.push(`Execução linha ${ln}${id?' ('+id+')':''}: ${t}`),W=t=>warn.push(`Execução linha ${ln}${id?' ('+id+')':''}: ${t}`);
-      if(!id){E('ID da linha vazio');return}if(ids.has(id)){E(`ID repetido (também na linha ${ids.get(id)}) — duplicidade`);return}ids.set(id,ln);
-      const tipoT=normTxt(g('Tipo do registro'));const tipo=tipoT.startsWith('leit')?'read':tipoT.startsWith('sub')||tipoT.startsWith('exec')?'sub':null;if(!tipo){E(`tipo do registro "${g('Tipo do registro')}" não reconhecido`);return}
-      const L=laneOf(g('Sentido'),g('Faixa'));if(L<0){E('sentido ou faixa fora da lista');return}
-      const code=String(g('Solução executada')).trim(),fam=famOf(code);if(!fam){E(`solução "${code}" fora da lista`);return}
-      const A=Data.parseKm(String(g('Estaca inicial')).trim());if(A.err){E('estaca inicial: '+A.err);return}
-      const de=parseDate(g('Data de execução'));if(de==='ERR'||!de){E('data de execução vazia ou inválida (dd/mm/aaaa)');return}
-      const ev=g('Espessura executada (cm)'),esp=ev===''||ev==null?null:parseFloat(String(ev).replace(',','.'));
-      const drn=LANES[L].grp==='DRN';
-      if(tipo==='read'){if(esp==null||!isFinite(esp)||esp<=0){E('leitura sem espessura medida (cm)');return}reads.push({id,L,s:A.s,name:A.name,esp,date:de,code,obs:String(g('Observações')).trim(),pano:String(g('Pano executado')).trim()});return}
-      const B=Data.parseKm(String(g('Estaca final')).trim());if(B.err){E('estaca final: '+B.err);return}
-      const a=Math.min(A.s,B.s),b=Math.max(A.s,B.s);if(b-a<1e-6){E('estaca inicial igual à final');return}
-      if(!drn&&(esp==null||!isFinite(esp)||esp<=0)){E('espessura executada vazia, zero ou não numérica — dados insuficientes');return}
-      const lenT=g('Extensão (m)');if(lenT!==''&&lenT!=null){const lv=parseFloat(String(lenT).replace(',','.'));if(isFinite(lv)&&Math.abs(lv-(b-a))>TOL_M)W(`extensão digitada ${nf(lv,0)} m difere da calculada pelas estacas (${nf(b-a,0)} m)`)}
-      const sg=String(g('Segmento de projeto')).trim();if(sg){const P=TAGIDX.get(sg);if(!P){E(`segmento de projeto ${sg} não existe no R08`);return}
-        if(P.L!==L||Math.min(b,ODO[P.i1]+20)-Math.max(a,ODO[P.i0])<=1e-6){E(`segmento ${sg} não cruza o intervalo nesta faixa — sem correspondência`);return}}
-      const key=[L,Math.round(a),Math.round(b),esp,de].join('|');if(sig.has(key)){E(`linha idêntica à ${sig.get(key)} — duplicidade`);return}sig.set(key,id);
-      const tv=g('Toneladas executadas'),tons=tv===''||tv==null?null:parseFloat(String(tv).replace(',','.'));
-      subs.push({id,L,a,b,code,fam,esp:drn?(esp&&isFinite(esp)?esp:null):esp,date:de,motivo:String(g('Motivo da alteração')).trim(),rmp:String(g('Nº do RMP')).trim()||null,tons:isFinite(tons)?tons:null,obs:String(g('Observações')).trim(),pano:String(g('Pano executado')).trim(),seg:sg||null,ln})});
-    // sobreposições na mesma faixa
-    for(let L=0;L<8;L++){const s=subs.filter(x=>x.L===L).sort((x,y)=>x.a-y.a);for(let i=1;i<s.length;i++)for(let j=0;j<i;j++){const o=Math.min(s[i].b,s[j].b)-Math.max(s[i].a,s[j].a);if(o>1e-6)warn.push(`sobreposição de ${nf(o,0)} m entre ${s[j].id} e ${s[i].id} (${SIDE[LANES[L].side]} · ${LANES[L].name}) — contada uma vez`)}}
-    // sem segmento de projeto na faixa
-    for(const s of subs){if(!PANOS.some(p=>p.L===s.L&&Math.min(s.b,ODO[p.i1]+20)-Math.max(s.a,ODO[p.i0])>1e-6))warn.push(`${s.id}: nenhum segmento de projeto nesta faixa entre ${nmDir(s.L,s.a,s.b)} — fora do projeto`)}
-    // RMP
-    const rmps=[];const ra=aoaOf(X,wb,'RMP');if(ra&&ra.length){const h=ra[0].map(normTxt),cc=n=>h.indexOf(normTxt(n));const seen=new Set();
-      ra.slice(1).forEach((row,k)=>{const g=n=>{const i=cc(n);return i>=0?row[i]:''};const id=String(g('Nº do RMP')).trim();if(!row.some(v=>String(v).trim()!==''))return;if(/^EX-/i.test(id))return;
-        if(!id){err.push(`RMP linha ${k+2}: número vazio`);return}if(seen.has(id)){err.push(`RMP linha ${k+2}: ${id} repetido — duplicidade`);return}seen.add(id);
-        const d=parseDate(g('Data'));rmps.push({id,date:d==='ERR'?null:d,tipo:String(g('Tipo')).trim(),motivo:String(g('Motivo')).trim(),sit:String(g('Situação do documento')).trim(),trechos:String(g('Trechos afetados')).trim()})})}
-    const rIds=new Set(rmps.map(r=>r.id));for(const s of subs)if(s.rmp&&!rIds.has(s.rmp))warn.push(`${s.id}: RMP ${s.rmp} não está cadastrado na aba RMP`);
-    for(const r of rmps)if(!subs.some(s=>s.rmp===r.id))warn.push(`RMP ${r.id} cadastrado sem nenhuma linha vinculada`);
-    // espessuras de projeto informadas
-    const projEsp={};const pa=aoaOf(X,wb,'Projeto');if(pa&&pa.length){const h=pa[0].map(normTxt),cc=n=>h.indexOf(normTxt(n));
-      pa.slice(1).forEach((row,k)=>{const g=n=>{const i=cc(n);return i>=0?row[i]:''};const tag=String(g('Pano (segmento)')).trim();if(!tag)return;const P=TAGIDX.get(tag);if(!P){warn.push(`Projeto linha ${k+2}: pano ${tag} não existe no R08`);return}
-        const v=g('Espessura de projeto (cm)');if(v===''||v==null)return;const n=parseFloat(String(v).replace(',','.'));if(!isFinite(n)||n<=0){err.push(`Projeto linha ${k+2}: espessura inválida em ${tag}`);return}
-        const r8=R08ESP(P);if(r8!=null){if(Math.abs(r8-n)>1e-9)warn.push(`Projeto: ${tag} com ${cmf(n)} cm, mas o R08 indica ${cmf(r8)} cm — mantido o R08`);return}projEsp[tag]=n})}
-    const semEsp=new Set();for(const s of subs){if(LANES[s.L].grp==='DRN')continue;for(const p of PANOS)if(p.L===s.L&&p.info.fam===s.fam&&Math.min(s.b,ODO[p.i1]+20)-Math.max(s.a,ODO[p.i0])>1e-6&&R08ESP(p)==null&&projEsp[p.tag]==null)semEsp.add(p.tag)}
-    if(semEsp.size)info.push(`${semEsp.size} segmento(s) sem espessura de projeto (ex.: ${[...semEsp].slice(0,4).join(', ')}): a comparação de espessura fica como "dados insuficientes".`);
-    if(nEx)info.push(`${nEx} linha(s) de exemplo (EX-) ignoradas.`);
-    return {subs,reads,rmps,projEsp,err,warn,info}}
-  async function importNew(X,wb,fname){const P=parseNew(X,wb);PEND2=Object.assign(P,{file:fname});
-    const L=(t,a,cls)=>a.length?`<h4 class="rvh ${cls||''}">${t} (${a.length})</h4><ul class="rerr ${cls||''}">${a.slice(0,60).map(x=>`<li>${esc(x)}</li>`).join('')}${a.length>60?`<li>… e mais ${a.length-60}</li>`:''}</ul>`:'';
-    $('ri2T').textContent='Validar '+fname;
-    $('ri2Body').innerHTML=`<div class="kv3"><div><span>Subtrechos</span><b>${P.subs.length}</b></div><div><span>Leituras</span><b>${P.reads.length}</b></div><div><span>RMPs</span><b>${P.rmps.length}</b></div></div>
-      ${L('Erros — linhas que não serão importadas',P.err)}${L('Alertas — importados e marcados',P.warn,'wn')}${P.info.map(t=>`<p class="note" style="margin:4px 0">${esc(t)}</p>`).join('')}
-      ${!P.err.length&&!P.warn.length?'<p class="note">Nenhum erro ou alerta encontrado.</p>':''}`;
-    $('ri2Ok').disabled=!P.subs.length&&!P.reads.length&&!P.rmps.length;$('rImp2').hidden=false}
-  $('ri2Cancel').onclick=()=>{$('rImp2').hidden=true;PEND2=null};
-  $('rImp2').addEventListener('click',e=>{if(e.target.id==='rImp2'){$('rImp2').hidden=true;PEND2=null}});
-  $('ri2Ok').onclick=()=>{const P=PEND2;if(!P)return;RM.set({subs:P.subs,reads:P.reads,rmps:P.rmps,projEsp:P.projEsp,warn:P.warn,err:P.err,file:P.file,at:new Date().toLocaleString('pt-BR')});
-    $('rImp2').hidden=true;PEND2=null;msgR(`Importado: ${P.subs.length} subtrechos, ${P.reads.length} leituras e ${P.rmps.length} RMPs.`);refresh()};
-
-  /* ---------- tela: resumo + tabela + ficha por segmento ---------- */
-  const EXST={exec:'Executado',and:'Em andamento',nao:'Não iniciado'},EXC={exec:'#1E7A4C',and:'#E08A00',nao:'#9AA19D'};
-  const RCAT={semrmp:'RMP necessário · sem RMP',vinc:'RMP necessário · vinculado',div:'Divergência para análise',ins:'Dados insuficientes',ok:'Sem exigência'};
-  const RCC={semrmp:'#C8101A',vinc:'#6A2C91',div:'#E08A00',ins:'#56605A',ok:'#1E7A4C'};
-  let RF={cat:Object.keys(RCAT),onlyAlt:false};
-  function renderRmp(){const box=$('rRmp');const D=RM.get();
-    if(!D){box.innerHTML=`<h2>Projeto × Execução · RMP</h2><div class="rgsum"><p class="note" style="margin:0">Nenhuma planilha de subtrechos importada. Em "Execução · programações e planilha", baixe a planilha padrão (abas Projeto, Execução e RMP), preencha e importe.</p></div>`;return}
-    const A=analyze();const tags=new Set(RES.rows.map(r=>r.p.tag));const inF=A.res.filter(r=>tags.has(r.tag));
-    const list=inF.filter(r=>RF.cat.includes(r.cat)&&(!RF.onlyAlt||r.alts.length||r.low.length||r.fora>TOL_M||r.troca>TOL_M));
-    const S=(k,arr)=>arr.reduce((s,r)=>s+(r[k]||0),0);const nAlt=inF.reduce((s,r)=>s+r.alts.length,0),nLow=inF.reduce((s,r)=>s+r.low.length,0);
-    const mAlt=inF.reduce((s,r)=>s+r.alts.reduce((t,a)=>t+a.b-a.a,0),0);const rmpD=new Set(inF.flatMap(r=>r.rmpsLinked));const semR=inF.reduce((s,r)=>s+r.semRmp,0);
-    const outF=A.outside.filter(o=>o.sub);
-    box.innerHTML=`<h2>Projeto × Execução · RMP <em class="rcnt">${esc(D.file||'')} · ${esc(D.at||'')}</em></h2><div class="rgsum">
-      <div class="kpis"><div class="kpi"><span>Segmentos com registro</span><b>${inF.length}</b><div class="sub">${inF.filter(r=>r.st==='exec').length} executados · ${inF.filter(r=>r.st==='and').length} em andamento</div></div>
-        <div class="kpi"><span>Previsto nesses segmentos</span><b>${nf(S('len',inF)/1000,3)}<small>km</small></b><div class="sub">dentro ${fmtM(S('dentro',inF))} · restante ${fmtM(S('rest',inF))}</div></div>
-        <div class="kpi"><span>Fora dos limites</span><b>${nf(S('fora',inF),0)}<small>m</small></b><div class="sub">troca de solução ${fmtM(S('troca',inF))}${outF.length?` · ${outF.length} trecho(s) sem projeto`:''}</div></div>
-        <div class="kpi main"><span>Alterações de espessura</span><b>${nAlt}</b><div class="sub">${fmtM(mAlt)} afetados · ${rmpD.size} RMP(s) distintos · ${semR} sem RMP${nLow?` · ${nLow} menor(es) p/ análise`:''}</div></div></div>
-      <div class="rgrp"><h3>Situação do RMP <span><button type="button" id="rfAllC">Todas</button></span></h3><div class="rchips" id="rfCat">${Object.entries(RCAT).map(([k,t])=>`<button type="button" class="rchip" data-k="${k}" aria-pressed="${RF.cat.includes(k)}"><i style="background:${RCC[k]}"></i>${t}: ${inF.filter(r=>r.cat===k).length}</button>`).join('')}
-        <button type="button" class="rchip" id="rfAlt" aria-pressed="${RF.onlyAlt}">Só segmentos com alteração</button></div></div>
-      ${D.warn&&D.warn.length?`<details class="rwarn"><summary>${D.warn.length} alerta(s) da importação</summary><ul class="rerr wn">${D.warn.slice(0,80).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`:''}
-      ${outF.length?`<details class="rwarn"><summary>${outF.length} trecho(s) executado(s) sem segmento de projeto na faixa</summary><ul class="rerr wn">${outF.map(o=>`<li>${esc(o.sub.id)} · ${SIDE[LANES[o.sub.L].side]} · ${LANES[o.sub.L].name} · ${nmDir(o.sub.L,o.a,o.b)} · ${fmtM(o.b-o.a)}</li>`).join('')}</ul></details>`:''}
-    </div>
-    <div class="tscroll"><table class="q rq"><thead><tr><th class="l sticky">Segmento</th><th class="l">Execução</th><th class="l">RMP</th><th>Previsto<small>m</small></th><th>Dentro<small>m</small></th><th>Restante<small>m</small></th><th>Fora<small>m</small></th><th>Exec.<small>%</small></th><th>Esp. proj.<small>cm</small></th><th>Alterações</th><th>RMPs</th><th>Sem RMP</th></tr></thead><tbody>
-    ${list.length?list.slice(0,400).map(r=>`<tr data-seg="${r.tag}" class="rrow"><td class="l sticky pano">${r.tag}<small>${SIDE[LANES[r.L].side]} · ${r.drn?'Dreno':LANES[r.L].name} · ${r.p.info.code}</small></td>
-      <td class="l"><span class="rst" style="background:${EXC[r.st]}">${EXST[r.st]}</span></td><td class="l"><span class="rst" style="background:${RCC[r.cat]}">${RCAT[r.cat]}</span></td>
-      <td>${nf(r.len,0)}</td><td>${nf(r.dentro,0)}</td><td>${nf(r.rest,0)}</td><td>${nf(r.fora,0)}</td><td>${nf(r.pct,0)}</td><td>${r.drn?'—':cmf(r.ep)}</td><td>${r.alts.length}${r.low.length?` <small>+${r.low.length} menor</small>`:''}</td><td>${r.rmpsLinked.length}</td><td>${r.semRmp}</td></tr>`).join(''):`<tr><td class="l" colspan="12">Nenhum segmento com registro neste filtro.</td></tr>`}
-    </tbody></table></div><div class="tnote">Toque num segmento para ver subtrechos, espessuras, alterações e RMPs. Tolerância de 5 m no comprimento e nenhuma na espessura. Situação da execução pelo trecho previsto; situação do RMP à parte.</div>`;
-    box.querySelectorAll('#rfCat .rchip[data-k]').forEach(b=>b.onclick=()=>{const k=b.dataset.k;RF.cat=RF.cat.includes(k)?RF.cat.filter(x=>x!==k):[...RF.cat,k];renderRmp()});
-    $('rfAllC').onclick=()=>{RF.cat=Object.keys(RCAT);renderRmp()};$('rfAlt').onclick=()=>{RF.onlyAlt=!RF.onlyAlt;renderRmp()};
-    box.querySelectorAll('tr[data-seg]').forEach(tr=>tr.onclick=()=>openFicha(tr.dataset.seg))}
-  function openFicha(tag){const r=AN&&AN.byTag.get(tag);if(!r)return;const L=r.L;
-    const kv=(k,v)=>`<dt>${k}</dt><dd>${v}</dd>`;
-    const pcsT=r.pcs.length?`<table class="fx"><tr><th>Subtrecho</th><th>Estacas</th><th>m</th><th>Proj.</th><th>Exec.</th><th>Dif.</th><th>RMP</th></tr>${r.pcs.map(q=>{const d=r.ep!=null&&q.e!=null?q.e-r.ep:null;return `<tr class="${d>0?'up':d<0?'dn':''}"><td>${esc(q.sub.id)}</td><td>${nmDir(L,q.a,q.b)}</td><td>${nf(q.b-q.a,0)}</td><td>${r.drn?'—':cmf(r.ep)}</td><td>${r.drn?'—':cmf(q.e)}</td><td>${d==null?'—':(d>0?'+':'')+cmf(d)}</td><td>${esc(q.sub.rmp||'—')}</td></tr>`}).join('')}</table>`:'<p class="note">Nenhum subtrecho executado neste segmento.</p>';
-    const altT=r.alts.length||r.low.length?`<ul class="fl">${r.alts.map(a=>`<li><b>Aumento</b> ${nmDir(L,a.a,a.b)} · ${fmtM(a.b-a.a)} · ${cmf(a.ep)} → ${cmf(a.e)} cm · RMP: ${a.rmps.size?[...a.rmps].map(x=>esc(x)+(AN.rmpSet.has(x)?'':' (não cadastrado)')).join(', '):'<b style="color:#C8101A">sem RMP</b>'}${a.mot.size?' · motivo: '+esc([...a.mot].join('; ')):''}</li>`).join('')}${r.low.map(a=>`<li><b>Menor que o projeto</b> ${nmDir(L,a.a,a.b)} · ${fmtM(a.b-a.a)} · ${cmf(a.ep)} → ${cmf(a.e)} cm · divergência para análise</li>`).join('')}</ul>`:'<p class="note">Nenhuma alteração de espessura.</p>';
-    const needT=r.need.length?`<ul class="fl">${r.need.map(n=>`<li><b>RMP necessário</b> — ${esc(n.txt)} · ${n.ok?'RMP '+n.rmps.map(esc).join(', ')+(n.missing.length?' (não cadastrado: '+n.missing.map(esc).join(', ')+')':''):'<b style="color:#C8101A">sem RMP</b>'}</li>`).join('')}</ul>`:'';
-    const transT=r.trans.length?`<p class="note">Transição prevista no projeto: ${r.trans.map(t=>`em ${Data.nameAt(t.at)} para ${esc(t.other)} (${cmf(t.e2)} cm)`).join('; ')} — não conta como alteração.</p>`:'';
-    const rdT=r.reads.length?`<p class="note">${r.reads.length} leitura(s) de campo${r.readDiv.length?`, ${r.readDiv.length} divergente(s) do subtrecho: ${r.readDiv.map(x=>`${x.r.name} ${cmf(x.r.esp)} cm × ${cmf(x.sub.e)} cm`).join('; ')}`:''} — leituras não contam como alteração.</p>`:'';
-    $('rfT').textContent=`Segmento ${r.tag} · ${r.p.info.code}`;
-    $('rfB').innerHTML=`<div class="kv3"><div><span>Execução</span><b style="color:${EXC[r.st]}">${EXST[r.st]}</b></div><div><span>Executado</span><b>${nf(r.pct,0)}%</b></div><div><span>RMP</span><b style="color:${RCC[r.cat]};font-size:15px">${RCAT[r.cat]}</b></div></div>
-      <dl class="fdl">${kv('Faixa',`${SIDE[LANES[L].side]} · ${r.drn?'Dreno':LANES[L].name}`)}${kv('Limites de projeto',nmDir(L,ODO[r.p.i0],ODO[r.p.i1]+20))}${kv('Extensão prevista',fmtM(r.len))}${kv('Executada dentro dos limites',fmtM(r.dentro))}${kv('Restante para concluir',fmtM(r.rest))}${kv('Executada fora dos limites',fmtM(r.fora)+(r.troca?` · troca de solução ${fmtM(r.troca)}`:''))}
-        ${r.drn?'':kv('Espessura de projeto',r.ep==null?'<b style="color:#C8101A">dados insuficientes</b>':cmf(r.ep)+' cm ('+r.epSrc+')')}${kv('Alterações de espessura',`${r.alts.length} · ${r.rmpsLinked.length} RMP(s) vinculados · ${r.semRmp} item(ns) sem RMP`)}</dl>
-      ${r.insuf.length?`<p class="alert warn" style="margin:8px 0"><b>Dados insuficientes</b>${r.insuf.map(esc).join('; ')}</p>`:''}
-      <h4>Subtrechos e espessuras</h4>${pcsT}<h4>Alterações de espessura</h4>${altT}${needT?'<h4>RMP</h4>'+needT:''}${transT}${rdT}
-      ${r.overl.length?`<p class="note">Sobreposição entre subtrechos: ${r.overl.map(o=>fmtM(o.b-o.a)).join(', ')} — contada uma vez.</p>`:''}`;
-    $('rFicha').hidden=false}
-  $('rfClose').onclick=()=>$('rFicha').hidden=true;$('rFicha').addEventListener('click',e=>{if(e.target.id==='rFicha')$('rFicha').hidden=true});
-  $('rImp2Del').onclick=()=>{if(!confirm('Remover os subtrechos, leituras e RMPs importados?'))return;store.set('rmpData',null);refresh()};
-  function rmpAoa(){const A=AN||analyze();if(!A)return null;const tags=new Set(RES.rows.map(r=>r.p.tag));const L=A.res.filter(r=>tags.has(r.tag));
-    const seg=[['Segmento','Sentido','Faixa','Solução','Limites de projeto','Extensão prevista (m)','Executada dentro (m)','Restante (m)','Fora dos limites (m)','Troca de solução (m)','Execução (%)','Espessura de projeto (cm)','Origem espessura','Situação da execução','Situação do RMP','Motivos de RMP','Alterações de espessura','Metros com espessura alterada','Espessura menor (trechos)','RMPs vinculados','Itens sem RMP','Dados insuficientes'],
-      ...L.map(r=>[r.tag,SIDE[LANES[r.L].side],r.drn?'Dreno':LANES[r.L].name,r.p.info.code,nmDir(r.L,ODO[r.p.i0],ODO[r.p.i1]+20),Math.round(r.len),Math.round(r.dentro),Math.round(r.rest),Math.round(r.fora),Math.round(r.troca),Math.round(r.pct*10)/10,r.ep??'',r.epSrc||'',EXST[r.st],RCAT[r.cat],r.need.map(n=>n.txt).join('; '),r.alts.length,Math.round(r.alts.reduce((s,a)=>s+a.b-a.a,0)),r.low.length,r.rmpsLinked.join(', '),r.semRmp,r.insuf.join('; ')])];
-    const alt=[['Segmento','Tipo','Estacas','Extensão (m)','Espessura de projeto (cm)','Espessura executada (cm)','Diferença (cm)','RMP','RMP cadastrado','Motivo','Subtrechos'],
-      ...L.flatMap(r=>[...r.alts.map(a=>[r.tag,'Aumento de espessura',nmDir(r.L,a.a,a.b),Math.round(a.b-a.a),a.ep,a.e,a.e-a.ep,[...a.rmps].join(', '),[...a.rmps].every(x=>A.rmpSet.has(x))&&a.rmps.size?'sim':a.rmps.size?'não':'sem RMP',[...a.mot].join('; '),[...a.subs].join(', ')]),
-        ...r.low.map(a=>[r.tag,'Espessura menor — análise',nmDir(r.L,a.a,a.b),Math.round(a.b-a.a),a.ep,a.e,a.e-a.ep,[...a.rmps].join(', '),'','',[...a.subs].join(', ')])])];
-    const sub=[['Segmento','Subtrecho','Pano executado','Estacas (no segmento)','Extensão (m)','Espessura de projeto (cm)','Espessura executada (cm)','Data de execução','RMP','Motivo','Observações'],...L.flatMap(r=>r.pcs.map(q=>[r.tag,q.sub.id,q.sub.pano,nmDir(r.L,q.a,q.b),Math.round(q.b-q.a),r.ep??'',q.e??'',br(q.sub.date),q.sub.rmp||'',q.sub.motivo,q.sub.obs]))];
-    return {seg,alt,sub,L}}
-  window.__rmp={analyze,renderRmp,rmpAoa,openFicha};
 
   on('exec',()=>{if(Router.cur()==='relatorios')refresh()});
   Router.onInit('relatorios',refresh);
@@ -3570,7 +3340,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto','relatorios'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 14:36';
+  const CUR_VER='30/09/2026 14:45';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
