@@ -1271,7 +1271,15 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .fbusy i{width:12px;height:12px;border-radius:50%;border:2px solid #fff;border-right-color:transparent;animation:fspin .8s linear infinite}@keyframes fspin{to{transform:rotate(360deg)}}
 .fok{position:absolute;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:7;background:rgba(30,122,76,.92);color:#fff;font:700 13px var(--body);border-radius:999px;padding:7px 14px;pointer-events:none;white-space:nowrap}
 .fflash{position:absolute;inset:0;z-index:4;background:#fff;opacity:0;pointer-events:none;transition:opacity .25s}.fflash.go{opacity:.55;transition:none}
-.nbox{padding:18px 16px 16px}.nbox h2{margin:0 0 4px;font:700 18px var(--body)}
+.nbox{padding:18px 16px 16px}
+.lbox{width:min(560px,100%)}
+.lopts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 0 14px}
+.lopt{display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;border:2px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);padding:6px 6px 8px;cursor:pointer;font:inherit}
+.lopt canvas{width:100%;height:auto;aspect-ratio:4/3;border-radius:7px;display:block;background:#333}
+.lopt b{font:700 13.5px var(--body);margin-top:4px}.lopt small{font:500 12px var(--body);color:var(--muted)}
+.lopt[aria-pressed="true"]{border-color:#C8101A;box-shadow:0 0 0 2px rgba(200,16,26,.25)}
+.lopt[aria-pressed="true"] b::after{content:' ✓';color:#C8101A}
+@media (orientation:landscape) and (max-height:520px){#layModal .mbox{max-height:calc(100% - 8px);overflow:auto}.lopts{grid-template-columns:1fr 1fr}.lopt canvas{max-height:30vh;width:auto;margin:0 auto}#layModal .msub{display:none}#layModal h2{margin-bottom:8px}.lopts{margin:0 0 10px}}.nbox h2{margin:0 0 4px;font:700 18px var(--body)}
 .nbox textarea{width:100%;box-sizing:border-box;min-height:110px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px/1.4 var(--body);padding:10px 12px;resize:vertical}
 .ncount{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;font:500 12.5px var(--body);color:var(--muted)}
 .linkBtn{border:0;background:none;color:#C8101A;font:600 13.5px var(--body);padding:6px 0;cursor:pointer}
@@ -1330,7 +1338,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 08:14 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 08:35 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1431,6 +1439,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
     <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><button type="button" class="fgal" id="fGalBtn" aria-label="Fotos guardadas no app">Fotos <b id="fGalN">0</b></button><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
     <div class="fctl2" id="fCtl">
       <button type="button" class="fbtn" id="fNoteBtn" aria-label="Adicionar nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span id="fNoteLbl">Nota</span></button>
+      <button type="button" class="fbtn" id="fLayBtn" aria-label="Escolher layout da foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h7V4M14 20v-5h7"/></svg><span id="fLayLbl">Layout</span></button>
       <label class="fbtn" for="fFile" id="fNative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Câmera do aparelho</span></label>
       <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
     </div>
@@ -1466,6 +1475,14 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
       <textarea id="fNote" maxlength="400" rows="4" placeholder="ex.: FF faixa 1 decrescente"></textarea>
       <div class="ncount"><button type="button" class="linkBtn" id="nmClear">Limpar nota</button><span id="nmN">0/400</span></div>
       <div class="nbtns"><button type="button" class="ghostBtn" id="nmCancel">Cancelar</button><button type="button" class="bigBtn" id="nmApply">Aplicar</button></div></div>
+  </div>
+  <div class="modal" id="layModal" hidden role="dialog" aria-modal="true" aria-labelledby="lmT">
+    <div class="mbox nbox lbox"><h2 id="lmT">Layout da foto</h2><p class="msub">Vale para as próximas fotos até você trocar. Só muda o fundo das logos.</p>
+      <div class="lopts">
+        <button type="button" class="lopt" data-lay="semi"><canvas width="320" height="240"></canvas><b>Layout 1 · Semitransparente</b><small>logos com fundo branco leve</small></button>
+        <button type="button" class="lopt" data-lay="trans"><canvas width="320" height="240"></canvas><b>Layout 2 · Transparente</b><small>só as logos sobre a foto</small></button>
+      </div>
+      <div class="nbtns" style="grid-template-columns:1fr"><button type="button" class="bigBtn" id="lmClose">Pronto</button></div></div>
   </div>
   <div class="modal" id="confModal" hidden role="alertdialog" aria-modal="true" aria-labelledby="cfT">
     <div class="mbox nbox"><h2 id="cfT">Excluir fotos</h2><p class="msub" id="cfTxt"></p>
@@ -2585,6 +2602,8 @@ renderGps(Loc.gps);
   let stream=null,raf=0,live=null,liveT=0,busy=false,lastShot=0;
   // nota aplicada: vale para as próximas capturas até ser alterada ou limpa (câmera e galeria usam o mesmo texto)
   let NOTE=store.get('fotoNote','')||'';
+  // layout visual: 'semi' (Layout 1, aprovado) ou 'trans' (Layout 2, logos sem caixa)
+  let LAYOUT=store.get('fotoLayout','semi')==='trans'?'trans':'semi';
   function noteUi(){$('fNoteLbl').textContent=NOTE?'Nota: '+NOTE:'Adicionar nota';$('fNoteBtn').classList.toggle('on',!!NOTE);live=null}
   function openNote(){$('fNote').value=NOTE;$('nmN').textContent=NOTE.length+'/400';$('noteModal').hidden=false;setTimeout(()=>$('fNote').focus(),60)}
   $('fNote').addEventListener('input',()=>$('nmN').textContent=$('fNote').value.length+'/400');
@@ -2593,6 +2612,16 @@ renderGps(Loc.gps);
   $('nmApply').onclick=()=>{NOTE=$('fNote').value.trim();store.set('fotoNote',NOTE);noteUi();$('noteModal').hidden=true};
   $('noteModal').addEventListener('click',e=>{if(e.target.id==='noteModal')$('noteModal').hidden=true});
   $('fNoteBtn').onclick=openNote;noteUi();
+  function layUi(){$('fLayLbl').textContent=LAYOUT==='trans'?'Layout 2':'Layout 1';document.querySelectorAll('.lopt').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lay===LAYOUT))}
+  function drawThumbs(){const has=video.videoWidth>0;document.querySelectorAll('.lopt canvas').forEach(c=>{const b=c.closest('.lopt');
+      const W=has&&video.videoHeight>video.videoWidth?240:320,H=W===320?240:320;c.width=W;c.height=H;const g=c.getContext('2d');
+      let src=null;if(has){src=video}else{src=document.createElement('canvas');src.width=W;src.height=H;const q=src.getContext('2d');const gr=q.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#8FA9B8');gr.addColorStop(.5,'#6E7A70');gr.addColorStop(.52,'#3A3D3F');gr.addColorStop(1,'#2A2C2E');q.fillStyle=gr;q.fillRect(0,0,W,H)}
+      compose(g,src,W,H,live||infoFrom(liveFix(),new Date()),b.dataset.lay)})}
+  function openLay(){layUi();drawThumbs();$('layModal').hidden=false}
+  document.querySelectorAll('.lopt').forEach(b=>b.onclick=()=>{LAYOUT=b.dataset.lay;store.set('fotoLayout',LAYOUT);layUi()});
+  $('lmClose').onclick=()=>$('layModal').hidden=true;
+  $('layModal').addEventListener('click',e=>{if(e.target.id==='layModal')$('layModal').hidden=true});
+  $('fLayBtn').onclick=openLay;layUi();
   const pad2=n=>String(n).padStart(2,'0');
   const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
   // estaca pela mesma fonte e lógica da página Localização estaca
@@ -2628,14 +2657,14 @@ renderGps(Loc.gps);
   // marcas-d'água, proporcionais ao menor lado (foto vertical ou horizontal)
   // marcas-d'água com padrão fixo, pensado para foto horizontal:
   // logos em quadros de mesmo tamanho (contain), fundo branco translúcido, bloco de dados com largura fixa
-  function watermark(g,W,H,info){const land=W>=H,U=Math.min(W,H),m=Math.round(U*0.045);
+  function watermark(g,W,H,info,lay){lay=lay||LAYOUT;const land=W>=H,U=Math.min(W,H),m=Math.round(U*0.045);
     // logos: quadro padrão (altura e largura iguais para as duas marcas)
     const bh=Math.round(U*(land?0.105:0.085)),bw=Math.round(bh*3.1),pad=Math.round(bh*0.14),rad=Math.round(bh*0.16);
     // quadros encostados no topo e na lateral da foto: cantos junto às bordas retos, canto livre levemente arredondado
-    const plate=(img,x,y,left)=>{const r=Math.max(2,Math.round(bh*0.07));g.save();g.fillStyle='rgba(255,255,255,.72)';g.beginPath();
+    const plate=(img,x,y,left)=>{const r=Math.max(2,Math.round(bh*0.07));if(lay!=='trans'){g.save();g.fillStyle='rgba(255,255,255,.72)';g.beginPath();
       if(left){g.moveTo(x,y);g.lineTo(x+bw,y);g.lineTo(x+bw,y+bh-r);g.arcTo(x+bw,y+bh,x+bw-r,y+bh,r);g.lineTo(x,y+bh)}
       else{g.moveTo(x,y);g.lineTo(x+bw,y);g.lineTo(x+bw,y+bh);g.lineTo(x+r,y+bh);g.arcTo(x,y+bh,x,y+bh-r,r)}
-      g.closePath();g.fill();g.restore();
+      g.closePath();g.fill();g.restore()}
       if(!img.complete||!img.naturalWidth)return;const iw=bw-2*pad,ih=bh-2*pad,ar=img.naturalWidth/img.naturalHeight;let w=iw,h=iw/ar;if(h>ih){h=ih;w=ih*ar}
       g.imageSmoothingQuality='high';g.drawImage(img,x+(bw-w)/2,y+(bh-h)/2,w,h)};
     plate(imgNeo,0,0,true);plate(imgVia,W-bw,0,false);
@@ -2654,7 +2683,7 @@ renderGps(Loc.gps);
     g.save();g.fillStyle='rgba(0,0,0,.55)';g.beginPath();g.moveTo(x,H);g.lineTo(x,y+cr);g.arcTo(x,y,x+cr,y,cr);g.lineTo(W,y);g.lineTo(W,H);g.closePath();g.fill();
     g.fillStyle='#C8101A';g.fillRect(x,y+cr,Math.max(2,fs*0.16),L.h-cr);
     g.textBaseline='middle';g.font=L.font;L.rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp+fs*0.35,y+bp*0.75+L.lhT*(k+0.5))});g.restore()}
-  function compose(g,src,W,H,info){g.drawImage(src,0,0,W,H);watermark(g,W,H,info)}
+  function compose(g,src,W,H,info,lay){g.drawImage(src,0,0,W,H);watermark(g,W,H,info,lay)}
   // prévia ao vivo: mesma função de desenho da foto salva
   function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth)return;
     const st=$('fStage'),dpr=Math.min(2,window.devicePixelRatio||1),vw=video.videoWidth,vh=video.videoHeight;
@@ -2704,7 +2733,7 @@ renderGps(Loc.gps);
     const fl=$('fFlash');fl.classList.add('go');requestAnimationFrame(()=>requestAnimationFrame(()=>fl.classList.remove('go')));
     $('fHint').classList.add('off');finish(frame,W,H,date)}
   // toque em qualquer ponto da imagem (canvas ou fundo do palco); botões, menus e avisos não disparam
-  $('fStage').addEventListener('click',e=>{const t=e.target;if(t!==$('fCanvas')&&t!==$('fStage'))return;if(!$('noteModal').hidden)return;shoot()});
+  $('fStage').addEventListener('click',e=>{const t=e.target;if(t!==$('fCanvas')&&t!==$('fStage'))return;if(!$('noteModal').hidden||!$('layModal').hidden)return;shoot()});
   $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||busy)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
     img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date).then(()=>URL.revokeObjectURL(u))};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
   // cada foto fica no próprio app (IndexedDB) até o usuário excluir
@@ -2761,7 +2790,7 @@ renderGps(Loc.gps);
   on('page',p=>{if(p==='foto'){if(!Loc.gps.on)Loc.start();if(!galOpen())startCam();gpsUi();
     if(!store.get('fotoGalInfo',false)){store.set('fotoGalInfo',true);setTimeout(()=>msg('info','Onde as fotos ficam:',' cada foto é guardada no botão "Fotos" deste app. O navegador do iPhone não permite gravar direto no app Fotos; para isso use "Salvar selecionadas" (várias de uma vez).'),600)}}else stopCam()});
   document.addEventListener('visibilitychange',()=>{if(Router.cur()!=='foto')return;if(document.hidden)stopCam();else if(!galOpen())startCam()});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('noteModal').hidden=true;$('fGalMenu').hidden=true}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('noteModal').hidden=true;$('layModal').hidden=true;$('fGalMenu').hidden=true}});
 })();
 
 /* ------------------------------ Início ------------------------------ */
@@ -2771,7 +2800,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 08:14';
+  const CUR_VER='30/09/2026 08:35';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
