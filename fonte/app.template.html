@@ -1927,12 +1927,12 @@ renderGps(Loc.gps);
     let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
     return {txt:Data.fmtName(i,d),name:Data.fmtName(i,d),warn:false}}
   function infoFrom(fix,date){const lines=[];const low=fix&&fix.acc>20;
+    // ordem fixa do quadro da foto
+    lines.push({k:'Data e hora',v:fmtDate(date)});
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
-    if(fix&&fix.stale)lines.push({k:'Posição',v:`última leitura, ${fix.stale} s antes da foto`,warn:true});
-    lines.push({k:'Data',v:fmtDate(date)});
-    const st=stakeFor(fix);lines.push({k:'Estaca',v:st.txt,warn:st.warn});
     lines.push({k:'Rodovia',v:'BR-277'});
+    const st=stakeFor(fix);lines.push({k:'Localização',v:st.txt,warn:st.warn});
     if(NOTE)lines.push({k:'Nota',v:NOTE,wrap:true});
     return {lines,stake:st,low,fix}}
   function liveFix(){const g=Loc.gps,st=Loc.st;if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=5000)return {lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix};return null}
