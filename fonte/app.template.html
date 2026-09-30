@@ -1883,7 +1883,6 @@ renderGps(Loc.gps);
   function infoFrom(fix,date){const lines=[];const low=fix&&fix.acc>20;
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
-    if(low)lines.push({k:'Precisão',v:`±${Math.round(fix.acc)} m (baixa precisão)`,warn:true});
     if(fix&&fix.stale)lines.push({k:'Posição',v:`última leitura, ${fix.stale} s antes da foto`,warn:true});
     lines.push({k:'Data',v:fmtDate(date)});
     const st=stakeFor(fix);lines.push({k:'Estaca',v:st.txt,warn:st.warn});
@@ -1919,7 +1918,7 @@ renderGps(Loc.gps);
     // bloco de informações compacto (proporção do Note Cam): canto inferior direito, largura só a necessária,
     // limitada a uma fração da foto; texto longo quebra linha e o quadro cresce só em altura
     const mi=Math.round(U*0.022),maxW=Math.round(land?W*0.40:W*0.58),bp=Math.round(U*0.012);
-    let fs=Math.max(11,U*(land?0.0235:0.026));const maxH=H-2*m-bh-mi;
+    let fs=Math.max(10,U*(land?0.0195:0.0215));const maxH=H-2*m-bh-mi;
     const layout=fs=>{const font=`600 ${fs}px Barlow, "Helvetica Neue", Arial, sans-serif`,lhT=fs*1.2;
       g.font=font;const rows=[];const tw=maxW-2*bp-fs*0.45;
       for(const l of info.lines){wrap(g,`${l.k}: ${l.v}`,tw,l.wrap?14:4).forEach(tx=>rows.push({t:tx,warn:l.warn}))}
