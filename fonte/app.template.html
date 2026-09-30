@@ -1968,16 +1968,17 @@ renderGps(Loc.gps);
     // bloco de informações compacto (proporção do Note Cam): canto inferior direito, largura só a necessária,
     // limitada a uma fração da foto; texto longo quebra linha e o quadro cresce só em altura
     const mi=Math.round(U*0.022),maxW=Math.round(land?W*0.40:W*0.58),bp=Math.round(U*0.012);
-    let fs=Math.max(10,U*(land?0.0195:0.0215));const maxH=H-bh-2*mi;
+    let fs=Math.max(11,U*(land?0.0215:0.0235));const maxH=H-bh-mi;
     const layout=fs=>{const font=`600 ${fs}px Barlow, "Helvetica Neue", Arial, sans-serif`,lhT=fs*1.2;
       g.font=font;const rows=[];const tw=maxW-2*bp-fs*0.45;
       for(const l of info.lines){wrap(g,`${l.k}: ${l.v}`,tw,l.wrap?14:4).forEach(tx=>rows.push({t:tx,warn:l.warn}))}
       const cw=Math.max(...rows.map(r=>g.measureText(r.t).width));
       return {font,lhT,rows,w:Math.min(maxW,Math.ceil(cw+2*bp+fs*0.45)),h:Math.ceil(rows.length*lhT+bp*1.5)}};
     let L=layout(fs);while(L.h>maxH&&fs>10){fs*=0.94;L=layout(fs)} // só reduz se não couber na altura da foto
-    const x=W-mi-L.w,y=H-mi-L.h;
-    g.save();g.fillStyle='rgba(0,0,0,.55)';rr(g,x,y,L.w,L.h,fs*0.3);g.fill();
-    g.fillStyle='#C8101A';g.fillRect(x,y+fs*0.3,Math.max(2,fs*0.16),L.h-fs*0.6);
+    // encostado no canto inferior direito: só o canto superior esquerdo (voltado para dentro da foto) é arredondado
+    const x=W-L.w,y=H-L.h,cr=Math.max(2,Math.round(fs*0.45));
+    g.save();g.fillStyle='rgba(0,0,0,.55)';g.beginPath();g.moveTo(x,H);g.lineTo(x,y+cr);g.arcTo(x,y,x+cr,y,cr);g.lineTo(W,y);g.lineTo(W,H);g.closePath();g.fill();
+    g.fillStyle='#C8101A';g.fillRect(x,y+cr,Math.max(2,fs*0.16),L.h-cr);
     g.textBaseline='middle';g.font=L.font;L.rows.forEach((r,k)=>{g.fillStyle=r.warn?'#FFC940':'#FFFFFF';g.fillText(r.t,x+bp+fs*0.35,y+bp*0.75+L.lhT*(k+0.5))});g.restore()}
   function compose(g,src,W,H,info){g.drawImage(src,0,0,W,H);watermark(g,W,H,info)}
   // prévia ao vivo: mesma função de desenho da foto salva
