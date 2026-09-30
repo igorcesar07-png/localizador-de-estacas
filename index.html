@@ -1309,12 +1309,31 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 .fbtn{display:inline-flex;align-items:center;gap:7px;min-height:44px;max-width:44vw;border-radius:22px;border:1px solid rgba(255,255,255,.28);background:rgba(10,12,11,.62);color:#fff;font:600 13px var(--body);padding:0 13px 0 11px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .fbtn svg{width:19px;height:19px;flex:none}.fbtn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fbtn.on{border-color:#F2B705;color:#FFE9B0}
-.fsel{position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:8px}
-.fsb{width:160px;height:54px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,.35);background:rgba(10,12,11,.66);color:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:0 12px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:manipulation;text-align:left}
-.fsb small{font:700 10px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#F2B705}
-.fsb b{font:700 17px/1.15 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fsb{width:100%;height:46px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,.35);background:rgba(10,12,11,.66);color:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:0 12px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:manipulation;text-align:left}
+.fsb small{font:700 9px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#F2B705}
+.fsb b{font:700 14.5px/1.15 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .fsb.flip{animation:fsflip .18s ease}@keyframes fsflip{from{background:rgba(242,183,5,.55)}to{background:rgba(10,12,11,.66)}}
-@media (orientation:landscape) and (max-height:520px){.fsb{width:150px;height:48px}.fsb b{font-size:15.5px}}
+/* controles da câmera: coluna à direita (horizontal) ou faixa inferior (vertical), sempre fora da imagem */
+.fstage{--dockW:128px}
+.fdock{position:absolute;z-index:6;box-sizing:border-box}
+.fsb{padding:0 10px;border-radius:10px;min-width:0}
+.fnote2{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;width:100%;min-height:58px;box-sizing:border-box;border:0;border-radius:10px;background:#F2B705;color:#111;padding:6px 10px;text-align:left;cursor:pointer;min-width:0}
+.fnote2 .nt1{display:flex;align-items:center;gap:5px;font:800 9.5px var(--body);letter-spacing:.1em;text-transform:uppercase}.fnote2 .nt1 svg{width:13px;height:13px}
+.fnote2 .nt2{font:700 13.5px/1.2 var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;max-width:100%}
+.fnote2 .nt3{font:600 10.5px var(--body);color:#3A2E00;opacity:.85}
+.fnote2.empty .nt2{font-weight:600;color:#3A2E00}
+.fcam{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:1.5px solid rgba(255,255,255,.4);background:#1A1F1C;color:#fff;cursor:pointer;flex:none}
+.fcam svg{width:24px;height:24px}
+@media (orientation:landscape){
+  .fstage{padding-left:env(safe-area-inset-left,0px);padding-right:calc(var(--dockW) + 14px + env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+  .fdock{top:64px;right:calc(8px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));width:var(--dockW);display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+  .fdock .fcam{margin-top:auto;align-self:flex-end}}
+@media (orientation:landscape) and (max-height:430px){.fsb{height:42px}.fnote2{min-height:52px}.fnote2 .nt2{-webkit-line-clamp:1}.fdock{gap:5px}}
+@media (orientation:portrait){
+  .fstage{padding-bottom:calc(128px + env(safe-area-inset-bottom,0px))}
+  .fdock{left:calc(8px + env(safe-area-inset-left,0px));right:calc(8px + env(safe-area-inset-right,0px));bottom:calc(8px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:46px 58px;gap:6px}
+  .fok,.fbusy{bottom:calc(140px + env(safe-area-inset-bottom,0px))}
+  #fSentBtn{grid-area:1/1}#fFxBtn{grid-area:1/2}#fLayBtn{grid-area:1/3}.fdock .fnote2{grid-area:2/1/3/3}.fdock .fcam{grid-area:2/3;justify-self:end;align-self:center;width:54px;height:54px}}
 .fhint{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(10,12,11,.55);color:#fff;font:600 12.5px var(--body);border-radius:999px;padding:6px 12px;pointer-events:none;transition:opacity .6s;white-space:nowrap}
 .fhint.off{opacity:0}
 #fMsg.fmsg2{left:50%;right:auto;margin:0}
@@ -1403,7 +1422,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/09/2026 14:45 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 30/09/2026 19:03 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1554,15 +1573,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <video id="fVideo" playsinline muted autoplay></video>
     <div class="fempty" id="fEmpty" hidden></div>
     <div class="ftop"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Foto georreferenciada</h1><button type="button" class="fgal" id="fGalBtn" aria-label="Fotos guardadas no app">Fotos <b id="fGalN">0</b></button><span class="status" id="fGps"><i></i><span id="fGpsTxt">GPS</span></span></div>
-    <div class="fctl2" id="fCtl">
-      <button type="button" class="fbtn" id="fNoteBtn" aria-label="Adicionar nota"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span id="fNoteLbl">Nota</span></button>
-      <button type="button" class="fbtn" id="fLayBtn" aria-label="Escolher layout da foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h7V4M14 20v-5h7"/></svg><span id="fLayLbl">Layout</span></button>
-      <label class="fbtn" for="fFile" id="fNative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Câmera do aparelho</span></label>
-      <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
-    </div>
-    <div class="fsel" id="fSel">
+    <div class="fdock" id="fDock">
       <button type="button" class="fsb" id="fSentBtn" aria-label="Sentido da pista: toque para alternar"><small>Sentido</small><b id="fSentTxt">Crescente</b></button>
       <button type="button" class="fsb" id="fFxBtn" aria-label="Faixa: toque para alternar"><small>Faixa</small><b id="fFxTxt">Faixa 1</b></button>
+      <button type="button" class="fnote2" id="fNoteBtn" aria-label="Nota da foto: toque para editar"><span class="nt1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Nota</span><span class="nt2" id="fNoteLbl">Sem nota</span><span class="nt3">Toque para editar</span></button>
+      <button type="button" class="fsb" id="fLayBtn" aria-label="Escolher layout da foto"><small>Layout</small><b id="fLayLbl">Semitransp.</b></button>
+      <label class="fcam" for="fFile" id="fNative" aria-label="Abrir a câmera do aparelho" title="Câmera do aparelho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></label>
+      <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
     </div>
     <div class="fhint" id="fHint">Toque na imagem para fotografar</div>
     <div class="fmsg2" id="fMsg" hidden></div>
@@ -2734,7 +2751,7 @@ renderGps(Loc.gps);
   // sentido e faixa informados pelo usuário para a foto (a estaca continua vindo do GPS)
   const SENTS=['Crescente','Decrescente'],FAIXAS=['Faixa 1','Faixa 2','Faixa 2/3','Faixa 3','Acostamento'];
   let SENT=SENTS.includes(store.get('fotoSent',''))?store.get('fotoSent'):'Crescente',FAIXA=FAIXAS.includes(store.get('fotoFaixa',''))?store.get('fotoFaixa'):'Faixa 1';
-  function noteUi(){$('fNoteLbl').textContent=NOTE?'Nota: '+NOTE:'Adicionar nota';$('fNoteBtn').classList.toggle('on',!!NOTE);live=null}
+  function noteUi(){$('fNoteLbl').textContent=NOTE||'Sem nota';$('fNoteBtn').classList.toggle('empty',!NOTE);live=null}
   // histórico de notas: sem duplicar textos iguais (ignora maiúsculas, acentos e espaços extras)
   const nkey=t=>t.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
   const Notes={all:()=>{const a=store.get('fotoNotes',[]);return Array.isArray(a)?a:[]},
@@ -2757,7 +2774,7 @@ renderGps(Loc.gps);
   $('nmApply').onclick=()=>{NOTE=$('fNote').value.trim();store.set('fotoNote',NOTE);if(NOTE)Notes.add(NOTE);noteUi();$('noteModal').hidden=true};
   $('noteModal').addEventListener('click',e=>{if(e.target.id==='noteModal')$('noteModal').hidden=true});
   $('fNoteBtn').onclick=openNote;noteUi();
-  function layUi(){$('fLayLbl').textContent=LAYOUT==='trans'?'Layout 2':'Layout 1';document.querySelectorAll('.lopt').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lay===LAYOUT))}
+  function layUi(){$('fLayLbl').textContent=LAYOUT==='trans'?'Transparente':'Semitransp.';document.querySelectorAll('.lopt').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lay===LAYOUT))}
   function drawThumbs(){const has=video.videoWidth>0;document.querySelectorAll('.lopt canvas').forEach(c=>{const b=c.closest('.lopt');
       const W=has&&video.videoHeight>video.videoWidth?240:320,H=W===320?240:320;c.width=W;c.height=H;const g=c.getContext('2d');
       let src=null;if(has){src=video}else{src=document.createElement('canvas');src.width=W;src.height=H;const q=src.getContext('2d');const gr=q.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#8FA9B8');gr.addColorStop(.5,'#6E7A70');gr.addColorStop(.52,'#3A3D3F');gr.addColorStop(1,'#2A2C2E');q.fillStyle=gr;q.fillRect(0,0,W,H)}
@@ -2837,7 +2854,8 @@ renderGps(Loc.gps);
   // prévia ao vivo: mesma função de desenho da foto salva
   function loop(){raf=requestAnimationFrame(loop);if(!video.videoWidth)return;
     const st=$('fStage'),dpr=Math.min(2,window.devicePixelRatio||1),vw=video.videoWidth,vh=video.videoHeight;
-    const sc=Math.min(st.clientWidth/vw,(st.clientHeight-58)/vh);const cw=Math.round(vw*sc*dpr),ch=Math.round(vh*sc*dpr);
+    const cs=getComputedStyle(st),pw=st.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ph=st.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+    const sc=Math.min(pw/vw,ph/vh);const cw=Math.round(vw*sc*dpr),ch=Math.round(vh*sc*dpr);
     if(cv.width!==cw||cv.height!==ch){cv.width=cw;cv.height=ch;cv.style.width=cw/dpr+'px';cv.style.height=ch/dpr+'px'}
     const now=Date.now();if(!live||now-liveT>500){live=infoFrom(liveFix(),new Date());liveT=now}
     compose(ctx,video,cw,ch,live)}
@@ -3340,7 +3358,7 @@ renderGps(Loc.gps);
   const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto','relatorios'].includes(h)?h:store.get('page','localizacao'));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/09/2026 14:45';
+  const CUR_VER='30/09/2026 19:03';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
