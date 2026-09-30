@@ -630,8 +630,15 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 .fbtn{display:inline-flex;align-items:center;gap:7px;min-height:44px;max-width:44vw;border-radius:22px;border:1px solid rgba(255,255,255,.28);background:rgba(10,12,11,.62);color:#fff;font:600 13px var(--body);padding:0 13px 0 11px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .fbtn svg{width:19px;height:19px;flex:none}.fbtn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fbtn.on{border-color:#F2B705;color:#FFE9B0}
+.fsel{position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:6;display:flex;flex-direction:column;gap:8px}
+.fsb{width:160px;height:54px;box-sizing:border-box;border-radius:12px;border:1.5px solid rgba(255,255,255,.35);background:rgba(10,12,11,.66);color:#fff;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:0 12px;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);touch-action:manipulation;text-align:left}
+.fsb small{font:700 10px var(--body);letter-spacing:.1em;text-transform:uppercase;color:#F2B705}
+.fsb b{font:700 17px/1.15 var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fsb.flip{animation:fsflip .18s ease}@keyframes fsflip{from{background:rgba(242,183,5,.55)}to{background:rgba(10,12,11,.66)}}
+@media (orientation:landscape) and (max-height:520px){.fsb{width:150px;height:48px}.fsb b{font-size:15.5px}}
 .fhint{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:6;background:rgba(10,12,11,.55);color:#fff;font:600 12.5px var(--body);border-radius:999px;padding:6px 12px;pointer-events:none;transition:opacity .6s;white-space:nowrap}
 .fhint.off{opacity:0}
+#fMsg.fmsg2{left:50%;right:auto;margin:0}
 .fmsg2{position:absolute;left:50%;top:70px;transform:translateX(-50%);z-index:7;width:max-content;max-width:min(560px,calc(100% - 24px));box-sizing:border-box;border-radius:10px;padding:7px 12px;font:500 13px/1.35 var(--body);cursor:pointer}
 .fmsg2 b{font-weight:700;margin-right:4px}
 .fmsg2.bad{background:rgba(61,21,18,.92);color:#FFD9D5}.fmsg2.warn{background:rgba(58,44,8,.92);color:#FFE9B0}.fmsg2.info{background:rgba(16,38,63,.92);color:#CFE3FF}
@@ -862,6 +869,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <button type="button" class="fbtn" id="fLayBtn" aria-label="Escolher layout da foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h7V4M14 20v-5h7"/></svg><span id="fLayLbl">Layout</span></button>
       <label class="fbtn" for="fFile" id="fNative"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Câmera do aparelho</span></label>
       <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
+    </div>
+    <div class="fsel" id="fSel">
+      <button type="button" class="fsb" id="fSentBtn" aria-label="Sentido da pista: toque para alternar"><small>Sentido</small><b id="fSentTxt">Crescente</b></button>
+      <button type="button" class="fsb" id="fFxBtn" aria-label="Faixa: toque para alternar"><small>Faixa</small><b id="fFxTxt">Faixa 1</b></button>
     </div>
     <div class="fhint" id="fHint">Toque na imagem para fotografar</div>
     <div class="fmsg2" id="fMsg" hidden></div>
@@ -2027,6 +2038,9 @@ renderGps(Loc.gps);
   let NOTE=store.get('fotoNote','')||'';
   // layout visual: 'semi' (Layout 1, aprovado) ou 'trans' (Layout 2, logos sem caixa)
   let LAYOUT=store.get('fotoLayout','semi')==='trans'?'trans':'semi';
+  // sentido e faixa informados pelo usuário para a foto (a estaca continua vindo do GPS)
+  const SENTS=['Crescente','Decrescente'],FAIXAS=['Faixa 1','Faixa 2','Faixa 2/3','Faixa 3','Acostamento'];
+  let SENT=SENTS.includes(store.get('fotoSent',''))?store.get('fotoSent'):'Crescente',FAIXA=FAIXAS.includes(store.get('fotoFaixa',''))?store.get('fotoFaixa'):'Faixa 1';
   function noteUi(){$('fNoteLbl').textContent=NOTE?'Nota: '+NOTE:'Adicionar nota';$('fNoteBtn').classList.toggle('on',!!NOTE);live=null}
   function openNote(){$('fNote').value=NOTE;$('nmN').textContent=NOTE.length+'/400';$('noteModal').hidden=false;setTimeout(()=>$('fNote').focus(),60)}
   $('fNote').addEventListener('input',()=>$('nmN').textContent=$('fNote').value.length+'/400');
@@ -2045,6 +2059,11 @@ renderGps(Loc.gps);
   $('lmClose').onclick=()=>$('layModal').hidden=true;
   $('layModal').addEventListener('click',e=>{if(e.target.id==='layModal')$('layModal').hidden=true});
   $('fLayBtn').onclick=openLay;layUi();
+  function selUi2(){$('fSentTxt').textContent=SENT;$('fFxTxt').textContent=FAIXA;live=null}
+  const flip=el=>{el.classList.remove('flip');void el.offsetWidth;el.classList.add('flip')};
+  $('fSentBtn').onclick=e=>{e.stopPropagation();SENT=SENTS[(SENTS.indexOf(SENT)+1)%SENTS.length];store.set('fotoSent',SENT);selUi2();flip($('fSentBtn'))};
+  $('fFxBtn').onclick=e=>{e.stopPropagation();FAIXA=FAIXAS[(FAIXAS.indexOf(FAIXA)+1)%FAIXAS.length];store.set('fotoFaixa',FAIXA);selUi2();flip($('fFxBtn'))};
+  selUi2();
   const pad2=n=>String(n).padStart(2,'0');
   const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
   // estaca pela mesma fonte e lógica da página Localização estaca
@@ -2052,14 +2071,14 @@ renderGps(Loc.gps);
     if(r.outside)return {txt:`fora do trecho (a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} de ${R[r.nearest][0]})`,warn:true};
     let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
     return {txt:Data.fmtName(i,d),name:Data.fmtName(i,d),warn:false}}
-  function infoFrom(fix,date){const lines=[];const low=fix&&fix.acc>20;
+  function infoFrom(fix,date,sel){sel=sel||{sent:SENT,faixa:FAIXA,note:NOTE};const lines=[];const low=fix&&fix.acc>20;
     // ordem fixa do quadro da foto
     lines.push({k:'Data e hora',v:fmtDate(date)});
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Rodovia',v:'BR-277/PR'});
-    const st=stakeFor(fix);lines.push({k:'Localização',v:st.txt,warn:st.warn});
-    if(NOTE)lines.push({k:'Nota',v:NOTE,wrap:true});
+    const st=stakeFor(fix);lines.push({k:'Localização',v:`${st.txt} — ${sel.sent} | ${sel.faixa}`,warn:st.warn});
+    if(sel.note)lines.push({k:'Nota',v:sel.note,wrap:true});
     return {lines,stake:st,low,fix}}
   function liveFix(){const g=Loc.gps,st=Loc.st;if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=5000)return {lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix};return null}
   // posição do momento da foto: usa leitura com até 3 s; senão pede uma nova ao GPS
@@ -2140,13 +2159,13 @@ renderGps(Loc.gps);
   function stopCam(){cancelAnimationFrame(raf);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}video.srcObject=null}
   // captura: grava direto na galeria interna "Fotos", sem prévia nem compartilhamento; a câmera segue ativa
   function okToast(t){const o=$('fOk');o.textContent=t;o.hidden=false;clearTimeout(okToast.h);okToast.h=setTimeout(()=>o.hidden=true,2200)}
-  async function finish(src,W,H,date){busy=true;$('fBusy').hidden=false;$('fOk').hidden=true;
-    try{const fix=await freshFix();const info=infoFrom(fix,date);
+  async function finish(src,W,H,date){const sel={sent:SENT,faixa:FAIXA,note:NOTE};busy=true;$('fBusy').hidden=false;$('fOk').hidden=true;
+    try{const fix=await freshFix();const info=infoFrom(fix,date,sel);
       const out=document.createElement('canvas');out.width=W;out.height=H;compose(out.getContext('2d'),src,W,H,info);
       const b=await new Promise(r=>out.toBlob(r,'image/jpeg',0.95));if(!b)throw new Error('imagem');
       const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';
       const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
-      await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null});
+      await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
       await galCount();
       okToast(`✓ Guardada em Fotos do app${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
@@ -2172,7 +2191,7 @@ renderGps(Loc.gps);
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
   async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b><small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg">Nenhuma foto guardada ainda.</p>';
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
     const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=GAL.length?`(${GAL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
