@@ -71,7 +71,7 @@ if(Capacitor.isNativePlatform()){
         t.querySelector('#nUpdGo').onclick=()=>{location.href=v.apk};t.querySelector('#nUpdNo').onclick=()=>{t.hidden=true};return}
       const list=((await UP.list()).bundles||[]);
       let b=list.find(x=>x.version===v.build&&x.status!=='error');
-      if(!b)b=await UP.download({url:v.url,version:v.build});
+      if(!b)b=await UP.download({url:v.url,version:v.build,checksum:v.sha256});
       await UP.next({id:b.id});staged=v.build;
       toast('Atualização do app baixada. Ela será aplicada quando você sair e voltar ao aplicativo.',6000);
     }catch(e){console.log('atualização não verificada: '+((e&&e.message)||e))}
