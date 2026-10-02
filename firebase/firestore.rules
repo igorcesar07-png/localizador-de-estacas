@@ -1,0 +1,77 @@
+rules_version = '2';
+// Regras do Localizador de Estacas — validadas no servidor do Firebase.
+// Administrador principal: único que gerencia usuários, perfis, convites e a base do projeto.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email == 'igordalmolin.eng@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function hasMe() { return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)); }
+    // permissões efetivas: as próprias do usuário (custom) ou as do perfil
+    function permsOf(u) {
+      return u.custom == true || u.profile == null
+        ? u.perms
+        : get(/databases/$(database)/documents/profiles/$(u.profile)).data.perms;
+    }
+    function canView(p, page) { return p.get(page, {}).get('view', false) == true; }
+    function anyView(p) {
+      return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'calculadora')
+          || canView(p, 'foto') || canView(p, 'relatorios');
+    }
+    function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
+    function emailKey() { return request.auth.token.email.lower(); }
+
+    // Base do projeto (R08 + estacas): só para usuários ativos com alguma página liberada
+    match /base/{doc} {
+      allow read: if isAdmin() || activeWithAccess();
+      allow write: if isAdmin();
+    }
+
+    // Usuários
+    match /users/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow update, delete: if isAdmin();
+      // primeiro acesso: o próprio usuário cria o registro
+      //  - com convite do administrador: exatamente o perfil/permissões do convite
+      //  - sem convite: inativo e sem nenhuma permissão, até o administrador autorizar
+      allow create: if isAdmin() || (
+        signedIn() && request.auth.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.keys().hasOnly(['email','name','profile','custom','perms','active','createdAt','invited'])
+        && (
+          (exists(/databases/$(database)/documents/invites/$(emailKey()))
+            && request.resource.data.profile == get(/databases/$(database)/documents/invites/$(emailKey())).data.profile
+            && request.resource.data.custom == get(/databases/$(database)/documents/invites/$(emailKey())).data.custom
+            && request.resource.data.perms == get(/databases/$(database)/documents/invites/$(emailKey())).data.perms
+            && request.resource.data.active == get(/databases/$(database)/documents/invites/$(emailKey())).data.active
+            && request.resource.data.invited == true)
+          ||
+          (request.resource.data.active == false
+            && request.resource.data.profile == null
+            && request.resource.data.custom == true
+            && request.resource.data.perms == {}
+            && request.resource.data.invited == false)
+        )
+      );
+    }
+
+    // Perfis de acesso
+    match /profiles/{id} {
+      allow read: if isAdmin() || hasMe();
+      allow write: if isAdmin();
+    }
+
+    // Convites (cadastro prévio feito pelo administrador)
+    match /invites/{email} {
+      allow read: if isAdmin() || (signedIn() && emailKey() == email);
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

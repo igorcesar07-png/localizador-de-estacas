@@ -1,0 +1,64 @@
+name: Firebase (testes e publicação)
+on:
+  push:
+    branches: [main]
+    paths: ['firebase/**', '.github/workflows/firebase.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: firebase, cancel-in-progress: false }
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: firebase } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm, cache-dependency-path: firebase/package-lock.json }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Config do emulador
+        run: EMU=1 node scripts/write-config.mjs
+      - name: Regras do Firestore
+        run: mkdir -p ci-report && (npx firebase emulators:exec --only auth,firestore --project demo-estacas "REPORT=ci-report/rules-report.txt node test/rules.test.mjs" > ci-report/rules-log.txt 2>&1 || echo falhou > ci-report/RULES_FAILED); tail -40 ci-report/rules-log.txt
+      - name: Ponta a ponta (login e permissões)
+        run: (npx firebase emulators:exec --only auth,firestore,hosting --project demo-estacas "OUT=ci-report node test/e2e.mjs" > ci-report/e2e-log.txt 2>&1 || echo falhou > ci-report/E2E_FAILED); tail -40 ci-report/e2e-log.txt
+      - name: Publicar relatório no ramo ci-results
+        if: always()
+        run: |
+          mkdir -p ci-report && cd ci-report && echo "${GITHUB_SHA}" > commit.txt
+          git init -q && git checkout -q -b ci-results && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "relatório ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-results
+      - name: Resultado
+        run: test ! -e ci-report/RULES_FAILED && test ! -e ci-report/E2E_FAILED
+  publicar:
+    needs: testes
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: firebase } }
+    env:
+      SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      FIREBASE_WEB_CONFIG: ${{ secrets.FIREBASE_WEB_CONFIG }}
+    steps:
+      - name: Verificar credencial
+        id: chk
+        working-directory: .
+        run: if [ -n "$SA" ]; then echo ok=1 >> $GITHUB_OUTPUT; else echo "Secret FIREBASE_SERVICE_ACCOUNT ainda não cadastrado — publicação ignorada."; fi
+      - uses: actions/checkout@v4
+        if: steps.chk.outputs.ok
+      - uses: actions/setup-node@v4
+        if: steps.chk.outputs.ok
+        with: { node-version: '22', cache: npm, cache-dependency-path: firebase/package-lock.json }
+      - if: steps.chk.outputs.ok
+        run: npm ci
+      - name: Publicar no Firebase Hosting + regras
+        if: steps.chk.outputs.ok
+        run: |
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
+          PJ=$(node -e "console.log(require(process.env.RUNNER_TEMP+'/sa.json').project_id)")
+          node scripts/write-config.mjs "$PJ"
+          npx firebase deploy --only hosting,firestore:rules --project "$PJ" --non-interactive
+          echo "### Publicado em https://$PJ.web.app" >> $GITHUB_STEP_SUMMARY
