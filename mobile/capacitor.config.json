@@ -19,6 +19,16 @@
     },
     "SystemBars": {
       "style": "DARK"
+    },
+    "CapacitorUpdater": {
+      "autoUpdate": false,
+      "appReadyTimeout": 20000,
+      "resetWhenUpdate": true,
+      "autoDeleteFailed": true,
+      "autoDeletePrevious": true,
+      "statsUrl": "",
+      "updateUrl": "",
+      "channelUrl": ""
     }
   },
   "backgroundColor": "#1A1E1C"

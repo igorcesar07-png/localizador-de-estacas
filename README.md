@@ -29,3 +29,8 @@ Abra o endereço novo no Safari, entre com a conta liberada pelo administrador e
 - `test/`: testes das regras e teste de ponta a ponta no emulador.
 - `.github/workflows/firebase.yml`: roda os testes a cada alteração e publica no Firebase quando o secret `FIREBASE_SERVICE_ACCOUNT` está cadastrado. O relatório dos testes fica no ramo `ci-results`.
 - Para regerar `public/`: `python3 fonte/build_fb.py` (precisa de `fonte/package/dist/leaflet.css` e dos logotipos).
+
+## App Android (pasta `mobile/`)
+- Capacitor: o APK leva o app dentro (funciona offline) e usa login Google nativo, galeria do aparelho e compartilhamento do sistema (`mobile/native.src.js` → `firebase/public/native.js`).
+- APK sempre atualizado em: https://github.com/igorcesar07-png/localizador-de-estacas/releases/latest/download/Localizador-Estacas.apk (workflow `android.yml`).
+- Atualização automática: cada publicação no Firebase gera `app-bundle/version.json` e um `.zip` do app; o APK baixa sozinho e aplica ao voltar para o app. Se a versão nova exigir um recurso nativo que o APK instalado não tem (lista em `mobile/native-plugins.json`), o app mostra o aviso para baixar e instalar o APK novo.

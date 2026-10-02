@@ -58,8 +58,12 @@ jobs:
           npx cap sync android
           cd android
           export APP_VERSION_CODE=${{ github.run_number }} APP_VERSION_NAME=1.0.${{ github.run_number }}
-          ./gradlew --no-daemon assembleRelease assembleDebug
+          ./gradlew --no-daemon assembleRelease
+          # APK de teste com uma versão antiga das telas, para conferir a atualização automática no emulador
+          sed -i 's/window.APP_BUILD="[^"]*"/window.APP_BUILD="teste-antigo"/' app/src/main/assets/public/index.html
+          ./gradlew --no-daemon assembleDebug
           mkdir -p ../../out
+          grep -o 'window.APP_BUILD="[^"]*"' ../../firebase/public/index.html | cut -d'"' -f2 > ../../out/build.txt
           cp app/build/outputs/apk/release/app-release.apk ../../out/Localizador-Estacas.apk
           cp app/build/outputs/apk/debug/app-debug.apk ../../out/teste-debug.apk
           ls -la ../../out
@@ -88,11 +92,15 @@ jobs:
           arch: x86_64
           disable-animations: true
           script: |
-            mkdir -p rep && adb install -r out/teste-debug.apk && adb shell pm grant $PKG android.permission.CAMERA && adb shell pm grant $PKG android.permission.ACCESS_FINE_LOCATION && adb logcat -c && adb shell am start -n $PKG/.MainActivity && sleep 40 && adb exec-out screencap -p > rep/1-abertura.png && adb logcat -d > rep/logcat.txt; adb install -r out/Localizador-Estacas.apk > rep/install-release.txt 2>&1 || adb uninstall $PKG >> rep/install-release.txt 2>&1; adb uninstall $PKG; adb install out/Localizador-Estacas.apk >> rep/install-release.txt 2>&1; adb shell am start -n $PKG/.MainActivity; sleep 30; adb exec-out screencap -p > rep/2-release.png; echo ok
+            mkdir -p rep; B=$(cat out/build.txt); for i in $(seq 1 60); do curl -s "https://localizador-estacas.web.app/app-bundle/version.json?t=$i" | grep -q "\"$B\"" && break; sleep 10; done; curl -s "https://localizador-estacas.web.app/app-bundle/version.json" > rep/version.json
+            adb install -r out/teste-debug.apk && adb shell pm grant $PKG android.permission.CAMERA && adb shell pm grant $PKG android.permission.ACCESS_FINE_LOCATION && adb logcat -c
+            adb shell am start -n $PKG/.MainActivity; sleep 45; adb exec-out screencap -p > rep/1-versao-antiga.png
+            adb shell input keyevent KEYCODE_HOME; sleep 8; adb shell am start -n $PKG/.MainActivity; sleep 6; adb exec-out screencap -p > rep/2-atualizado.png; sleep 20; adb logcat -d > rep/logcat.txt
+            adb uninstall $PKG; adb install out/Localizador-Estacas.apk > rep/install-release.txt 2>&1; adb shell am start -n $PKG/.MainActivity; sleep 30; adb exec-out screencap -p > rep/3-release.png; echo ok
       - name: Relatório no ramo ci-results-apk
         if: always()
         run: |
-          mkdir -p rep && cp out/firebase-android.txt rep/ 2>/dev/null; cd rep && grep -E "Capacitor|chromium|NATIVE|Console|AndroidRuntime|FATAL" logcat.txt > logcat-app.txt 2>/dev/null || true
+          mkdir -p rep && cp out/firebase-android.txt rep/ 2>/dev/null; cd rep && grep -E "Capacitor|NATIVE|Console|AndroidRuntime|FATAL|Updater|capgo" logcat.txt > logcat-app.txt 2>/dev/null || true
           rm -f logcat.txt; echo "${GITHUB_SHA}" > commit.txt
           git init -q && git checkout -q -b ci-results-apk && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "emulador ${GITHUB_SHA::7}"

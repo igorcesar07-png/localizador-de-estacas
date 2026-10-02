@@ -2,7 +2,7 @@ name: Firebase (testes e publicação)
 on:
   push:
     branches: [main]
-    paths: ['firebase/**', '.github/workflows/firebase.yml']
+    paths: ['firebase/**', 'mobile/native-plugins.json', '.github/workflows/firebase.yml']
   workflow_dispatch:
 permissions:
   contents: write
@@ -60,5 +60,6 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json"
           PJ=$(node -e "console.log(require(process.env.RUNNER_TEMP+'/sa.json').project_id)")
           node scripts/write-config.mjs "$PJ"
+          node scripts/bundle.mjs
           npx firebase deploy --only hosting,firestore:rules --project "$PJ" --non-interactive
           echo "### Publicado em https://$PJ.web.app" >> $GITHUB_STEP_SUMMARY
