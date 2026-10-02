@@ -13,12 +13,12 @@ Aplicativo web para acompanhamento em campo do projeto de restauração da BR-27
 - A largura das faixas não consta na base. A calculadora usa por padrão 3,60 m para faixa 1 e faixa 2/3 e 2,50 m para acostamento, e densidade de 2,528 t/m³. Todos os valores podem ser editados e ficam salvos no aparelho.
 
 ## Uso
-O aplicativo agora exige login e fica no Firebase Hosting (pasta `firebase/`). O endereço antigo do GitHub Pages será desativado depois da validação.
+O aplicativo agora exige login e fica no Firebase Hosting (pasta `firebase/`). Endereço: https://localizador-estacas.web.app. O endereço antigo do GitHub Pages foi desativado (mostra só um aviso).
 
 Abra o endereço novo no Safari, entre com a conta liberada pelo administrador e permita a localização. Para instalar no iPhone: Compartilhar → Adicionar à Tela de Início. Depois de instalado, funciona offline para os dados e para os trechos de mapa já visualizados.
 
 ## Estrutura
-- `index.html`: aplicativo completo, com os dados embutidos
+- `index.html`: aviso de endereço desativado (o app antigo continua no histórico do git)
 - `sw.js`, `manifest.webmanifest`, `icon-*.png`: instalação e cache offline
 - `fonte/`: modelo do app, scripts de preparo dos dados e lista de panos (`panos_R08_B2B3.csv`)
 
