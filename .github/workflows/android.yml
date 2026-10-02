@@ -1,0 +1,99 @@
+name: Android (APK)
+on:
+  push:
+    branches: [main]
+    paths: ['mobile/**', 'firebase/public/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: { group: android, cancel-in-progress: false }
+env:
+  PKG: br.com.neovia.localizadorestacas
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    env:
+      SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Credencial
+        run: |
+          test -n "$SA" || { echo "Secret FIREBASE_SERVICE_ACCOUNT não cadastrado"; exit 1; }
+          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> $GITHUB_ENV
+          echo "PJ=$(node -e "console.log(require(process.env.RUNNER_TEMP+'/sa.json').project_id)")" >> $GITHUB_ENV
+          # senha da chave de assinatura derivada da credencial (não fica no repositório)
+          echo "KS_PASS=$(node -e "const c=require('crypto');console.log(c.createHash('sha256').update('estacas-apk:'+require(process.env.RUNNER_TEMP+'/sa.json').private_key).digest('hex').slice(0,32))")" >> $GITHUB_ENV
+      - name: Chave de assinatura (fixa entre versões)
+        run: |
+          mkdir -p mobile/keystore
+          export KS_FILE="$RUNNER_TEMP/release.jks"
+          if [ -f mobile/keystore/release.jks.enc ]; then
+            openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -in mobile/keystore/release.jks.enc -out "$KS_FILE" -pass env:KS_PASS
+          else
+            keytool -genkeypair -keystore "$KS_FILE" -storetype PKCS12 -storepass "$KS_PASS" -keypass "$KS_PASS" -alias estacas -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Localizador de Estacas, O=Neovia Engenharia, C=BR"
+            openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -in "$KS_FILE" -out mobile/keystore/release.jks.enc -pass env:KS_PASS
+            git config user.name ci && git config user.email ci@users.noreply.github.com
+            git add mobile/keystore/release.jks.enc && git commit -m "APK: chave de assinatura criptografada [skip ci]" && git push
+          fi
+          echo "KS_FILE=$KS_FILE" >> $GITHUB_ENV
+          SHA1=$(keytool -list -v -keystore "$KS_FILE" -storepass "$KS_PASS" -alias estacas | awk '/SHA1:/{print $2}')
+          SHA256=$(keytool -list -v -keystore "$KS_FILE" -storepass "$KS_PASS" -alias estacas | awk '/SHA256:/{print $2}')
+          echo "SHA1=$SHA1" >> $GITHUB_ENV; echo "SHA256=$SHA256" >> $GITHUB_ENV; echo "SHA-1 da chave: $SHA1"
+      - name: Dependências
+        run: |
+          cd firebase && npm ci && cd ../mobile && npm ci
+      - name: App Android no Firebase (SHA-1 e google-services.json)
+        working-directory: firebase
+        run: |
+          node scripts/write-config.mjs "$PJ"
+          node scripts/android-app.mjs "$PJ" "$PKG" "$SHA1" "$SHA256" ../mobile/android/app/google-services.json
+      - name: Compilar
+        working-directory: mobile
+        run: |
+          npx cap sync android
+          cd android
+          export APP_VERSION_CODE=${{ github.run_number }} APP_VERSION_NAME=1.0.${{ github.run_number }}
+          ./gradlew --no-daemon assembleRelease assembleDebug
+          mkdir -p ../../out
+          cp app/build/outputs/apk/release/app-release.apk ../../out/Localizador-Estacas.apk
+          cp app/build/outputs/apk/debug/app-debug.apk ../../out/teste-debug.apk
+          ls -la ../../out
+      - uses: actions/upload-artifact@v4
+        with: { name: apk, path: out/ }
+      - name: Publicar APK (Releases)
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          gh release delete apk-latest --yes --cleanup-tag 2>/dev/null || true
+          gh release create apk-latest out/Localizador-Estacas.apk --title "App Android 1.0.${{ github.run_number }}" --notes "APK do Localizador de Estacas (versão 1.0.${{ github.run_number }}). Instale no Android: baixe o arquivo e permita a instalação de apps desta origem." --latest
+  emulador:
+    needs: apk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { name: apk, path: out }
+      - name: KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+      - name: Rodar no emulador
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: |
+            mkdir -p rep && adb install -r out/teste-debug.apk && adb shell pm grant $PKG android.permission.CAMERA && adb shell pm grant $PKG android.permission.ACCESS_FINE_LOCATION && adb logcat -c && adb shell am start -n $PKG/.MainActivity && sleep 40 && adb exec-out screencap -p > rep/1-abertura.png && adb logcat -d > rep/logcat.txt; adb install -r out/Localizador-Estacas.apk > rep/install-release.txt 2>&1 || adb uninstall $PKG >> rep/install-release.txt 2>&1; adb uninstall $PKG; adb install out/Localizador-Estacas.apk >> rep/install-release.txt 2>&1; adb shell am start -n $PKG/.MainActivity; sleep 30; adb exec-out screencap -p > rep/2-release.png; echo ok
+      - name: Relatório no ramo ci-results-apk
+        if: always()
+        run: |
+          mkdir -p rep && cd rep && grep -E "Capacitor|chromium|NATIVE|Console|AndroidRuntime|FATAL" logcat.txt > logcat-app.txt 2>/dev/null || true
+          rm -f logcat.txt; echo "${GITHUB_SHA}" > commit.txt
+          git init -q && git checkout -q -b ci-results-apk && git add -A
+          git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "emulador ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-results-apk

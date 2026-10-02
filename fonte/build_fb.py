@@ -11,7 +11,7 @@ body=t.replace('/*__VERSION__*/',VER).replace('/*__LEAFLET_CSS__*/',css).replace
 m=re.search(r'<script>\nconst PROJECT_DATA = /\*__DATA__\*/;(.*?)</script>',body,re.S)
 assert m
 app_js='const PROJECT_DATA = window.PROJECT_DATA;'+m.group(1)
-shell=body[:m.start()]+f'<script>window.APP_BUILD="{BUILD}";</script>\n<script src="firebase-config.js?v={BUILD}"></script>\n<script src="auth.js?v={BUILD}"></script>'+body[m.end():]
+shell=body[:m.start()]+f'<script>window.APP_BUILD="{BUILD}";</script>\n<script src="native.js?v={BUILD}"></script>\n<script src="firebase-config.js?v={BUILD}"></script>\n<script src="auth.js?v={BUILD}"></script>'+body[m.end():]
 assert '/*__DATA__*/' not in shell and 'rows' not in shell[:0]
 head='''<!doctype html>
 <html lang="pt-BR" data-pwa="1">
@@ -50,4 +50,5 @@ self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;c
 if not os.path.exists(OUT+'/firebase-config.js'):
     open(OUT+'/firebase-config.js','w').write('// gerado na publicação (GitHub Actions)\nwindow.FIREBASE_CONFIG=null;\n')
 r=subprocess.run(['npm','run','-s','bundle'],capture_output=True,text=True,cwd=REPO+'/firebase')
+r2=subprocess.run(['../firebase/node_modules/.bin/esbuild','native.src.js','--bundle','--minify','--format=iife','--target=es2019','--legal-comments=none','--outfile=../firebase/public/native.js'],cwd=REPO+'/mobile',capture_output=True,text=True);print(r2.stderr[-400:])
 print(r.stdout,r.stderr[-800:]);print('ok',VER,BUILD,os.path.getsize(OUT+'/index.html'),os.path.getsize(OUT+'/app.js'),os.path.getsize(OUT+'/auth.js'))

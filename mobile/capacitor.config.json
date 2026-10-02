@@ -1,0 +1,10 @@
+{
+  "appId": "br.com.neovia.localizadorestacas",
+  "appName": "Localizador de Estacas",
+  "webDir": "../firebase/public",
+  "android": { "allowMixedContent": false },
+  "server": { "androidScheme": "https", "hostname": "localhost" },
+  "plugins": {
+    "FirebaseAuthentication": { "skipNativeAuth": true, "providers": ["google.com"] }
+  }
+}

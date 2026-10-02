@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Localizador de Estacas</string>
+    <string name="title_activity_main">Localizador de Estacas</string>
+    <string name="package_name">br.com.neovia.localizadorestacas</string>
+    <string name="custom_url_scheme">br.com.neovia.localizadorestacas</string>
+</resources>

@@ -1,12 +1,13 @@
 // Localizador de Estacas — login, permissões e administração (Firebase Auth + Firestore)
 // A base do projeto só é entregue pelo servidor a usuários ativos e autorizados (ver firestore.rules).
 import {initializeApp} from 'firebase/app';
-import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signInWithEmailAndPassword,
+import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWithRedirect,signInWithCredential,getRedirectResult,signInWithEmailAndPassword,
   createUserWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,signOut,connectAuthEmulator,updateProfile,
   setPersistence,indexedDBLocalPersistence,browserLocalPersistence} from 'firebase/auth';
 import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memoryLocalCache,doc,getDoc,getDocFromServer,setDoc,collection,getDocs,
   updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot} from 'firebase/firestore';
 
+const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
 export const PAGES=[
   {k:'localizacao',t:'Localização estaca',acts:['view'],help:{view:'Ver a estaca atual pelo GPS'}},
@@ -95,7 +96,8 @@ function loginScreen(msg,kind){
     ${mode==='in'?'<button type="button" class="glink" id="gReset" style="float:right">Esqueci a senha</button>':''}
     <p class="gsub" style="margin:12px 0 0;clear:both">Contas novas começam sem acesso: o administrador libera as páginas.</p>
     ${msg?`<div class="gmsg ${kind||''}">${esc(msg)}</div>`:''}`);
-  $('gGoogle').onclick=async()=>{try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
+  $('gGoogle').onclick=async()=>{if(window.NATIVE&&NATIVE.googleIdToken){try{loginScreen('Entrando com Google…');const t=await NATIVE.googleIdToken();await signInWithCredential(auth,GoogleAuthProvider.credential(t))}catch(e){loginScreen(/cancel/i.test(String(e&&e.message))?'Login cancelado.':errTxt(e),'bad')}return}
+  try{const p=new GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
       const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
       if(standalone&&!emu)await signInWithRedirect(auth,p);else await signInWithPopup(auth,p)}catch(e){if(e.code==='auth/popup-blocked'){try{await signInWithRedirect(auth,new GoogleAuthProvider())}catch(x){loginScreen(errTxt(x),'bad')}}else loginScreen(errTxt(e),'bad')}};
   $('gMode').onclick=()=>{mode=mode==='up'?'in':'up';loginScreen()};
@@ -109,7 +111,7 @@ function waitScreen(u,title,txt){
   gate(`<div class="gwho">Conectado como<b>${esc(u.displayName||u.email)}</b>${esc(u.email)}</div>
     <div class="gmsg">${esc(title)} ${esc(txt)}</div>
     <button type="button" class="gbtn gsec" id="gRetry">Verificar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
-  $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>signOut(auth).then(()=>location.reload())}
+  $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>doSignOut().then(()=>location.reload())}
 
 /* ---------------- permissões ---------------- */
 const emptyPerms=()=>({});
@@ -130,14 +132,14 @@ function startApp(){if(window.__appStarted)return;window.__appStarted=true;const
   s.onerror=()=>gate('<div class="gmsg bad">Não foi possível carregar o aplicativo. Verifique a conexão e tente de novo.</div>');document.body.appendChild(s)}
 function decorateDrawer(){const d=document.querySelector('#drawer .dfoot');if(!d||$('duser'))return;const a=window.ACL;const box=document.createElement('div');box.id='duser';box.className='duser';
   box.innerHTML=`<div><b>${esc(a.user.name||a.user.email)}</b>${esc(a.user.email)}${a.admin?' · administrador':''}</div><button type="button" id="dOut">Sair</button>`;d.appendChild(box);
-  $('dOut').onclick=()=>signOut(auth).then(()=>{location.hash='';location.reload()})}
+  $('dOut').onclick=()=>doSignOut().then(()=>{location.hash='';location.reload()})}
 
 async function baseMissing(isAdm){
-  if(!isAdm){gate('<div class="gmsg">A base do projeto ainda não foi carregada pelo administrador. Tente mais tarde.</div><button type="button" class="gbtn gsec" id="gOut">Sair</button>');$('gOut').onclick=()=>signOut(auth).then(()=>location.reload());return}
+  if(!isAdm){gate('<div class="gmsg">A base do projeto ainda não foi carregada pelo administrador. Tente mais tarde.</div><button type="button" class="gbtn gsec" id="gOut">Sair</button>');$('gOut').onclick=()=>doSignOut().then(()=>location.reload());return}
   gate(`<div class="gmsg">Base do projeto ainda não carregada no servidor. Envie o arquivo <b>data.json</b> do R08 para liberar o aplicativo.</div>
     <label for="gBase">Arquivo da base (data.json)</label><input id="gBase" type="file" accept=".json,application/json" style="padding-top:12px">
     <div id="gBaseMsg"></div><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
-  $('gOut').onclick=()=>signOut(auth).then(()=>location.reload());
+  $('gOut').onclick=()=>doSignOut().then(()=>location.reload());
   $('gBase').onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=$('gBaseMsg');m.innerHTML='<div class="gmsg">Enviando…</div>';
     try{await uploadBase(f);m.innerHTML='<div class="gmsg ok">Base carregada. Abrindo o aplicativo…</div>';setTimeout(()=>location.reload(),900)}catch(x){m.innerHTML=`<div class="gmsg bad">${esc(errTxt(x))}</div>`}}}
 async function uploadBase(file){const txt=await file.text();let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
@@ -162,14 +164,14 @@ onAuthStateChanged(auth,async user=>{
       if(!anyView(perms)){waitScreen(user,'Sem páginas liberadas.','O administrador ainda não autorizou nenhuma página para você.');watchUser(user);return}}
     else if(normEmail(user.email)===ADMIN&&!user.emailVerified){waitScreen(user,'E-mail não verificado.','Entre com o Google para usar o acesso de administrador.');return}
     window.ACL={admin:isAdm,perms:isAdm?Object.fromEntries(PAGES.map(p=>[p.k,Object.fromEntries(p.acts.map(a=>[a,true]))])):perms,
-      user:{uid:user.uid,email:user.email,name:(ud&&ud.name)||user.displayName||''},pages:PAGES,renderAdmin,signOut:()=>signOut(auth)};
+      user:{uid:user.uid,email:user.email,name:(ud&&ud.name)||user.displayName||''},pages:PAGES,renderAdmin,signOut:()=>doSignOut()};
     let base=null;try{base=await loadBase()}catch(e){if(e.code==='permission-denied'){waitScreen(user,'Acesso negado pelo servidor.','Seu usuário não tem permissão para a base do projeto.');return}throw e}
     if(!base){baseMissing(isAdm);return}
     window.PROJECT_DATA=base.data;window.BASE_VERSION=base.version;
     if(!isAdm)watchUser(user,true);
     startApp()}
   catch(e){gate(`<div class="gmsg bad">${esc(errTxt(e))}</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
-    $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>signOut(auth).then(()=>location.reload())}
+    $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>doSignOut().then(()=>location.reload())}
 });
 // mudanças feitas pelo administrador (liberar, bloquear, desativar) valem sem precisar sair
 let watching=false;

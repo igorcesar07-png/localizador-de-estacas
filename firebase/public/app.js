@@ -1183,10 +1183,13 @@ renderGps(Loc.gps);
       const b=await new Promise(r=>out.toBlob(r,'image/jpeg',0.95));if(!b)throw new Error('imagem');
       const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';
       const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
-      await DB.add({name,blob:b,t:date.getTime(),saved:false,stake:info.stake.name||null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
+      // no app Android: grava também na galeria do aparelho (álbum "Localizador Estacas"); só marca como salva se a gravação deu certo
+      let gal=null;if(window.NATIVE&&NATIVE.saveToGallery){try{await NATIVE.saveToGallery(b,name);gal=true}catch(e){gal=false}}
+      await DB.add({name,blob:b,t:date.getTime(),saved:gal===true,stake:info.stake.name||null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
       if(sel.note)Notes.add(sel.note);
       await galCount();
-      okToast(`✓ Guardada em Fotos do app${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
+      okToast(`✓ ${gal===true?'Salva na galeria do aparelho':'Guardada em Fotos do app'}${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`);
+      if(gal===false)msg('warn','Não foi possível gravar na galeria do aparelho.',' A foto ficou guardada no app; use Salvar selecionadas.')}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
     finally{busy=false;$('fBusy').hidden=true}}
   function shoot(){if(!can('foto','create')){msg('warn','Sem permissão.',' Seu usuário pode ver a câmera, mas não gravar fotos.');return}const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
@@ -1239,6 +1242,8 @@ renderGps(Loc.gps);
   async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)&&!f.saved){f.saved=true;await DB.put(f)}}catch(e){}}
   $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=GAL.filter(f=>SEL.has(f.id));if(!a.length)return;
     const files=a.map(f=>new File([f.blob],f.name,{type:'image/jpeg'}));
+    if(window.NATIVE&&NATIVE.saveToGallery){let ok=0,err='';for(const f of a){try{await NATIVE.saveToGallery(f.blob,f.name);ok++;await markSaved([f.id])}catch(e){err=e&&e.message||String(e)}}
+      m.textContent=ok===a.length?`${ok} foto${ok>1?'s salvas':' salva'} na galeria do aparelho (álbum Localizador Estacas).`:`${ok} de ${a.length} salvas na galeria. Erro: ${err}`;openGal();return}
     if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files});await markSaved(a.map(f=>f.id));
         m.textContent=`Se você tocou em "Salvar ${files.length>1?files.length+' Imagens':'Imagem'}", ${files.length>1?'elas estão':'ela está'} no app Fotos. As fotos continuam guardadas aqui até você excluir.`;openGal()}
       catch(e){m.textContent=e&&e.name==='AbortError'?'Cancelado: nada foi salvo no aparelho.':'Não foi possível abrir o salvar ('+(e.message||e.name)+').'}return}
@@ -1652,7 +1657,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='01/10/2026 22:02';
+  const CUR_VER='01/10/2026 23:42';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
