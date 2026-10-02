@@ -36,7 +36,7 @@ try{
   ok(true,'administrador entra no aplicativo');
   ok((await drawerPages(a)).includes('admin'),'menu Administração visível para o administrador');
   await a.goto(BASE.replace('/?','/?')+'#admin');await a.waitForSelector('.adm-row',{timeout:15000});await a.shot('2-admin-lista');
-  const row=a.locator('.adm-row',{hasText:'apontador@teste.com'});ok(await row.count()===1,'usuário novo aparece na lista');
+  const row=a.locator('.adm-row',{hasText:'apontador@teste.com'});ok(await row.count()===1,'usuário novo aparece na lista');ok(/Apontador Teste/.test(await row.textContent()),'nome informado no cadastro aparece na lista');
   ok(/Aguardando autorização/.test(await row.textContent()),'status do usuário novo: Aguardando autorização');
   await row.click();await a.waitForSelector('#uMx .adm-mx');
   await a.check('#uMx input[data-pg="localizacao"][data-a="view"]');await a.check('#uMx input[data-pg="mapa"][data-a="view"]');await a.check('#uAct');

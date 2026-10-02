@@ -747,6 +747,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
+    <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
   <div class="dfoot">Versão /*__VERSION__*/ · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
@@ -840,6 +841,12 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </aside>
 </section>
 
+<!-- ===== 6. Administração (só administrador principal) ===== -->
+<section class="page" id="pAdmin" data-page="admin" hidden style="display:flex;flex-direction:column;background:var(--ground)">
+  <div class="topbar" style="background:var(--plate);color:var(--plate-ink)"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Administração</h1></div>
+  <div class="cscroll"><div id="admRoot"></div></div>
+</section>
+
 <!-- ===== 5. Relatórios ===== -->
 <section class="page" id="pRel" data-page="relatorios" hidden>
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Relatórios</h1><span class="rquick" id="rQuick"></span></div>
@@ -869,8 +876,8 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="rexe">
           <div><h3>Programações registradas</h3><p class="note" style="margin:0 0 8px">Cada programação emitida na Calculadora fica registrada como <b>programado</b>. Toque em <b>Concluir</b> para marcar os panos executados, com a data de execução.</p><div id="rProgs"></div></div>
           <div><h3>Planilha de execução</h3><p class="note" style="margin:0 0 8px">Baixe a planilha padrão com os panos do filtro atual, preencha Status, datas e observações e importe de volta.</p>
-            <div class="ract"><button type="button" class="secondary" id="rTpl">Baixar planilha padrão</button><button type="button" class="primary" id="rImpBtn">Importar planilha</button><input type="file" id="rImpFile" accept=".xlsx,.xls,.csv" hidden></div>
-            <p class="note" id="rImpInfo" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImpDel" hidden>Remover dados importados</button></div>
+            <div class="ract"><button type="button" class="secondary" id="rTpl">Baixar planilha padrão</button><button type="button" class="primary" id="rImpBtn" data-acl="relatorios:create">Importar planilha</button><input type="file" id="rImpFile" accept=".xlsx,.xls,.csv" hidden></div>
+            <p class="note" id="rImpInfo" style="margin:8px 0 0"></p><button type="button" class="linkBtn" id="rImpDel" data-acl="relatorios:delete" hidden>Remover dados importados</button></div>
         </div>
       </details>
       <div class="alert info" id="rMsg" hidden></div>
@@ -904,7 +911,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <button type="button" class="fsb" id="fFxBtn" aria-label="Faixa: toque para alternar"><small>Faixa</small><b id="fFxTxt">Faixa 1</b></button>
       <button type="button" class="fnote2" id="fNoteBtn" aria-label="Nota da foto: toque para editar"><span class="nt1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>Nota</span><span class="nt2" id="fNoteLbl">Sem nota</span><span class="nt3">Toque para editar</span></button>
       <button type="button" class="fsb" id="fLayBtn" aria-label="Escolher layout da foto"><small>Layout</small><b id="fLayLbl">Semitransp.</b></button>
-      <label class="fcam" for="fFile" id="fNative" aria-label="Abrir a câmera do aparelho" title="Câmera do aparelho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></label>
+      <label class="fcam" for="fFile" id="fNative" data-acl="foto:create" aria-label="Abrir a câmera do aparelho" title="Câmera do aparelho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></label>
       <input type="file" id="fFile" accept="image/*" capture="environment" hidden>
     </div>
     <div class="fhint" id="fHint">Toque na imagem para fotografar</div>
@@ -928,7 +935,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <p class="gmsg" id="fGalMsg" hidden></p>
       <div class="gact2">
         <button type="button" class="ginfoBtn" id="gInfoBtn" aria-expanded="false" aria-controls="gInfo"><b id="gSelN">0 selecionadas</b><span id="gPendMini"></span><i aria-hidden="true">ⓘ</i></button>
-        <button class="delBtn" type="button" id="fGalDel" disabled>Excluir</button>
+        <button class="delBtn" type="button" id="fGalDel" data-acl="foto:delete" disabled>Excluir</button>
         <button class="bigBtn" type="button" id="fGalSave" disabled>Salvar</button>
       </div>
     </div>
@@ -1006,11 +1013,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
-          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="primary" type="button" id="cRep" style="background:var(--accent);color:var(--accent-ink)">Emitir Relatório da Programação</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="primary" type="button" id="cRep" data-acl="calculadora:create" style="background:var(--accent);color:var(--accent-ink)">Emitir Relatório da Programação</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
         </div>
       </form>
 
-      <details class="card" id="cCad">
+      <details class="card" id="cCad" data-acl-ro="calculadora:edit">
         <summary><span>Cadastro de larguras e espessuras</span><span class="flag" id="cCadFlag"></span></summary>
         <div class="cad">
           <div>
@@ -1040,6 +1047,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 const PROJECT_DATA = /*__DATA__*/;
+const ACL=window.ACL||null;
+const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
+(function aclCss(){if(!ACL)return;let css='';
+  for(const pg of ['localizacao','mapa','calculadora','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+    for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
+  if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
+  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
 /* =====================================================================
    Localizador de Estacas — estrutura
    Data    → estacas, soluções e panos (base do projeto R08 + KMZ)
@@ -1206,20 +1220,20 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','calculadora','foto','relatorios'];const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','calculadora','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
   $('scrim').onclick=close;$('drawer').querySelector('[data-close]').onclick=close;
   document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
   $('drawer').querySelectorAll('a').forEach(a=>a.onclick=e=>{e.preventDefault();go(a.dataset.page);close()});
-  function go(p){if(!PAGES.includes(p))p='localizacao';if(p===cur)return;cur=p;
+  function go(p){if(!PAGES.includes(p))p=PAGES.includes(store.get('page',''))?store.get('page'):PAGES[0];if(p===cur){try{history.replaceState(null,'','#'+p)}catch(e){}return}cur=p;
     document.querySelectorAll('.page').forEach(s=>s.hidden=s.dataset.page!==p);
     $('drawer').querySelectorAll('a').forEach(a=>a.setAttribute('aria-current',a.dataset.page===p?'page':'false'));
     if(!shown[p]){shown[p]=true;inits[p]&&inits[p]()}
     store.set('page',p);try{history.replaceState(null,'','#'+p)}catch(e){}emit('page',p)}
   window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
-  return {go,onInit:(p,f)=>inits[p]=f,cur:()=>cur};
+  return {go,onInit:(p,f)=>inits[p]=f,cur:()=>cur,pages:PAGES};
 })();
 
 /* =====================================================================
@@ -1713,7 +1727,7 @@ renderGps(Loc.gps);
     if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
       if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
     $('rfPend').hidden=true;$('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
-  $('cRep').onclick=openForm;
+  $('cRep').onclick=()=>{if(can('calculadora','create'))openForm()};
   $('rfCancel').onclick=()=>$('repForm').hidden=true;
   $('repForm').addEventListener('click',e=>{if(e.target.id==='repForm')$('repForm').hidden=true});
   $('rfForm').addEventListener('submit',e=>{e.preventDefault();
@@ -2223,13 +2237,13 @@ renderGps(Loc.gps);
       okToast(`✓ Guardada em Fotos do app${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`)}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
     finally{busy=false;$('fBusy').hidden=true}}
-  function shoot(){const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
+  function shoot(){if(!can('foto','create')){msg('warn','Sem permissão.',' Seu usuário pode ver a câmera, mas não gravar fotos.');return}const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
     const date=new Date(),W=video.videoWidth,H=video.videoHeight;const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);
     const fl=$('fFlash');fl.classList.add('go');requestAnimationFrame(()=>requestAnimationFrame(()=>fl.classList.remove('go')));
     $('fHint').classList.add('off');finish(frame,W,H,date)}
   // toque em qualquer ponto da imagem (canvas ou fundo do palco); botões, menus e avisos não disparam
   $('fStage').addEventListener('click',e=>{const t=e.target;if(t!==$('fCanvas')&&t!==$('fStage'))return;if(!$('noteModal').hidden||!$('layModal').hidden)return;shoot()});
-  $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||busy)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
+  $('fFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!can('foto','create'))return;if(!f||busy)return;const date=new Date();const img=new Image();const u=URL.createObjectURL(f);
     img.onload=()=>{finish(img,img.naturalWidth,img.naturalHeight,date).then(()=>URL.revokeObjectURL(u))};img.onerror=()=>{URL.revokeObjectURL(u);msg('bad','Não foi possível abrir a imagem.','')};img.src=u};
   // cada foto fica no próprio app (IndexedDB) até o usuário excluir
   const DB=(()=>{let dbp=null;const open=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
@@ -2244,9 +2258,9 @@ renderGps(Loc.gps);
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
   async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg" style="grid-column:1 / -1">Nenhuma foto guardada ainda.</p>';
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-acl="foto:delete" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg" style="grid-column:1 / -1">Nenhuma foto guardada ainda.</p>';
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
-    grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
+    grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();if(!can('foto','delete'))return;const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
     const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=GAL.length?`(${GAL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
     $('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: use Selecionar ▾ › "Não salvas no aparelho" e depois "Salvar".`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
     selUi();$('fGal').hidden=false;stopCam()}
@@ -2268,7 +2282,7 @@ renderGps(Loc.gps);
   // mensagens de retorno: uma linha na barra inferior que some sozinha (não empurra nem cobre as fotos permanentemente)
   let gmT=0;new MutationObserver(()=>{const m=$('fGalMsg');if(!m.textContent.trim())return;m.hidden=false;clearTimeout(gmT);gmT=setTimeout(()=>{m.hidden=true},6000)}).observe($('fGalMsg'),{childList:true,characterData:true,subtree:true});
   $('fGalNote').onclick=()=>{closePops();openNote()};
-  $('fGalDel').onclick=async()=>{const ids=[...SEL];if(!ids.length)return;if(!await confirmDel(ids.length))return;
+  $('fGalDel').onclick=async()=>{if(!can('foto','delete'))return;const ids=[...SEL];if(!ids.length)return;if(!await confirmDel(ids.length))return;
     for(const id of ids)await DB.del(id);SEL.clear();$('fGalMsg').textContent=`${ids.length} foto${ids.length>1?'s excluídas':' excluída'} do app.`;openGal()};
   async function markSaved(ids){try{const a=await DB.all();for(const f of a)if(ids.includes(f.id)&&!f.saved){f.saved=true;await DB.put(f)}}catch(e){}}
   $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=GAL.filter(f=>SEL.has(f.id));if(!a.length)return;
@@ -2497,7 +2511,7 @@ renderGps(Loc.gps);
     $('rImpInfo').textContent=imp.length?`${imp.length} registro${imp.length>1?'s':''} importado${imp.length>1?'s':''} da planilha${store.get('execImpAt','')?' em '+store.get('execImpAt',''):''}.`:'Nenhuma planilha importada.';
     $('rImpDel').hidden=!imp.length;
     $('rProgs').innerHTML=ps.length?ps.map(p=>`<div class="rpg${p.concluded?' done':''}"><div><b>${br(p.data)} · ${esc(p.equipe)}</b><small>${p.items.length} segmento${p.items.length>1?'s':''} · ${fmtM(p.items.reduce((s,i)=>s+(i.b-i.a),0))} · ${p.concluded?`concluída em ${br(p.execDate)} (${p.nExec} executado${p.nExec!==1?'s':''})`:'aberta (programado)'}</small></div>
-      <span>${p.concluded?`<button type="button" class="secondary sm" data-reopen="${esc(p.id)}">Reabrir</button>`:`<button type="button" class="primary sm" data-conc="${esc(p.id)}">Concluir</button>`}<button type="button" class="secondary sm" data-pdel="${esc(p.id)}" aria-label="Excluir registro">✕</button></span></div>`).join(''):'<p class="note" style="margin:0">Nenhuma programação registrada. Elas entram aqui automaticamente quando você emite o relatório na Calculadora de programação.</p>';
+      <span>${p.concluded?`<button type="button" class="secondary sm" data-acl="relatorios:edit" data-reopen="${esc(p.id)}">Reabrir</button>`:`<button type="button" class="primary sm" data-acl="relatorios:create" data-conc="${esc(p.id)}">Concluir</button>`}<button type="button" class="secondary sm" data-acl="relatorios:delete" data-pdel="${esc(p.id)}" aria-label="Excluir registro">✕</button></span></div>`).join(''):'<p class="note" style="margin:0">Nenhuma programação registrada. Elas entram aqui automaticamente quando você emite o relatório na Calculadora de programação.</p>';
     $('rProgs').querySelectorAll('[data-conc]').forEach(b=>b.onclick=()=>openConclude(b.dataset.conc));
     $('rProgs').querySelectorAll('[data-reopen]').forEach(b=>b.onclick=()=>{if(!confirm('Reabrir a programação? Os panos marcados como executados por ela voltam a ficar como programados.'))return;
       const id=b.dataset.reopen;Rec.saveExecs(Rec.execs().filter(r=>r.progId!==id));Rec.saveProgs(Rec.progs().map(p=>p.id===id?Object.assign({},p,{concluded:false,execDate:null,nExec:0}):p));refresh()});
@@ -2513,7 +2527,7 @@ renderGps(Loc.gps);
   $('rcNone').onclick=()=>$('rcList').querySelectorAll('input').forEach(c=>c.checked=false);
   $('rcCancel').onclick=()=>$('rConc').hidden=true;
   $('rConc').addEventListener('click',e=>{if(e.target.id==='rConc')$('rConc').hidden=true});
-  $('rcOk').onclick=()=>{const p=CUR;if(!p)return;const date=$('rcDate').value||p.data,obs=$('rcObs').value.trim();
+  $('rcOk').onclick=()=>{if(!can('relatorios','create'))return;const p=CUR;if(!p)return;const date=$('rcDate').value||p.data,obs=$('rcObs').value.trim();
     const ks=[...$('rcList').querySelectorAll('input:checked')].map(c=>+c.dataset.k);
     const ex=Rec.execs().filter(r=>r.progId!==p.id);ks.forEach(k=>{const it=p.items[k];ex.push({L:it.L,a:it.a,b:it.b,tag:it.tag,st:'exec',dateExec:date,dateProg:p.data,obs,src:'prog',progId:p.id})});
     Rec.saveExecs(ex);Rec.saveProgs(Rec.progs().map(x=>x.id===p.id?Object.assign({},x,{concluded:true,execDate:date,nExec:ks.length}):x));$('rConc').hidden=true;refresh()};
@@ -2554,7 +2568,7 @@ renderGps(Loc.gps);
     const g=f.includes('dren')?'DRN':f.includes('acost')||f==='ac'?'AC':f.includes('2')||f.includes('3')?'F23':f.includes('1')?'F1':null;if(!s||!g)return -1;return LANES.findIndex(L=>L.side===s&&L.grp===g)}
   let PEND=null,PEND_ESP={};
   $('rImpBtn').onclick=()=>$('rImpFile').click();
-  $('rImpFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;
+  $('rImpFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f||!can('relatorios','create'))return;
     try{await loadScript(XLSX_URL);const X=window.XLSX;const wb=X.read(await f.arrayBuffer(),{cellDates:true});
       const sh=wb.Sheets['Execução']||wb.Sheets[wb.SheetNames[0]];const aoa=X.utils.sheet_to_json(sh,{header:1,defval:'',raw:true});
       if(!aoa.length)throw new Error('planilha vazia');const hd=aoa[0].map(normTxt);const col=n=>hd.indexOf(normTxt(n));
@@ -2589,7 +2603,7 @@ renderGps(Loc.gps);
   $('rImp').addEventListener('click',e=>{if(e.target.id==='rImp'){$('rImp').hidden=true;PEND=null}});
   $('riOk').onclick=()=>{if(!PEND)return;if(Object.keys(PEND_ESP).length)store.set('espProj',Object.assign(store.get('espProj',{}),PEND_ESP));const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha');ex=ex.concat(PEND);Rec.saveExecs(ex);
     const d=new Date();store.set('execImpAt',d.toLocaleString('pt-BR'));$('rImp').hidden=true;msgR(`${PEND.length} registro(s) importado(s).`);PEND=null;refresh()};
-  $('rImpDel').onclick=()=>{if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'));refresh()};
+  $('rImpDel').onclick=()=>{if(!can('relatorios','delete'))return;if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'));refresh()};
 
   /* ---------- Excel ---------- */
   function detailAoa(){const noRec=RES.fonte==='proj';const H=['Pano','Rodovia','Bloco','Sentido','Faixa','Tipo de serviço','Solução','Descrição','Estaca inicial','Estaca final','Extensão (m)','Parcial no recorte','Largura (m)','Espessura (cm)','Área (m²)','Volume (m³)','Previsto (t)','Status','Espessura de projeto (cm)','Espessura executada (cm)','RMP','Motivo do RMP','Extensão executada (m)','Extensão programada (m)','Saldo (m)','Executado (t)','Programado (t)','Saldo (t)','Data de programação','Data de execução','Origem do registro','Observações','Marco km','Página do PDF'];
@@ -2677,11 +2691,13 @@ renderGps(Loc.gps);
   on('page',p=>{if(p==='relatorios')refresh()});
 })();
 
+on('page',p=>{if(p==='admin'&&ACL&&ACL.admin&&ACL.renderAdmin)ACL.renderAdmin($('admRoot'))});
+if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]');if(a)a.hidden=false}
 /* ------------------------------ Início ------------------------------ */
 (function boot(){
   const f=Data.parseKm('196+610');const i=Math.floor((f.s-ODO[0])/20);
   Loc.set((LAT[i]+LAT[i+1])/2+0.00002,(LON[i]+LON[i+1])/2,5,null,null,'init','exemplo');
-  const h=location.hash.slice(1);Router.go(['localizacao','mapa','calculadora','foto','relatorios'].includes(h)?h:store.get('page','localizacao'));
+  const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
   const CUR_VER='/*__VERSION__*/';

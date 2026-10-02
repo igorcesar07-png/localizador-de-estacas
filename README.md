@@ -13,9 +13,19 @@ Aplicativo web para acompanhamento em campo do projeto de restauração da BR-27
 - A largura das faixas não consta na base. A calculadora usa por padrão 3,60 m para faixa 1 e faixa 2/3 e 2,50 m para acostamento, e densidade de 2,528 t/m³. Todos os valores podem ser editados e ficam salvos no aparelho.
 
 ## Uso
-Abra o endereço do GitHub Pages no Safari e permita a localização. Para instalar no iPhone: Compartilhar → Adicionar à Tela de Início. Depois de instalado, funciona offline para os dados e para os trechos de mapa já visualizados.
+O aplicativo agora exige login e fica no Firebase Hosting (pasta `firebase/`). O endereço antigo do GitHub Pages será desativado depois da validação.
+
+Abra o endereço novo no Safari, entre com a conta liberada pelo administrador e permita a localização. Para instalar no iPhone: Compartilhar → Adicionar à Tela de Início. Depois de instalado, funciona offline para os dados e para os trechos de mapa já visualizados.
 
 ## Estrutura
 - `index.html`: aplicativo completo, com os dados embutidos
 - `sw.js`, `manifest.webmanifest`, `icon-*.png`: instalação e cache offline
 - `fonte/`: modelo do app, scripts de preparo dos dados e lista de panos (`panos_R08_B2B3.csv`)
+
+## Login e permissões (pasta `firebase/`)
+- `firestore.rules`: regras do servidor. Sem login, sem cadastro ativo ou sem página liberada, a base do projeto não é entregue. Só o administrador principal (igordalmolin.eng@gmail.com, e-mail verificado) gerencia usuários, perfis, convites e a base.
+- `src/auth.src.js`: tela de login (Google ou e-mail e senha), espera de liberação, painel de Administração (usuários, perfis de acesso, base do projeto).
+- `public/`: app publicado, **sem** a base embutida (a base é carregada do Firestore depois do login).
+- `test/`: testes das regras e teste de ponta a ponta no emulador.
+- `.github/workflows/firebase.yml`: roda os testes a cada alteração e publica no Firebase quando o secret `FIREBASE_SERVICE_ACCOUNT` está cadastrado. O relatório dos testes fica no ramo `ci-results`.
+- Para regerar `public/`: `python3 fonte/build_fb.py` (precisa de `fonte/package/dist/leaflet.css` e dos logotipos).

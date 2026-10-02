@@ -102,7 +102,7 @@ function loginScreen(msg,kind){
   if($('gReset'))$('gReset').onclick=async()=>{const e=$('gEmail').value.trim();if(!e){loginScreen('Digite seu e-mail e toque em "Esqueci a senha".','bad');return}
     try{await sendPasswordResetEmail(auth,e);loginScreen('Se o e-mail tiver conta, enviamos o link para criar uma nova senha.','ok')}catch(x){loginScreen(errTxt(x),'bad')}};
   $('gForm').onsubmit=async ev=>{ev.preventDefault();const e=$('gEmail').value.trim(),p=$('gPass').value;
-    try{if(mode==='up'){const c=await createUserWithEmailAndPassword(auth,e,p);const n=$('gName').value.trim();if(n)await updateProfile(c.user,{displayName:n});sendEmailVerification(c.user).catch(()=>{})}
+    try{if(mode==='up'){const n=$('gName').value.trim();window.__pendingName=n;const c=await createUserWithEmailAndPassword(auth,e,p);if(n)await updateProfile(c.user,{displayName:n});sendEmailVerification(c.user).catch(()=>{})}
       else await signInWithEmailAndPassword(auth,e,p)}catch(x){loginScreen(errTxt(x),'bad')}};
 }
 function waitScreen(u,title,txt){
@@ -121,8 +121,8 @@ async function ensureUserDoc(user){const ref=doc(db,'users',user.uid);let s;
   try{s=await getDoc(ref)}catch(e){throw e}
   if(s.exists())return s.data();
   const key=normEmail(user.email);let inv=null;try{const i=await getDoc(doc(db,'invites',key));if(i.exists())inv=i.data()}catch(e){}
-  const data=inv?{email:user.email,name:inv.name||user.displayName||'',profile:inv.profile??null,custom:inv.custom===true,perms:inv.perms||{},active:inv.active===true,invited:true,createdAt:serverTimestamp()}
-    :{email:user.email,name:user.displayName||'',profile:null,custom:true,perms:{},active:false,invited:false,createdAt:serverTimestamp()};
+  const data=inv?{email:user.email,name:inv.name||user.displayName||window.__pendingName||'',profile:inv.profile??null,custom:inv.custom===true,perms:inv.perms||{},active:inv.active===true,invited:true,createdAt:serverTimestamp()}
+    :{email:user.email,name:user.displayName||window.__pendingName||'',profile:null,custom:true,perms:{},active:false,invited:false,createdAt:serverTimestamp()};
   await setDoc(ref,data);return data}
 
 async function loadBase(){const s=await getDoc(doc(db,'base','r08'));if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
