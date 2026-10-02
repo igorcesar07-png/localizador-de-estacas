@@ -1,0 +1,71 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, firestore, hosting
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-estacas", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m✔  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m✔  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi  hosting[demo-estacas]:[22m[39m Serving hosting files from: [1mpublic[22m
+[32m[1m✔  hosting[demo-estacas]:[22m[39m Local server: [4m[1mhttp://127.0.0.1:5000[22m[24m
+[36m[1mi [22m[39m Running script: [1mOUT=ci-report node test/e2e.mjs[22m
+OK base sintética gravada no emulador
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /?emu=1 HTTP/1.1" 200 - "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /logo_neovia.png HTTP/1.1" 200 22703 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:13 +0000] "GET /logo_via.png HTTP/1.1" 200 120155 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi [22m[39m To verify the email address apontador@teste.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=9RpOuFxbf_aD5zK8Ox9FQzr8WyIkY0loESfOFSdv83jBFzBBWZH2DW&apiKey=fake-api-key
+OK conta nova fica aguardando liberação do administrador
+OK conta nova não recebe a base do projeto
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /?emu=1 HTTP/1.1" 200 - "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /logo_neovia.png HTTP/1.1" 200 22703 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /logo_via.png HTTP/1.1" 200 120155 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:16 +0000] "GET /app.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+OK administrador entra no aplicativo
+OK menu Administração visível para o administrador
+OK usuário novo aparece na lista
+OK nome informado no cadastro aparece na lista
+OK status do usuário novo: Aguardando autorização
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /?emu=1 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+OK administrador salva as permissões
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:17 +0000] "GET /app.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+OK usuário vê só Localização e Mapa no menu (localizacao,mapa)
+OK URL direta da Calculadora é bloqueada
+OK URL direta da Administração é bloqueada
+OK API do banco recusa leitura sem credencial (403)
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /?emu=1 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /logo_neovia.png HTTP/1.1" 200 22703 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /logo_via.png HTTP/1.1" 200 120155 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:21 +0000] "GET /logo_via.png HTTP/1.1" 200 120155 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+OK usuário desativado não entra
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /?emu=1 HTTP/1.1" 200 - "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /firebase-config.js?v=20261002035200 HTTP/1.1" 200 138 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /native.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /auth.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /logo_neovia.png HTTP/1.1" 200 22703 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /logo_via.png HTTP/1.1" 200 120155 "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+[36m[1mi [22m[39m To verify the email address prog@teste.com, follow this link: http://127.0.0.1:9099/emulator/action?mode=verifyEmail&lang=en&oobCode=ln_M8M-BaQDPwl-kOo4qEW-PYQtBfxt4dT5sa4fZr0qxPhXWKEm1YF&apiKey=fake-api-key
+[36m[1mi  hosting:[22m[39m 127.0.0.1 - - [02/Oct/2026:03:53:25 +0000] "GET /app.js?v=20261002035200 HTTP/1.1" 200 - "http://127.0.0.1:5000/?emu=1" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36"
+OK convidado entra direto com as páginas do perfil (calculadora,relatorios)
+OK sem "Criar" na Calculadora, botão de emitir programação fica oculto
+[32m[1m✔ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  hosting:[22m[39m Stopping Hosting Emulator
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

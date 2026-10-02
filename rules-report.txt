@@ -1,0 +1,30 @@
+Regras do Firestore: 28/28 testes OK
+
+OK  sem login não lê a base
+OK  administrador lê e grava a base
+OK  e-mail do admin sem verificação não grava a base
+OK  usuário ativo com página liberada lê a base
+OK  usuário com perfil liberado lê a base
+OK  usuário com perfil sem páginas não lê a base
+OK  usuário inativo não lê a base
+OK  usuário sem permissões não lê a base
+OK  usuário sem cadastro não lê a base
+OK  usuário comum não grava a base
+OK  novo usuário cria o próprio cadastro sem acesso
+OK  novo usuário não se cria ativo
+OK  novo usuário não se dá permissões
+OK  novo usuário não escolhe perfil
+OK  não cria cadastro de outra pessoa
+OK  convidado cria cadastro com o perfil do convite
+OK  convidado não altera o perfil do convite
+OK  usuário não altera o próprio cadastro
+OK  usuário não se reativa
+OK  usuário lê o próprio cadastro
+OK  usuário não lê cadastro de outro
+OK  usuário não lista usuários
+OK  usuário não cria perfis
+OK  usuário não cria convites
+OK  administrador lista e altera usuários
+OK  administrador cria perfis e convites
+OK  e-mail do admin sem verificação não gerencia
+OK  coleções desconhecidas bloqueadas

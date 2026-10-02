@@ -1,0 +1,70 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-estacas", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[33m[1m⚠ [22m[39m It appears you are running in a CI environment. You can avoid downloading the Firestore Emulator repeatedly by caching the /home/runner/.cache/firebase/emulators directory.
+[36m[1mi  firestore:[22m[39m downloading cloud-firestore-emulator-v1.22.0.jar...
+
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m✔  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m✔  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi [22m[39m Running script: [1mREPORT=ci-report/rules-report.txt node test/rules.test.mjs[22m
+[2026-10-02T03:53:01.347Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362206 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L32, false for 'create' @ L75, false for 'update' @ L32, false for 'update' @ L75
+[2026-10-02T03:53:01.668Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c36220d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L32, false for 'create' @ L75, false for 'update' @ L32, false for 'update' @ L75
+[2026-10-02T03:53:01.745Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c36220f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L42, false for 'create' @ L75, false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:01.762Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362210 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L42, false for 'create' @ L75, false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:01.777Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362211 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L42, false for 'create' @ L75, false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:01.792Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362212 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L42, false for 'create' @ L75, false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:01.878Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362214 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L42:24 for 'create' @ L42, false for 'create' @ L75, false for 'update' @ L38, false for 'update' @ L75, false for 'create' @ L42, false for 'create' @ L75
+[2026-10-02T03:53:01.917Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362215 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:01.946Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362216 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L38, false for 'update' @ L75
+[2026-10-02T03:53:02.070Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c36221a error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L66, false for 'create' @ L75, false for 'update' @ L66, false for 'update' @ L75
+[2026-10-02T03:53:02.094Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c36221b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L72, false for 'create' @ L75, false for 'update' @ L72, false for 'update' @ L75
+[2026-10-02T03:53:02.196Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8c362205 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L75, false for 'update' @ L75
+Regras do Firestore: 28/28 testes OK
+
+OK  sem login não lê a base
+OK  administrador lê e grava a base
+OK  e-mail do admin sem verificação não grava a base
+OK  usuário ativo com página liberada lê a base
+OK  usuário com perfil liberado lê a base
+OK  usuário com perfil sem páginas não lê a base
+OK  usuário inativo não lê a base
+OK  usuário sem permissões não lê a base
+OK  usuário sem cadastro não lê a base
+OK  usuário comum não grava a base
+OK  novo usuário cria o próprio cadastro sem acesso
+OK  novo usuário não se cria ativo
+OK  novo usuário não se dá permissões
+OK  novo usuário não escolhe perfil
+OK  não cria cadastro de outra pessoa
+OK  convidado cria cadastro com o perfil do convite
+OK  convidado não altera o perfil do convite
+OK  usuário não altera o próprio cadastro
+OK  usuário não se reativa
+OK  usuário lê o próprio cadastro
+OK  usuário não lê cadastro de outro
+OK  usuário não lista usuários
+OK  usuário não cria perfis
+OK  usuário não cria convites
+OK  administrador lista e altera usuários
+OK  administrador cria perfis e convites
+OK  e-mail do admin sem verificação não gerencia
+OK  coleções desconhecidas bloqueadas
+
+[32m[1m✔ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator

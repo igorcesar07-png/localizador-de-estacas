@@ -1,0 +1,18 @@
+Teste de ponta a ponta: 16/16 OK
+
+OK  base sintética gravada no emulador
+OK  conta nova fica aguardando liberação do administrador
+OK  conta nova não recebe a base do projeto
+OK  administrador entra no aplicativo
+OK  menu Administração visível para o administrador
+OK  usuário novo aparece na lista
+OK  nome informado no cadastro aparece na lista
+OK  status do usuário novo: Aguardando autorização
+OK  administrador salva as permissões
+OK  usuário vê só Localização e Mapa no menu (localizacao,mapa)
+OK  URL direta da Calculadora é bloqueada
+OK  URL direta da Administração é bloqueada
+OK  API do banco recusa leitura sem credencial (403)
+OK  usuário desativado não entra
+OK  convidado entra direto com as páginas do perfil (calculadora,relatorios)
+OK  sem "Criar" na Calculadora, botão de emitir programação fica oculto
