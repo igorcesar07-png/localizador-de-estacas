@@ -51,7 +51,7 @@ jobs:
         working-directory: firebase
         run: |
           node scripts/write-config.mjs "$PJ"
-          node scripts/android-app.mjs "$PJ" "$PKG" "$SHA1" "$SHA256" ../mobile/android/app/google-services.json
+          mkdir -p ../out && node scripts/android-app.mjs "$PJ" "$PKG" "$SHA1" "$SHA256" ../mobile/android/app/google-services.json 2>&1 | tee ../out/firebase-android.txt; test ${PIPESTATUS[0]} -eq 0
       - name: Compilar
         working-directory: mobile
         run: |
@@ -92,7 +92,7 @@ jobs:
       - name: Relatório no ramo ci-results-apk
         if: always()
         run: |
-          mkdir -p rep && cd rep && grep -E "Capacitor|chromium|NATIVE|Console|AndroidRuntime|FATAL" logcat.txt > logcat-app.txt 2>/dev/null || true
+          mkdir -p rep && cp out/firebase-android.txt rep/ 2>/dev/null; cd rep && grep -E "Capacitor|chromium|NATIVE|Console|AndroidRuntime|FATAL" logcat.txt > logcat-app.txt 2>/dev/null || true
           rm -f logcat.txt; echo "${GITHUB_SHA}" > commit.txt
           git init -q && git checkout -q -b ci-results-apk && git add -A
           git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "emulador ${GITHUB_SHA::7}"
