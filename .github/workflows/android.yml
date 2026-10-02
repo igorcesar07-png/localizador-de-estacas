@@ -1,4 +1,5 @@
 name: Android (APK)
+# compila o APK, publica em Releases e testa no emulador (inclusive a atualização automática)
 on:
   push:
     branches: [main]
