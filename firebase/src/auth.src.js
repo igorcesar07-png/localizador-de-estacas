@@ -230,9 +230,9 @@ function userEditor(B,root,u){const isNew=u.kind==='new';const custom=isNew?fals
         if(ADM.users.some(x=>normEmail(x.email)===e)){msgA('Já existe um usuário com este e-mail.','bad');return}
         await setDoc(doc(db,'invites',e),{...data,email:e,createdAt:serverTimestamp()})}
       else if(u.kind==='invite')await setDoc(doc(db,'invites',u.id),{...data,email:u.email},{merge:true});
-      else await updateDoc(doc(db,'users',u.id),{...data,updatedAt:serverTimestamp()});
+      else await updateDoc(doc(db,'users',u.id),{...data,...(data.active?{invited:true}:{}),updatedAt:serverTimestamp()});
       ADM.sel=null;await renderAdmin(root);msgA('Salvo.','ok')}catch(e){msgA(errTxt(e),'bad')}};
-  if($('uTog'))$('uTog').onclick=async()=>{try{const ref=u.kind==='invite'?doc(db,'invites',u.id):doc(db,'users',u.id);await updateDoc(ref,{active:!u.active});ADM.sel=null;await renderAdmin(root);msgA(u.active?'Usuário desativado.':'Usuário ativado.','ok')}catch(e){msgA(errTxt(e),'bad')}};
+  if($('uTog'))$('uTog').onclick=async()=>{try{const ref=u.kind==='invite'?doc(db,'invites',u.id):doc(db,'users',u.id);await updateDoc(ref,u.kind!=='invite'&&!u.active?{active:true,invited:true}:{active:!u.active});ADM.sel=null;await renderAdmin(root);msgA(u.active?'Usuário desativado.':'Usuário ativado.','ok')}catch(e){msgA(errTxt(e),'bad')}};
   if($('uDel'))$('uDel').onclick=async()=>{if(!confirm('Excluir este convite?'))return;try{await deleteDoc(doc(db,'invites',u.id));ADM.sel=null;await renderAdmin(root);msgA('Convite excluído.','ok')}catch(e){msgA(errTxt(e),'bad')}}}
 
 function profilesTab(B,root){const sel=ADM.sel;
