@@ -1268,6 +1268,8 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       hint.innerHTML=`Horários preenchidos a partir da programação de <b>${brD(pd)}</b> (${escH(eq)} · ${escH(ob)}).${kept?` ${kept} horário${kept>1?'s':''} alterado${kept>1?'s':''} por você ${kept>1?'foram mantidos':'foi mantido'}.`:''} Todos continuam editáveis.`}
     else{HKEYS.forEach(k=>{if(!HDIRTY[k])RFF[k].value=''});hint.innerHTML=`Não há programação salva em <b>${brD(pd)}</b> para esta obra e equipe: preencha os horários.`}}
   ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',prevHours));
+  function equipeTitulo(eq){return /dren/i.test(eq||'')?'Equipe de dreno':/pav/i.test(eq||'')?'Equipe de pavimentação':'Equipe de serviço'}
+  const eqLabel=()=>{$('rfELabel').textContent=equipeTitulo(RFF.equipe.value).replace('Equipe de ','').replace(/^./,c=>c.toUpperCase())};RFF.equipe.addEventListener('change',eqLabel);eqLabel();
   function obraHint(){$('rfObraHint').textContent=/BR-373/.test(RFF.obra.value)?'Atenção: os panos desta calculadora são do R08 da BR-277 (Blocos 2 e 3).':''}
   obraHint();
   let PROG=null;
@@ -1306,6 +1308,33 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   // cor da etiqueta de espessura: 10 cm vermelho, 6 cm roxo, 3 cm verde, outras em grafite
   const ESP_COR={10:'#B00E17',6:'#6A2C91',3:'#1E7A4C'};
   const espColor=e=>e==null?null:(ESP_COR[Math.round(e*10)/10]||'#4A4A4A');
+  // tipo de céu pela condição escolhida: sol, parcialmente nublado, nublado, chuva ou temporal
+  const wxKind=s=>/temporal|forte/i.test(s||'')?'storm':/chuva|garoa/i.test(s||'')?'rain':/parcial/i.test(s||'')?'part':/nublad/i.test(s||'')?'cloud':'sun';
+  const WXC=new Map();
+  // imagem do quadro (com cantos arredondados e véu claro para a leitura do texto), no tamanho do quadro
+  function wxImg(status,W,H,R){W=Math.round(W);H=Math.round(H);R=Math.round(R||0);const k=wxKind(status),key=[k,W,H,R].join('|');if(WXC.has(key))return WXC.get(key);
+    const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+    g.beginPath();g.moveTo(R,0);g.arcTo(W,0,W,H,R);g.arcTo(W,H,0,H,R);g.arcTo(0,H,0,0,R);g.arcTo(0,0,W,0,R);g.closePath();g.clip();
+    const SKY={sun:['#5DB8F0','#BFE6FF'],part:['#7DB3DA','#D6E9F5'],cloud:['#8FA3B5','#D5DEE6'],rain:['#5D6F80','#A8B5C0'],storm:['#3A4550','#7A8691']}[k];
+    let gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,SKY[0]);gr.addColorStop(1,SKY[1]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+    const u=H/100;
+    const sun=(cx,cy,r)=>{let rg=g.createRadialGradient(cx,cy,r*0.2,cx,cy,r*2.6);rg.addColorStop(0,'rgba(255,236,140,.95)');rg.addColorStop(.4,'rgba(255,214,90,.45)');rg.addColorStop(1,'rgba(255,214,90,0)');g.fillStyle=rg;g.fillRect(0,0,W,H);
+      g.strokeStyle='rgba(255,200,40,.85)';g.lineWidth=r*0.13;g.lineCap='round';for(let i=0;i<12;i++){const a=i*Math.PI/6;g.beginPath();g.moveTo(cx+Math.cos(a)*r*1.35,cy+Math.sin(a)*r*1.35);g.lineTo(cx+Math.cos(a)*r*1.85,cy+Math.sin(a)*r*1.85);g.stroke()}
+      rg=g.createRadialGradient(cx-r*.3,cy-r*.3,r*.1,cx,cy,r);rg.addColorStop(0,'#FFF6C2');rg.addColorStop(1,'#FFC425');g.fillStyle=rg;g.beginPath();g.arc(cx,cy,r,0,7);g.fill()};
+    const cloud=(cx,cy,sz,col,shade)=>{g.save();g.shadowColor='rgba(40,55,70,.25)';g.shadowBlur=sz*.25;g.shadowOffsetY=sz*.06;g.fillStyle=col;g.beginPath();
+      [[-.9,.15,.45],[-.4,-.15,.6],[.25,-.25,.7],[.85,.05,.5],[0,.2,.55]].forEach(([dx,dy,r])=>{g.moveTo(cx+dx*sz+r*sz,cy+dy*sz);g.arc(cx+dx*sz,cy+dy*sz,r*sz,0,7)});g.fill();g.restore();
+      if(shade){g.fillStyle=shade;g.beginPath();g.ellipse(cx,cy+sz*.42,sz*1.25,sz*.18,0,0,7);g.fill()}};
+    if(k==='sun'){sun(W-H*.62,H*.48,H*.26);cloud(W-H*1.55,H*.86,H*.16,'rgba(255,255,255,.9)')}
+    if(k==='part'){sun(W-H*.5,H*.36,H*.2);cloud(W-H*.85,H*.62,H*.3,'#F4F7FA');cloud(W-H*1.9,H*.42,H*.18,'rgba(255,255,255,.85)')}
+    if(k==='cloud'){cloud(W-H*.6,H*.5,H*.32,'#EEF2F5');cloud(W-H*1.45,H*.35,H*.24,'#DCE3E9');cloud(W-H*2.3,H*.7,H*.2,'#E6EBF0')}
+    if(k==='rain'||k==='storm'){const c1=k==='storm'?'#59636C':'#A9B4BE',c2=k==='storm'?'#454E57':'#8E9AA5';
+      g.strokeStyle=k==='storm'?'rgba(210,225,240,.75)':'rgba(235,244,252,.8)';g.lineWidth=Math.max(1.2,u*1.1);g.lineCap='round';
+      for(let x=W*.35;x<W+H*.3;x+=u*7)for(let y=H*.55;y<H;y+=u*16){const o=((x*7+y*3)%17)/17*u*6;g.beginPath();g.moveTo(x+o,y+o);g.lineTo(x+o-u*3.5,y+o+u*9);g.stroke()}
+      cloud(W-H*.65,H*.32,H*.32,c1);cloud(W-H*1.6,H*.24,H*.26,c2);cloud(W-H*2.5,H*.36,H*.2,c1);
+      if(k==='storm'){g.fillStyle='#FFD43B';g.beginPath();g.moveTo(W-H*.7,H*.5);g.lineTo(W-H*.85,H*.8);g.lineTo(W-H*.74,H*.78);g.lineTo(W-H*.82,H*1.02);g.lineTo(W-H*.55,H*.66);g.lineTo(W-H*.66,H*.68);g.closePath();g.fill()}}
+    // véu claro: mais forte à esquerda (título, condição e mensagem), mais leve à direita (ilustração)
+    gr=g.createLinearGradient(0,0,W,0);gr.addColorStop(0,'rgba(255,255,255,.86)');gr.addColorStop(.55,'rgba(255,255,255,.72)');gr.addColorStop(1,'rgba(255,255,255,.28)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+    const url=cv.toDataURL('image/png');WXC.set(key,url);return url}
   const tempoCls=s=>/temporal|forte/i.test(s)?'bad':/chuva|garoa/i.test(s)?'rain':/nublado/i.test(s)?'cloud':'sun';
   const TEMPO_RGB={bad:[[253,232,230],[192,57,43]],rain:[[226,238,252],[26,115,232]],cloud:[[236,239,236],[86,96,90]],sun:[[255,244,219],[183,121,31]]};
   function cellVals(r){return {ext:nf(r.len,1),larg:r.excl||r.w==null?(r.excl?'-':'sem largura'):nf(r.w,2),area:r.area==null?'-':nf(r.area,1),esp:r.excl?'-':r.e==null?'sem espessura':nf(r.e,1),t:r.excl?'não leva CBUQ':r.miss.length||r.t==null?'-':nf(r.t,2)}}
@@ -1316,7 +1345,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,
-        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:espColor(r.excl?null:r.e),
+        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:inf.color,espInk:inf.ink,
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
         qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc,serial:r.serial||''});
       const q=cur.panos[cur.panos.length-1];q.chips=[['Serial',q.serial||'—','ser',!!q.serial],['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
@@ -1335,14 +1364,14 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       date:dateBR(I.data),equipe:I.equipe,obra:I.obra,
       tempo:{status:I.tempo,msg:I.tempoMsg,cls:tc,unst:isUnstable(I.tempo),label:isUnstable(I.tempo)?'instável':'estável'},
       horarios:[{title:'Equipe de sinalização',items:[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]},
-                {title:'Equipe de serviço',items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
-                {title:'Usina',na:!hasP&&!I.uPrep&&!I.uIni,items:[['Preparação da usina',I.uPrep||'—'],['Início da usinagem',I.uIni||'—']]}],
+                {title:equipeTitulo(I.equipe),items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
+                {title:'Usina e qualidade',na:!hasP&&!I.uPrep&&!I.uIni,items:[['Preparação da usina',I.uPrep||'—'],['Início da usinagem',I.uIni||'—']]}],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
       warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
       sides,count:P.seq.length,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} · ${D.nSai} saída${D.nSai!==1?'s':''} de dreno`:null,
-      tiles:hasP?[['Panos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]].concat(nD?[['Drenagem',nf(dTot,0)+' m',false]]:[]):
+      tiles:hasP?[['Segmentos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]].concat(nD?[['Drenagem',nf(dTot,0)+' m',false]]:[]):
         [['Segmentos',String(nD),false],['DR – Dreno Raso',nf(D.DR,0)+' m',false],['DP – Dreno Profundo',nf(D.DP,0)+' m',false],['Drenagem total',nf(dTot,0)+' m',true],['Saídas de dreno',String(D.nSai),false]],
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
@@ -1350,6 +1379,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); as saídas de dreno aparecem junto do dreno a que pertencem.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
+  // rótulo da equipe de serviço conforme a equipe escolhida
   // subtítulo: rodovia e blocos da obra + trecho, faixa e sentido da programação
   const RODOVIAS={'BR-277':'BR-277 — Blocos 02 e 03','BR-373':'BR-373 — Bloco 04'};
   const rodOf=obra=>/BR-?373/i.test(obra||'')?'BR-373':'BR-277';
@@ -1372,12 +1402,12 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
     const head=`<div class="nh"><img src="${LOGOS.neo}" alt="Neovia"><img class="r" src="${LOGOS.via}" alt="Via Araucária"></div><h1 class="nt">${M.title}</h1><div class="ns">${esc(M.subtitle)}</div><div class="nl"></div>`;
     let h=`<div class="nid"><div class="d">${esc(M.date)}</div><div class="g"><div><span>Equipe</span><b>${esc(M.equipe)}</b></div><div><span>Obra</span><b class="o">${esc(M.obra)}</b></div></div></div>
-      <div class="ntp${M.tempo.unst?' un':''}">${ICON[M.tempo.cls]}<div><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
+      <div class="ntp${M.tempo.unst?' un':''}" style="background:url(${wxImg(M.tempo.status,1400,220,0)}) center/cover no-repeat">${ICON[M.tempo.cls]}<div><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <h3 class="nsec">Horários</h3><div class="nhr">${M.horarios.map(b=>`<div class="nhb"><h4>${b.title}</h4>${b.items.map(([k,v])=>`<div class="it"><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`).join('')}</div>
-      ${M.count?`<h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3><div class="nleg">Espessura: <span style="background:#B00E17">10 cm</span><span style="background:#6A2C91">6 cm</span><span style="background:#1E7A4C">3 cm</span><span style="background:#4A4A4A">outras</span></div>`:''}${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
+      ${M.count?`<h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3>`:''}${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
     const card=p=>`<div class="npc${p.inc?' inc':''}${p.drn?' drn':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
         <div class="l"><b>${p.lane}</b> ${pill(p)} <span>${esc(p.desc)}</span></div>
-        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor}"`:''}>${k} <b>${v}</b></span>`).join('')}</div></div>
+        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor};color:${p.espInk}"`:''}>${k} <b>${v}</b></span>`).join('')}</div></div>
         <div class="q">${p.unit?`<b>${p.qty}</b><small>${p.unit}</small>`:`<small>${p.qty}</small>`}</div></div>`;
     for(const s of M.sides){for(const p of s.panos)h+=card(p)}
     if(M.total)h+=`<div class="ntot">${esc(M.total)}</div>`;
@@ -1403,14 +1433,14 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     const hr=M.horarios;
     let h=`<div class="sr"><div class="sr-h"><img src="${LOGOS.neo}" alt="Neovia"><div><h1>${M.title}</h1><small>${esc(M.subtitle)}</small></div><img src="${LOGOS.via}" alt="Via Araucária"></div>
       <div class="sr-top"><div class="sr-id"><b class="d">${esc(M.date)}</b><div><span>Equipe</span><b>${esc(M.equipe)}</b></div><div><span>Obra</span><b class="o">${esc(M.obra)}</b></div></div>
-      <div class="sr-tp${M.tempo.unst?' un':''}"><span>Previsão · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
+      <div class="sr-tp${M.tempo.unst?' un':''}" style="background:url(${wxImg(M.tempo.status,1200,300,0)}) center/cover no-repeat"><span>Previsão · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <div class="sr-mid"><table class="sr-ht"><thead><tr><th></th><th>Café</th><th>DDS</th><th>Saída trecho</th></tr></thead><tbody>
-        <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>Serviço</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
-        <div class="sr-us"><span>Usina</span><div><small>Preparação</small><b>${esc(hr[2].items[0][1])}</b></div><div><small>Início usinagem</small><b>${esc(hr[2].items[1][1])}</b></div></div></div>
+        <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>${esc(hr[1].title.replace('Equipe de ','').replace(/^./,c=>c.toUpperCase()))}</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
+        <div class="sr-us"><span>Usina e qualidade</span><div><small>Preparação</small><b>${esc(hr[2].items[0][1])}</b></div><div><small>Início usinagem</small><b>${esc(hr[2].items[1][1])}</b></div></div></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
       ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
-        <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:#fff"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
+        <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
       ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
         ${M.dsides.map(s=>s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
@@ -1439,28 +1469,28 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const g=3*s;let y=Mg;
       // cabeçalho
       const lg=9*s;doc.addImage(LOGOS.neo,'PNG',Mg,y,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-Mg-lg*aV,y,lg*aV,lg,'via','FAST');
-      para(M.title,Mg,y+0.5,CW,14,{b:true,a:'center'});para(M.subtitle,Mg,y+0.5+lh(14)+0.6,CW,7.5,{c:MUT,a:'center'});
-      y+=Math.max(lg,lh(14)+lh(7.5)+1)+2;doc.setFillColor(...RED);doc.rect(Mg,y,CW,0.8,'F');y+=0.8+g;
+      para(M.title,Mg,y+0.5,CW,14,{b:true,a:'center'});const sx=Mg+lg*aN+2,sw=CW-lg*(aN+aV)-4;let sz=7.5;while(sz>6&&hP(M.subtitle,sw,sz)>lh(sz))sz-=0.25;const sh=para(M.subtitle,sx,y+0.5+lh(14)+0.6,sw,sz,{c:MUT,a:'center'});
+      y+=Math.max(lg,lh(14)+sh+1)+2;doc.setFillColor(...RED);doc.rect(Mg,y,CW,0.8,'F');y+=0.8+g;
       // linha 1: identificação | previsão do tempo (lado a lado)
       {const w1=CW*0.42,w2=CW-w1-g,pad=2.6*s;const hId=pad+lh(12)+1+lh(6)+hP(M.equipe,w1-2*pad-2,11,true)+0.8+lh(6)+hP(M.obra,w1-2*pad-2,8.5,false)+pad;
         const un=M.tempo.unst,hT=pad+lh(6)+hP(M.tempo.status,w2-2*pad,12,true)+0.8+hP(M.tempo.msg,w2-2*pad,8.5,false)+pad;const h=Math.max(hId,hT);
         box(Mg,y,w1,h,{stroke:LINE});doc.setFillColor(...RED);doc.roundedRect(Mg,y,1.8,h,0.9,0.9,'F');let yy=y+pad,x=Mg+pad+2;
         yy+=para(M.date.toUpperCase(),x,yy,w1-2*pad-2,12,{b:true,c:RED})+1;yy+=para('EQUIPE',x,yy,w1,6,{b:true,c:MUT});yy+=para(M.equipe,x,yy,w1-2*pad-2,11,{b:true})+0.8;yy+=para('OBRA',x,yy,w1,6,{b:true,c:MUT});para(M.obra,x,yy,w1-2*pad-2,8.5,{});
-        const x2=Mg+w1+g;box(x2,y,w2,h,{fill:un?PINK:LIGHT,stroke:un?RED:LINE,lw:un?0.6:0.3});yy=y+pad;
+        const x2=Mg+w1+g;doc.addImage(wxImg(M.tempo.status,w2*12,h*12,1.5*12),'PNG',x2,y,w2,h,undefined,'FAST');box(x2,y,w2,h,{stroke:un?RED:LINE,lw:un?0.6:0.3});yy=y+pad;
         yy+=para(`PREVISÃO DO TEMPO · ${M.tempo.label.toUpperCase()}`,x2+pad,yy,w2-2*pad,6,{b:true,c:un?RED:MUT});yy+=para(M.tempo.status,x2+pad,yy,w2-2*pad,12,{b:true})+0.8;para(M.tempo.msg,x2+pad,yy,w2-2*pad,8.5,{});y+=h+g}
       // linha 2: horários das equipes | usina
       {const hr=M.horarios,w1=CW*0.64,w2=CW-w1-g,rh=lh(12)+2.2*s,hh=lh(6.5)+2*s,h=hh+2*rh+1.5*s;
         box(Mg,y,w1,h,{stroke:LINE});const c0=26*s,cw=(w1-c0-4)/3;['Café da manhã','DDS','Saída p/ trecho'].forEach((k,i)=>para(k.toUpperCase(),Mg+2+c0+i*cw,y+1.2*s,cw,6.5,{b:true,c:MUT}));
         [hr[0],hr[1]].forEach((b,r)=>{const yy=y+hh+r*rh;doc.setDrawColor(...LINE);doc.setLineWidth(0.2);doc.line(Mg+2,yy,Mg+w1-2,yy);para(b.title.replace('Equipe de ','').toUpperCase(),Mg+2,yy+1.4*s,c0,7.5,{b:true});
           b.items.forEach(([k,v],i)=>para(v,Mg+2+c0+i*cw,yy+0.9*s,cw,12,{b:true}))});
-        const x2=Mg+w1+g;box(x2,y,w2,h,{stroke:LINE});doc.setFillColor(...RED);doc.rect(x2,y,w2,hh,'F');para('USINA',x2+2,y+1.2*s,w2-4,7,{b:true,c:WH});
+        const x2=Mg+w1+g;box(x2,y,w2,h,{stroke:LINE});doc.setFillColor(...RED);doc.rect(x2,y,w2,hh,'F');para('USINA E QUALIDADE',x2+2,y+1.2*s,w2-4,7,{b:true,c:WH});
         hr[2].items.forEach(([k,v],i)=>{const yy=y+hh+i*rh;para(k,x2+2,yy+1.6*s,w2*0.55,7.5,{c:MUT});para(v,x2+2,yy+0.9*s,w2-4,12,{b:true,a:'right'})});y+=h+g}
       // (quadro de início da execução removido do relatório)
       if(M.warn){const h=hP(M.warn,CW-4,7.5,false)+2.4*s;box(Mg,y,CW,h,{fill:LIGHT,r:1});para(M.warn,Mg+2,y+1.2*s,CW-4,7.5,{});y+=h+g*0.7}
       // tabela de panos
       const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
         [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
-         {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:WH,fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
+         {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:hex(r.espInk),fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
          r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),clean(r.area.replace(' m²','')),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}}]);
       if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','Área (m2)','CBUQ (t)']],body,
         theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
@@ -1556,7 +1586,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     // 2. previsão do tempo
     {const un=M.tempo.unst,pad=3.5,tx=M0+16,w=W-M0-pad-tx;
       const h=Math.max(15,pad+lhOf(6.5)+hPara(M.tempo.status,w,13,true)+1+hPara(M.tempo.msg,w,9,false)+pad);need(h);
-      box(M0,y,CW,h,{fill:un?PINK:LIGHT,stroke:un?RED:LINE,lw:un?0.6:0.3});
+      doc.addImage(wxImg(M.tempo.status,CW*12,h*12,1.5*12),'PNG',M0,y,CW,h,undefined,'FAST');box(M0,y,CW,h,{stroke:un?RED:LINE,lw:un?0.6:0.3});
       const ix=M0+8,iy=y+8,tc=M.tempo.cls;
       if(tc==='sun'){doc.setFillColor(...INK);doc.circle(ix,iy,2.4,'F');doc.setDrawColor(...INK);doc.setLineWidth(0.6);for(let k=0;k<8;k++){const a=k*Math.PI/4;doc.line(ix+Math.cos(a)*3.4,iy+Math.sin(a)*3.4,ix+Math.cos(a)*4.6,iy+Math.sin(a)*4.6)}}
       else{doc.setFillColor(...(tc==='bad'?[74,74,74]:MUT));doc.circle(ix-1.8,iy,2.2,'F');doc.circle(ix+0.6,iy-1.2,2.8,'F');doc.circle(ix+2.8,iy+0.3,2,'F');doc.rect(ix-1.8,iy,4.6,2.2,'F');
@@ -1572,9 +1602,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     // (quadro de início da execução removido do relatório)
     // 4. sequência
     if(M.count){secT('Sequência de execução',`${M.count} panos`);
-    {font(6.5,true);doc.setTextColor(...MUT);doc.text('ESPESSURA:',M0,y+2.8);let lx=M0+doc.getTextWidth('ESPESSURA:')+2;
-      for(const [lbl,c] of [['10 cm','#B00E17'],['6 cm','#6A2C91'],['3 cm','#1E7A4C'],['outras','#4A4A4A']]){font(7,true);const w=doc.getTextWidth(lbl)+3;doc.setFillColor(...hex(c));doc.roundedRect(lx,y,w,4,0.8,0.8,'F');doc.setTextColor(...WH);doc.text(lbl,lx+1.5,y+2.9);lx+=w+1.5}
-      y+=6}}
+    }
     if(M.warn){const h=hPara(M.warn,CW-5,7.5,false)+4;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:MUT,dash:true,r:1.2});para(M.warn,M0+2.5,y+2,CW-5,7.5,{});y+=h+2}
     const chipsLayout=(p,x,w)=>{ // chips: espessura (destaque), largura, extensão, área; quebra de linha automática
       const items=p.chips.map(([k,v,cls,ok])=>[k.toUpperCase(),p.drn&&/^Saídas de dreno/.test(k)?(p.sai.length?p.sai.length+(p.sai.length>1?' saídas':' saída'):'nenhuma'):v,cls,ok]);const out=[];let cx=x,cy=0;
@@ -1594,7 +1622,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         yy+=hL+1.8;
         for(const c of CL.out){const cy=yy+c.dy;const esp=c.cls==='esp';
           if(esp&&c.ok)box(c.x,cy,c.w,c.h,{fill:hex(p.espColor),r:1});else box(c.x,cy,c.w,c.h,{fill:WH,stroke:esp?RED:LINE,dash:!c.ok,r:1});
-          font(6,true);doc.setTextColor(...(esp?(c.ok?WH:RED):MUT));doc.text(c.k,c.x+1.6,cy+3.6);font(esp?9.5:8.5,true);doc.setTextColor(...(esp?(c.ok?WH:RED):INK));let tv=clean(c.v);while(tv.length>4&&doc.getTextWidth(tv)>c.w-c.kw-4)tv=tv.slice(0,-4)+'...';doc.text(tv,c.x+2.6+c.kw,cy+3.8)}
+          const ek=esp&&c.ok?hex(p.espInk||'#FFFFFF'):null;font(6,true);doc.setTextColor(...(esp?(c.ok?ek:RED):MUT));doc.text(c.k,c.x+1.6,cy+3.6);font(esp?9.5:8.5,true);doc.setTextColor(...(esp?(c.ok?ek:RED):INK));let tv=clean(c.v);while(tv.length>4&&doc.getTextWidth(tv)>c.w-c.kw-4)tv=tv.slice(0,-4)+'...';doc.text(tv,c.x+2.6+c.kw,cy+3.8)}
         const big=!!p.unit;para(p.qty,W-M0-3-qw,y+(big?3.5:5),qw,big?13.5:8,{b:true,a:'right',c:big?INK:MUT});if(big)para(p.unit,W-M0-3-qw,y+10.2,qw,6.5,{c:MUT,a:'right'});
         y+=h+2}}};
     const totBox=t=>{const h=hPara(t,CW-6,9,true)+5;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:LINE,r:1.5});para(t,M0+3,y+2.5,CW-6,9,{b:true});y+=h+4};
@@ -2277,7 +2305,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 18:31';
+  const CUR_VER='06/10/2026 19:05';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

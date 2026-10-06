@@ -1157,7 +1157,7 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
 .npc .ch{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .npc .ch span{font:600 10.5px var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--ng);border:1px solid var(--nb);border-radius:6px;padding:3px 7px;background:#fff}
 .npc .ch span b{font:700 14px var(--cond);letter-spacing:0;color:var(--nk);text-transform:none;margin-left:3px}
-.npc .ch span.esp{background:var(--nr);border-color:var(--nr);color:#fff}.npc .ch span.esp b{color:#fff;font-size:16px}
+.npc .ch span.esp{background:var(--nr);border-color:var(--nr);color:#fff}.npc .ch span.esp b{color:inherit;font-size:16px}
 .npc.drn .o{background:#0B5E43}.npc .ch span.no{border-style:dashed}.npc .ch span.esp.no{background:#fff;color:var(--nr)}.npc .ch span.esp.no b{color:var(--nr)}
 .npc .q{text-align:right;white-space:nowrap}.npc .q b{display:block;font:700 24px var(--cond)}.npc .q small{font-size:12px;color:var(--ng)}
 .ntot{margin-top:6px;background:var(--nl);border:1px solid var(--nb);border-radius:8px;padding:10px 12px;font:700 14px var(--body)}
@@ -1449,7 +1449,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/10/2026 18:31 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 19:05 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1750,7 +1750,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="hmx" role="table" aria-label="Horários das equipes">
         <div class="hh" role="row"><span></span><span>Café da manhã</span><span>DDS</span><span>Saída p/ trecho</span></div>
         <div class="hr" role="row"><b>Sinalização</b><input id="rfSCafe" type="time" aria-label="Sinalização – café da manhã"><input id="rfSDds" type="time" aria-label="Sinalização – DDS"><input id="rfSSai" type="time" aria-label="Sinalização – saída para o trecho"></div>
-        <div class="hr" role="row"><b>Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
+        <div class="hr" role="row"><b id="rfELabel">Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
         <div class="hh u" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
         <div class="hr" role="row"><b>Usina<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
       </div><p class="hint hrhint" id="rfHrHint"></p></fieldset>
@@ -1822,10 +1822,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006213110";</script>
-<script src="native.js?v=20261006213110"></script>
-<script src="firebase-config.js?v=20261006213110"></script>
-<script src="auth.js?v=20261006213110"></script>
+<script>window.APP_BUILD="20261006220514";</script>
+<script src="native.js?v=20261006220514"></script>
+<script src="firebase-config.js?v=20261006220514"></script>
+<script src="auth.js?v=20261006220514"></script>
 
 </body>
 </html>

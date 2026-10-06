@@ -9,9 +9,9 @@ await p.goto('http://localhost:8765/#calculadora');await p.waitForTimeout(1500);
 const setCalc=async(a,b,sent)=>{await p.fill('#cKmA',a);await p.fill('#cKmB',b);await p.selectOption('#cSent',sent);await p.click('#cForm button[type=submit]');await p.waitForTimeout(500)};
 await setCalc('186+100','186+200','C');
 const rowsInfo=async()=>p.$$eval('#cOut table.q tbody tr[data-tag]',a=>a.map(tr=>{const td=[...tr.children].map(x=>x.innerText.trim());return {tag:tr.dataset.tag,td}}));
-let R0=await rowsInfo();console.log(R0.slice(0,4).map(r=>r.tag+' | '+r.td.slice(4,12).join(' | ')).join('\n'));
+let R0=await rowsInfo();console.log(R0.slice(0,4).map(r=>r.tag+' | '+r.td.slice(5,13).join(' | ')).join('\n'));
 const tag=R0[0].tag;const tot0=await p.textContent('#cOut .kpi.main b');
-ok(R0[0].td[4]==='186+100'&&R0[0].td[5]==='186+200'&&R0[0].td[6]==='100,0','pano de 186+100 a 186+200 com 100 m ('+tag+')');
+ok(R0[0].td[5]==='186+100'&&R0[0].td[6]==='186+200'&&R0[0].td[7]==='100,0','pano de 186+100 a 186+200 com 100 m ('+tag+')');
 // editar
 await p.click(`tr[data-tag="${tag}"] .segEd`);await p.waitForTimeout(200);
 ok(await p.locator(`tr[data-tag="${tag}"] .segk`).count()===2,'Editar abre estaca inicial e final na própria linha');
@@ -23,24 +23,24 @@ await ini.fill('186+1x');await p.click(`tr[data-tag="${tag}"] .segSave`);ok(/Est
 await ini.fill('150+000');await fim.fill('186+180');await p.click(`tr[data-tag="${tag}"] .segSave`);ok((await err.textContent()).length>5,'estaca fora do trecho/pano é recusada: '+(await err.textContent()));
 await ini.fill('186+120');await fim.fill('186+400');await p.click(`tr[data-tag="${tag}"] .segSave`);ok(/Fora do pano/.test(await err.textContent()),'estaca além do pano é recusada: '+(await err.textContent()));
 // cancelar não altera
-await p.click(`tr[data-tag="${tag}"] .segCancel`);await p.waitForTimeout(200);let R1=await rowsInfo();ok(R1[0].td[6]==='100,0'&&await p.locator('.segk').count()===0,'Cancelar mantém 100 m');
+await p.click(`tr[data-tag="${tag}"] .segCancel`);await p.waitForTimeout(200);let R1=await rowsInfo();ok(R1[0].td[7]==='100,0'&&await p.locator('.segk').count()===0,'Cancelar mantém 100 m');
 // exemplo do pedido
 await p.click(`tr[data-tag="${tag}"] .segEd`);await ini.fill('186+120');await fim.fill('186+180');
 const prev=await p.textContent(`tr[data-tag="${tag}"] .segprev`);ok(/^60,0/.test(prev),'prévia da extensão: '+prev.replace(/\s+/g,' '));
 await p.click(`tr[data-tag="${tag}"] .segSave`);await p.waitForTimeout(400);
-R1=await rowsInfo();const r1=R1.find(r=>r.tag===tag);console.log(r1.td.slice(4,12).join(' | '));
-ok(r1.td[4]==='186+120'&&r1.td[5]==='186+180'&&r1.td[6]==='60,0','salvo: 186+120 → 186+180 com 60 m');
-const w=parseFloat(await p.inputValue(`tr[data-tag="${tag}"] .rw`)),e=parseFloat(r1.td[8].replace(',','.')),area=parseFloat(r1.td[9].replace(/\./g,'').replace(',','.')),vol=parseFloat(r1.td[10].replace(/\./g,'').replace(',','.')),t=parseFloat(r1.td[11].replace(/\./g,'').replace(',','.'));
+R1=await rowsInfo();const r1=R1.find(r=>r.tag===tag);console.log(r1.td.slice(5,13).join(' | '));
+ok(r1.td[5]==='186+120'&&r1.td[6]==='186+180'&&r1.td[7]==='60,0','salvo: 186+120 → 186+180 com 60 m');
+const w=parseFloat(await p.inputValue(`tr[data-tag="${tag}"] .rw`)),e=parseFloat(r1.td[9].replace(',','.')),area=parseFloat(r1.td[10].replace(/\./g,'').replace(',','.')),vol=parseFloat(r1.td[11].replace(/\./g,'').replace(',','.')),t=parseFloat(r1.td[12].replace(/\./g,'').replace(',','.'));
 ok(Math.abs(area-60*w)<0.06&&Math.abs(vol-area*e/100)<0.01&&Math.abs(t-vol*2.528)<0.02,`área ${area} = 60 × ${w}; volume ${vol}; CBUQ ${t} t (largura e espessura mantidas)`);
 const tot1=await p.textContent('#cOut .kpi.main b');ok(tot1!==tot0,'total de CBUQ atualizado: '+tot0+' → '+tot1);
 console.log('td0',JSON.stringify(r1.td[0]));ok(/editado/i.test(r1.td[0]),'pano marcado como editado, com os limites originais do pano');
 ok(/60,0 m \(antes 100,0 m\)/.test(await p.textContent('#cOut .alert.ok')),'mensagem de confirmação');
 // decrescente
-await setCalc('186+100','186+200','D');let RD=await rowsInfo();const tD=RD[0].tag;console.log('D:',RD[0].td.slice(4,7).join(' | '));
+await setCalc('186+100','186+200','D');let RD=await rowsInfo();const tD=RD[0].tag;console.log('D:',RD[0].td.slice(5,8).join(' | '));
 await p.click(`tr[data-tag="${tD}"] .segEd`);const iD=p.locator(`tr[data-tag="${tD}"] .segk[data-k="ini"]`),fD=p.locator(`tr[data-tag="${tD}"] .segk[data-k="fim"]`);
 await iD.fill('186+120');await fD.fill('186+180');await p.click(`tr[data-tag="${tD}"] .segSave`);ok(/decrescente a estaca inicial deve ser maior/.test(await p.textContent(`tr[data-tag="${tD}"] .segErr`)),'decrescente: inicial menor que a final é recusada');
 await iD.fill('186+180');await fD.fill('186+130');await p.click(`tr[data-tag="${tD}"] .segSave`);await p.waitForTimeout(300);
-RD=await rowsInfo();const d1=RD.find(r=>r.tag===tD);ok(d1.td[4]==='186+180'&&d1.td[5]==='186+130'&&d1.td[6]==='50,0','decrescente salvo: 186+180 → 186+130 com 50 m');
+RD=await rowsInfo();const d1=RD.find(r=>r.tag===tD);ok(d1.td[5]==='186+180'&&d1.td[6]==='186+130'&&d1.td[7]==='50,0','decrescente salvo: 186+180 → 186+130 com 50 m');
 // emitir relatório e conferir a programação registrada; depois editar e conferir a atualização
 await setCalc('186+100','186+200','C');
 await p.click('#cRep');await p.waitForTimeout(300);
@@ -57,10 +57,10 @@ const it2=await p.evaluate(t=>JSON.parse(localStorage.getItem('br277.execProgs')
 ok(it2&&it2.b-it2.a===40,'edição depois de emitir atualiza a programação registrada (40 m)');
 ok(/atualizada/.test(await p.textContent('#cOut .alert.ok')),'aviso de programação atualizada');
 // persistência e restaurar
-await p.reload();await p.waitForTimeout(1500);R1=await rowsInfo();ok(R1.find(r=>r.tag===tag).td[6]==='40,0','edição continua salva depois de recarregar');
+await p.reload();await p.waitForTimeout(1500);R1=await rowsInfo();ok(R1.find(r=>r.tag===tag).td[7]==='40,0','edição continua salva depois de recarregar');
 await p.screenshot({path:'seg1.png',fullPage:false});
 await p.click(`tr[data-tag="${tag}"] .segEd`);await p.waitForTimeout(200);await p.screenshot({path:'seg2.png'});
-await p.click(`tr[data-tag="${tag}"] .segOrig`);await p.waitForTimeout(300);R1=await rowsInfo();ok(R1.find(r=>r.tag===tag).td[6]==='100,0','Original restaura 100 m');
+await p.click(`tr[data-tag="${tag}"] .segOrig`);await p.waitForTimeout(300);R1=await rowsInfo();ok(R1.find(r=>r.tag===tag).td[7]==='100,0','Original restaura 100 m');
 // projeto preservado: mapa/relatórios continuam com o pano original
 await p.goto('http://localhost:8765/#relatorios');await p.waitForTimeout(1200);
 ok(errs.length===0,'sem erros de JavaScript '+JSON.stringify(errs.slice(0,3)));
