@@ -43,10 +43,10 @@ await iD.fill('186+180');await fD.fill('186+130');await p.click(`tr[data-tag="${
 RD=await rowsInfo();const d1=RD.find(r=>r.tag===tD);ok(d1.td[5]==='186+180'&&d1.td[6]==='186+130'&&d1.td[7]==='50,0','decrescente salvo: 186+180 → 186+130 com 50 m');
 // emitir relatório e conferir a programação registrada; depois editar e conferir a atualização
 await setCalc('186+100','186+200','C');
-await p.click('#cRep');await p.waitForTimeout(300);
+
 const fill=async(id,v)=>{const el=p.locator('#'+id);const tg=await el.evaluate(e=>e.tagName);if(tg==='SELECT'){const o=await el.evaluate(e=>[...e.options].map(o=>o.value).filter(Boolean));await el.selectOption(o[0])}else await el.fill(v)};
 for(const [id,v] of [['rfData','2026-10-07'],['rfObra','Restauração BR-277'],['rfEquipe','Equipe teste'],['rfUPrep','05:00'],['rfUIni','06:00'],['rfSCafe','06:00'],['rfSDds','06:30'],['rfSSai','07:00'],['rfECafe','06:00'],['rfEDds','06:30'],['rfESai','07:00'],['rfTempo',''],['rfTempoMsg','ok']])await fill(id,v);
-await p.click('#rfForm button[type=submit]');await p.waitForTimeout(1200);
+await p.click('#cRep');await p.waitForTimeout(1200);
 ok(!(await p.isHidden('#repView')),'relatório emitido');
 const repTxt=await p.textContent('#repDoc');ok(/186\+120/.test(repTxt)&&/186\+180/.test(repTxt),'relatório usa o segmento editado (186+120 a 186+180)');
 console.log('progs',await p.evaluate(()=>localStorage.getItem('br277.execProgs')));console.log('w',await p.inputValue(`tr[data-tag="${tag}"] .rw`).catch(()=>'?'));const it1=await p.evaluate(t=>JSON.parse(localStorage.getItem('br277.execProgs')).find(x=>x.data==='2026-10-07').items.find(i=>i.tag===t),tag);

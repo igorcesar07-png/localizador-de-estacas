@@ -104,6 +104,8 @@ const emit=(e,d)=>__G.emit('b4:'+e,d),on=(e,f)=>__G.on(e==='page'?e:'b4:'+e,f);
 const store={{get:(k,d)=>__G.store.get('b4.'+k,d),set:(k,v)=>__G.store.set('b4.'+k,v)}};
 {js}
 {B4_SRC}
+// fonte de dados da Calculadora de programação para a obra BR-373 — Bloco 04
+window.__SRC_B4={{Data,R,LANES,SIDE,PANOS,ODO,Loc,B4}};
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{{navigator.permissions&&navigator.permissions.query({{name:'geolocation'}}).then(q=>{{if(q.state==='granted')Loc.start()}}).catch(()=>{{}})}}catch(e){{}}}});
 }})()}}else Router.onInit('mapab4',()=>{{const m=document.getElementById('{P}map'),pn=document.getElementById('{P}panel');if(pn)pn.hidden=true;

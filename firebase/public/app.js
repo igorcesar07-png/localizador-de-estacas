@@ -970,6 +970,8 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   window.__b4=()=>({panos:recs.length,ligados:lig,saidas:nSai,semEstaca:sem,mapa:PANOS.length,semRegistro:PANOS.filter(p=>!p.src).length,avisos:[...avisos.keys()],estacas:N,erros:check()});
   return {recs,sai,avisos,renderNote}})();
 
+// fonte de dados da Calculadora de programação para a obra BR-373 — Bloco 04
+window.__SRC_B4={Data,R,LANES,SIDE,PANOS,ODO,Loc,B4};
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(q=>{if(q.state==='granted')Loc.start()}).catch(()=>{})}catch(e){}});
 })()}else Router.onInit('mapab4',()=>{const m=document.getElementById('b4_map'),pn=document.getElementById('b4_panel');if(pn)pn.hidden=true;
@@ -979,8 +981,13 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
 /* =====================================================================
    PÁGINA 3 — Calculadora de programação (CBUQ)
    ===================================================================== */
+const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
 (function CalcPage(){
-  const PAVE_CODES=Data.CODES.slice().sort((a,b)=>{const fa=Data.FAM_ORDER.indexOf(Data.info(a).fam),fb=Data.FAM_ORDER.indexOf(Data.info(b).fam);return fa-fb||a.localeCompare(b,'pt',{numeric:true})});
+  // fonte dos segmentos conforme a obra: BR-277 B2+B3 (R08) ou BR-373 B4 (unifilar); nunca misturadas
+  let {Data,R,LANES,SIDE,PANOS,ODO,Loc}=__SRC277;let SRCK='277';
+  const srcOfObra=o=>/BR-?373/i.test(o||'')?'B4':'277';
+  const paveCodes=()=>Data.CODES.filter(c=>c!=='DR'&&c!=='DP').sort((a,b)=>{const fa=Data.FAM_ORDER.indexOf(Data.info(a).fam),fb=Data.FAM_ORDER.indexOf(Data.info(b).fam);return fa-fb||a.localeCompare(b,'pt',{numeric:true})});
+  let PAVE_CODES=paveCodes();
   const DEF_ESP={FF:6,FE:10,FS:3};
   const saved=store.get('calc',null)||{};
   const DEF_DENS='2.528',DEF_W={F1:'3.6',F23:'3.6',AC:'2.5'};
@@ -988,11 +995,23 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
     w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),equipe:saved.equipe||'',equipeMan:!!saved.equipeMan,done:saved.done??true,ordem:saved.ordem||'auto'};
-  const save=()=>store.set('calc',S);
+  const save=()=>{S.km[SRCK]={a:S.kmA,b:S.kmB};S.src=SRCK;store.set('calc',S)};
+  // estado por fonte: estacas editadas, larguras por pano, "programar" e seriais (as estacas das duas rodovias se repetem)
+  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};
+  S.km=saved.km||{};if(!S.km[saved.src||'277'])S.km[saved.src||'277']={a:S.kmA,b:S.kmB};
+  const KM0={'277':{a:'236+000',b:'237+000'},B4:{a:'230+000',b:'231+000'}};
+  function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
+    ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{}});S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;
+    const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
+  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
+  let SRC_MISS=false;if(srcOfObra(INIT_OBRA)==='B4')SRC_MISS=!swapSrc('B4');
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
   Object.entries(F).forEach(([k,el])=>{el.value=S[k];const h=()=>{S[k]=el.value;save();if(S.done)calc(false)};el.addEventListener('input',h);el.addEventListener('change',h)});
   ['F1','F23','AC'].forEach(k=>{const el=$('w'+k);el.value=S.w[k];el.addEventListener('input',()=>{S.w[k]=el.value;save();cadFlag();if(S.done)calc(false)})});
+  function renderEsp(){$('cEspB4').hidden=SRCK!=='B4';
   $('cEsp').innerHTML=PAVE_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
       <span class="dsc"><b>${inf.desc}</b>${inf.esp?'espessura da solução '+inf.esp:inf.param?'parâmetro no R08: '+inf.param:'sem espessura na base'}</span>
       <input type="number" inputmode="decimal" step="0.1" min="0" aria-label="Espessura de CBUQ de ${c} em cm" placeholder="cm" value="${S.esp[c]??''}">
@@ -1001,24 +1020,32 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,inp=row.querySelector('input[type=number]'),chk=row.querySelector('input[data-k=excl]'),shw=row.querySelector('input[data-k=show]');
     shw.addEventListener('change',()=>{S.show[c]=shw.checked;S.equipeMan=true;save();cadFlag();eqHint();if(S.done)calc(false)});
     inp.addEventListener('input',()=>{S.esp[c]=inp.value;save();cadFlag();if(S.done)calc(false)});
-    chk.addEventListener('change',()=>{S.excl[c]=chk.checked;save();cadFlag();if(S.done)calc(false)})});
+    chk.addEventListener('change',()=>{S.excl[c]=chk.checked;save();cadFlag();if(S.done)calc(false)})})}
+  renderEsp();
   // drenagem: DR (verde-claro, 0,60 m) e DP (verde-escuro, 1,50 m); exibir no resumo e nos segmentos
   const DRN_CODES=['DR','DP'],DRN_PROF={DR:'0,60',DP:'1,50'};
+  function renderDrn(){
   $('cDrn').innerHTML=DRN_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
       <span class="dsc"><b>${inf.desc}</b>profundidade de referência · extensão em metros</span><span class="dref">${DRN_PROF[c]}<small>m</small></span>
       <div class="opts"><label class="no"><input type="checkbox" data-k="show" ${S.show[c]===false?'':'checked'}> exibir no resumo e nos segmentos</label></div></div>`}).join('');
-  $('cDrn').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,shw=row.querySelector('input[data-k=show]');shw.addEventListener('change',()=>{S.show[c]=shw.checked;S.equipeMan=true;save();cadFlag();eqHint();if(S.done)calc(false)})});
+  $('cDrn').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,shw=row.querySelector('input[data-k=show]');shw.addEventListener('change',()=>{S.show[c]=shw.checked;S.equipeMan=true;save();cadFlag();eqHint();if(S.done)calc(false)})})}
+  renderDrn();
   // padrão de soluções por equipe: pavimentação = FF, FS e FE; dreno = DR e DP; as demais ficam desmarcadas
   const EQ_SOL=eq=>/^pavimenta/i.test(eq||'')?['FF','FS','FE']:/dren/i.test(eq||'')?['DR','DP']:null;
   function syncShowUI(){document.querySelectorAll('#cEsp .erow,#cDrn .erow').forEach(row=>{const c=row.dataset.c;row.querySelector('input[data-k=show]').checked=S.show[c]!==false;row.classList.toggle('excl',S.show[c]===false||!!S.excl[c])})}
   function eqHint(){const sol=EQ_SOL(S.equipe);$('hEquipe').textContent=!S.equipe?'Escolha a equipe para aplicar as soluções padrão.':sol?(S.equipeMan?`Padrão ${sol.join(', ')} alterado no cadastro.`:`Soluções: ${sol.join(', ')} (padrão da equipe).`):'Sem padrão para esta equipe: seleção do cadastro.'}
-  function applyEquipe(eq,from){S.equipe=eq||'';$('cEquipe').value=S.equipe;const sol=EQ_SOL(eq);
+  function applyEquipe(eq){S.equipe=eq||'';if($('rfEquipe').value!==S.equipe)$('rfEquipe').value=S.equipe;const sol=EQ_SOL(eq);
     if(sol){[...PAVE_CODES,...DRN_CODES].forEach(c=>S.show[c]=sol.includes(c));S.equipeMan=false;
-      const drn=/dren/i.test(eq);if(drn&&!/^DRN/.test(S.pista)&&S.pista!=='ALL'){S.pista='DRN';F.pista.value='DRN'}if(!drn&&/^DRN/.test(S.pista)){S.pista='ALL';F.pista.value='ALL'}
+      const drn=/dren/i.test(eq);if(drn&&!/^DRN/.test(S.pista)){S.pista='DRN';F.pista.value='DRN'}if(!drn&&/^DRN/.test(S.pista)){S.pista='ALL';F.pista.value='ALL'}
       syncShowUI();cadFlag()}
-    save();eqHint();if(from!=='form'&&$('rfEquipe')&&$('rfEquipe').value!==S.equipe&&S.equipe){$('rfEquipe').value=S.equipe}
-    if(S.done)calc(false)}
-  $('cEquipe').value=S.equipe||'';$('cEquipe').addEventListener('change',()=>applyEquipe($('cEquipe').value,'calc'));
+    save();eqHint();if(S.done)calc(false)}
+  $('rfEquipe').value=S.equipe||'';
+  // obra: troca a fonte dos segmentos (cadastro, km, seriais, cálculo e relatório)
+  function setObra(obra){const k=srcOfObra(obra);if(k===SRCK&&!SRC_MISS)return;
+    if(!swapSrc(k)){SRC_MISS=true;LAST=null;calc(false);return}SRC_MISS=false;
+    F.kmA.value=S.kmA;F.kmB.value=S.kmB;renderEsp();renderDrn();save();
+    if(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)applyEquipe(S.equipe);else{syncShowUI();cadFlag();eqHint();if(S.done)calc(false)}
+    serInfo()}
   function cadFlag(){const missW=['F1','F23','AC'].filter(k=>!(num(S.w[k])>0)).length;let missE=0;
     $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c;const hid=S.show[c]===false,ok=hid||S.excl[c]||num(S.esp[c])>0;row.classList.toggle('miss',!ok);row.classList.toggle('excl',!!S.excl[c]||hid);if(!ok)missE++});
     const parts=[];if(missW)parts.push(`${missW} largura${missW>1?'s':''}`);if(missE)parts.push(`${missE} espessura${missE>1?'s':''}`);
@@ -1077,7 +1104,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       let shared=false;try{if(window.ACL&&ACL.admin&&ACL.saveShared){await ACL.saveShared('seriais',base);shared=true}}catch(e){}
       return {st,shared}}
     // candidatos: mesmo pano lógico (faixa/lado e sentido), mesma solução e trecho sobreposto ao segmento programado
-    function cands(p,a,b){if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+    function cands(p,a,b){if(!base||SRCK==='B4')return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
     function forRow(r){const c=cands(r.p,r.a,r.b),man=Object.prototype.hasOwnProperty.call(S.serial,r.p.tag)?S.serial[r.p.tag]:null,auto=c.length===1?c[0]:'';
       return {auto,cands:c,man,val:man!=null?man:auto,st:man!=null?'manual':c.length===1?'auto':c.length>1?'multi':'none'}}
         // índice usado também no mapa e nos Relatórios (BR-277)
@@ -1113,7 +1140,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   function segBtns(r){if(r.off)return '';if(EDIT&&EDIT.tag===r.p.tag)return `<div class="segbar"><button type="button" class="segSave">Salvar</button><button type="button" class="segCancel">Cancelar</button>${r.ed?'<button type="button" class="segOrig">Original</button>':''}</div><div class="segErr" role="alert">${EDIT.err||''}</div>`;
     return `<button type="button" class="segEd" aria-label="Editar estacas do pano ${r.p.tag}">✎ Editar</button>`}
   // depois de salvar: atualiza a programação já emitida (relatório e registro em Relatórios)
-  function segAfter(tag){let note='';
+  function segAfter(tag){let note='';if(SRCK==='B4')return note;
     try{if(PROG&&PROG.info){buildProg(PROG.info);if(!$('repView').hidden)showReport();note=` Programação de ${PROG.info.data.split('-').reverse().join('/')} (${PROG.info.equipe}) atualizada.`}
       else{const lp=store.get('progLast',null);if(lp&&lp.data&&lp.equipe){const id=lp.data+'|'+lp.equipe,ps=store.get('execProgs',[]),pr=ps.find(x=>x.id===id);
         if(pr&&pr.items.some(it=>it.tag===tag)){if(pr.concluded)note=' A programação emitida já foi concluída: a execução registrada não muda.';
@@ -1123,7 +1150,8 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     return note}
 
   function calc(scroll){
-    const out=$('cOut');['eKmA','eKmB','eDens','ePerda'].forEach(id=>fieldErr(id,''));
+    const out=$('cOut');
+    if(SRC_MISS){LAST=null;out.innerHTML=`<div class="alert warn"><b>Base da BR-373 B4 não carregada.</b>${window.ACL&&ACL.admin?'Envie o arquivo base-BR373-B4.json em Administração › Base do projeto e reabra o app.':'O administrador precisa enviar a base da BR-373 B4.'} Os dados da BR-277 não são usados para esta obra.</div>`;return}['eKmA','eKmB','eDens','ePerda'].forEach(id=>fieldErr(id,''));
     const A=Data.parseKm(S.kmA),B=Data.parseKm(S.kmB);let bad=false;
     if(A.err){fieldErr('eKmA',A.err);bad=true}if(B.err){fieldErr('eKmB',B.err);bad=true}
     if(!bad&&A.s===B.s){fieldErr('eKmB','O km final deve ser diferente do inicial.');bad=true}
@@ -1131,7 +1159,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     if(dens!=null&&(isNaN(dens)||dens<=0)){fieldErr('eDens','Informe um valor maior que zero.');bad=true}
     else if(dens!=null&&(dens<1.5||dens>3.5))densWarn='Confira a densidade: valor fora da faixa usual de CBUQ.';
     if(perda!=null&&(isNaN(perda)||perda<0||perda>100)){fieldErr('ePerda','Use um percentual entre 0 e 100.');bad=true}
-    if(bad){LAST=null;out.innerHTML=`<div class="alert warn"><b>Corrija os campos destacados para calcular.</b>O km aceita o formato rodoviário, por exemplo 236+300, dentro do trecho de 164+700 a 303+800.</div>`;return}
+    if(bad){LAST=null;out.innerHTML=`<div class="alert warn"><b>Corrija os campos destacados para calcular.</b>O km aceita o formato rodoviário, por exemplo 236+300, dentro do trecho de ${R[0][0]} a ${R[R.length-1][0]}.</div>`;return}
     if(densWarn)fieldErr('eDens',densWarn),F.dens.setAttribute('aria-invalid','false');
     [[F.kmA,A,'kmA'],[F.kmB,B,'kmB']].forEach(([el,P,k])=>{if(document.activeElement!==el&&el.value!==P.name){el.value=P.name;S[k]=P.name;save()}});
     const nIn=[A.name,B.name];let sA=A.s,sB=B.s,nA=A.name,nB=B.name,swapped=false;if(sA>sB){[sA,sB]=[sB,sA];[nA,nB]=[nB,nA];swapped=S.sent!=='D'}
@@ -1142,8 +1170,10 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const hid=S.show[p.code]===false;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
-      const ow=S.rowW[p.tag],wBase=num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
-      const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]),off=S.rowOff[p.tag]===true;
+      // BR-373 B4: largura e espessura do próprio unifilar (o cadastro vale só quando o unifilar não informa)
+      const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?Math.round(us.espessura_m*1000)/10:null;
+      const ow=S.rowW[p.tag],wBase=uw!=null?uw:num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
+      const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:(ue!=null?ue:num(S.esp[p.code])),off=S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
       rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
@@ -1198,7 +1228,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
         <span>${ordTxt}</span></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
-        <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">Serial</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
+        <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
         <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
@@ -1219,7 +1249,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <div class="kpi"><span>DP – Dreno Profundo</span><b>${nf(DRN.DP,0)}<small>m</small></b><div class="sub">profundidade 1,50 m</div></div>
         <div class="kpi"><span>Saídas de dreno</span><b>${nSai}</b><div class="sub">vinculadas aos drenos programados</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP,0)}<small>m</small></b><div class="sub">${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
-      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
+      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
       ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
@@ -1256,38 +1286,56 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
 
   /* ---------- Relatório da programação ---------- */
   const RFF={data:$('rfData'),obra:$('rfObra'),equipe:$('rfEquipe'),uPrep:$('rfUPrep'),uIni:$('rfUIni'),sCafe:$('rfSCafe'),sDds:$('rfSDds'),sSai:$('rfSSai'),eCafe:$('rfECafe'),eDds:$('rfEDds'),eSai:$('rfESai'),tempo:$('rfTempo'),tempoMsg:$('rfTempoMsg')};
-  const RFL={data:'Data da programação',obra:'Obra',equipe:'Equipe',uPrep:'Preparação da usina',uIni:'Início da usinagem',sCafe:'Sinalização – café da manhã',sDds:'Sinalização – DDS',sSai:'Sinalização – saída para o trecho',eCafe:'Serviço – café da manhã',eDds:'Serviço – DDS',eSai:'Serviço – saída para o trecho',tempo:'Status da previsão do tempo',tempoMsg:'Mensagem da previsão do tempo'};
+  const RFL={data:'Data da programação',obra:'Obra',equipe:'Equipe',uPrep:'Preparação da usina',uIni:'Início da usinagem',sCafe:'Sinalização – café da manhã',sDds:'Sinalização – DDS',sSai:'Sinalização – saída para o trecho',eCafe:'Equipe – café da manhã',eDds:'Equipe – DDS',eSai:'Equipe – saída para o trecho',tempo:'Condição da previsão do tempo',tempoMsg:'Mensagem da previsão do tempo'};
   const MSG_EST='A previsão do tempo está estável. Seguiremos monitorando.',MSG_INST='A previsão do tempo está instável. Seguiremos monitorando.';
-  const isUnstable=s=>/chuva|garoa|temporal/i.test(s);
+  // estável/instável pelo significado de cada condição, não pela posição no seletor: até "Nublado" é estável; de "Chuva fraca / garoa" em diante, instável
+  const WX_INST={'Ensolarado':false,'Parcialmente nublado':false,'Nublado':false,'Chuva fraca / garoa':true,'Chuva moderada':true,'Chuva forte':true,'Risco de temporal':true};
+  const isUnstable=s=>Object.prototype.hasOwnProperty.call(WX_INST,s)?WX_INST[s]:/chuva|garoa|temporal|tempestade/i.test(s||'');
   const addDay=(iso,n=1)=>{const [y,m,d]=iso.split('-').map(Number);const dt=new Date(y,m-1,d+n);return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`};
   const todayISO=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
-  // base: última programação emitida; a data avança para o dia seguinte
+  const brD=iso=>iso.split('-').reverse().join('/');
   const LASTP=store.get('progLast',null)||store.get('prog',{});
-  Object.keys(RFF).forEach(k=>{if(k!=='data'&&LASTP[k]!=null)RFF[k].value=LASTP[k]});
-  if(LASTP.data){RFF.data.value=addDay(LASTP.data);$('rfDataHint').textContent=`Pré-preenchida a partir da programação de ${LASTP.data.split('-').reverse().join('/')}.`}
+  const hist=()=>store.get('progHist',{});
+  (function seedHist(){const H=hist();if(LASTP&&LASTP.data&&LASTP.equipe&&LASTP.obra){const id=LASTP.data+'|'+LASTP.obra+'|'+LASTP.equipe;if(!H[id]){H[id]=LASTP;store.set('progHist',H)}}})();
+  // obra, data e previsão ficam na tela principal e são salvas a cada alteração
+  const MAIN=store.get('progMain',{})||{};
+  const saveMain=()=>store.set('progMain',{obra:RFF.obra.value,data:RFF.data.value,tempo:RFF.tempo.value,tempoMsg:RFF.tempoMsg.value});
+  {const o=MAIN.obra||LASTP.obra;if(o&&[...RFF.obra.options].some(x=>x.value===o))RFF.obra.value=o}
+  if(!RFF.equipe.value&&LASTP.equipe&&!S.equipe)RFF.equipe.value=LASTP.equipe;
+  RFF.data.value=MAIN.data||todayISO();
+  RFF.tempo.value=MAIN.tempo!=null?MAIN.tempo:(LASTP.tempo||'');RFF.tempoMsg.value=MAIN.tempoMsg!=null?MAIN.tempoMsg:(LASTP.tempoMsg||'');
+  const WD=iso=>{const [y,m,d]=iso.split('-').map(Number);const w=new Date(y,m-1,d).toLocaleDateString('pt-BR',{weekday:'long'});return w.charAt(0).toUpperCase()+w.slice(1)};
+  function dataHint(){const v=RFF.data.value;$('rfDataHint').textContent=v?`${WD(v)} · ${brD(v)}`:'Escolha a data no calendário.'}
+  function setData(v){RFF.data.value=v;RFF.data.removeAttribute('aria-invalid');dataHint();saveMain();usiLoad()}
+  $('rfPrev').onclick=()=>setData(addDay(RFF.data.value||todayISO(),-1));
+  $('rfNext').onclick=()=>setData(addDay(RFF.data.value||todayISO(),1));
+  RFF.data.addEventListener('change',()=>{dataHint();saveMain()});dataHint();
+  // previsão do tempo: título (estável/instável), mensagem e imagem de fundo seguem a condição
   function autoMsg(){const cur=RFF.tempoMsg.value.trim();if(!RFF.tempo.value)return;const def=isUnstable(RFF.tempo.value)?MSG_INST:MSG_EST;
     // troca só a frase padrão; texto digitado pelo usuário é mantido
     if(!cur||cur===MSG_EST||cur===MSG_INST)RFF.tempoMsg.value=def;else if(cur.startsWith(MSG_EST)||cur.startsWith(MSG_INST))RFF.tempoMsg.value=def+cur.slice(MSG_EST.length)}
-  const grow=()=>{const e=RFF.tempoMsg;e.style.height='auto';e.style.height=Math.max(132,e.scrollHeight+2)+'px'};RFF.tempoMsg.addEventListener('input',grow);
-  RFF.tempo.addEventListener('change',()=>{autoMsg();grow()});if(RFF.tempo.value&&!RFF.tempoMsg.value)autoMsg();
-  $('rfNext').onclick=()=>{RFF.data.value=addDay(RFF.data.value||todayISO());RFF.data.removeAttribute('aria-invalid');$('rfDataHint').textContent='';prevHours()};
-  Object.entries(RFF).forEach(([k,el])=>{const h=()=>{el.removeAttribute('aria-invalid');obraHint()};el.addEventListener('input',h);el.addEventListener('change',h)});
-  // horários: copiados da programação do dia anterior (mesma obra e equipe); o que o usuário digitou não é sobrescrito
-  const HKEYS=['sCafe','sDds','sSai','eCafe','eDds','eSai','uPrep','uIni'];const HDIRTY={};
-  const hist=()=>store.get('progHist',{});
-  (function seedHist(){const H=hist();if(LASTP&&LASTP.data&&LASTP.equipe&&LASTP.obra){const id=LASTP.data+'|'+LASTP.obra+'|'+LASTP.equipe;if(!H[id]){H[id]=LASTP;store.set('progHist',H)}}})();
-  HKEYS.forEach(k=>RFF[k].addEventListener('input',()=>{HDIRTY[k]=true}));
-  const brD=iso=>iso.split('-').reverse().join('/');
-  function prevHours(){const d=RFF.data.value,ob=RFF.obra.value,eq=RFF.equipe.value,hint=$('rfHrHint');
-    if(!d||!ob||!eq){hint.textContent='Escolha a data, a obra e a equipe para trazer os horários da programação do dia anterior.';return}
-    const same=hist()[d+'|'+ob+'|'+eq],pd=same?d:addDay(d,-1),ref=same||hist()[pd+'|'+ob+'|'+eq];const kept=HKEYS.filter(k=>HDIRTY[k]).length;
-    if(ref){HKEYS.forEach(k=>{if(!HDIRTY[k]&&ref[k]){RFF[k].value=ref[k];RFF[k].removeAttribute('aria-invalid')}});
-      hint.innerHTML=`Horários preenchidos a partir da programação ${same?'já salva':'de'} <b>${brD(pd)}</b> (${escH(eq)} · ${escH(ob)}).${kept?` ${kept} horário${kept>1?'s':''} alterado${kept>1?'s':''} por você ${kept>1?'foram mantidos':'foi mantido'}.`:''} Todos continuam editáveis.`}
-    else{HKEYS.forEach(k=>{if(!HDIRTY[k])RFF[k].value=''});hint.innerHTML=`Não há programação salva em <b>${brD(pd)}</b> para esta obra e equipe: preencha os horários.`}}
-  ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',prevHours));
+  const grow=()=>{const e=RFF.tempoMsg;e.style.height='auto';e.style.height=Math.max(90,e.scrollHeight+2)+'px'};
+  function wxPrev(){const st=RFF.tempo.value,box=$('rfWxPrev');if(!st){box.hidden=true;return}box.hidden=false;const un=isUnstable(st);
+    box.classList.toggle('un',un);box.style.backgroundImage=`url(${wxImg(st,1000,200,0)})`;$('rfWxLab').textContent=`Previsão do tempo · ${un?'instável':'estável'}`;$('rfWxSt').textContent=st;$('rfWxMsg').textContent=RFF.tempoMsg.value}
+  RFF.tempo.addEventListener('change',()=>{autoMsg();grow();wxPrev();saveMain()});
+  RFF.tempoMsg.addEventListener('input',()=>{grow();wxPrev();saveMain()});
+  setTimeout(()=>{if(RFF.tempo.value)autoMsg();wxPrev();grow()},0);
+  Object.entries(RFF).forEach(([k,el])=>{const h=()=>{el.removeAttribute('aria-invalid');$('rfPend').hidden=true};el.addEventListener('input',h);el.addEventListener('change',h)});
+  // horários: nunca vazios; guardam o último valor válido (também ao recarregar); −15/+15 min e digitação HH:mm com virada da meia-noite
+  const HKEYS=['sCafe','sDds','sSai','eCafe','eDds','eSai','uPrep','uIni'];
+  const DEF_H={sCafe:'04:30',sDds:'05:00',sSai:'05:30',eCafe:'04:30',eDds:'05:00',eSai:'05:30',uPrep:'04:00',uIni:'04:30'};
+  const toMin=v=>{v=String(v==null?'':v).trim().toLowerCase().replace(/\s/g,'').replace(/h/,':');let m=v.match(/^(\d{1,2})[:.]?(\d{2})$/);if(!m&&/^\d{1,2}$/.test(v))m=[v,v,'00'];if(!m)return null;const h=+m[1],mi=+m[2];return h>23||mi>59?null:h*60+mi};
+  const fmtHM=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+  const HV=Object.assign({},DEF_H);[LASTP,store.get('progHours',{})||{}].forEach(src=>HKEYS.forEach(k=>{const m=toMin(src[k]);if(m!=null)HV[k]=fmtHM(m)}));
+  const saveH=()=>store.set('progHours',HV);saveH();
+  function setH(k,v){HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid');saveH()}
+  function commitH(k){const el=RFF[k],m=toMin(el.value);if(m==null){el.value=HV[k];el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}else setH(k,fmtHM(m))}
+  HKEYS.forEach(k=>{RFF[k].value=HV[k];RFF[k].addEventListener('change',()=>commitH(k));RFF[k].addEventListener('blur',()=>commitH(k))});
+  document.querySelectorAll('#cHor [data-hstep]').forEach(b=>b.addEventListener('click',()=>{const k=Object.keys(RFF).find(x=>RFF[x].id===b.dataset.k);const m=toMin(RFF[k].value);setH(k,fmtHM((m==null?toMin(HV[k]):m)+(+b.dataset.hstep)))}));
+  $('rfHrHint').textContent='Os últimos horários informados ficam salvos. Use −15 min / +15 min ou digite no formato HH:mm; um valor apagado ou inválido volta ao último válido.';
   function equipeTitulo(eq){return /dren/i.test(eq||'')?'Equipe de dreno':/pav/i.test(eq||'')?'Equipe de pavimentação':'Equipe de serviço'}
-  const eqLabel=()=>{$('rfELabel').textContent=equipeTitulo(RFF.equipe.value).replace('Equipe de ','').replace(/^./,c=>c.toUpperCase())};RFF.equipe.addEventListener('change',eqLabel);eqLabel();
-  RFF.equipe.addEventListener('change',()=>{if(RFF.equipe.value&&RFF.equipe.value!==S.equipe){applyEquipe(RFF.equipe.value,'form');usiSync()}});
+  const eqLabel=()=>{$('rfELabel').textContent=equipeTitulo(RFF.equipe.value)};RFF.equipe.addEventListener('change',eqLabel);eqLabel();
+  RFF.equipe.addEventListener('change',()=>{applyEquipe(RFF.equipe.value);usiSync()});
   // usinagem para o dreno: só para equipe de dreno; "Não" dispensa os horários da usina
   const isDrnEq=()=>/dren/i.test(RFF.equipe.value||'');
   const usiVal=()=>{const r=document.querySelector('input[name=rfUsiDr]:checked');return r?r.value:''};
@@ -1296,7 +1344,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   const uNeeded=()=>isDrnEq()?usiVal()==='S':!drnOnlyCalc();
   let USIDIRTY=false;
   function usiSync(){const d=isDrnEq(),v=usiVal();$('rfUsiSet').hidden=!d;$('rfUsiQtF').hidden=!(d&&v==='S');
-    const hideU=d&&v==='N';$('rfUHead').hidden=hideU;$('rfURow').hidden=hideU;
+    const hideU=d&&v==='N';$('rfURow').hidden=hideU;
     $('rfUsinaNote').hidden=!(!d&&drnOnlyCalc());[RFF.uPrep,RFF.uIni].forEach(e=>{const r=uNeeded();e.required=r;e.setAttribute('aria-required',String(r))});
     $('rfUsiHint').textContent=!d?'':v==='N'?'Sem usinagem: o relatório mostra "Usinagem para dreno: NÃO" e oculta a tonelagem e os horários da usina.':v==='S'?'Com usinagem: informe a quantidade prevista e os horários da usina.':''}
   function usiLoad(){if(USIDIRTY)return;const ref=hist()[RFF.data.value+'|'+RFF.obra.value+'|'+RFF.equipe.value];
@@ -1306,30 +1354,26 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',usiLoad));
   function usiErrs(){if(!isDrnEq())return [];const v=usiVal();if(!v)return [['Haverá usinagem para o dreno? (Sim ou Não)',$('rfUsiDr'),document.querySelector('input[name=rfUsiDr]')]];
     if(v==='S'&&!(parseT($('rfUsiQt').value)>0))return [['Quantidade prevista para usinagem (t), maior que zero',$('rfUsiQt'),$('rfUsiQt')]];return []}
-  function obraHint(){$('rfObraHint').textContent=/BR-373/.test(RFF.obra.value)?'Atenção: os panos desta calculadora são do R08 da BR-277 (Blocos 2 e 3).':''}
-  obraHint();
+  function obraHint(){const k=srcOfObra(RFF.obra.value);$('rfObraHint').textContent=k==='B4'?(window.__SRC_B4?'Fonte: unifilar da BR-373 B4 · Serial Kartado digitado em cada segmento':'Base da BR-373 B4 não carregada'):'Fonte: R08 unifilar B2+B3 da BR-277'}
+  RFF.obra.addEventListener('change',()=>{setObra(RFF.obra.value);saveMain();obraHint()});
+  obraHint();setTimeout(()=>usiLoad(),0);
   let PROG=null;
-  function openForm(){if(S.done)calc(false);
-    if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
-      if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
-    if(S.equipe&&RFF.equipe.value!==S.equipe){RFF.equipe.value=S.equipe;eqLabel()}
-    $('rfPend').hidden=true;prevHours();
-    usiLoad();
-    $('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
-  $('cRep').onclick=()=>{if(can('calculadora','create'))openForm()};
-  $('rfCancel').onclick=()=>$('repForm').hidden=true;
-  $('repForm').addEventListener('click',e=>{if(e.target.id==='repForm')$('repForm').hidden=true});
-  $('rfForm').addEventListener('submit',e=>{e.preventDefault();
+  // emissão: usa obra, equipe, data, horários e previsão da tela principal; recalcula antes para refletir os parâmetros atuais
+  function pend(html,el){$('rfPend').innerHTML=html;$('rfPend').hidden=false;$('rfPend').scrollIntoView({behavior:'smooth',block:'center'});if(el)setTimeout(()=>el.focus({preventScroll:true}),300)}
+  function emitReport(){HKEYS.forEach(commitH);S.done=true;save();calc(false);
+    if(srcOfObra(RFF.obra.value)!==SRCK||SRC_MISS){pend('<b>Base da obra não carregada:</b> a BR-373 — Bloco 04 precisa da base enviada pelo administrador. Os dados da BR-277 não são usados para esta obra.',RFF.obra);return}
+    if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){pend('<b>Nenhum segmento para programar.</b> Confira o trecho, a pista, o sentido e a equipe e toque em Calcular.',F.kmA);return}
     const uN=uNeeded();
     const miss=Object.keys(RFF).filter(k=>!RFF[k].value.trim()&&!(!uN&&(k==='uPrep'||k==='uIni')));
     Object.keys(RFF).forEach(k=>RFF[k].setAttribute('aria-invalid',miss.includes(k)?'true':'false'));
     const ux=usiErrs();$('rfUsiDr').setAttribute('aria-invalid',String(ux.some(x=>x[1].id==='rfUsiDr')));$('rfUsiQt').setAttribute('aria-invalid',String(ux.some(x=>x[1].id==='rfUsiQt')));
-    if(miss.length||ux.length){$('rfPend').innerHTML=`<b>Campos pendentes:</b> ${[...ux.map(x=>x[0]),...miss.map(k=>RFL[k])].join(', ')}.`;$('rfPend').hidden=false;(ux.length?ux[0][2]:RFF[miss[0]]).focus();return}
-    if(rodOf(RFF.obra.value)!=='BR-277'){$('rfPend').innerHTML='<b>Obra incompatível:</b> os panos desta calculadora são da BR-277 (Blocos 02 e 03). Escolha a obra Restauração BR-277 – Blocos 02 e 03.';$('rfPend').hidden=false;RFF.obra.setAttribute('aria-invalid','true');RFF.obra.focus();return}
+    if(miss.length||ux.length){pend(`<b>Campos pendentes:</b> ${[...ux.map(x=>x[0]),...miss.map(k=>RFL[k])].join(', ')}.`,ux.length?ux[0][2]:RFF[miss[0]]);return}
+    $('rfPend').hidden=true;
     const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());
-    if(isDrnEq()){info.usiDr=usiVal();info.usiQt=info.usiDr==='S'?Math.round(parseT($('rfUsiQt').value)*100)/100:null}USIDIRTY=false;store.set('progLast',info);
-    {const H=hist();H[info.data+'|'+info.obra+'|'+info.equipe]=info;const ks=Object.keys(H).sort((a,b)=>a<b?1:-1);ks.slice(200).forEach(k=>delete H[k]);store.set('progHist',H);Object.keys(HDIRTY).forEach(k=>delete HDIRTY[k])}
-    $('repForm').hidden=true;buildProg(info);showReport()});
+    if(isDrnEq()){info.usiDr=usiVal();info.usiQt=info.usiDr==='S'?Math.round(parseT($('rfUsiQt').value)*100)/100:null}USIDIRTY=false;store.set('progLast',info);saveMain();
+    {const H=hist();H[info.data+'|'+info.obra+'|'+info.equipe]=info;const ks=Object.keys(H).sort((a,b)=>a<b?1:-1);ks.slice(200).forEach(k=>delete H[k]);store.set('progHist',H)}
+    buildProg(info);showReport()}
+  $('cRep').onclick=()=>{if(can('calculadora','create'))emitReport()};
   // sequência de execução: crescente da menor para a maior estaca, depois decrescente da maior para a menor
   function buildProg(info){const L=LAST;const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
     const seq=L.rows.slice().sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini)||LORD[x.p.L]-LORD[y.p.L]);
@@ -1339,7 +1383,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     const dseq=L.drn.rows.slice();dseq.forEach((r,k)=>r.ord=seq.length+k+1);
     PROG={info,seq,dseq,sol,L,made:new Date()};
     // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
-    try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,usiDr:info.usiDr||null,usiQt:info.usiQt==null?null:info.usiQt,created:Date.now(),concluded:false,
+    if(SRCK==='277')try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,usiDr:info.usiDr||null,usiQt:info.usiQt==null?null:info.usiQt,created:Date.now(),concluded:false,
       items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||''}))})}catch(e){}}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
@@ -1403,8 +1447,8 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const sai=r.sai.filter(k=>{const id=r.L0.side+'|'+k;if(SEEN.has(id))return false;SEEN.add(id);return true});nSaiTot+=sai.length;
       saidas.push({ord:ordTxt(r.ord),serial:r.serial||'',code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,pista:SIDE[r.L0.side],ini,fim,n:sai.length,sai});
       cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
-        line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||'-',sai,nSai:sai.length,
-        chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||'-','',true],['Qtd. de saídas',String(sai.length),'',true]],
+        line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),sai,nSai:sai.length,
+        chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),'',true],['Qtd. de saídas',String(sai.length),'',true]],
         qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||''})}
     const dTot=D.DR+D.DP,nD=P.dseq.length,hasP=P.seq.length>0;
     const drnTxt=[D.DR?`DR ${nf(D.DR,0)} m`:null,D.DP?`DP ${nf(D.DP,0)} m`:null].filter(Boolean).join(' · ');
@@ -1426,7 +1470,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
-      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
   // rótulo da equipe de serviço conforme a equipe escolhida
@@ -1488,11 +1532,11 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>${esc(hr[1].title.replace('Equipe de ','').replace(/^./,c=>c.toUpperCase()))}</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
         <div class="sr-us${hr[2].items.length>2?' n4':''}"><span>Usina e qualidade</span>${hr[2].items.map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
-      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>CBUQ (t)</th><th>CBUQ acumulado (t)</th></tr></thead><tbody>
+      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>CBUQ (t)</th><th>CBUQ acumulado (t)</th></tr></thead><tbody>
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td><td class="q acc">${r.acc}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
-      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th></tr></thead><tbody>
+      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th></tr></thead><tbody>
         ${M.dsides.map(s=>s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td></tr>`).join('')).join('')}
         </tbody></table></div><h3 class="sdt">Localização das saídas de dreno</h3>${saidasHtml(M,pill)}`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
@@ -1543,7 +1587,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
          {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:hex(r.espInk),fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
          r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}},{content:r.acc,styles:{fontStyle:'bold',fillColor:LIGHT}}]);
-      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','CBUQ (t)','CBUQ acumulado (t)']],body,
+      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa',SRCK==='B4'?'Serial Kartado':'Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','CBUQ (t)','CBUQ acumulado (t)']],body,
         theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
         headStyles:{fillColor:INK,textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
         columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},2:{cellWidth:12.5*s},3:{cellWidth:26*s},4:{halign:'right'},5:{halign:'right'},7:{cellWidth:13*s},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',cellWidth:15*s},11:{halign:'right',cellWidth:21*s}},
@@ -1554,7 +1598,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       if(M.count)y=doc.lastAutoTable.finalY+g;
       if(M.dcount){const dbody=[];for(const sd of M.dsides){
           for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},{content:String(r.nSai),styles:{fontStyle:'bold',halign:'center'}}])}
-        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Serial','Est. inicial','Est. final','Ext. (m)','Qtd. de saídas']],body:dbody,
+        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço',SRCK==='B4'?'Serial Kartado':'Serial','Est. inicial','Est. final','Ext. (m)','Qtd. de saídas']],body:dbody,
           theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
           headStyles:{fillColor:[11,94,67],textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
           columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},3:{cellWidth:30*s},4:{halign:'right',cellWidth:20*s},5:{halign:'right',cellWidth:20*s},6:{halign:'right',cellWidth:17*s},7:{halign:'center',cellWidth:22*s}},
@@ -1600,7 +1644,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   function showReport(){if(!PROG.type)PROG.type=store.get('repType','full');setType(PROG.type);(PROG.type==='simp'?showReportSimple:showReportFull)()}
   document.querySelectorAll('.rtype button').forEach(b=>b.onclick=()=>{setType(b.dataset.rt);showReport()});
   $('rvClose').onclick=()=>$('repView').hidden=true;
-  $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
+  $('rvEdit').onclick=()=>{$('repView').hidden=true;$('cForm').scrollIntoView({behavior:'smooth'})};
   const isMobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   // O PDF é preparado assim que a pré-visualização abre: o toque em Imprimir/Gerar PDF usa o arquivo pronto
   function preparePdf(){PROG.pdfP=(PROG.type==='simp'?makePdfSimple():makePdf()).catch(e=>{PROG.pdfErr=e;return null});PROG.pngP=null;PROG.pngErr=null;setTimeout(()=>{if(PROG&&!PROG.pngP&&!$('repView').hidden)preparePng()},400)}
@@ -1745,7 +1789,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         if(e&&e.name==='NotAllowedError'){msg.textContent='Imagem pronta. Toque em Baixar imagem (PNG) de novo para enviar ou salvar.';return}}}
     try{const u=URL.createObjectURL(r.png);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
       msg.textContent=`Imagem gerada (${name}, ${r.w}×${r.h} px). O download foi solicitado ao navegador.`}catch(e){msg.textContent='Imagem gerada, mas o navegador bloqueou o download.'}};
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('repForm').hidden=true}});
+
   Router.onInit('calculadora',()=>{if(S.done)calc(false)});
 })();
 
@@ -2378,7 +2422,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 19:57';
+  const CUR_VER='06/10/2026 20:35';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

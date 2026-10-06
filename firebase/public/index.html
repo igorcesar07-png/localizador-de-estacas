@@ -1038,6 +1038,24 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .mgrid select{min-height:50px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 10px;width:100%}.mgrid .fld.w2{grid-column:1 / -1}
 .mgrid .fld label b{color:var(--bad)}
 .mfoot{display:flex;gap:10px;justify-content:flex-end;padding:4px 16px 16px;flex-wrap:wrap}
+.hcard{padding:10px 16px 16px;display:grid;gap:12px}
+.hgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.hgrp{border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px;display:grid;gap:8px;align-content:start;min-width:0}
+.hgrp h3{margin:0;font:700 12.5px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}.hgrp h3 small{text-transform:none;letter-spacing:0}
+.tf{display:grid;gap:4px;min-width:0}.tf label{font:600 12.5px var(--body);color:var(--muted)}
+.tstep{display:grid;grid-template-columns:auto minmax(64px,1fr) auto;gap:6px}
+.tstep button{min-height:46px;padding:0 9px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 13px var(--body);white-space:nowrap;cursor:pointer}
+.tstep input{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:700 21px var(--cond);text-align:center;width:100%;min-width:0;box-sizing:border-box;letter-spacing:.02em}
+.tstep input.flash{border-color:var(--bad);box-shadow:0 0 0 2px color-mix(in srgb,var(--bad) 25%,transparent)}
+.hset{margin:0}
+.tcard{padding:10px 16px 16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px;align-items:start}
+.tcard textarea{min-height:90px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 16px var(--body);padding:10px 12px;width:100%;box-sizing:border-box;resize:vertical}
+.wxprev{grid-column:1 / -1;border:1px solid #D9D9D9;border-radius:12px;padding:12px 16px;background-size:cover;background-position:center;color:#1A1A1A;min-height:92px}
+.wxprev span{display:block;font:700 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:#6B6B6B}.wxprev b{display:block;font:700 22px var(--body);margin-top:2px}.wxprev p{margin:4px 0 0;font-size:15px}
+.wxprev.un{border:2px solid #C8101A}.wxprev.un span{color:#C8101A}
+.cemit{padding:14px 16px;display:grid;gap:10px}.cemit .pend{margin:0}.cemit #cRep{min-height:54px;font-size:17px}
+#cForm .drow button{min-height:50px;white-space:nowrap}
+@media (max-width:900px){.hgrid{grid-template-columns:1fr}.tcard{grid-template-columns:1fr}}
 .pend{margin:0 16px;border-radius:10px;padding:10px 12px;background:var(--bad-bg);border:1px solid var(--bad);font-size:14px;line-height:1.4}
 #repView{position:fixed;inset:0;z-index:3000;background:#5C645F;display:flex;flex-direction:column}
 .rtool{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:var(--plate);color:var(--plate-ink);flex-wrap:wrap}
@@ -1461,7 +1479,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/10/2026 19:57 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 20:35 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1749,35 +1767,6 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   <div class="mbox imbox"><div class="imh"><div id="imTitle"></div><button type="button" class="imx" id="imClose" aria-label="Fechar">✕</button></div><div class="imb" id="imBody"></div></div>
 </div>
 <!-- ===== relatório da programação ===== -->
-<div class="modal" id="repForm" hidden role="dialog" aria-modal="true" aria-labelledby="rfT">
-  <form class="mbox" id="rfForm" novalidate>
-    <h2 id="rfT">Dados da programação</h2>
-    <p class="msub">Preencha para gerar a programação. Todos os campos são obrigatórios.</p>
-    <div class="mgrid g2">
-      <div class="fld"><label for="rfData">Data <b>*</b></label><div class="drow"><input id="rfData" type="date"><button type="button" class="secondary" id="rfNext">+1 dia</button></div><span class="hint" id="rfDataHint"></span></div>
-      <div class="fld"><label for="rfEquipe">Equipe <b>*</b></label><select id="rfEquipe"><option value="">Selecione…</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select></div>
-      <div class="fld w2"><label for="rfObra">Obra <b>*</b></label><select id="rfObra"><option value="">Selecione…</option><option>Restauração BR-277 – Blocos 02 e 03</option><option>Restauração BR-373 – Bloco 04</option></select><span class="hint" id="rfObraHint"></span></div>
-    </div>
-    <fieldset class="mset" id="rfUsiSet" hidden><legend>Usinagem para o dreno</legend>
-      <div class="usiq"><div class="fld"><span class="ulbl" id="rfUsiL">Haverá usinagem para o dreno? <b>*</b></span>
-        <div class="seg2" id="rfUsiDr" role="radiogroup" aria-labelledby="rfUsiL"><label><input type="radio" name="rfUsiDr" value="S"><span>Sim</span></label><label><input type="radio" name="rfUsiDr" value="N"><span>Não</span></label></div></div>
-      <div class="fld" id="rfUsiQtF" hidden><label for="rfUsiQt">Quantidade prevista para usinagem (t) <b>*</b></label><input id="rfUsiQt" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 12,50"><span class="hint">Maior que zero; aceita casas decimais (vírgula ou ponto).</span></div></div>
-      <p class="hint hrhint" id="rfUsiHint"></p></fieldset>
-    <fieldset class="mset"><legend>Horários</legend>
-      <div class="hmx" role="table" aria-label="Horários das equipes">
-        <div class="hh" role="row"><span></span><span>Café da manhã</span><span>DDS</span><span>Saída p/ trecho</span></div>
-        <div class="hr" role="row"><b>Sinalização</b><input id="rfSCafe" type="time" aria-label="Sinalização – café da manhã"><input id="rfSDds" type="time" aria-label="Sinalização – DDS"><input id="rfSSai" type="time" aria-label="Sinalização – saída para o trecho"></div>
-        <div class="hr" role="row"><b id="rfELabel">Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
-        <div class="hh u" id="rfUHead" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
-        <div class="hr" id="rfURow" role="row"><b>Usina<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
-      </div><p class="hint hrhint" id="rfHrHint"></p></fieldset>
-    <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid" style="grid-template-columns:1fr">
-      <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
-      <div class="fld w2"><label for="rfTempoMsg">Detalhes da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="5" maxlength="600"></textarea><span class="hint">Começa com a frase padrão (estável ou instável) conforme o status. Complete ou troque o texto; ele vai inteiro para o relatório.</span></div></div></fieldset>
-    <div class="pend" id="rfPend" hidden></div>
-    <div class="mfoot"><button class="backBtn" type="button" id="rfCancel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button><button class="primary" type="submit">Gerar programação</button></div>
-  </form>
-</div>
 <div id="repView" hidden>
   <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" class="go2" id="rvPng">Baixar imagem (PNG)</button><button type="button" class="backBtn" id="rvClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button></div>
   <div class="rmsg2" id="rvMsg" hidden></div>
@@ -1792,16 +1781,50 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <form class="card" id="cForm" novalidate>
         <h2>Trecho e parâmetros</h2>
         <div class="form">
+          <div class="fld"><label for="rfObra">Obra</label><select id="rfObra"><option value="Restauração BR-277 – Blocos 02 e 03">BR-277 — Blocos 02 e 03</option><option value="Restauração BR-373 – Bloco 04">BR-373 — Bloco 04</option></select><span class="hint" id="rfObraHint"></span></div>
+          <div class="fld"><label for="rfEquipe">Equipe</label><select id="rfEquipe"><option value="">Selecione…</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select><span class="hint" id="hEquipe"></span></div>
+          <div class="fld"><label for="rfData">Data da programação</label><div class="drow"><button type="button" class="secondary" id="rfPrev" aria-label="Dia anterior">−1 dia</button><input id="rfData" type="date"><button type="button" class="secondary" id="rfNext" aria-label="Dia seguinte">+1 dia</button></div><span class="hint" id="rfDataHint"></span></div>
           <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000 ou 236000"><span class="err" id="eKmA"></span></div>
           <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000 ou 237000"><span class="err" id="eKmB"></span></div>
-          <div class="fld"><label for="cEquipe">Equipe</label><select id="cEquipe"><option value="">Sem equipe (seleção manual)</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select><span class="hint" id="hEquipe"></span></div>
           <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option><option value="DRN">Somente drenagem (DR + DP)</option><option value="DRN_DR">Somente DR – Dreno Raso</option><option value="DRN_DP">Somente DP – Dreno Profundo</option></select></div>
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
-          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="primary" type="button" id="cRep" data-acl="calculadora:create" style="background:var(--accent);color:var(--accent-ink)">Emitir Relatório da Programação</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
         </div>
       </form>
+
+      <section class="card" id="cHor" aria-labelledby="cHorT" data-acl="calculadora:create">
+        <h2 id="cHorT">Horários da programação</h2>
+        <div class="hcard">
+          <div class="hgrid">
+            <div class="hgrp"><h3>Sinalização</h3><div class="tf"><label for="rfSCafe">Café da manhã</label><div class="tstep"><button type="button" data-k="rfSCafe" data-hstep="-15" aria-label="Sinalização – café da manhã: menos 15 minutos">−15 min</button><input id="rfSCafe" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Sinalização – café da manhã"><button type="button" data-k="rfSCafe" data-hstep="15" aria-label="Sinalização – café da manhã: mais 15 minutos">+15 min</button></div></div><div class="tf"><label for="rfSDds">DDS</label><div class="tstep"><button type="button" data-k="rfSDds" data-hstep="-15" aria-label="Sinalização – DDS: menos 15 minutos">−15 min</button><input id="rfSDds" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Sinalização – DDS"><button type="button" data-k="rfSDds" data-hstep="15" aria-label="Sinalização – DDS: mais 15 minutos">+15 min</button></div></div><div class="tf"><label for="rfSSai">Saída para o trecho</label><div class="tstep"><button type="button" data-k="rfSSai" data-hstep="-15" aria-label="Sinalização – saída para o trecho: menos 15 minutos">−15 min</button><input id="rfSSai" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Sinalização – saída para o trecho"><button type="button" data-k="rfSSai" data-hstep="15" aria-label="Sinalização – saída para o trecho: mais 15 minutos">+15 min</button></div></div></div>
+            <div class="hgrp"><h3 id="rfELabel">Serviço</h3><div class="tf"><label for="rfECafe">Café da manhã</label><div class="tstep"><button type="button" data-k="rfECafe" data-hstep="-15" aria-label="Equipe – café da manhã: menos 15 minutos">−15 min</button><input id="rfECafe" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Equipe – café da manhã"><button type="button" data-k="rfECafe" data-hstep="15" aria-label="Equipe – café da manhã: mais 15 minutos">+15 min</button></div></div><div class="tf"><label for="rfEDds">DDS</label><div class="tstep"><button type="button" data-k="rfEDds" data-hstep="-15" aria-label="Equipe – DDS: menos 15 minutos">−15 min</button><input id="rfEDds" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Equipe – DDS"><button type="button" data-k="rfEDds" data-hstep="15" aria-label="Equipe – DDS: mais 15 minutos">+15 min</button></div></div><div class="tf"><label for="rfESai">Saída para o trecho</label><div class="tstep"><button type="button" data-k="rfESai" data-hstep="-15" aria-label="Equipe – saída para o trecho: menos 15 minutos">−15 min</button><input id="rfESai" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Equipe – saída para o trecho"><button type="button" data-k="rfESai" data-hstep="15" aria-label="Equipe – saída para o trecho: mais 15 minutos">+15 min</button></div></div></div>
+            <div class="hgrp" id="rfURow"><h3>Usina e qualidade<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></h3><div class="tf"><label for="rfUPrep">Preparação da usina</label><div class="tstep"><button type="button" data-k="rfUPrep" data-hstep="-15" aria-label="Preparação da usina: menos 15 minutos">−15 min</button><input id="rfUPrep" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Preparação da usina"><button type="button" data-k="rfUPrep" data-hstep="15" aria-label="Preparação da usina: mais 15 minutos">+15 min</button></div></div><div class="tf"><label for="rfUIni">Início da usinagem</label><div class="tstep"><button type="button" data-k="rfUIni" data-hstep="-15" aria-label="Início da usinagem: menos 15 minutos">−15 min</button><input id="rfUIni" class="hm" type="text" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="HH:mm" aria-label="Início da usinagem"><button type="button" data-k="rfUIni" data-hstep="15" aria-label="Início da usinagem: mais 15 minutos">+15 min</button></div></div></div>
+          </div>
+          <fieldset class="mset hset" id="rfUsiSet" hidden><legend>Usinagem para o dreno</legend>
+            <div class="usiq"><div class="fld"><span class="ulbl" id="rfUsiL">Haverá usinagem para o dreno? <b>*</b></span>
+              <div class="seg2" id="rfUsiDr" role="radiogroup" aria-labelledby="rfUsiL"><label><input type="radio" name="rfUsiDr" value="S"><span>Sim</span></label><label><input type="radio" name="rfUsiDr" value="N"><span>Não</span></label></div></div>
+            <div class="fld" id="rfUsiQtF" hidden><label for="rfUsiQt">Quantidade prevista para usinagem (t) <b>*</b></label><input id="rfUsiQt" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 12,50"><span class="hint">Maior que zero; aceita casas decimais (vírgula ou ponto).</span></div></div>
+            <p class="hint hrhint" id="rfUsiHint"></p></fieldset>
+          <p class="hint hrhint" id="rfHrHint"></p>
+        </div>
+      </section>
+
+      <section class="card" id="cTempo" aria-labelledby="cTempoT" data-acl="calculadora:create">
+        <h2 id="cTempoT">Previsão do tempo</h2>
+        <div class="tcard">
+          <div class="fld"><label for="rfTempo">Condição</label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
+          <div class="fld tmsg"><label for="rfTempoMsg">Mensagem <em>(gerada pela condição; editável)</em></label><textarea id="rfTempoMsg" rows="3" maxlength="600"></textarea></div>
+          <div class="wxprev" id="rfWxPrev" hidden aria-live="polite"><span id="rfWxLab"></span><b id="rfWxSt"></b><p id="rfWxMsg"></p></div>
+        </div>
+      </section>
+
+      <div class="card cemit" data-acl="calculadora:create">
+        <div class="pend" id="rfPend" hidden></div>
+        <button class="primary" type="button" id="cRep" data-acl="calculadora:create" style="background:var(--accent);color:var(--accent-ink)">Emitir Relatório da Programação</button>
+        <p class="note" style="margin:0">O relatório usa a obra, a equipe, a data, os horários e a previsão preenchidos acima, com o trecho calculado na hora.</p>
+      </div>
 
       <details class="card" id="cCad" data-acl-ro="calculadora:edit">
         <summary><span>Cadastro de larguras e espessuras</span><span class="flag" id="cCadFlag"></span></summary>
@@ -1819,6 +1842,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div>
             <h3>Espessura de CBUQ por solução (cm)</h3>
             <p class="note" style="margin:0 0 10px">FF, FE e FS vêm preenchidas com a espessura da solução (6, 10 e 3 cm), considerando recomposição em CBUQ na mesma espessura. As demais siglas não têm espessura de CBUQ na base: informe o valor ou marque "não leva CBUQ".</p>
+            <p class="note" id="cEspB4" hidden style="margin:0 0 10px;font-weight:600">BR-373 — Bloco 04: a largura e a espessura de cada pano vêm do unifilar da obra. Os valores deste cadastro só entram quando o unifilar não informa.</p>
             <div class="egrid" id="cEsp"></div>
           </div>
           <div>
@@ -1845,10 +1869,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006225710";</script>
-<script src="native.js?v=20261006225710"></script>
-<script src="firebase-config.js?v=20261006225710"></script>
-<script src="auth.js?v=20261006225710"></script>
+<script>window.APP_BUILD="20261006233520";</script>
+<script src="native.js?v=20261006233520"></script>
+<script src="firebase-config.js?v=20261006233520"></script>
+<script src="auth.js?v=20261006233520"></script>
 
 </body>
 </html>

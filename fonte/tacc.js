@@ -9,9 +9,9 @@ await p.setInputFiles('#cSerFile','/tmp/claude-0/apj/apontamentos_BR-277.json');
 const runs=[['A','233+726','232+220','F1','D'],['B','186+000','186+400','ALL','ALL']];
 for(const [nm,ka,kb,pi,se] of runs){await p.reload();await p.waitForTimeout(1300);
  await p.fill('#cKmA',ka);await p.fill('#cKmB',kb);await p.selectOption('#cPista',pi);await p.selectOption('#cSent',se);await p.click('#cForm button[type=submit]');await p.waitForTimeout(500);
- await p.click('#cRep');await p.waitForTimeout(300);await p.fill('#rfData','2026-10-07');await p.selectOption('#rfObra',{index:1});await p.selectOption('#rfEquipe','Pavimentação Johonatan');await p.dispatchEvent('#rfEquipe','change');
+ await p.fill('#rfData','2026-10-07');await p.selectOption('#rfObra','Restauração BR-277 – Blocos 02 e 03');await p.selectOption('#rfEquipe','Pavimentação Johonatan');await p.dispatchEvent('#rfEquipe','change');
  for(const [id,v] of [['rfUPrep','04:00'],['rfUIni','04:30'],['rfSCafe','04:30'],['rfSDds','05:00'],['rfSSai','05:30'],['rfECafe','04:30'],['rfEDds','05:00'],['rfESai','05:30'],['rfTempoMsg','A previsão do tempo está estável. Seguiremos monitorando.']])await p.fill('#'+id,v);
- await p.selectOption('#rfTempo','Ensolarado');await p.click('#rfForm button[type=submit]');await p.waitForTimeout(1000);await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(600);
+ await p.selectOption('#rfTempo','Ensolarado');await p.click('#cRep');await p.waitForTimeout(1000);await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(600);
  const hd=await p.evaluate(()=>{const a=[...document.querySelector('.sr-t').querySelectorAll('thead th')];return a.map(x=>x.textContent)});ok(hd.slice(-2).join('|')==='CBUQ (t)|CBUQ acumulado (t)'&&!hd.includes('Área'),nm+': colunas '+hd.slice(-4).join(', '));
  const rows=await p.evaluate(()=>{const a=[...document.querySelector('.sr-t').querySelectorAll('tbody tr:not(.b)')];return a.map(tr=>[...tr.children].map(x=>x.textContent.trim()))});
  // acumulado esperado a partir do modelo (precisão integral)
