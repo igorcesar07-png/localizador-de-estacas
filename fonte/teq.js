@@ -1,0 +1,38 @@
+const {chromium}=require('/home/claude/work/node_modules/playwright');const fs=require('fs');process.chdir('/home/claude/work');
+const LIB={'xlsx.full.min.js':'npmlib/xlsx/package/dist/xlsx.full.min.js','jspdf.umd.min.js':'npmlib/jspdf-2.5.1/package/dist/jspdf.umd.min.js','jspdf.plugin.autotable.min.js':'npmlib/jspdf-autotable-3.8.2/package/dist/jspdf.plugin.autotable.min.js','pdf.min.js':'npmlib/pdfjs/package/build/pdf.min.js','pdf.worker.min.js':'npmlib/pdfjs/package/build/pdf.worker.min.js'};
+const out=[];const ok=(c,n)=>{out.push((c?'OK  ':'FALHOU ')+n);console.log((c?'OK  ':'FALHOU ')+n)};const D='/tmp/claude-0/eq/';fs.mkdirSync(D,{recursive:true});
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1280,height:900},acceptDownloads:true});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route('**/cdnjs.cloudflare.com/**',r=>{const f=r.request().url().split('/').pop();r.fulfill({body:fs.readFileSync(LIB[f]||'package/dist/leaflet.js'),contentType:'application/javascript'})});await p.route(/(jsdelivr|fonts\.g|openstreetmap|arcgisonline)/,r=>r.abort());
+await p.goto('http://localhost:8765/#calculadora');await p.waitForTimeout(1200);
+await p.setInputFiles('#cSerFile','/tmp/claude-0/apj/apontamentos_BR-277.json');await p.waitForSelector('#cSerMsg .sermsg b',{state:'attached'});
+const shown=()=>p.$$eval('#cEsp .erow,#cDrn .erow',a=>a.filter(r=>r.querySelector('input[data-k=show]').checked).map(r=>r.dataset.c).sort().join(','));
+const codes=()=>p.$$eval('#cOut tr[data-tag]',a=>[...new Set(a.map(tr=>tr.dataset.tag.split('-')[1]==='DR'||/DR|DP/.test(tr.innerText.slice(0,40))?tr.innerText.trim().slice(0,2):tr.innerText.trim().slice(0,2)))].sort().join(','));
+ok(await p.locator('#cDrn .erow').count()===2,'cartões DR e DP no cadastro');
+const drnTxt=await p.textContent('#cDrn');ok(/0,60\s*m/.test(drnTxt)&&/1,50\s*m/.test(drnTxt),'profundidades 0,60 m e 1,50 m');
+await p.fill('#cKmA','186+000');await p.fill('#cKmB','186+400');await p.selectOption('#cPista','ALL');await p.selectOption('#cSent','ALL');await p.click('#cForm button[type=submit]');await p.waitForTimeout(500);
+await p.selectOption('#cEquipe','Pavimentação Johonatan');await p.waitForTimeout(500);
+ok(await shown()==='FE,FF,FS','Pavimentação: só FF, FS, FE ('+await shown()+')');
+let tags=await p.$$eval('#cOut tr[data-tag] .tag',a=>[...new Set(a.map(x=>x.textContent))].sort().join(','));ok(tags.split(',').every(c=>['FE','FF','FS'].includes(c)),'segmentos da calculadora: '+tags);
+await p.evaluate(()=>{document.getElementById('cCad').open=true});await p.waitForTimeout(200);await p.locator('#cDrn').scrollIntoViewIfNeeded();await p.screenshot({path:D+'cad.png'});
+await p.selectOption('#cEquipe','Dreno Sandro');await p.waitForTimeout(500);
+ok(await shown()==='DP,DR','Dreno: só DR e DP ('+await shown()+')');
+tags=await p.$$eval('#cOut tr[data-tag] .tag',a=>[...new Set(a.map(x=>x.textContent))].sort().join(','));ok(tags==='DP,DR','segmentos da calculadora: '+tags);
+console.log('hint',await p.textContent('#hEquipe'));
+await p.locator('#cEquipe').scrollIntoViewIfNeeded();await p.screenshot({path:D+'calc_dreno.png'});
+await p.click('#cRep');await p.waitForTimeout(300);ok(await p.inputValue('#rfEquipe')==='Dreno Sandro','formulário já vem com a equipe da calculadora');
+// trocar a equipe no formulário sincroniza a calculadora
+await p.selectOption('#rfEquipe','Pavimentação Raimundo');await p.waitForTimeout(400);ok(await p.inputValue('#cEquipe')==='Pavimentação Raimundo'&&await shown()==='FE,FF,FS','troca no formulário aplica o padrão de pavimentação');
+await p.selectOption('#rfEquipe','Dreno Sandro');await p.waitForTimeout(400);ok(await shown()==='DP,DR'&&await p.isVisible('#rfUsiSet'),'de volta ao Dreno: DR/DP e pergunta da usinagem');
+await p.fill('#rfData','2026-10-09');await p.selectOption('#rfObra',{index:1});
+for(const [id,v] of [['rfSCafe','04:30'],['rfSDds','05:00'],['rfSSai','05:30'],['rfECafe','04:30'],['rfEDds','05:00'],['rfESai','05:30'],['rfTempoMsg','A previsão do tempo está estável. Seguiremos monitorando.']])await p.fill('#'+id,v);
+await p.selectOption('#rfTempo','Ensolarado');await p.check('input[name=rfUsiDr][value=N]');await p.click('#rfForm button[type=submit]');await p.waitForTimeout(1000);
+ok(!(await p.isHidden('#repView')),'relatório emitido');await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(600);
+const hd=await p.$$eval('.sr-t thead th',a=>a.map(x=>x.textContent).join(' | '));ok(hd==='Ord. | Pista | Serviço | Serial | Est. inicial | Est. final | Ext. (m) | Qtd. de saídas','colunas: '+hd);
+const t=await p.textContent('#repDoc');ok(!/ocultas/.test(t)&&!/CBUQ/.test(t),'relatório de dreno sem pavimento e sem nota de ocultos');
+const dl=p.waitForEvent('download',{timeout:60000});await p.click('#rvPng');await (await dl).saveAs(D+'dreno.png');
+await p.click('#rvClose');await p.waitForTimeout(300);
+// ajuste manual depois do padrão
+await p.evaluate(()=>{document.getElementById('cCad').open=true});await p.uncheck('#cDrn .erow[data-c="DP"] input[data-k=show]');await p.waitForTimeout(300);
+tags=await p.$$eval('#cOut tr[data-tag] .tag',a=>[...new Set(a.map(x=>x.textContent))].sort().join(','));ok(tags==='DR'&&/alterado/.test(await p.textContent('#hEquipe')),'desmarcar DP manualmente: '+tags+' · '+await p.textContent('#hEquipe'));
+await p.reload();await p.waitForTimeout(1200);ok(await p.inputValue('#cEquipe')==='Dreno Sandro'&&await shown()==='DR','equipe e seleção salvas');
+ok(errs.length===0,'sem erros JS '+JSON.stringify(errs.slice(0,3)));await b.close()})();

@@ -987,7 +987,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   const filled=v=>v!==''&&v!=null;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
-    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),equipe:saved.equipe||'',equipeMan:!!saved.equipeMan,done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -999,14 +999,31 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       <div class="opts"><label class="no"><input type="checkbox" data-k="show" ${S.show[c]===false?'':'checked'}> exibir no resumo e nos panos</label>
       <label class="no"><input type="checkbox" data-k="excl" ${S.excl[c]?'checked':''}> não leva CBUQ</label></div></div>`}).join('');
   $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,inp=row.querySelector('input[type=number]'),chk=row.querySelector('input[data-k=excl]'),shw=row.querySelector('input[data-k=show]');
-    shw.addEventListener('change',()=>{S.show[c]=shw.checked;save();cadFlag();if(S.done)calc(false)});
+    shw.addEventListener('change',()=>{S.show[c]=shw.checked;S.equipeMan=true;save();cadFlag();eqHint();if(S.done)calc(false)});
     inp.addEventListener('input',()=>{S.esp[c]=inp.value;save();cadFlag();if(S.done)calc(false)});
     chk.addEventListener('change',()=>{S.excl[c]=chk.checked;save();cadFlag();if(S.done)calc(false)})});
+  // drenagem: DR (verde-claro, 0,60 m) e DP (verde-escuro, 1,50 m); exibir no resumo e nos segmentos
+  const DRN_CODES=['DR','DP'],DRN_PROF={DR:'0,60',DP:'1,50'};
+  $('cDrn').innerHTML=DRN_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
+      <span class="dsc"><b>${inf.desc}</b>profundidade de referência · extensão em metros</span><span class="dref">${DRN_PROF[c]}<small>m</small></span>
+      <div class="opts"><label class="no"><input type="checkbox" data-k="show" ${S.show[c]===false?'':'checked'}> exibir no resumo e nos segmentos</label></div></div>`}).join('');
+  $('cDrn').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c,shw=row.querySelector('input[data-k=show]');shw.addEventListener('change',()=>{S.show[c]=shw.checked;S.equipeMan=true;save();cadFlag();eqHint();if(S.done)calc(false)})});
+  // padrão de soluções por equipe: pavimentação = FF, FS e FE; dreno = DR e DP; as demais ficam desmarcadas
+  const EQ_SOL=eq=>/^pavimenta/i.test(eq||'')?['FF','FS','FE']:/dren/i.test(eq||'')?['DR','DP']:null;
+  function syncShowUI(){document.querySelectorAll('#cEsp .erow,#cDrn .erow').forEach(row=>{const c=row.dataset.c;row.querySelector('input[data-k=show]').checked=S.show[c]!==false;row.classList.toggle('excl',S.show[c]===false||!!S.excl[c])})}
+  function eqHint(){const sol=EQ_SOL(S.equipe);$('hEquipe').textContent=!S.equipe?'Escolha a equipe para aplicar as soluções padrão.':sol?(S.equipeMan?`Padrão ${sol.join(', ')} alterado no cadastro.`:`Soluções: ${sol.join(', ')} (padrão da equipe).`):'Sem padrão para esta equipe: seleção do cadastro.'}
+  function applyEquipe(eq,from){S.equipe=eq||'';$('cEquipe').value=S.equipe;const sol=EQ_SOL(eq);
+    if(sol){[...PAVE_CODES,...DRN_CODES].forEach(c=>S.show[c]=sol.includes(c));S.equipeMan=false;
+      const drn=/dren/i.test(eq);if(drn&&!/^DRN/.test(S.pista)&&S.pista!=='ALL'){S.pista='DRN';F.pista.value='DRN'}if(!drn&&/^DRN/.test(S.pista)){S.pista='ALL';F.pista.value='ALL'}
+      syncShowUI();cadFlag()}
+    save();eqHint();if(from!=='form'&&$('rfEquipe')&&$('rfEquipe').value!==S.equipe&&S.equipe){$('rfEquipe').value=S.equipe}
+    if(S.done)calc(false)}
+  $('cEquipe').value=S.equipe||'';$('cEquipe').addEventListener('change',()=>applyEquipe($('cEquipe').value,'calc'));
   function cadFlag(){const missW=['F1','F23','AC'].filter(k=>!(num(S.w[k])>0)).length;let missE=0;
     $('cEsp').querySelectorAll('.erow').forEach(row=>{const c=row.dataset.c;const hid=S.show[c]===false,ok=hid||S.excl[c]||num(S.esp[c])>0;row.classList.toggle('miss',!ok);row.classList.toggle('excl',!!S.excl[c]||hid);if(!ok)missE++});
     const parts=[];if(missW)parts.push(`${missW} largura${missW>1?'s':''}`);if(missE)parts.push(`${missE} espessura${missE>1?'s':''}`);
     $('cCadFlag').textContent=parts.length?parts.join(' e ')+' sem valor':'completo';$('cCadFlag').style.color=parts.length?'':'var(--ok)'}
-  cadFlag();
+  cadFlag();eqHint();
   $('cRestore').onclick=()=>{S.dens=DEF_DENS;F.dens.value=DEF_DENS;['F1','F23','AC'].forEach(k=>{S.w[k]=DEF_W[k];$('w'+k).value=DEF_W[k]});save();cadFlag();if(S.done)calc(false)};
   if(!['F1','F23','AC'].every(k=>num(S.w[k])>0))$('cCad').open=true;
   $('cForm').addEventListener('submit',e=>{e.preventDefault();S.done=true;save();calc(true)});
@@ -1132,7 +1149,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
     const drows=[];
     if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
-      const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
+      const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;if(S.show[p.code]===false){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
       drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
@@ -1146,7 +1163,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     rows.sort(cmp[ordem]);
     const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor'}[ordem];
     const scope=`${S.pista==='ALL'?'todas as faixas':S.pista==='DRN'?'somente drenagem':S.pista==='DRN_DR'?'somente DR – Dreno Raso':S.pista==='DRN_DP'?'somente DP – Dreno Profundo':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
-    const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}. Marque de novo em Cadastro de larguras e espessuras.</div>`:'';
+    const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>${S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan?`Padrão da equipe ${escH(S.equipe)}: só ${EQ_SOL(S.equipe).join(', ')}.`:`Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}.`} Para mudar, use Equipe ou Cadastro de larguras e espessuras.</div>`:'';
     if(!rows.length&&!drows.length){LAST=null;out.innerHTML=hidTxt+`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento nem drenagem cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
     // só os segmentos marcados para execução entram nos totais e na programação
     const act=rows.filter(r=>!r.off),nOff=rows.length-act.length;
@@ -1209,7 +1226,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''}</td></tr></tfoot></table></div>
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação.</div></div>`}
-    LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()]};
+    LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
     out.innerHTML=h;
     [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
@@ -1270,6 +1287,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',prevHours));
   function equipeTitulo(eq){return /dren/i.test(eq||'')?'Equipe de dreno':/pav/i.test(eq||'')?'Equipe de pavimentação':'Equipe de serviço'}
   const eqLabel=()=>{$('rfELabel').textContent=equipeTitulo(RFF.equipe.value).replace('Equipe de ','').replace(/^./,c=>c.toUpperCase())};RFF.equipe.addEventListener('change',eqLabel);eqLabel();
+  RFF.equipe.addEventListener('change',()=>{if(RFF.equipe.value&&RFF.equipe.value!==S.equipe){applyEquipe(RFF.equipe.value,'form');usiSync()}});
   // usinagem para o dreno: só para equipe de dreno; "Não" dispensa os horários da usina
   const isDrnEq=()=>/dren/i.test(RFF.equipe.value||'');
   const usiVal=()=>{const r=document.querySelector('input[name=rfUsiDr]:checked');return r?r.value:''};
@@ -1294,6 +1312,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   function openForm(){if(S.done)calc(false);
     if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
       if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
+    if(S.equipe&&RFF.equipe.value!==S.equipe){RFF.equipe.value=S.equipe;eqLabel()}
     $('rfPend').hidden=true;prevHours();
     usiLoad();
     $('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
@@ -1407,14 +1426,14 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
-      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
   // rótulo da equipe de serviço conforme a equipe escolhida
   // subtítulo: rodovia e blocos da obra + trecho, faixa e sentido da programação
   const RODOVIAS={'BR-277':'BR-277 — Blocos 02 e 03','BR-373':'BR-373 — Bloco 04'};
   const rodOf=obra=>/BR-?373/i.test(obra||'')?'BR-373':'BR-277';
-  function repSubtitle(I,L){const faixa=S.pista==='ALL'?'Todas as faixas':S.pista==='DRN'?'Somente drenagem (DR e DP)':S.pista==='DRN_DR'?'DR – Dreno Raso':S.pista==='DRN_DP'?'DP – Dreno Profundo':Data.GRP[S.pista];
+  function repSubtitle(I,L){const onlyD=L&&!L.rows.length&&L.drn&&L.drn.rows.length,dc=onlyD?[...new Set(L.drn.rows.map(r=>r.p.code))]:[];const faixa=S.pista==='ALL'?(onlyD?(dc.length>1?'Somente drenagem (DR e DP)':dc[0]==='DR'?'DR – Dreno Raso':'DP – Dreno Profundo'):'Todas as faixas'):S.pista==='DRN'?'Somente drenagem (DR e DP)':S.pista==='DRN_DR'?'DR – Dreno Raso':S.pista==='DRN_DP'?'DP – Dreno Profundo':Data.GRP[S.pista];
     const sent=S.sent==='ALL'?'Ambos os sentidos':SIDE[S.sent];
     return `${RODOVIAS[rodOf(I.obra)]} — Trecho ${L.nIn[0]} a ${L.nIn[1]} — ${faixa} — ${sent}`}
   // validação: todos os campos da programação precisam chegar ao relatório
@@ -2359,7 +2378,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 19:42';
+  const CUR_VER='06/10/2026 19:57';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

@@ -930,6 +930,7 @@ details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:70
 .erow .dsc{font-size:12.5px;line-height:1.25;color:var(--muted);min-width:0}
 .erow .dsc b{display:block;color:var(--ink);font-size:13px}
 .erow input[type=number]{min-height:42px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 8px;width:100%;box-sizing:border-box;text-align:right}
+.erow .dref{min-height:42px;display:flex;align-items:center;justify-content:flex-end;font:700 16px var(--body);color:var(--ink);white-space:nowrap}.erow .dref small{font-weight:500;color:var(--muted);margin-left:3px}
 .erow .opts{grid-column:2 / -1;display:flex;flex-wrap:wrap;gap:4px 14px}
 .erow label.no{font-size:12.5px;display:flex;align-items:center;gap:6px;color:var(--muted);cursor:pointer}
 .erow.miss{border-color:var(--warn);background:var(--warn-bg)}
@@ -1460,7 +1461,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/10/2026 19:42 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 19:57 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1793,6 +1794,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="form">
           <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000 ou 236000"><span class="err" id="eKmA"></span></div>
           <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000 ou 237000"><span class="err" id="eKmB"></span></div>
+          <div class="fld"><label for="cEquipe">Equipe</label><select id="cEquipe"><option value="">Sem equipe (seleção manual)</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select><span class="hint" id="hEquipe"></span></div>
           <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option><option value="DRN">Somente drenagem (DR + DP)</option><option value="DRN_DR">Somente DR – Dreno Raso</option><option value="DRN_DP">Somente DP – Dreno Profundo</option></select></div>
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
@@ -1819,6 +1821,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
             <p class="note" style="margin:0 0 10px">FF, FE e FS vêm preenchidas com a espessura da solução (6, 10 e 3 cm), considerando recomposição em CBUQ na mesma espessura. As demais siglas não têm espessura de CBUQ na base: informe o valor ou marque "não leva CBUQ".</p>
             <div class="egrid" id="cEsp"></div>
           </div>
+          <div>
+            <h3>Drenagem (m)</h3>
+            <p class="note" style="margin:0 0 10px">DR e DP são medidos em metros de extensão, só com a parte de cada segmento dentro do trecho. A profundidade é a referência do dreno e não é espessura de CBUQ: não entra nas toneladas.</p>
+            <div class="egrid" id="cDrn"></div>
+          </div>
         </div>
       </details>
 
@@ -1838,10 +1845,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006224200";</script>
-<script src="native.js?v=20261006224200"></script>
-<script src="firebase-config.js?v=20261006224200"></script>
-<script src="auth.js?v=20261006224200"></script>
+<script>window.APP_BUILD="20261006225710";</script>
+<script src="native.js?v=20261006225710"></script>
+<script src="firebase-config.js?v=20261006225710"></script>
+<script src="auth.js?v=20261006225710"></script>
 
 </body>
 </html>
