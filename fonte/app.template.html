@@ -273,6 +273,21 @@ details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:70
 .alert{border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
 .alert.warn{background:var(--warn-bg);border:1px solid var(--warn)}
 .alert.info{background:var(--surface);border:1px solid var(--line)}
+.alert.ok{background:color-mix(in srgb,var(--ok) 10%,var(--surface));border:1px solid var(--ok)}
+.badge.edt{background:#FFF4D6;color:#7A5300;border:1px solid #E0B44A}
+.linkb{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+table.q td.pano .segEd{display:inline-block;margin-top:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 10px;font:700 12.5px var(--sans,system-ui);cursor:pointer}
+table.q td.pano .segEd:hover{border-color:var(--ink)}
+table.q td.pano .segbar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+table.q td.pano .segbar button{border-radius:8px;padding:6px 11px;font:700 12.5px var(--sans,system-ui);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+table.q td.pano .segbar .segSave{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+table.q td.pano .segErr{color:var(--bad,#C8101A);font-size:12px;font-weight:600;white-space:normal;max-width:220px;margin-top:4px}
+table.q td.pano .segErr:empty{display:none}
+table.q td.segin{padding:4px 6px}
+table.q td.segin input{width:108px;font:700 15px var(--cond);padding:7px 6px;border:2px solid var(--ink);border-radius:8px;text-align:center;background:var(--surface);color:var(--ink)}
+table.q td.segin input[aria-invalid="true"]{border-color:var(--bad,#C8101A);background:#FFF1F1}
+table.q td.segprev{font-weight:800}
+table.q td.seged{background:#FFF8E6}
 .alert b{display:block}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
 table.q{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
@@ -1566,7 +1581,7 @@ renderGps(Loc.gps);
   const filled=v=>v!==''&&v!=null;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
-    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1595,6 +1610,33 @@ renderGps(Loc.gps);
   let LAST=null;
   const tag=inf=>`<span class="tag sm" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
 
+  /* ---------- edição de segmentos (estaca inicial/final de cada pano na programação) ---------- */
+  let EDIT=null,SEGMSG='';const ROWS=new Map();
+  // segmento editado só vale se continuar dentro do pano (os dados do projeto não mudam)
+  function segOf(p,pa,pb){const g=S.rowSeg[p.tag];if(!g||!(g.b-g.a>1e-6)||g.a<pa-1e-6||g.b>pb+1e-6)return null;return g}
+  function segCheck(r,ti,tf){const A=Data.parseKm(ti),B=Data.parseKm(tf);
+    if(A.err)return {err:'Estaca inicial: '+A.err};if(B.err)return {err:'Estaca final: '+B.err};
+    if(Math.abs(A.s-B.s)<1e-6)return {err:'A extensão não pode ser zero: a estaca inicial e a final são iguais.'};
+    const dec=r.L0.side==='D';
+    if(!dec&&A.s>B.s)return {err:'No sentido crescente a estaca inicial deve ser menor que a final.'};
+    if(dec&&A.s<B.s)return {err:'No sentido decrescente a estaca inicial deve ser maior que a final.'};
+    const a=Math.min(A.s,B.s),b=Math.max(A.s,B.s),pa=ODO[r.p.i0],pb=ODO[r.p.i1]+20;
+    if(a<pa-1e-6||b>pb+1e-6)return {err:`Fora do pano: a solução ${r.p.code} deste pano vai de ${r.pIni} a ${r.pFim}.`};
+    return {a,b,len:b-a,ini:A.name,fim:B.name}}
+  function segCells(r,dig){if(EDIT&&EDIT.tag===r.p.tag)return `<td class="segin"><input class="km segk" data-k="ini" value="${EDIT.ini}" inputmode="text" autocomplete="off" aria-label="Estaca inicial do pano ${r.p.tag}"></td><td class="segin"><input class="km segk" data-k="fim" value="${EDIT.fim}" inputmode="text" autocomplete="off" aria-label="Estaca final do pano ${r.p.tag}"></td><td class="segprev">${nf(r.len,dig)}</td>`;
+    return `<td${r.ed?' class="seged"':''}>${Data.nameAt(r.ini)}</td><td${r.ed?' class="seged"':''}>${Data.nameAt(r.fim)}</td><td${r.ed?' class="seged"':''}>${nf(r.len,dig)}</td>`}
+  function segBtns(r){if(r.off)return '';if(EDIT&&EDIT.tag===r.p.tag)return `<div class="segbar"><button type="button" class="segSave">Salvar</button><button type="button" class="segCancel">Cancelar</button>${r.ed?'<button type="button" class="segOrig">Original</button>':''}</div><div class="segErr" role="alert">${EDIT.err||''}</div>`;
+    return `<button type="button" class="segEd" aria-label="Editar estacas do pano ${r.p.tag}">✎ Editar</button>`}
+  // depois de salvar: atualiza a programação já emitida (relatório e registro em Relatórios)
+  function segAfter(tag){let note='';
+    try{if(PROG&&PROG.info){buildProg(PROG.info);if(!$('repView').hidden)showReport();note=` Programação de ${PROG.info.data.split('-').reverse().join('/')} (${PROG.info.equipe}) atualizada.`}
+      else{const lp=store.get('progLast',null);if(lp&&lp.data&&lp.equipe){const id=lp.data+'|'+lp.equipe,ps=store.get('execProgs',[]),pr=ps.find(x=>x.id===id);
+        if(pr&&pr.items.some(it=>it.tag===tag)){if(pr.concluded)note=' A programação emitida já foi concluída: a execução registrada não muda.';
+          else if(LAST){const r=[...LAST.rows,...LAST.drn.rows].find(x=>x.p.tag===tag);
+            pr.items=pr.items.map(it=>it.tag===tag?Object.assign({},it,r?{a:r.a,b:r.b}:{}):it).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
+            note=` Programação de ${lp.data.split('-').reverse().join('/')} (${lp.equipe}) atualizada em Relatórios.`}}}}}catch(e){}
+    return note}
+
   function calc(scroll){
     const out=$('cOut');['eKmA','eKmB','eDens','ePerda'].forEach(id=>fieldErr(id,''));
     const A=Data.parseKm(S.kmA),B=Data.parseKm(S.kmB);let bad=false;
@@ -1613,18 +1655,18 @@ renderGps(Loc.gps);
     const rows=[];
     for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN'||S.pista==='DRN')continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const hid=S.show[p.code]===false;
-      const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;
+      const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
       const ow=S.rowW[p.tag],wBase=num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
       const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:num(S.esp[p.code]),off=S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
-      rows.push({p,L0,a,b,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
+      rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
     const drows=[];
     if(S.pista==='ALL'||S.pista==='DRN')for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
-      const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const dec=L0.side==='D';
+      const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
-      drows.push({p,L0,a,b,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
+      drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
     drows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini));
     // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
@@ -1649,6 +1691,8 @@ renderGps(Loc.gps);
     const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
     let h=hidTxt;
+    const nEd=[...rows,...drows].filter(r=>r.ed).length;
+    if(SEGMSG||nEd)h+=`<div class="alert ${SEGMSG?'ok':'info'}">${SEGMSG?`<b>${SEGMSG}</b>`:''}${nEd?`${nEd} pano${nEd>1?'s':''} com estacas editadas nesta programação (marcados como "editado"); os dados do projeto não mudam. <button type="button" class="linkb" id="segAll">Restaurar todos</button>`:''}</div>`;SEGMSG='';
     if(swapped)h+=`<div class="alert info">O km inicial era maior que o final; para ${S.sent==='C'?'o sentido crescente':'os dois sentidos'} o intervalo foi considerado de ${nA} a ${nB}.</div>`;
     if(partial||dens==null){const det=[missW.length?`Falta largura: ${missW.join(', ')}.`:'',missE.length?`Falta espessura de CBUQ: ${missE.join(', ')}.`:'',dens==null?'Sem densidade, as toneladas não são calculadas.':''].filter(Boolean).join(' ');
       h+=`<div class="alert warn"><b>${partial?`Resultado incompleto: ${inc.length} de ${valid.length} panos têm dados ausentes e não entram nos totais.`:'Informe a densidade para obter as toneladas de CBUQ.'}</b>${det} Preencha em "Cadastro de larguras e espessuras".</div>`}
@@ -1670,17 +1714,17 @@ renderGps(Loc.gps);
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
         <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
-        <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small></td>
+        <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
         <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>
-        <td>${Data.nameAt(r.ini)}</td><td>${Data.nameAt(r.fim)}</td><td>${nf(r.len,1)}</td>
+        ${segCells(r,1)}
         ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
         <td class="wcell"><input type="number" class="rw${r.wCustom?' cust':''}" inputmode="decimal" step="0.01" min="0" value="${r.w!=null?r.w:''}" placeholder="—" aria-label="Largura do pano ${r.p.tag} em metros">${r.wCustom?`<button type="button" class="rwreset" title="Voltar à largura padrão (${r.wBase!=null?nf(r.wBase,2):'—'} m)">↺</button>`:''}</td>
         <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
-      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação.</div></div>`;
+      <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação. "Editar" muda a estaca inicial e a final do segmento dentro do pano: a extensão, a área, o volume e o CBUQ são recalculados com a mesma largura e espessura; os dados do projeto não mudam ("Original" desfaz).</div></div>`;
     }else h+=`<div class="alert info"><b>Sem panos de pavimento neste filtro.</b>${S.pista==='DRN'?'Pista "Somente drenagem" selecionada: a programação terá só os serviços de drenagem.':`Entre ${nA} e ${nB} (${scope}) só há drenagem.`}</div>`;
     const dact=drows.filter(r=>!r.off),dOff=drows.length-dact.length,dSum=c=>dact.filter(r=>r.p.code===c).reduce((a,r)=>a+r.len,0),nSai=dact.reduce((a,r)=>a+r.sai.length,0);
     const DRN={rows:dact,all:drows,nOff:dOff,DR:dSum('DR'),DP:dSum('DP'),nSai};
@@ -1690,9 +1734,9 @@ renderGps(Loc.gps);
         <div class="kpi"><span>Saídas de dreno</span><b>${nSai}</b><div class="sub">vinculadas aos drenos programados</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP,0)}<small>m</small></b><div class="sub">${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno</th></tr></thead><tbody>
-      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m`}</small></td>
+      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
-        <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td><td>${Data.nameAt(r.ini)}</td><td>${Data.nameAt(r.fim)}</td><td>${nf(r.len,0)}</td>
+        <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${segCells(r,0)}
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="3">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''}</td></tr></tfoot></table></div>
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação.</div></div>`}
@@ -1704,6 +1748,20 @@ renderGps(Loc.gps);
       cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};
       if(wi)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
       if(rs)rs.onclick=()=>{delete S.rowW[tg];save();calc(false)}});
+    ROWS.clear();[...rows,...drows].forEach(r=>ROWS.set(r.p.tag,r));
+    out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag,r=ROWS.get(tg);if(!r)return;
+      const eb=tr.querySelector('.segEd');if(eb)eb.onclick=()=>{EDIT={tag:tg,ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),err:''};calc(false);const i=out.querySelector('tr[data-tag="'+tg+'"] .segk');if(i){i.focus();i.select()}};
+      if(!(EDIT&&EDIT.tag===tg))return;
+      const ins=[...tr.querySelectorAll('.segk')],prev=tr.querySelector('.segprev'),er=tr.querySelector('.segErr'),dig=r.drn?0:1;
+      const chk=()=>{EDIT.ini=ins[0].value.trim();EDIT.fim=ins[1].value.trim();const v=segCheck(r,EDIT.ini,EDIT.fim);EDIT.err=v.err||'';er.textContent=EDIT.err;
+        ins.forEach(i=>i.setAttribute('aria-invalid',v.err?'true':'false'));prev.innerHTML=v.err?'—':`${nf(v.len,dig)}<small style="display:block;color:var(--muted)">era ${nf(r.len,dig)}</small>`;return v};
+      ins.forEach(i=>{i.addEventListener('input',chk);i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tr.querySelector('.segSave').click()}if(e.key==='Escape')tr.querySelector('.segCancel').click()})});
+      tr.querySelector('.segSave').onclick=()=>{const v=chk();if(v.err){ins[v.err.startsWith('Estaca final')?1:0].focus();return}
+        if(Math.abs(v.a-r.a0)<1e-6&&Math.abs(v.b-r.b0)<1e-6)delete S.rowSeg[tg];else S.rowSeg[tg]={a:v.a,b:v.b};save();EDIT=null;
+        SEGMSG=`Pano ${tg}: ${v.ini} → ${v.fim} · ${nf(v.len,dig)} m (antes ${nf(r.len,dig)} m). Totais recalculados.`;calc(false);const n=segAfter(tg);if(n){SEGMSG+=n;calc(false)}};
+      tr.querySelector('.segCancel').onclick=()=>{EDIT=null;calc(false)};
+      const ob=tr.querySelector('.segOrig');if(ob)ob.onclick=()=>{delete S.rowSeg[tg];save();EDIT=null;SEGMSG=`Pano ${tg}: estacas originais restauradas.`;calc(false);const n=segAfter(tg);if(n){SEGMSG+=n;calc(false)}}});
+    const sa=$('segAll');if(sa)sa.onclick=()=>{const tags=[...rows,...drows].filter(r=>r.ed).map(r=>r.p.tag);tags.forEach(t=>delete S.rowSeg[t]);save();EDIT=null;SEGMSG=`${tags.length} pano${tags.length>1?'s':''} com as estacas originais restauradas.`;calc(false);let n='';tags.forEach(t=>n=segAfter(t)||n);if(n){SEGMSG+=n;calc(false)}};
     const so=$('cOrdem');if(so)so.onchange=()=>{S.ordem=so.value;save();calc(false)};
     if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
 

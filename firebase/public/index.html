@@ -949,6 +949,21 @@ details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:70
 .alert{border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
 .alert.warn{background:var(--warn-bg);border:1px solid var(--warn)}
 .alert.info{background:var(--surface);border:1px solid var(--line)}
+.alert.ok{background:color-mix(in srgb,var(--ok) 10%,var(--surface));border:1px solid var(--ok)}
+.badge.edt{background:#FFF4D6;color:#7A5300;border:1px solid #E0B44A}
+.linkb{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+table.q td.pano .segEd{display:inline-block;margin-top:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 10px;font:700 12.5px var(--sans,system-ui);cursor:pointer}
+table.q td.pano .segEd:hover{border-color:var(--ink)}
+table.q td.pano .segbar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+table.q td.pano .segbar button{border-radius:8px;padding:6px 11px;font:700 12.5px var(--sans,system-ui);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+table.q td.pano .segbar .segSave{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+table.q td.pano .segErr{color:var(--bad,#C8101A);font-size:12px;font-weight:600;white-space:normal;max-width:220px;margin-top:4px}
+table.q td.pano .segErr:empty{display:none}
+table.q td.segin{padding:4px 6px}
+table.q td.segin input{width:108px;font:700 15px var(--cond);padding:7px 6px;border:2px solid var(--ink);border-radius:8px;text-align:center;background:var(--surface);color:var(--ink)}
+table.q td.segin input[aria-invalid="true"]{border-color:var(--bad,#C8101A);background:#FFF1F1}
+table.q td.segprev{font-weight:800}
+table.q td.seged{background:#FFF8E6}
 .alert b{display:block}
 .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
 table.q{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
@@ -1426,7 +1441,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 05/10/2026 21:53 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 16:04 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1790,10 +1805,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006005359";</script>
-<script src="native.js?v=20261006005359"></script>
-<script src="firebase-config.js?v=20261006005359"></script>
-<script src="auth.js?v=20261006005359"></script>
+<script>window.APP_BUILD="20261006190419";</script>
+<script src="native.js?v=20261006190419"></script>
+<script src="firebase-config.js?v=20261006190419"></script>
+<script src="auth.js?v=20261006190419"></script>
 
 </body>
 </html>
