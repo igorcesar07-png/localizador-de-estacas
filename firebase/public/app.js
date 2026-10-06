@@ -1368,7 +1368,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       ${o.n?`<div class="sdg">${o.sai.map(k=>`<span>${k}</span>`).join('')}</div>`:'<p class="sdn">Sem saídas previstas neste segmento</p>'}</div>`).join('')}</div>`}
   // Modelo único do relatório: a pré-visualização e o PDF são desenhados a partir dele
   function reportModel(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
-    const sides=[];let cur=null;
+    const sides=[];let cur=null;let acc=0;
     for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
@@ -1376,7 +1376,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:inf.color,espInk:inf.ink,
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
         qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc,serial:r.serial||''});
-      const q=cur.panos[cur.panos.length-1];q.chips=[['Serial',q.serial||'—','ser',!!q.serial],['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
+      const q=cur.panos[cur.panos.length-1];const tOk=!r.excl&&!inc&&r.t!=null;if(tOk)acc+=r.t;q.tOk=tOk;q.accN=acc;q.acc=nf(acc,2);q.chips=[['Serial',q.serial||'—','ser',!!q.serial],['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
     const dsides=[];cur=null;const D=L.drn;const SEEN=new Set(),saidas=[];let nSaiTot=0;
     for(const r of P.dseq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Drenagem · pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};dsides.push(cur)}
       const inf=r.p.info,ini=Data.nameAt(r.ini),fim=Data.nameAt(r.fim),ext=nf(r.len,0)+' m';
@@ -1399,7 +1399,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
                 usinaBox(I,hasP)],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
       warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
-      sides,count:P.seq.length,dsides,dcount:nD,
+      sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} · ${nSaiTot} saída${nSaiTot!==1?'s':''} de dreno`:null,saidas,nSai:nSaiTot,
       tiles:hasP?[['Segmentos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]].concat(nD?[['Drenagem',nf(dTot,0)+' m',false]]:[]):
@@ -1469,9 +1469,9 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>${esc(hr[1].title.replace('Equipe de ','').replace(/^./,c=>c.toUpperCase()))}</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
         <div class="sr-us${hr[2].items.length>2?' n4':''}"><span>Usina e qualidade</span>${hr[2].items.map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
-      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
+      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>CBUQ (t)</th><th>CBUQ acumulado (t)</th></tr></thead><tbody>
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
-        <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
+        <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td><td class="q acc">${r.acc}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
       ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th></tr></thead><tbody>
         ${M.dsides.map(s=>s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td></tr>`).join('')).join('')}
@@ -1523,11 +1523,11 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
         [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
          {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:hex(r.espInk),fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
-         r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),clean(r.area.replace(' m²','')),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}}]);
-      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','Área (m2)','CBUQ (t)']],body,
+         r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}},{content:r.acc,styles:{fontStyle:'bold',fillColor:LIGHT}}]);
+      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','CBUQ (t)','CBUQ acumulado (t)']],body,
         theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
         headStyles:{fillColor:INK,textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
-        columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},2:{cellWidth:12.5*s},3:{cellWidth:26*s},4:{halign:'right'},5:{halign:'right'},7:{cellWidth:13*s},8:{halign:'right'},9:{halign:'right'},10:{halign:'right'},11:{halign:'right',cellWidth:16*s}},
+        columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},2:{cellWidth:12.5*s},3:{cellWidth:26*s},4:{halign:'right'},5:{halign:'right'},7:{cellWidth:13*s},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',cellWidth:15*s},11:{halign:'right',cellWidth:21*s}},
         didParseCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(raw.raw.code)+2;d.cell.styles.cellPadding={top:1.1*s,bottom:1.1*s,left:1.2*s+tw+1.4,right:1.2*s}}},
         didDrawCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){const p=raw.raw;doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(p.code)+2;
           const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'});
@@ -2359,7 +2359,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 19:31';
+  const CUR_VER='06/10/2026 19:42';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
