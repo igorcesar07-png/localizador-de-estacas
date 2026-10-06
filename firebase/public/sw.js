@@ -1,5 +1,5 @@
 // cache só do app e das bibliotecas; nunca dos serviços de login e banco de dados
-const C='estacas277-fb-20261006202038';
+const C='estacas277-fb-20261006203736';
 const LIB=/cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/;
 const TILE=/tile\.openstreetmap|arcgisonline/;
 self.addEventListener('install',e=>{self.skipWaiting()});
