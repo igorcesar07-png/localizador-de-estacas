@@ -1285,6 +1285,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     const miss=Object.keys(RFF).filter(k=>!RFF[k].value.trim()&&!(drnOnly&&(k==='uPrep'||k==='uIni')));
     Object.keys(RFF).forEach(k=>RFF[k].setAttribute('aria-invalid',miss.includes(k)?'true':'false'));
     if(miss.length){$('rfPend').innerHTML=`<b>Campos pendentes:</b> ${miss.map(k=>RFL[k]).join(', ')}.`;$('rfPend').hidden=false;RFF[miss[0]].focus();return}
+    if(rodOf(RFF.obra.value)!=='BR-277'){$('rfPend').innerHTML='<b>Obra incompatível:</b> os panos desta calculadora são da BR-277 (Blocos 02 e 03). Escolha a obra Restauração BR-277 – Blocos 02 e 03.';$('rfPend').hidden=false;RFF.obra.setAttribute('aria-invalid','true');RFF.obra.focus();return}
     const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());store.set('progLast',info);
     {const H=hist();H[info.data+'|'+info.obra+'|'+info.equipe]=info;const ks=Object.keys(H).sort((a,b)=>a<b?1:-1);ks.slice(200).forEach(k=>delete H[k]);store.set('progHist',H);Object.keys(HDIRTY).forEach(k=>delete HDIRTY[k])}
     $('repForm').hidden=true;buildProg(info);showReport()});
@@ -1330,7 +1331,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     const drnTxt=[D.DR?`DR ${nf(D.DR,0)} m`:null,D.DP?`DP ${nf(D.DP,0)} m`:null].filter(Boolean).join(' · ');
     const fd=P.dseq[0];
     const tc=tempoCls(I.tempo);
-    const M={title:'PROGRAMAÇÃO DE SERVIÇOS',subtitle:`BR-277 · trecho ${L.nIn[0]} a ${L.nIn[1]} · ${L.scope}`,
+    const M={title:'PROGRAMAÇÃO DE SERVIÇOS',subtitle:repSubtitle(I,L),
       date:dateBR(I.data),equipe:I.equipe,obra:I.obra,
       tempo:{status:I.tempo,msg:I.tempoMsg,cls:tc,unst:isUnstable(I.tempo),label:isUnstable(I.tempo)?'instável':'estável'},
       horarios:[{title:'Equipe de sinalização',items:[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]},
@@ -1347,8 +1348,14 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
       note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); as saídas de dreno aparecem junto do dreno a que pertencem.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} Fonte: R08 Unifilar de Soluções B2+B3 BR-277. Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
-      close:['Estamos à disposição. Bom trabalho a todos!','Neovia — por pessoas, com pessoas, para pessoas!']};
+      close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
+  // subtítulo: rodovia e blocos da obra + trecho, faixa e sentido da programação
+  const RODOVIAS={'BR-277':'BR-277 — Blocos 02 e 03','BR-373':'BR-373 — Bloco 04'};
+  const rodOf=obra=>/BR-?373/i.test(obra||'')?'BR-373':'BR-277';
+  function repSubtitle(I,L){const faixa=S.pista==='ALL'?'Todas as faixas':S.pista==='DRN'?'Somente drenagem (DR e DP)':S.pista==='DRN_DR'?'DR – Dreno Raso':S.pista==='DRN_DP'?'DP – Dreno Profundo':Data.GRP[S.pista];
+    const sent=S.sent==='ALL'?'Ambos os sentidos':SIDE[S.sent];
+    return `${RODOVIAS[rodOf(I.obra)]} — Trecho ${L.nIn[0]} a ${L.nIn[1]} — ${faixa} — ${sent}`}
   // validação: todos os campos da programação precisam chegar ao relatório
   function validateModel(M){const miss=[];const chk=(v,l)=>{if(v==null||String(v).trim()===''||/undefined|null|NaN/.test(String(v)))miss.push(l)};
     chk(M.date,'Data');chk(M.equipe,'Equipe');chk(M.obra,'Obra');chk(M.tempo.status,'Previsão do tempo');chk(M.tempo.msg,'Mensagem da previsão');
@@ -1367,16 +1374,15 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     let h=`<div class="nid"><div class="d">${esc(M.date)}</div><div class="g"><div><span>Equipe</span><b>${esc(M.equipe)}</b></div><div><span>Obra</span><b class="o">${esc(M.obra)}</b></div></div></div>
       <div class="ntp${M.tempo.unst?' un':''}">${ICON[M.tempo.cls]}<div><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <h3 class="nsec">Horários</h3><div class="nhr">${M.horarios.map(b=>`<div class="nhb"><h4>${b.title}</h4>${b.items.map(([k,v])=>`<div class="it"><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`).join('')}</div>
-      <div class="ngo"><div class="n">1º</div><div><span>Início da execução</span><p>${esc(M.start)}</p></div></div>
       ${M.count?`<h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3><div class="nleg">Espessura: <span style="background:#B00E17">10 cm</span><span style="background:#6A2C91">6 cm</span><span style="background:#1E7A4C">3 cm</span><span style="background:#4A4A4A">outras</span></div>`:''}${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
     const card=p=>`<div class="npc${p.inc?' inc':''}${p.drn?' drn':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
         <div class="l"><b>${p.lane}</b> ${pill(p)} <span>${esc(p.desc)}</span></div>
         <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor}"`:''}>${k} <b>${v}</b></span>`).join('')}</div></div>
         <div class="q">${p.unit?`<b>${p.qty}</b><small>${p.unit}</small>`:`<small>${p.qty}</small>`}</div></div>`;
-    for(const s of M.sides){h+=`<div class="nside"><b>${s.title}</b><span>${s.sub}</span></div>`;for(const p of s.panos)h+=card(p)}
+    for(const s of M.sides){for(const p of s.panos)h+=card(p)}
     if(M.total)h+=`<div class="ntot">${esc(M.total)}</div>`;
     if(M.dcount){h+=`<h3 class="nsec">Drenagem <em>${M.dcount} segmento${M.dcount>1?'s':''}</em></h3>`;
-      for(const s of M.dsides){h+=`<div class="nside"><b>${s.title}</b><span>${s.sub}</span></div>`;for(const p of s.panos)h+=card(p)}
+      for(const s of M.dsides){for(const p of s.panos)h+=card(p)}
       h+=`<div class="ntot">${esc(M.dtotal)}</div>`}
     h+=`<h3 class="nsec">Resumo da programação</h3><div class="nsum">${M.tiles.map(([k,v,d])=>`<div class="${d?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
     if(M.perda)h+=`<p class="nperda">${M.perda}</p>`;
@@ -1390,25 +1396,24 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   const ABRV={FF:'Fres. funcional',FE:'Fres. estrutural',FS:'Fres. superficial',REC:'Reciclagem',PA:'Preench. acost.',RP:'Reparo profundo',RF:'Sigla R08'};
   const abrv=code=>{const f=Data.info(code).fam;return ABRV[f]||Data.info(code).desc};
   const faixaAb=l=>l.replace('Acostamento','Acost.').replace('Faixa ','F');
-  function simpRows(M){const out=[];for(const s of M.sides){out.push({band:true,title:s.title,sub:s.sub});for(const p of s.panos)out.push(p)}return out}
+  function simpRows(M){const out=[];for(const s of M.sides)for(const p of s.panos)out.push(p);return out}
   function showReportSimple(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
     if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
     const hr=M.horarios;
-    let h=`<div class="sr"><div class="sr-h"><img src="${LOGOS.neo}" alt="Neovia"><div><h1>${M.title}</h1><small>${esc(M.subtitle)} · resumo</small></div><img src="${LOGOS.via}" alt="Via Araucária"></div>
+    let h=`<div class="sr"><div class="sr-h"><img src="${LOGOS.neo}" alt="Neovia"><div><h1>${M.title}</h1><small>${esc(M.subtitle)}</small></div><img src="${LOGOS.via}" alt="Via Araucária"></div>
       <div class="sr-top"><div class="sr-id"><b class="d">${esc(M.date)}</b><div><span>Equipe</span><b>${esc(M.equipe)}</b></div><div><span>Obra</span><b class="o">${esc(M.obra)}</b></div></div>
       <div class="sr-tp${M.tempo.unst?' un':''}"><span>Previsão · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <div class="sr-mid"><table class="sr-ht"><thead><tr><th></th><th>Café</th><th>DDS</th><th>Saída trecho</th></tr></thead><tbody>
         <tr><th>Sinalização</th>${hr[0].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr><tr><th>Serviço</th>${hr[1].items.map(i=>`<td>${esc(i[1])}</td>`).join('')}</tr></tbody></table>
         <div class="sr-us"><span>Usina</span><div><small>Preparação</small><b>${esc(hr[2].items[0][1])}</b></div><div><small>Início usinagem</small><b>${esc(hr[2].items[1][1])}</b></div></div></div>
-      <div class="sr-go"><b>1º</b><p>${esc(M.start)}</p></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
       ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:#fff"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
       ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
-        ${M.dsides.map(s=>`<tr class="b"><td colspan="8">${s.title} <span>· ${s.sub}</span></td></tr>`+s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
+        ${M.dsides.map(s=>s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
         </tbody></table></div>`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
         <div class="sr-sol">${M.sol.map(o=>`<span>${pill(o)} ${o.line.replace(/ panos?/,'p')} · <b>${o.val}</b></span>`).join('')}</div></div>
@@ -1434,7 +1439,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const g=3*s;let y=Mg;
       // cabeçalho
       const lg=9*s;doc.addImage(LOGOS.neo,'PNG',Mg,y,lg*aN,lg,'neo','FAST');doc.addImage(LOGOS.via,'PNG',W-Mg-lg*aV,y,lg*aV,lg,'via','FAST');
-      para(M.title,Mg,y+0.5,CW,14,{b:true,a:'center'});para(M.subtitle+' · resumo',Mg,y+0.5+lh(14)+0.6,CW,7.5,{c:MUT,a:'center'});
+      para(M.title,Mg,y+0.5,CW,14,{b:true,a:'center'});para(M.subtitle,Mg,y+0.5+lh(14)+0.6,CW,7.5,{c:MUT,a:'center'});
       y+=Math.max(lg,lh(14)+lh(7.5)+1)+2;doc.setFillColor(...RED);doc.rect(Mg,y,CW,0.8,'F');y+=0.8+g;
       // linha 1: identificação | previsão do tempo (lado a lado)
       {const w1=CW*0.42,w2=CW-w1-g,pad=2.6*s;const hId=pad+lh(12)+1+lh(6)+hP(M.equipe,w1-2*pad-2,11,true)+0.8+lh(6)+hP(M.obra,w1-2*pad-2,8.5,false)+pad;
@@ -1450,9 +1455,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
           b.items.forEach(([k,v],i)=>para(v,Mg+2+c0+i*cw,yy+0.9*s,cw,12,{b:true}))});
         const x2=Mg+w1+g;box(x2,y,w2,h,{stroke:LINE});doc.setFillColor(...RED);doc.rect(x2,y,w2,hh,'F');para('USINA',x2+2,y+1.2*s,w2-4,7,{b:true,c:WH});
         hr[2].items.forEach(([k,v],i)=>{const yy=y+hh+i*rh;para(k,x2+2,yy+1.6*s,w2*0.55,7.5,{c:MUT});para(v,x2+2,yy+0.9*s,w2-4,12,{b:true,a:'right'})});y+=h+g}
-      // início da execução
-      {const w=CW-18*s,h=Math.max(10*s,hP(M.start,w,9,true)+4*s);box(Mg,y,CW,h,{fill:PINK,stroke:RED,lw:0.6});doc.setFillColor(...RED);doc.roundedRect(Mg+2,y+(h-7.5*s)/2,11*s,7.5*s,1,1,'F');
-        para('1º',Mg+2,y+(h-7.5*s)/2+1.2*s,11*s,12,{b:true,c:WH,a:'center'});para(M.start,Mg+15*s,y+2*s,w,9,{b:true});y+=h+g}
+      // (quadro de início da execução removido do relatório)
       if(M.warn){const h=hP(M.warn,CW-4,7.5,false)+2.4*s;box(Mg,y,CW,h,{fill:LIGHT,r:1});para(M.warn,Mg+2,y+1.2*s,CW-4,7.5,{});y+=h+g*0.7}
       // tabela de panos
       const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
@@ -1468,7 +1471,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
           const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'});
 }}});
       if(M.count)y=doc.lastAutoTable.finalY+g;
-      if(M.dcount){const dbody=[];for(const sd of M.dsides){dbody.push([{content:`${sd.title.toUpperCase()}  ·  ${sd.sub}`,colSpan:8,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]);
+      if(M.dcount){const dbody=[];for(const sd of M.dsides){
           for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},r.sai.length?r.sai.join(' · '):'-'])}
         doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Serial','Est. inicial','Est. final','Ext. (m)','Saídas de dreno (km)']],body:dbody,
           theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
@@ -1566,10 +1569,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const h=2.5+lhOf(7.5)+1.5+lab+lhOf(14)+2.5;need(h+2);box(M0,y,CW,h,{stroke:LINE});
       para(b.title.toUpperCase(),M0+3,y+2.2,CW-6,7.5,{b:true});const yb=y+2.5+lhOf(7.5)+1.5;
       b.items.forEach(([k,v],i)=>{const x=M0+3+i*cw;para(k,x,yb,cw-2,6.5,{c:MUT});para(v,x,yb+lab,cw-2,14,{b:true})});y+=h+2}
-    // início da execução (campo de destaque, mesmo texto da pré-visualização)
-    {y+=1;const w=CW-22,h=Math.max(14,lhOf(6.5)+hPara(M.start,w,9.5,true)+6.5);need(h+2);box(M0,y,CW,h,{fill:PINK,stroke:RED,lw:0.7,r:2.2});
-      doc.setFillColor(...RED);doc.roundedRect(M0+2.8,y+(h-10)/2,12,10,1.4,1.4,'F');para('1º',M0+2.8,y+(h-10)/2+2.2,12,14,{b:true,c:WH,a:'center'});
-      let yy=y+3;yy+=para('INÍCIO DA EXECUÇÃO',M0+18,yy,w,6.5,{b:true,c:RED})+0.5;para(M.start,M0+18,yy,w,9.5,{b:true});y+=h+3}
+    // (quadro de início da execução removido do relatório)
     // 4. sequência
     if(M.count){secT('Sequência de execução',`${M.count} panos`);
     {font(6.5,true);doc.setTextColor(...MUT);doc.text('ESPESSURA:',M0,y+2.8);let lx=M0+doc.getTextWidth('ESPESSURA:')+2;
@@ -1581,8 +1581,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       for(const [k,v,cls,ok] of items){font(6,true);const kw=doc.getTextWidth(k);font(cls?9.5:8.5,true);const vw=Math.min(doc.getTextWidth(clean(v)),w-kw-4.2);const cwid=kw+vw+4.2,ch=5.2;
         if(cx+cwid>x+w&&cx>x){cx=x;cy+=ch+1.4}out.push({k,v,cls,ok,x:cx,dy:cy,w:cwid,h:ch,kw});cx+=cwid+1.4}
       return {out,h:cy+5.2}};
-    const drawSides=sides=>{for(const s of sides){need(9+26);doc.setFillColor(...LIGHT);doc.rect(M0,y,CW,7,'F');doc.setFillColor(...RED);doc.rect(M0,y,1.6,7,'F');
-      para(s.title.toUpperCase(),M0+4,y+1.6,CW/2,8.5,{b:true});para(s.sub,M0,y+2,CW-2,7,{c:MUT,a:'right'});y+=9;
+    const drawSides=sides=>{for(const s of sides){
       for(const p of s.panos){const x=M0+17,qw=21,w=W-M0-3-qw-x;
         const laneTxt=`${p.lane}  [${p.code}]  ${p.desc}`+(p.drn&&p.sai.length?`  ·  Saídas de dreno (km): ${p.sai.join(', ')}`:''),hE=hPara(`${p.ini}  a  ${p.fim}`,w,12.5,true),hL=hPara(laneTxt,w,8.5,false),CL=chipsLayout(p,x,W-M0-3-x);
         const h=Math.max(20,3+hE+1+hL+1.8+CL.h+3);need(h+2);
@@ -2278,7 +2277,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 17:49';
+  const CUR_VER='06/10/2026 18:31';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
