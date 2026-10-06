@@ -956,7 +956,7 @@ table.q td.scell{min-width:190px;white-space:nowrap}
 table.q td.scell input{width:170px;font:600 13px var(--sans,system-ui);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 table.q td.scell input.auto{border-color:#7FB89A;background:#F1FAF4}table.q td.scell input.manual{border-color:var(--me);background:#EEF4FE}table.q td.scell input.multi{border-color:var(--warn);background:var(--warn-bg)}
 table.q td.scell small{display:block;color:var(--muted);font-size:11px;margin-top:2px}table.q td.scell .rserReset{border:0;background:none;color:var(--me);font-weight:700;cursor:pointer;margin-left:4px}
-.hrhint{margin:8px 2px 0;font-size:13px}.sr-t td.ser{font-size:10.5px;white-space:nowrap;text-align:left}.hrhint b{color:var(--ink)}
+.unote{display:block;font:600 11px var(--sans,system-ui);color:var(--muted);margin-top:2px}.hrhint{margin:8px 2px 0;font-size:13px}.sr-t td.ser{font-size:10.5px;white-space:nowrap;text-align:left}.hrhint b{color:var(--ink)}
 .alert.ok{background:color-mix(in srgb,var(--ok) 10%,var(--surface));border:1px solid var(--ok)}
 .badge.edt{background:#FFF4D6;color:#7A5300;border:1px solid #E0B44A}
 .linkb{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
@@ -1449,7 +1449,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/10/2026 16:31 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 17:20 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1752,7 +1752,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="hr" role="row"><b>Sinalização</b><input id="rfSCafe" type="time" aria-label="Sinalização – café da manhã"><input id="rfSDds" type="time" aria-label="Sinalização – DDS"><input id="rfSSai" type="time" aria-label="Sinalização – saída para o trecho"></div>
         <div class="hr" role="row"><b>Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
         <div class="hh u" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
-        <div class="hr" role="row"><b>Usina</b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
+        <div class="hr" role="row"><b>Usina<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
       </div><p class="hint hrhint" id="rfHrHint"></p></fieldset>
     <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid" style="grid-template-columns:1fr">
       <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
@@ -1777,7 +1777,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="form">
           <div class="fld s1"><label for="cKmA">Km inicial</label><input class="km" id="cKmA" inputmode="text" autocomplete="off" placeholder="236+000 ou 236000"><span class="err" id="eKmA"></span></div>
           <div class="fld s1"><label for="cKmB">Km final</label><input class="km" id="cKmB" inputmode="text" autocomplete="off" placeholder="237+000 ou 237000"><span class="err" id="eKmB"></span></div>
-          <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option><option value="DRN">Somente drenagem (DR/DP)</option></select></div>
+          <div class="fld"><label for="cPista">Pista</label><select id="cPista"><option value="ALL">Todas as faixas</option><option value="F1">Faixa 1</option><option value="F23">Faixa 2/3</option><option value="AC">Acostamento</option><option value="DRN">Somente drenagem (DR + DP)</option><option value="DRN_DR">Somente DR – Dreno Raso</option><option value="DRN_DP">Somente DP – Dreno Profundo</option></select></div>
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
@@ -1822,10 +1822,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006193140";</script>
-<script src="native.js?v=20261006193140"></script>
-<script src="firebase-config.js?v=20261006193140"></script>
-<script src="auth.js?v=20261006193140"></script>
+<script>window.APP_BUILD="20261006202038";</script>
+<script src="native.js?v=20261006202038"></script>
+<script src="firebase-config.js?v=20261006202038"></script>
+<script src="auth.js?v=20261006202038"></script>
 
 </body>
 </html>

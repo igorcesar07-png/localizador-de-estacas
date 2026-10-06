@@ -1106,7 +1106,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
     if(S.sent==='D'&&!(A.s>B.s))nIn.reverse(); // no decrescente o trecho vai da estaca maior para a menor
     const hidden=new Map();
     const rows=[];
-    for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN'||S.pista==='DRN')continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+    for(const p of PANOS){const L0=LANES[p.L];if(L0.grp==='DRN'||/^DRN/.test(S.pista))continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const hid=S.show[p.code]===false;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
@@ -1116,7 +1116,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
       rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
     const drows=[];
-    if(S.pista==='ALL'||S.pista==='DRN')for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+    if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
       drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
@@ -1130,7 +1130,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       exec:(x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini)||LORD[x.p.L]-LORD[y.p.L]};
     rows.sort(cmp[ordem]);
     const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor'}[ordem];
-    const scope=`${S.pista==='ALL'?'todas as faixas':S.pista==='DRN'?'somente drenagem':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
+    const scope=`${S.pista==='ALL'?'todas as faixas':S.pista==='DRN'?'somente drenagem':S.pista==='DRN_DR'?'somente DR – Dreno Raso':S.pista==='DRN_DP'?'somente DP – Dreno Profundo':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
     const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}. Marque de novo em Cadastro de larguras e espessuras.</div>`:'';
     if(!rows.length&&!drows.length){LAST=null;out.innerHTML=hidTxt+`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento nem drenagem cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
     // só os segmentos marcados para execução entram nos totais e na programação
@@ -1179,7 +1179,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="5">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
       <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação. "Editar" muda a estaca inicial e a final do segmento dentro do pano: a extensão, a área, o volume e o CBUQ são recalculados com a mesma largura e espessura; os dados do projeto não mudam ("Original" desfaz).</div></div>`;
-    }else h+=`<div class="alert info"><b>Sem panos de pavimento neste filtro.</b>${S.pista==='DRN'?'Pista "Somente drenagem" selecionada: a programação terá só os serviços de drenagem.':`Entre ${nA} e ${nB} (${scope}) só há drenagem.`}</div>`;
+    }else h+=`<div class="alert info"><b>Sem panos de pavimento neste filtro.</b>${/^DRN/.test(S.pista)?'Programação só de drenagem: entram apenas os drenos'+(S.pista==='DRN_DR'?' rasos (DR)':S.pista==='DRN_DP'?' profundos (DP)':' (DR e DP)')+' com as saídas de dreno. Os horários de usina não são exigidos.':`Entre ${nA} e ${nB} (${scope}) só há drenagem.`}</div>`;
     const dact=drows.filter(r=>!r.off),dOff=drows.length-dact.length,dSum=c=>dact.filter(r=>r.p.code===c).reduce((a,r)=>a+r.len,0),nSai=dact.reduce((a,r)=>a+r.sai.length,0);
     const DRN={rows:dact,all:drows,nOff:dOff,DR:dSum('DR'),DP:dSum('DP'),nSai};
     if(drows.length){h+=`<div class="card" id="cDrn"><h2>Drenagem de ${nIn[0]} a ${nIn[1]}</h2>
@@ -1187,7 +1187,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
         <div class="kpi"><span>DP – Dreno Profundo</span><b>${nf(DRN.DP,0)}<small>m</small></b><div class="sub">profundidade 1,50 m</div></div>
         <div class="kpi"><span>Saídas de dreno</span><b>${nSai}</b><div class="sub">vinculadas aos drenos programados</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP,0)}<small>m</small></b><div class="sub">${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
-      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno</th></tr></thead><tbody>
+      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
       ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
@@ -1259,12 +1259,15 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   function openForm(){if(S.done)calc(false);
     if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
       if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
-    $('rfPend').hidden=true;prevHours();$('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
+    $('rfPend').hidden=true;prevHours();
+    {const d=!!(LAST&&!LAST.rows.length&&LAST.drn.rows.length);$('rfUsinaNote').hidden=!d;[RFF.uPrep,RFF.uIni].forEach(e=>{e.required=!d;e.setAttribute('aria-required',String(!d))})}
+    $('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
   $('cRep').onclick=()=>{if(can('calculadora','create'))openForm()};
   $('rfCancel').onclick=()=>$('repForm').hidden=true;
   $('repForm').addEventListener('click',e=>{if(e.target.id==='repForm')$('repForm').hidden=true});
   $('rfForm').addEventListener('submit',e=>{e.preventDefault();
-    const miss=Object.keys(RFF).filter(k=>!RFF[k].value.trim());
+    const drnOnly=!!(LAST&&!LAST.rows.length&&LAST.drn.rows.length);
+    const miss=Object.keys(RFF).filter(k=>!RFF[k].value.trim()&&!(drnOnly&&(k==='uPrep'||k==='uIni')));
     Object.keys(RFF).forEach(k=>RFF[k].setAttribute('aria-invalid',miss.includes(k)?'true':'false'));
     if(miss.length){$('rfPend').innerHTML=`<b>Campos pendentes:</b> ${miss.map(k=>RFL[k]).join(', ')}.`;$('rfPend').hidden=false;RFF[miss[0]].focus();return}
     const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());store.set('progLast',info);
@@ -1306,7 +1309,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       const inf=r.p.info,ini=Data.nameAt(r.ini),fim=Data.nameAt(r.fim),ext=nf(r.len,0)+' m';
       cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||'-',sai:r.sai,
-        chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||'-','',true],['Saídas de dreno',r.sai.length?r.sai.join(' · '):'nenhuma','',true]],
+        chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||'-','',true],['Saídas de dreno (km)',r.sai.length?r.sai.join(' · '):'nenhuma','',true]],
         qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||''})}
     const dTot=D.DR+D.DP,nD=P.dseq.length,hasP=P.seq.length>0;
     const drnTxt=[D.DR?`DR ${nf(D.DR,0)} m`:null,D.DP?`DP ${nf(D.DP,0)} m`:null].filter(Boolean).join(' · ');
@@ -1317,7 +1320,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       tempo:{status:I.tempo,msg:I.tempoMsg,cls:tc,unst:isUnstable(I.tempo),label:isUnstable(I.tempo)?'instável':'estável'},
       horarios:[{title:'Equipe de sinalização',items:[['Café da manhã',I.sCafe],['DDS',I.sDds],['Saída para o trecho',I.sSai]]},
                 {title:'Equipe de serviço',items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
-                {title:'Usina',items:[['Preparação da usina',I.uPrep],['Início da usinagem',I.uIni]]}],
+                {title:'Usina',na:!hasP&&!I.uPrep&&!I.uIni,items:[['Preparação da usina',I.uPrep||'—'],['Início da usinagem',I.uIni||'—']]}],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
       warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
       sides,count:P.seq.length,dsides,dcount:nD,
@@ -1334,7 +1337,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
   // validação: todos os campos da programação precisam chegar ao relatório
   function validateModel(M){const miss=[];const chk=(v,l)=>{if(v==null||String(v).trim()===''||/undefined|null|NaN/.test(String(v)))miss.push(l)};
     chk(M.date,'Data');chk(M.equipe,'Equipe');chk(M.obra,'Obra');chk(M.tempo.status,'Previsão do tempo');chk(M.tempo.msg,'Mensagem da previsão');
-    M.horarios.forEach(b=>b.items.forEach(([k,v])=>chk(v,`${b.title} – ${k}`)));
+    M.horarios.forEach(b=>{if(!b.na)b.items.forEach(([k,v])=>chk(v,`${b.title} – ${k}`))});
     const n=M.sides.reduce((a,s)=>a+s.panos.length,0),nd=M.dsides.reduce((a,s)=>a+s.panos.length,0);if(n!==M.count||nd!==M.dcount||!(n+nd))miss.push('Sequência de panos');
     [...M.sides,...M.dsides].forEach(s=>s.panos.forEach(p=>{chk(p.ini,`Pano ${p.ord} – estaca inicial`);chk(p.fim,`Pano ${p.ord} – estaca final`);chk(p.qty,`Pano ${p.ord} – quantidade`)}));
     return miss}
@@ -1389,7 +1392,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:#fff"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
-      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno</th></tr></thead><tbody>
+      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
         ${M.dsides.map(s=>`<tr class="b"><td colspan="8">${s.title} <span>· ${s.sub}</span></td></tr>`+s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
         </tbody></table></div>`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
@@ -1452,7 +1455,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       if(M.count)y=doc.lastAutoTable.finalY+g;
       if(M.dcount){const dbody=[];for(const sd of M.dsides){dbody.push([{content:`${sd.title.toUpperCase()}  ·  ${sd.sub}`,colSpan:8,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]);
           for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},r.sai.length?r.sai.join(' · '):'-'])}
-        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Serial','Est. inicial','Est. final','Ext. (m)','Saídas de dreno']],body:dbody,
+        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Serial','Est. inicial','Est. final','Ext. (m)','Saídas de dreno (km)']],body:dbody,
           theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
           headStyles:{fillColor:[11,94,67],textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
           columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},3:{cellWidth:27*s},4:{halign:'right'},5:{halign:'right'},6:{halign:'right',cellWidth:15*s}},
@@ -1559,14 +1562,14 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       y+=6}}
     if(M.warn){const h=hPara(M.warn,CW-5,7.5,false)+4;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:MUT,dash:true,r:1.2});para(M.warn,M0+2.5,y+2,CW-5,7.5,{});y+=h+2}
     const chipsLayout=(p,x,w)=>{ // chips: espessura (destaque), largura, extensão, área; quebra de linha automática
-      const items=p.chips.map(([k,v,cls,ok])=>[k.toUpperCase(),p.drn&&k==='Saídas de dreno'?(p.sai.length?String(p.sai.length):'nenhuma'):v,cls,ok]);const out=[];let cx=x,cy=0;
+      const items=p.chips.map(([k,v,cls,ok])=>[k.toUpperCase(),p.drn&&/^Saídas de dreno/.test(k)?(p.sai.length?p.sai.length+(p.sai.length>1?' saídas':' saída'):'nenhuma'):v,cls,ok]);const out=[];let cx=x,cy=0;
       for(const [k,v,cls,ok] of items){font(6,true);const kw=doc.getTextWidth(k);font(cls?9.5:8.5,true);const vw=Math.min(doc.getTextWidth(clean(v)),w-kw-4.2);const cwid=kw+vw+4.2,ch=5.2;
         if(cx+cwid>x+w&&cx>x){cx=x;cy+=ch+1.4}out.push({k,v,cls,ok,x:cx,dy:cy,w:cwid,h:ch,kw});cx+=cwid+1.4}
       return {out,h:cy+5.2}};
     const drawSides=sides=>{for(const s of sides){need(9+26);doc.setFillColor(...LIGHT);doc.rect(M0,y,CW,7,'F');doc.setFillColor(...RED);doc.rect(M0,y,1.6,7,'F');
       para(s.title.toUpperCase(),M0+4,y+1.6,CW/2,8.5,{b:true});para(s.sub,M0,y+2,CW-2,7,{c:MUT,a:'right'});y+=9;
       for(const p of s.panos){const x=M0+17,qw=21,w=W-M0-3-qw-x;
-        const laneTxt=`${p.lane}  [${p.code}]  ${p.desc}`+(p.drn&&p.sai.length?`  ·  Saídas: ${p.sai.join(', ')}`:''),hE=hPara(`${p.ini}  a  ${p.fim}`,w,12.5,true),hL=hPara(laneTxt,w,8.5,false),CL=chipsLayout(p,x,W-M0-3-x);
+        const laneTxt=`${p.lane}  [${p.code}]  ${p.desc}`+(p.drn&&p.sai.length?`  ·  Saídas de dreno (km): ${p.sai.join(', ')}`:''),hE=hPara(`${p.ini}  a  ${p.fim}`,w,12.5,true),hL=hPara(laneTxt,w,8.5,false),CL=chipsLayout(p,x,W-M0-3-x);
         const h=Math.max(20,3+hE+1+hL+1.8+CL.h+3);need(h+2);
         box(M0,y,CW,h,{fill:p.inc?[250,250,250]:WH,stroke:p.inc?MUT:LINE,dash:p.inc});
         doc.setFillColor(...(p.drn?[11,94,67]:INK));doc.roundedRect(M0+2,y+2,12,h-4,1.5,1.5,'F');para(p.ord,M0+2,y+h/2-3,12,13.5,{b:true,c:WH,a:'center'});
@@ -2260,7 +2263,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 16:31';
+  const CUR_VER='06/10/2026 17:20';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
