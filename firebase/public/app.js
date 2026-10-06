@@ -1038,7 +1038,7 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       st.ok++;st.by[code]=(st.by[code]||0)+1;return [serial,L,code,Math.min(a,b),Math.max(a,b),String(get('status')||'')]}
     const famOf=name=>{const ns=norm(name);return /superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':null};
     async function importFile(f){const recs=[],st={lidos:0,ok:0,rod:0,pos:0,fx:0,abas:[],ign:[],by:{}};
-      if(/\.json$/i.test(f.name)||/json/.test(f.type)){let arr;try{arr=JSON.parse(await f.text())}catch(e){throw new Error('o arquivo não é um JSON válido.')}
+      if(/\.json$/i.test(f.name)||/json/.test(f.type)){let arr;try{arr=JSON.parse((await f.text()).replace(/^\uFEFF/,''))}catch(e){throw new Error('o arquivo não é um JSON válido.')}
         if(!Array.isArray(arr))arr=Array.isArray(arr.apontamentos)?arr.apontamentos:Array.isArray(arr.registros)?arr.registros:null;if(!arr)throw new Error('o JSON não tem uma lista de apontamentos.');
         const grupos=new Set();
         for(const o of arr){if(!o||typeof o!=='object')continue;const K={};Object.keys(o).forEach(k=>K[norm(k)]=o[k]);const fam=famOf(K['solucao']||K['solução']||'');
@@ -1049,11 +1049,13 @@ on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;
       else{await loadLib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',()=>!!window.XLSX);
         const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
         for(const nm of wb.SheetNames){const ws=wb.Sheets[nm];const raw=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}),txt=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:null});
-          const hi=raw.findIndex(r=>r&&r.some(c=>norm(c)==='serial'));const fam=famOf(nm);
-          if(hi<0||!fam){st.ign.push(nm);continue}st.abas.push(nm);
-          const H=raw[hi].map(norm),col=k=>H.indexOf(k);
-          for(let i=hi+1;i<raw.length;i++){const r=raw[i],tr=txt[i]||[];if(!r)continue;const rr=recOf(k=>col(k)>=0?r[col(k)]:null,k=>col(k)>=0?tr[col(k)]:null,fam,st);if(rr)recs.push(rr)}}}
-      if(!recs.length)throw new Error('nenhum registro com serial reconhecido (Fresagem Funcional, Estrutural, Superficial ou Drenos, com Serial, Sentido, Faixa e km inicial/final).');
+          // aba por solução (nome da aba) ou aba consolidada com a coluna "Solução" (ex.: exportação em uma aba só)
+          const hi=raw.findIndex(r=>r&&r.some(c=>norm(c)==='serial'));const H=hi>=0?raw[hi].map(norm):[],col=k=>H.indexOf(k),cSol=col('solucao'),fam=famOf(nm);
+          if(hi<0||(!fam&&cSol<0)){st.ign.push(nm);continue}const n0=st.ok;
+          for(let i=hi+1;i<raw.length;i++){const r=raw[i],tr=txt[i]||[];if(!r)continue;const f=fam||famOf(r[cSol]);if(!f)continue;
+            const rr=recOf(k=>col(k)>=0?r[col(k)]:null,k=>col(k)>=0?tr[col(k)]:null,f,st);if(rr)recs.push(rr)}
+          if(st.ok>n0)st.abas.push(nm);else st.ign.push(nm)}}
+      if(!recs.length)throw new Error(`nenhum registro com serial reconhecido em "${f.name}"${st.ign.length?` (abas/soluções lidas: ${st.ign.slice(0,6).join(', ')})`:''}. Use o arquivo de apontamentos exportado (planilha por solução ou JSON), com Serial, Solução, Sentido, Faixa e km inicial/final.`);
       base={at:Date.now(),file:f.name,recs,st};store.set('seriais',base);
       let shared=false;try{if(window.ACL&&ACL.admin&&ACL.saveShared){await ACL.saveShared('seriais',base);shared=true}}catch(e){}
       return {st,shared}}
@@ -2276,7 +2278,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 17:37';
+  const CUR_VER='06/10/2026 17:49';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
