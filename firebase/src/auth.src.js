@@ -12,6 +12,7 @@ const ADMIN='igordalmolin.eng@gmail.com';
 export const PAGES=[
   {k:'localizacao',t:'Localização estaca',acts:['view'],help:{view:'Ver a estaca atual pelo GPS'}},
   {k:'mapa',t:'Estacas BR-277 B2+B3 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros'}},
+  {k:'mapab4',t:'Estacas BR-373 B4 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros da BR-373 B4'}},
   {k:'calculadora',t:'Calculadora de programação',acts:['view','create','edit'],help:{view:'Calcular trechos',create:'Emitir o relatório da programação',edit:'Alterar larguras, espessuras e densidade'}},
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
@@ -127,7 +128,9 @@ async function ensureUserDoc(user){const ref=doc(db,'users',user.uid);let s;
     :{email:user.email,name:user.displayName||window.__pendingName||'',profile:null,custom:true,perms:{},active:false,invited:false,createdAt:serverTimestamp()};
   await setDoc(ref,data);return data}
 
-async function loadBase(){const s=await getDoc(doc(db,'base','r08'));if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
+async function loadBase(id='r08'){const s=await getDoc(doc(db,'base',id));if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
+// BR-373 B4: base separada, entregue só a quem tem a aba liberada (ver firestore.rules)
+async function loadB4(isAdm,perms){if(!isAdm&&!(perms.mapab4&&perms.mapab4.view))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
 function startApp(){if(window.__appStarted)return;window.__appStarted=true;const s=document.createElement('script');s.src='app.js?v='+(window.APP_BUILD||'');s.onload=()=>{closeGate();decorateDrawer()};
   s.onerror=()=>gate('<div class="gmsg bad">Não foi possível carregar o aplicativo. Verifique a conexão e tente de novo.</div>');document.body.appendChild(s)}
 function decorateDrawer(){const d=document.querySelector('#drawer .dfoot');if(!d||$('duser'))return;const a=window.ACL;const box=document.createElement('div');box.id='duser';box.className='duser';
@@ -142,10 +145,13 @@ async function baseMissing(isAdm){
   $('gOut').onclick=()=>doSignOut().then(()=>location.reload());
   $('gBase').onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=$('gBaseMsg');m.innerHTML='<div class="gmsg">Enviando…</div>';
     try{await uploadBase(f);m.innerHTML='<div class="gmsg ok">Base carregada. Abrindo o aplicativo…</div>';setTimeout(()=>location.reload(),900)}catch(x){m.innerHTML=`<div class="gmsg bad">${esc(errTxt(x))}</div>`}}}
-async function uploadBase(file){const txt=await file.text();let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
-  if(!d||!Array.isArray(d.codes)||!Array.isArray(d.rows)||!d.rows.length)throw new Error('O arquivo não tem o formato da base do R08 (codes e rows).');
-  if(txt.length>1000000)throw new Error('Arquivo grande demais para o servidor (limite de 1 MB).');
-  const ver=new Date().toLocaleString('pt-BR');await setDoc(doc(db,'base','r08'),{json:txt,version:ver,rows:d.rows.length,updatedAt:serverTimestamp(),by:auth.currentUser.email});return ver}
+async function uploadBase(file,id='r08'){const txt=await file.text();let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
+  if(!d||!Array.isArray(d.codes)||!Array.isArray(d.rows)||!d.rows.length)throw new Error('O arquivo não tem o formato da base (codes e rows).');
+  const isB4=!!(d.src&&Array.isArray(d.src.panos)&&d.base==='BR-373 B4');
+  if(id==='b4'&&!isB4)throw new Error('Este não é o arquivo da BR-373 B4 (base-BR373-B4.json).');
+  if(id==='r08'&&isB4)throw new Error('Este é o arquivo da BR-373 B4: envie no quadro "Base da BR-373 B4".');
+  if(new Blob([txt]).size>1040000)throw new Error('Arquivo grande demais para o servidor (limite de 1 MB).');
+  const ver=new Date().toLocaleString('pt-BR');await setDoc(doc(db,'base',id),{json:txt,version:ver,rows:d.rows.length,...(isB4?{panos:d.src.panos.length}:{}),updatedAt:serverTimestamp(),by:auth.currentUser.email});return ver}
 
 /* ---------------- fluxo principal ---------------- */
 gate('<div class="gspin" aria-label="Carregando"></div>');
@@ -168,6 +174,7 @@ onAuthStateChanged(auth,async user=>{
     let base=null;try{base=await loadBase()}catch(e){if(e.code==='permission-denied'){waitScreen(user,'Acesso negado pelo servidor.','Seu usuário não tem permissão para a base do projeto.');return}throw e}
     if(!base){baseMissing(isAdm);return}
     window.PROJECT_DATA=base.data;window.BASE_VERSION=base.version;
+    const b4=await loadB4(isAdm,window.ACL.perms);window.PROJECT_DATA_B4=b4?b4.data:null;window.BASE_VERSION_B4=b4?b4.version:'';
     if(!isAdm)watchUser(user,true);
     startApp()}
   catch(e){gate(`<div class="gmsg bad">${esc(errTxt(e))}</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
@@ -252,8 +259,13 @@ function profilesTab(B,root){const sel=ADM.sel;
     ${ADM.profiles.map((p,k)=>`<button type="button" class="adm-row" data-k="${k}"><div><b>${esc(p.name)}</b><small>${permsSummary(p.perms)} · ${ADM.users.filter(u=>!u.custom&&u.profile===p.id).length} usuário(s)</small></div><span class="adm-st st-inv">Editar</span></button>`).join('')||'<p class="adm-note">Nenhum perfil criado. Exemplos: "Apontador de campo" (Localização, Mapa e Foto), "Programação" (Calculadora e Relatórios).</p>'}</div></div>`;
   $('pNew').onclick=()=>{ADM.sel={kind:'new',perms:{}};renderAdmin(root)};B.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ADM.sel=ADM.profiles[+b.dataset.k];renderAdmin(root)})}
 
-async function baseTab(B,root){let info='';try{const s=await getDoc(doc(db,'base','r08'));if(s.exists()){const d=s.data();info=`Versão carregada em ${esc(d.version)} · ${esc(d.rows||'')} estacas · por ${esc(d.by||'')}`}}catch(e){info=esc(errTxt(e))}
-  B.innerHTML=`<div class="adm-card"><h2>Base do projeto (R08 + estacas)</h2><p class="adm-note">${info||'Nenhuma base carregada.'}</p>
+async function baseTab(B,root){const info={};
+  for(const id of ['r08','b4']){try{const s=await getDoc(doc(db,'base',id));if(s.exists()){const d=s.data();info[id]=`Versão carregada em ${esc(d.version)} · ${esc(d.rows||'')} estacas${d.panos?` · ${esc(d.panos)} panos`:''} · por ${esc(d.by||'')}`}}catch(e){info[id]=esc(errTxt(e))}}
+  B.innerHTML=`<div class="adm-card"><h2>Base do projeto (R08 + estacas)</h2><p class="adm-note">${info.r08||'Nenhuma base carregada.'}</p>
     <p class="adm-note">A base fica no servidor e só é entregue a usuários ativos com alguma página liberada. Para atualizar, envie um novo arquivo data.json.</p>
-    <div class="adm-form"><label>Novo arquivo da base<input type="file" id="bFile" accept=".json,application/json" style="padding-top:10px"></label></div></div>`;
-  $('bFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const v=await uploadBase(f);msgA('Base atualizada ('+v+'). Os usuários recebem a nova versão ao abrir o app.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}}}
+    <div class="adm-form"><label>Novo arquivo da base<input type="file" id="bFile" accept=".json,application/json" style="padding-top:10px"></label></div></div>
+    <div class="adm-card"><h2>Base da BR-373 B4 (unifilar + KMZ de estacas)</h2><p class="adm-note">${info.b4||'Nenhuma base carregada: a aba Estacas BR-373 B4 fica sem dados até o envio.'}</p>
+    <p class="adm-note">Entregue só a usuários ativos com a página "Estacas BR-373 B4" liberada. Arquivo: base-BR373-B4.json.</p>
+    <div class="adm-form"><label>Arquivo da base B4<input type="file" id="bFileB4" accept=".json,application/json" style="padding-top:10px"></label></div></div>`;
+  $('bFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const v=await uploadBase(f);msgA('Base atualizada ('+v+'). Os usuários recebem a nova versão ao abrir o app.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}};
+  $('bFileB4').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const v=await uploadBase(f,'b4');msgA('Base da BR-373 B4 carregada ('+v+'). Reabra o app para ver a aba com os dados.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}}}

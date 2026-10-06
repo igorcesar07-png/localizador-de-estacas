@@ -20,15 +20,21 @@ service cloud.firestore {
     }
     function canView(p, page) { return p.get(page, {}).get('view', false) == true; }
     function anyView(p) {
-      return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'calculadora')
+      return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
           || canView(p, 'foto') || canView(p, 'relatorios');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
 
-    // Base do projeto (R08 + estacas): só para usuários ativos com alguma página liberada
-    match /base/{doc} {
+    // Base do projeto BR-277 (R08 + estacas): só para usuários ativos com alguma página liberada
+    // (o app usa esta base em todas as páginas, inclusive para abrir)
+    match /base/r08 {
       allow read: if isAdmin() || activeWithAccess();
+      allow write: if isAdmin();
+    }
+    // Base da BR-373 B4: só para usuários ativos com a página "Estacas BR-373 B4" liberada
+    match /base/b4 {
+      allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'mapab4'));
       allow write: if isAdmin();
     }
 

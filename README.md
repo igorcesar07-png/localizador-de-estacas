@@ -34,3 +34,9 @@ Abra o endereço novo no Safari, entre com a conta liberada pelo administrador e
 - Capacitor: o APK leva o app dentro (funciona offline) e usa login Google nativo, galeria do aparelho e compartilhamento do sistema (`mobile/native.src.js` → `firebase/public/native.js`).
 - APK sempre atualizado em: https://github.com/igorcesar07-png/localizador-de-estacas/releases/latest/download/Localizador-Estacas.apk (workflow `android.yml`).
 - Atualização automática: cada publicação no Firebase gera `app-bundle/version.json` e um `.zip` do app; o APK baixa sozinho e aplica ao voltar para o app. Se a versão nova exigir um recurso nativo que o APK instalado não tem (lista em `mobile/native-plugins.json`), o app mostra o aviso para baixar e instalar o APK novo.
+
+## Aba Estacas BR-373 B4
+- Gerada no build a partir da aba "Estacas BR-277 B2+B3" (`fonte/b4/b4build.py`): mesma marcação, CSS e código, com ids `b4_`, eventos, filtros e GPS próprios. A aba BR-277 não é alterada.
+- Base: `fonte/b4/prep_b4.py <Estacas_BR-373_B4.kmz> <unifilar_BR-373_PR_utf8.json> base-BR373-B4.json` (coordenadas só do KMZ, sem interpolação; panos e quantidades do JSON, sem recálculo). O arquivo gerado não vai para o repositório: o administrador envia em Administração › Base do projeto.
+- Permissão própria ("Estacas BR-373 B4"); a base `base/b4` no Firestore só é entregue a quem tem a aba liberada.
+- Testes: `fonte/b4/tb4.js` (importação e associação dos 2.836 panos) e `fonte/b4/tb4eq.js` (mesmo roteiro de uso nas duas abas).

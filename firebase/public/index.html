@@ -768,18 +768,19 @@ button{font-family:inherit}
 }
 
 /* ===== página 2: mapa (Estacas BR-277 B2+B3) ===== */
-#pMap{display:grid;grid-template-columns:1fr 410px}
-#map{position:relative;background:var(--ground);min-height:0}
+#pMap,/* ===== página 2: mapa (Estacas BR-277 B2+B3) ===== */
+#b4_pMap{display:grid;grid-template-columns:1fr 410px}
+#map,#b4_map{position:relative;background:var(--ground);min-height:0}
 .leaflet-container{background:var(--ground);font-family:var(--body)}
-#estaq{position:absolute;z-index:850;top:12px;left:12px;width:min(360px,calc(100% - 80px));background:var(--plate);color:var(--plate-ink);border-radius:14px;box-shadow:var(--shadow);padding:8px 14px 12px 8px;border:2px solid #2B312D;display:grid;grid-template-columns:auto 1fr;gap:0 10px;box-sizing:border-box}
-#estaq .menuBtn{width:40px;height:40px;align-self:start}
-#estaq .emeta{margin-top:5px}
-#estaq .emeta .mode{border:0;background:#232925;color:var(--plate-ink);border-radius:6px;padding:3px 7px;font:700 11.5px var(--body);letter-spacing:.04em;cursor:pointer}
-#estaq .emeta span:empty{display:none}
-#estaq .emeta .mode span{background:none;padding:0;font:inherit}
-#estaq .emeta .mode.off{background:#3A2020;color:#F2C9C9}
-#estaq .emeta .mode.off i{background:#E05555}
-#estaq #eDir{background:transparent;color:var(--plate-muted);padding:3px 2px;font-weight:600}
+#estaq,#b4_estaq{position:absolute;z-index:850;top:12px;left:12px;width:min(360px,calc(100% - 80px));background:var(--plate);color:var(--plate-ink);border-radius:14px;box-shadow:var(--shadow);padding:8px 14px 12px 8px;border:2px solid #2B312D;display:grid;grid-template-columns:auto 1fr;gap:0 10px;box-sizing:border-box}
+#estaq .menuBtn,#b4_estaq .menuBtn{width:40px;height:40px;align-self:start}
+#estaq .emeta,#b4_estaq .emeta{margin-top:5px}
+#estaq .emeta .mode,#b4_estaq .emeta .mode{border:0;background:#232925;color:var(--plate-ink);border-radius:6px;padding:3px 7px;font:700 11.5px var(--body);letter-spacing:.04em;cursor:pointer}
+#estaq .emeta span:empty,#b4_estaq .emeta span:empty{display:none}
+#estaq .emeta .mode span,#b4_estaq .emeta .mode span{background:none;padding:0;font:inherit}
+#estaq .emeta .mode.off,#b4_estaq .emeta .mode.off{background:#3A2020;color:#F2C9C9}
+#estaq .emeta .mode.off i,#b4_estaq .emeta .mode.off i{background:#E05555}
+#estaq #eDir,#b4_estaq #b4_eDir{background:transparent;color:var(--plate-muted);padding:3px 2px;font-weight:600}
 .dline{width:100%}.imb .kv2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 6px}.imb .kv2 div{background:var(--surface-2);border-radius:10px;padding:8px 10px}.imb .kv2 span{display:block;font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.imb .kv2 b{font:700 20px var(--cond);font-variant-numeric:tabular-nums}
 .imb .pbar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin-top:3px}.imb .pbar i{display:block;height:100%;background:var(--accent)}
 .imh .t1 .chip{font:700 13px var(--body);border-radius:6px;padding:3px 8px;background:var(--ink);color:var(--surface)}.imh .t1 .chip.alt{background:var(--surface-2);color:var(--ink);border:1px solid var(--line)}
@@ -797,16 +798,16 @@ button{font-family:inherit}
 .emeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .emeta span{font:600 12.5px var(--body);background:#232925;color:var(--plate-ink);border-radius:6px;padding:3px 7px;font-variant-numeric:tabular-nums}
 .emeta span.acc-good{background:#1D4D31}.emeta span.acc-mid{background:#5A4610}.emeta span.acc-bad{background:#5E1D1D}
-#northBtn{position:absolute;z-index:845;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
-#northBtn svg{width:26px;height:26px;transition:transform .15s}#northBtn b{position:absolute;top:-2px;font:700 9px var(--body);color:#C8101A}#northBtn.rot b{display:none}#northBtn.rot{border-color:#C8101A}
-#toolTab{position:absolute;z-index:845;right:0;top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--line);border-right:0;border-radius:10px 0 0 10px;background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
-#toolTab svg{width:16px;height:16px}
-#toolScrim{position:absolute;inset:0;z-index:880;background:rgba(8,10,9,.35)}
-#tools{position:absolute;z-index:890;top:0;bottom:0;right:0;width:min(300px,84%);background:var(--surface);border-left:1px solid var(--line);box-shadow:-8px 0 26px rgba(0,0,0,.25);transform:translateX(104%);transition:transform .2s ease;display:flex;flex-direction:column;gap:4px;padding:10px;overflow-y:auto;box-sizing:border-box}
-#tools.open{transform:none}
-#tools .th{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
-#tools .th b{font:700 13px var(--body);letter-spacing:.12em;text-transform:uppercase}
-#tools .th .menuBtn{background:var(--surface-2);color:var(--ink);border-color:var(--line)}
+#northBtn,#b4_northBtn{position:absolute;z-index:845;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#northBtn svg,#b4_northBtn svg{width:26px;height:26px;transition:transform .15s}#northBtn b,#b4_northBtn b{position:absolute;top:-2px;font:700 9px var(--body);color:#C8101A}#northBtn.rot b,#b4_northBtn.rot b{display:none}#northBtn.rot,#b4_northBtn.rot{border-color:#C8101A}
+#toolTab,#b4_toolTab{position:absolute;z-index:845;right:0;top:50%;transform:translateY(-50%);width:22px;height:64px;border:1px solid var(--line);border-right:0;border-radius:10px 0 0 10px;background:color-mix(in srgb,var(--surface) 88%,transparent);color:var(--ink);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+#toolTab svg,#b4_toolTab svg{width:16px;height:16px}
+#toolScrim,#b4_toolScrim{position:absolute;inset:0;z-index:880;background:rgba(8,10,9,.35)}
+#tools,#b4_tools{position:absolute;z-index:890;top:0;bottom:0;right:0;width:min(300px,84%);background:var(--surface);border-left:1px solid var(--line);box-shadow:-8px 0 26px rgba(0,0,0,.25);transform:translateX(104%);transition:transform .2s ease;display:flex;flex-direction:column;gap:4px;padding:10px;overflow-y:auto;box-sizing:border-box}
+#tools.open,#b4_tools.open{transform:none}
+#tools .th,#b4_tools .th{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 8px;border-bottom:1px solid var(--line);margin-bottom:4px}
+#tools .th b,#b4_tools .th b{font:700 13px var(--body);letter-spacing:.12em;text-transform:uppercase}
+#tools .th .menuBtn,#b4_tools .th .menuBtn{background:var(--surface-2);color:var(--ink);border-color:var(--line)}
 .trow{display:flex;align-items:center;gap:12px;min-height:56px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--ink);font:600 15px var(--body);text-align:left;padding:6px 10px;cursor:pointer}
 .trow svg{width:24px;height:24px;flex:none}.trow span{display:flex;flex-direction:column}.trow small{font:500 12px var(--body);color:var(--muted)}
 .trow[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}.trow[aria-pressed="true"] small{color:var(--accent-ink)}
@@ -825,11 +826,11 @@ button{font-family:inherit}
 .cbtn{width:56px;height:56px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;font:700 10px var(--body);letter-spacing:.04em;text-transform:uppercase;padding:0}
 .cbtn svg{width:22px;height:22px}
 .cbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-#searchBox{position:absolute;z-index:860;top:12px;left:12px;right:80px;max-width:420px;display:flex;background:var(--surface);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-#searchBox input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:600 20px var(--cond);padding:12px 14px;outline:none}
-#searchBox button{border:0;background:var(--ink);color:var(--surface);font:700 15px var(--body);padding:0 18px;cursor:pointer}
-#toast{position:absolute;z-index:900;left:12px;right:80px;bottom:14px;max-width:520px;background:var(--ink);color:var(--surface);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.4;box-shadow:var(--shadow)}
-#map{--ls:1}
+#searchBox,#b4_searchBox{position:absolute;z-index:860;top:12px;left:12px;right:80px;max-width:420px;display:flex;background:var(--surface);border:2px solid var(--ink);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+#searchBox input,#b4_searchBox input{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:600 20px var(--cond);padding:12px 14px;outline:none}
+#searchBox button,#b4_searchBox button{border:0;background:var(--ink);color:var(--surface);font:700 15px var(--body);padding:0 18px;cursor:pointer}
+#toast,#b4_toast{position:absolute;z-index:900;left:12px;right:80px;bottom:14px;max-width:520px;background:var(--ink);color:var(--surface);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.4;box-shadow:var(--shadow)}
+#map,#b4_map{--ls:1}
 .kml{background:var(--axis);color:var(--ground);font:700 calc(12px*var(--ls)) var(--cond);padding:1px 6px;border-radius:4px;white-space:nowrap;letter-spacing:.03em;position:absolute;transform:translate(-50%,-50%)}
 .stl{position:absolute;top:calc(-7px*var(--ls));white-space:nowrap;color:var(--ink);font:600 calc(12px*var(--ls))/1 var(--cond);text-shadow:0 0 3px var(--ground),0 0 3px var(--ground),0 0 2px var(--ground);pointer-events:none;padding:0 3px}
 .stl.hot{background:var(--accent);color:var(--accent-ink);text-shadow:none;border-radius:3px;font-weight:700}
@@ -844,8 +845,8 @@ button{font-family:inherit}
 .pp table{border-collapse:collapse;width:100%;margin-top:8px;font-size:13px}
 .pp td{padding:3px 4px;border-top:1px solid var(--line)}
 .pp .go{margin-top:10px;width:100%;min-height:40px;border-radius:9px;border:0;background:var(--ink);color:var(--surface);font:700 14px var(--body);cursor:pointer}
-#panel{background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-#grab{display:none}#sheetHint{display:none}
+#panel,#b4_panel{background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+#grab,#b4_grab{display:none}#sheetHint,#b4_sheetHint{display:none}
 .ph{padding:12px 16px 0;display:flex;align-items:center;justify-content:space-between}
 .ph h2{margin:0;font:700 13px var(--body);letter-spacing:.14em;text-transform:uppercase}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 16px;border-bottom:1px solid var(--line)}
@@ -878,7 +879,7 @@ button{font-family:inherit}
 .item .bar{height:5px;background:var(--surface-2);border-radius:3px;margin-top:5px;position:relative}
 .item .bar i{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--ink);border-radius:2px}
 .none{font-size:13.5px;color:var(--muted);padding:8px 0;border-top:1px solid var(--line)}
-canvas#reti{width:100%;height:190px;display:block;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
+canvas#reti,canvas#b4_reti{width:100%;height:190px;display:block;border-radius:8px;background:var(--surface-2);border:1px solid var(--line)}
 .note{font-size:12.5px;color:var(--muted);line-height:1.45;margin:8px 0 0}
 .fsec{padding:14px 16px;border-bottom:1px solid var(--line)}
 .fsec h3{margin:0 0 10px;font:700 12px var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
@@ -1385,21 +1386,21 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 .gi .gdel{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:8px;border:0;background:#C8101A;color:#fff;font:700 15px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .gi i{top:auto;right:auto;left:6px;bottom:26px}
 @media (max-width:900px){
-  #pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
-  #panel{border-left:0;border-top:1px solid var(--line);height:46px;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);transition:height .24s cubic-bezier(.2,.8,.2,1)}
-  #sheetHead{touch-action:none;cursor:grab;padding-bottom:6px}
-  #sheetHint{display:inline}
-  #panel.drag{transition:none}
-  #panel .ph{cursor:grab}
-  #panel.collapsed .tabs,#panel.collapsed .pbody{visibility:hidden}
-  #grab{display:block;border:0;background:transparent;padding:8px 0 4px;cursor:grab;width:100%;touch-action:none}
-  #grab span{display:block;width:48px;height:5px;border-radius:3px;background:var(--line);margin:auto}
+  #pMap,#b4_pMap{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  #panel,#b4_panel{border-left:0;border-top:1px solid var(--line);height:46px;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.14);transition:height .24s cubic-bezier(.2,.8,.2,1)}
+  #sheetHead,#b4_sheetHead{touch-action:none;cursor:grab;padding-bottom:6px}
+  #sheetHint,#b4_sheetHint{display:inline}
+  #panel.drag,#b4_panel.drag{transition:none}
+  #panel .ph,#b4_panel .ph{cursor:grab}
+  #panel.collapsed .tabs,#panel.collapsed .pbody,#b4_panel.collapsed .tabs,#b4_panel.collapsed .pbody{visibility:hidden}
+  #grab,#b4_grab{display:block;border:0;background:transparent;padding:8px 0 4px;cursor:grab;width:100%;touch-action:none}
+  #grab span,#b4_grab span{display:block;width:48px;height:5px;border-radius:3px;background:var(--line);margin:auto}
   .ph{padding-top:4px}
-  #estaq{top:10px;left:10px;width:calc(100% - 76px);padding:6px 10px 8px 6px}
+  #estaq,#b4_estaq{top:10px;left:10px;width:calc(100% - 76px);padding:6px 10px 8px 6px}
   .big{font-size:46px}.big small{font-size:26px}
-  #northBtn{top:10px;right:10px}
-  #searchBox{top:10px;left:10px;right:64px}
-  #toast{left:10px;right:40px}
+  #northBtn,#b4_northBtn{top:10px;right:10px}
+  #searchBox,#b4_searchBox{top:10px;left:10px;right:64px}
+  #toast,#b4_toast{left:10px;right:40px}
   .form{grid-template-columns:repeat(2,minmax(0,1fr))}
   .fld,.fld.s3{grid-column:span 2}.fld.s1{grid-column:span 1}
   .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1419,12 +1420,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   <div class="nav">
     <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
+    <a href="#mapab4" data-page="mapab4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-373 B4<small>Mapa, soluções e filtros</small></span></a>
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 02/10/2026 00:52 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 05/10/2026 21:46 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1515,6 +1517,74 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     </div>
   </aside>
 </section>
+<!-- ===== 2b. Estacas BR-373 B4 (gerada a partir da aba BR-277 B2+B3) ===== -->
+<section class="page" id="b4_pMap" data-page="mapab4" hidden>
+  <div id="b4_map">
+    <div id="b4_estaq" aria-live="polite">
+      <button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button>
+      <div class="ebody"><div class="big" id="b4_big">—</div><div class="emeta" id="b4_emeta"><button type="button" class="mode" id="b4_mode" title="Ligar ou desligar o GPS"><i></i><span id="b4_modeTxt">Exemplo</span></button><span id="b4_eAcc"></span><span id="b4_eDir"></span></div></div>
+    </div>
+    <form id="b4_searchBox" hidden role="search">
+      <input id="b4_q" type="search" autocomplete="off" placeholder="Estaca, ex. 230+040 ou 230" aria-label="Buscar estaca">
+      <button type="submit">Ir</button>
+    </form>
+    <button type="button" id="b4_northBtn" title="Norte para cima" aria-label="Voltar o norte para cima"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.5 10h-9z" fill="#C8101A"/><path d="M12 22l-4.5-10h9z" fill="currentColor" opacity=".55"/><circle cx="12" cy="12" r="1.6" fill="#fff"/></svg><b>N</b></button>
+    <button type="button" id="b4_toolTab" aria-label="Abrir ferramentas do mapa" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <div id="b4_toolScrim" hidden></div>
+    <nav id="b4_tools" aria-label="Ferramentas do mapa" aria-hidden="true">
+      <div class="th"><b>Ferramentas</b><button type="button" class="menuBtn" id="b4_toolClose" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+      <button class="trow" id="b4_gpsBtn" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="8.5" opacity=".5"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/></svg><span>GPS <small>ligar / desligar</small></span></button>
+      <button class="trow" id="b4_followBtn" type="button" aria-pressed="true"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l7.5 19L12 16.8 4.5 21z"/></svg><span>Seguir <small>mapa acompanha a posição</small></span></button>
+      <button class="trow" id="b4_centerBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg><span>Centralizar <small>na minha localização</small></span></button>
+      <button class="trow" id="b4_searchBtn" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg><span>Buscar estaca</span></button>
+      <button class="trow" id="b4_baseBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 3 2 8l10 5 10-5z"/><path d="m2 13 10 5 10-5" opacity=".6"/></svg><span>Fundo do mapa <small id="b4_baseTxt">Satélite</small></span></button>
+      <button class="trow" id="b4_northBtn2" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4.5 10h-9z" fill="#C8101A"/><path d="M12 22l-4.5-10h9z" fill="currentColor" opacity=".55"/></svg><span>Norte para cima <small id="b4_bearTxt">rotação 0°</small></span></button>
+      <button class="trow" id="b4_posBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.5"/></svg><span>Informações de posicionamento <small>eixo, estaca mais próxima, confiança</small></span></button>
+      <p class="tnote2">Gire o mapa com dois dedos. Arraste a partir da borda direita para abrir este menu.</p>
+    </nav>
+    <div id="b4_toast" hidden></div>
+  </div>
+  <aside id="b4_panel" aria-label="Soluções">
+    <button id="b4_grab" type="button" aria-label="Expandir ou recolher o painel de soluções"><span></span></button>
+    <div class="ph" id="b4_sheetHead"><h2>Soluções <span id="b4_sheetHint" style="font-weight:600;letter-spacing:0;text-transform:none;color:var(--muted);font-size:12px">· arraste para abrir</span></h2><span class="note" id="b4_filterSummary" style="margin:0"></span></div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="b4_tabPt" aria-selected="true" type="button">Neste ponto</button>
+      <button class="tab" role="tab" id="b4_tabF" aria-selected="false" type="button">Filtros<span class="cnt" id="b4_fcnt"></span></button>
+    </div>
+    <div class="pbody" id="b4_pbody">
+      <div id="b4_viewPt">
+        <div class="pad">
+          <div class="hdr"><span>Bloco de 20 m</span><b id="b4_blockTxt"></b></div>
+          <div class="xs-lbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
+          <div class="xs" id="b4_xs"></div>
+          <div id="b4_groups"></div>
+        </div>
+        <div class="pad" style="border-top:1px solid var(--line)">
+          <div class="hdr"><span>Unifilar ±200 m</span></div>
+          <canvas id="b4_reti" aria-label="Unifilar de soluções em torno da posição"></canvas>
+          <p class="note">De cima para baixo: dreno C, acostamento C, faixa 2 C, faixa 1 C, faixa 1 D, faixa 2 D, acostamento D, dreno D. A barra escura é a sua posição.</p>
+        </div>
+      </div>
+      <div id="b4_viewF" hidden>
+        <div class="fsec"><h3>Sentido</h3><div class="segs" id="b4_fSent"></div></div>
+        <div class="fsec"><h3>Faixa <button type="button" id="b4_faixaAll">Todas</button></h3><div class="pills" id="b4_fFaixa"></div></div>
+        <div class="fsec"><h3>Solução <span><button type="button" id="b4_solAll">Todas</button> · <button type="button" id="b4_solNone">Nenhuma</button></span></h3><div class="pills" id="b4_fSol"></div></div>
+        <div class="fsec"><h3>Simulação</h3>
+          <div class="sim"><label for="b4_acc">Precisão ao tocar no mapa</label><input id="b4_acc" type="range" min="2" max="30" step="1" value="5"><b id="b4_accTxt">±5 m</b></div>
+          <p class="note">Sem GPS, toque no mapa para simular uma posição. Com o GPS ligado, o toque só consulta.</p>
+        </div>
+        <div class="fsec" style="border-bottom:0">
+          <h3>Convenções</h3>
+          <p class="note" style="margin-top:0">Cada linha do unifilar é um bloco de 20 m, da estaca até a seguinte. Blocos consecutivos com a mesma solução na mesma faixa formam um pano, dividido quando muda o marco km. Faixas desenhadas na posição do unifilar (faixa 1 junto ao eixo), com largura de 3,6 m só para desenho a partir do zoom 18 e ampliadas nos zooms menores. Sentido crescente à direita do eixo. Drenos ficam por fora do acostamento; ● marca saída de dreno.</p>
+          <p class="note" id="b4_fonte">Fonte: unifilar de soluções B4 – BR-373/PR e KMZ de estacas da BR-373 B4.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+</section>
+<div class="modal" id="b4_infoModal" hidden role="dialog" aria-modal="true" aria-labelledby="b4_imTitle">
+  <div class="mbox imbox"><div class="imh"><div id="b4_imTitle"></div><button type="button" class="imx" id="b4_imClose" aria-label="Fechar">✕</button></div><div class="imb" id="b4_imBody"></div></div>
+</div>
 
 <!-- ===== 6. Administração (só administrador principal) ===== -->
 <section class="page" id="pAdmin" data-page="admin" hidden style="display:flex;flex-direction:column;background:var(--ground)">
@@ -1720,10 +1790,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261002035200";</script>
-<script src="native.js?v=20261002035200"></script>
-<script src="firebase-config.js?v=20261002035200"></script>
-<script src="auth.js?v=20261002035200"></script>
+<script>window.APP_BUILD="20261006004600";</script>
+<script src="native.js?v=20261006004600"></script>
+<script src="firebase-config.js?v=20261006004600"></script>
+<script src="auth.js?v=20261006004600"></script>
 
 </body>
 </html>

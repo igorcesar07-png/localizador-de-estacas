@@ -1,8 +1,9 @@
 const PROJECT_DATA = window.PROJECT_DATA;
+const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','calculadora','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -172,7 +173,7 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','calculadora','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -501,6 +502,475 @@ Layers.init();renderFilters();
 if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
 renderGps(Loc.gps);
 });
+
+
+/* =====================================================================
+   PÁGINA 2b — Estacas BR-373 B4 (GERADA no build a partir da página 2; não editar aqui)
+   ===================================================================== */
+const __G={emit,on,store};
+if(PROJECT_DATA_B4){(function(){
+const emit=(e,d)=>__G.emit('b4:'+e,d),on=(e,f)=>__G.on(e==='page'?e:'b4:'+e,f);
+const store={get:(k,d)=>__G.store.get('b4.'+k,d),set:(k,v)=>__G.store.set('b4.'+k,v)};
+/* ------------------------------ Data ------------------------------ */
+const Data=(function(){
+  const CODES=PROJECT_DATA_B4.codes,R=PROJECT_DATA_B4.rows,N=R.length;
+  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:'',color:'#7FCBD9'},G:{desc:'',color:'#4F5D75'},
+    REC:{desc:'',color:'#D62839'},PA:{desc:'',color:'#F08A2C'},RP:{desc:'',color:'#B0177A'},
+    DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'}};
+  (function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos,iS=F.indexOf('sigla')+3,iT=F.indexOf('tipo_solucao')+3,tx=v=>typeof v==='string'&&v[0]==='#'?T[+v.slice(1)]:v;
+    const fam=c=>c==='R'?'DR':c==='P'?'DP':/^PA/.test(c)?'PA':c;
+    for(const r of S.panos){const f=fam(tx(r[iS]));if(FAM[f]&&!FAM[f].desc)FAM[f].desc=tx(r[iT])}
+    for(const k in FAM)if(!FAM[k].desc)FAM[k].desc=k})();
+  const FAM_ORDER=['FF','FE','G','REC','PA','RP','RF','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c)))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
+  const PA_SHADES={'1,5':'#FFD6A0','2,0':'#FDBA66','2,5':'#F79C3E','3,0':'#E47A2A','3,5':'#C95A1E','4,0':'#A64416','4,5':'#833310','5,0':'#5C240A'};
+  function inkOn(hex){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>150?'#141715':'#FFFFFF'}
+  function info(code){let fam,param=null,esp=null;
+    if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}else if(code==='G'){fam='G';esp='3 cm'}
+    else if(code==='DR'){fam='DR'}else if(code==='DP'){fam='DP'}
+    else if(code==='REC'){fam='REC';esp='25 cm'}else if(code==='RP'){fam='RP';esp='25 cm'}
+    else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else fam='RF';
+    let color=FAM[fam].color;if(fam==='PA'&&PA_SHADES[param])color=PA_SHADES[param];
+    return {code,fam,param,esp,color,desc:FAM[fam].desc,ink:inkOn(color)}}
+  const LANES=[
+    {i:0,name:'Acostamento / bordo',grp:'AC',side:'C',off:8.45,w:2.5,id:'AC-C'},
+    {i:1,name:'Faixa 2',grp:'F23',side:'C',off:5.4,w:3.6,id:'F23-C'},
+    {i:2,name:'Faixa 1',grp:'F1',side:'C',off:1.8,w:3.6,id:'F1-C'},
+    {i:3,name:'Faixa 1',grp:'F1',side:'D',off:-1.8,w:3.6,id:'F1-D'},
+    {i:4,name:'Faixa 2',grp:'F23',side:'D',off:-5.4,w:3.6,id:'F23-D'},
+    {i:5,name:'Acostamento / bordo',grp:'AC',side:'D',off:-8.45,w:2.5,id:'AC-D'},
+    {i:6,name:'Dreno',grp:'DRN',side:'C',off:11.2,w:1.2,id:'DR-C'},
+    {i:7,name:'Dreno',grp:'DRN',side:'D',off:-11.2,w:1.2,id:'DR-D'}];
+  const SIDE={C:'Crescente',D:'Decrescente'};const GRP={F1:'Faixa 1',F23:'Faixa 2',AC:'Acostamento / bordo'};
+  const DREN_CODE={R:'DR',P:'DP'};
+  function codeAt(L,i){if(L<6){const c=R[i][6][L];return c?CODES[c-1]:null}return DREN_CODE[R[i][7][L===6?2:1]]||null}
+  const saidaAt=(side,i)=>R[i][7][side==='C'?3:0]==='o';
+  const PANOS=[];const PANO_AT=LANES.map(()=>new Int32Array(N).fill(-1));
+  for(let L=0;L<8;L++){let i=0,seq=0,km=null;while(i<N){const c=codeAt(L,i);if(!c){i++;continue}let j=i;while(j+1<N&&codeAt(L,j+1)===c&&R[j+1][5]===R[i][5])j++;
+    if(R[i][5]!==km){km=R[i][5];seq=0}seq++;
+    const id=PANOS.length;PANOS.push({id,L,code:c,i0:i,i1:j,info:info(c),tag:`${R[i][5]}-${LANES[L].id}-${String(seq).padStart(2,'0')}`});for(let k=i;k<=j;k++)PANO_AT[L][k]=id;i=j+1}}
+  const NAME_IDX=new Map();R.forEach((r,i)=>NAME_IDX.set(r[0],i));
+  const KM_FIRST=new Map(),KM_LAST=new Map();for(let i=0;i<N;i++){if(!KM_FIRST.has(R[i][5]))KM_FIRST.set(R[i][5],i);KM_LAST.set(R[i][5],i)}
+  const splitName=n=>{const p=n.split('+');return [p[0],parseInt(p[1],10)]};
+  const fmtName=(i,extra)=>{const [km,o]=splitName(R[i][0]);return km+'+'+String(Math.round(o+extra)).padStart(3,'0')};
+  const endName=i1=>i1+1<N?R[i1+1][0]:fmtName(i1,20);
+  const famCount={};PANOS.forEach(p=>famCount[p.info.fam]=(famCount[p.info.fam]||0)+1);
+  const ODO0=R[0][3],ODO_END=R[N-1][3]+20;
+  function nameAt(s){let i=Math.floor((s-ODO0)/20+1e-9);i=Math.max(0,Math.min(N-1,i));let d=s-R[i][3];if(Math.round(d)>=20&&i+1<N){i++;d=s-R[i][3]}return fmtName(i,Math.max(0,d))}
+  function parseKm(txt){const t=String(txt||'').trim().replace(/\s/g,'');if(!t)return {err:'Informe o km.'};
+    let m=t.match(/^(\d{1,3})\+(\d{1,4}(?:[.,]\d+)?)$/),km,o;
+    if(m){km=+m[1];o=parseFloat(m[2].replace(',','.'))}
+    else if((m=t.match(/^(\d{3})[.,]?(\d{3,4})$/))){km=+m[1];o=+m[2]} // 235600, 235.600 ou 235,600 → 235+600
+    else{m=t.match(/^(\d{1,3})$/);if(!m)return {err:'Use 236+300 ou 236300.'};km=+m[1];o=null}
+    const f=KM_FIRST.get(km),l=KM_LAST.get(km);if(f==null)return {err:`O km ${km} não está no trecho (183+400 a 282+480).`};
+    const fo=splitName(R[f][0])[1],lo=splitName(R[l][0])[1]+20;if(o==null)o=fo;
+    if(o<fo)return {err:`O km ${km} começa em ${km}+${String(fo).padStart(3,'0')} neste trecho.`};
+    if(o>lo)return {err:`O km ${km} vai até ${km}+${String(lo).padStart(3,'0')} (${lo} m neste marco).`};
+    return {s:R[f][3]+(o-fo),name:`${km}+${String(Math.round(o)).padStart(3,'0')}`}}
+  return {CODES,R,N,FAM,FAM_ORDER,LANES,SIDE,GRP,PANOS,PANO_AT,NAME_IDX,KM_FIRST,info,codeAt,saidaAt,splitName,fmtName,endName,nameAt,parseKm,famCount,inkOn,ODO0,ODO_END};
+})();
+const {R,N,LANES,SIDE,PANOS,PANO_AT}=Data;
+
+/* ------------------------------ Geo ------------------------------ */
+const Geo=(function(){
+  const LAT=new Float64Array(N),LON=new Float64Array(N),ODO=new Float64Array(N),X=new Float64Array(N),Y=new Float64Array(N),NX=new Float64Array(N),NY=new Float64Array(N);
+  let lat0=0,lon0=0;for(let i=0;i<N;i++){LAT[i]=R[i][1]/1e5;LON[i]=R[i][2]/1e5;ODO[i]=R[i][3];lat0+=LAT[i];lon0+=LON[i]}lat0/=N;lon0/=N;
+  const MY=111320,MX=111320*Math.cos(lat0*Math.PI/180);
+  for(let i=0;i<N;i++){X[i]=(LON[i]-lon0)*MX;Y[i]=(LAT[i]-lat0)*MY}
+  for(let i=0;i<N;i++){let dx=0,dy=0;
+    if(i>0){const a=X[i]-X[i-1],b=Y[i]-Y[i-1],l=Math.hypot(a,b)||1;dx+=a/l;dy+=b/l}
+    if(i<N-1){const a=X[i+1]-X[i],b=Y[i+1]-Y[i],l=Math.hypot(a,b)||1;dx+=a/l;dy+=b/l}
+    const l=Math.hypot(dx,dy)||1;NX[i]=dy/l;NY[i]=-dx/l}
+  const toLL=(x,y)=>[lat0+y/MY,lon0+x/MX],toXY=(la,lo)=>[(lo-lon0)*MX,(la-lat0)*MY];
+  const off=(i,m)=>toLL(X[i]+NX[i]*m,Y[i]+NY[i]*m);
+  const CELL=250,grid=new Map(),key=(a,b)=>a+','+b;
+  for(let i=0;i<N-1;i++){const x0=Math.floor(Math.min(X[i],X[i+1])/CELL),x1=Math.floor(Math.max(X[i],X[i+1])/CELL),y0=Math.floor(Math.min(Y[i],Y[i+1])/CELL),y1=Math.floor(Math.max(Y[i],Y[i+1])/CELL);
+    for(let a=x0;a<=x1;a++)for(let b=y0;b<=y1;b++){const k=key(a,b);(grid.get(k)||grid.set(k,[]).get(k)).push(i)}}
+  function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x))}
+  const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+  const HALF=12;
+  function locate(lat,lon,acc){
+    const [px,py]=toXY(lat,lon),sig=Math.max(acc||5,3),Rq=Math.max(80,4*sig+HALF+20);
+    const seen=new Set(),cand=[];
+    for(let a=Math.floor((px-Rq)/CELL);a<=Math.floor((px+Rq)/CELL);a++)for(let b=Math.floor((py-Rq)/CELL);b<=Math.floor((py+Rq)/CELL);b++){
+      const arr=grid.get(key(a,b));if(!arr)continue;
+      for(const i of arr){if(seen.has(i))continue;seen.add(i);
+        const ax=X[i],ay=Y[i],dx=X[i+1]-ax,dy=Y[i+1]-ay,l2=dx*dx+dy*dy||1;let t=((px-ax)*dx+(py-ay)*dy)/l2;t=Math.max(0,Math.min(1,t));
+        const qx=ax+t*dx,qy=ay+t*dy,dist=Math.hypot(px-qx,py-qy);if(dist>Rq)continue;const l=Math.sqrt(l2);
+        cand.push({i,t,dist,lat:(((px-ax)*dy-(py-ay)*dx)/l),qx,qy,s:ODO[i]+t*(ODO[i+1]-ODO[i]),dx:dx/l,dy:dy/l})}}
+    if(!cand.length){let best=0,bd=Infinity;for(let i=0;i<N;i++){const d=Math.hypot(X[i]-px,Y[i]-py);if(d<bd){bd=d;best=i}}return {outside:true,nearest:best,dist:bd,sig}}
+    cand.sort((a,b)=>a.i-b.i);const groups=[];let g=[cand[0]];
+    for(let k=1;k<cand.length;k++){if(cand[k].i-cand[k-1].i<=2)g.push(cand[k]);else{groups.push(g);g=[cand[k]]}}groups.push(g);
+    const hyps=groups.map(g=>g.reduce((a,b)=>a.dist<b.dist?a:b));let W=0;
+    hyps.forEach(h=>{const e=Math.max(0,h.dist-HALF)/sig;h.w=Math.exp(-0.5*e*e);W+=h.w});if(W<1e-12){hyps.forEach(h=>h.w=1);W=hyps.length}
+    hyps.sort((a,b)=>b.w-a.w);const main=hyps[0];const P=new Map();
+    for(const h of hyps){const wn=h.w/W;if(wn<1e-4)continue;const k0=Math.max(0,Math.floor((h.s-ODO[0]-5*sig-20)/20)),k1=Math.min(N-1,Math.ceil((h.s-ODO[0]+5*sig+20)/20));
+      for(let k=k0;k<=k1;k++){const p=wn*(Phi((ODO[k]+10-h.s)/sig)-Phi((ODO[k]-10-h.s)/sig));if(p>1e-5)P.set(k,(P.get(k)||0)+p)}}
+    const probs=[...P.entries()].map(([k,p])=>({k,p})).sort((a,b)=>b.p-a.p);
+    const bounds=[[7.2,9.7],[3.6,7.2],[0,3.6],[-3.6,0],[-7.2,-3.6],[-9.7,-7.2]];
+    const lane=bounds.map(([a,b])=>Phi((b-main.lat)/sig)-Phi((a-main.lat)/sig));
+    const s=main.s,bi=Math.max(0,Math.min(N-1,Math.floor((s-ODO[0]+0.5)/20)));
+    return {outside:false,main,s,bi,probs,lane,sig,ambiguous:hyps.length>1&&hyps[1].w/W>0.15}}
+  return {LAT,LON,ODO,X,Y,NX,NY,lat0,toLL,off,locate};
+})();
+const {LAT,LON,ODO,X,Y,NX,NY}=Geo;
+
+/* ------------------------------ Loc: localização compartilhada ------------------------------ */
+const Loc=(function(){
+  const st={mode:'exemplo',lat:null,lon:null,acc:null,r:null,src:null,t:0,dirSign:0,lastS:null};
+  const gps={on:false,status:'off',err:null,watchId:null,lastFix:0,wake:false};
+  let wakeObj=null,watchdog=null;
+  function set(lat,lon,acc,heading,speed,src,mode){
+    const r=Geo.locate(lat,lon,acc);
+    if(!r.outside){const h=r.main;
+      if(heading!=null&&!isNaN(heading)&&speed!=null&&speed>1.5){const az=Math.atan2(h.dx,h.dy)*180/Math.PI;st.dirSign=Math.abs(((heading-az)%360+540)%360-180)<90?1:-1}
+      else if(src==='gps'&&st.lastS!=null&&Math.abs(r.s-st.lastS)>4&&Math.abs(r.s-st.lastS)<400)st.dirSign=Math.sign(r.s-st.lastS);
+      if(src==='gps')st.lastS=r.s}
+    if(src!=='gps')st.dirSign=0;
+    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st)}
+  const gpsEmit=()=>emit('gps',gps);
+  async function keepAwake(){if(!('wakeLock' in navigator)){gps.wake=false;return}try{wakeObj=await navigator.wakeLock.request('screen');gps.wake=true;wakeObj.addEventListener('release',()=>{gps.wake=false;gpsEmit()})}catch(e){gps.wake=false}gpsEmit()}
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&gps.on&&!gps.wake)keepAwake()});
+  function start(){
+    if(gps.on)return;
+    if(!('geolocation' in navigator)){gps.status='error';gps.err={code:'nosupport'};gpsEmit();return}
+    gps.on=true;gps.status='waiting';gps.err=null;gps.lastFix=0;st.lastS=null;st.dirSign=0;gpsEmit();
+    gps.watchId=navigator.geolocation.watchPosition(p=>{const c=p.coords;gps.lastFix=Date.now();
+        if(gps.status!=='on'||gps.err){gps.status='on';gps.err=null;gpsEmit()}
+        set(c.latitude,c.longitude,c.accuracy,c.heading,c.speed,'gps','gps')},
+      err=>{if(err.code===1){stop();gps.status='error';gps.err={code:'denied'};gpsEmit()}
+        else{gps.status='nosignal';gps.err={code:err.code===3?'timeout':'unavailable',msg:err.message};gpsEmit()}},
+      {enableHighAccuracy:true,maximumAge:0,timeout:20000});
+    clearInterval(watchdog);watchdog=setInterval(()=>{if(!gps.on)return;const age=gps.lastFix?Date.now()-gps.lastFix:Infinity;
+      if(gps.status==='on'&&age>15000){gps.status='nosignal';gps.err={code:'stale'}}gpsEmit()},3000);
+    keepAwake()}
+  function stop(){if(gps.watchId!=null)navigator.geolocation.clearWatch(gps.watchId);gps.watchId=null;gps.on=false;gps.status='off';clearInterval(watchdog);
+    if(wakeObj){wakeObj.release().catch(()=>{});wakeObj=null}gps.wake=false;if(st.mode==='gps')st.mode='sim';gpsEmit()}
+  return {st,gps,set,start,stop};
+})();
+
+/* ------------------------------ Filtros do mapa ------------------------------ */
+const Filters=(function(){
+  const def={sent:'ALL',faixa:['F1','F23','AC'],sol:Data.FAM_ORDER.slice()};
+  let st=store.get('filters',def);if(!st||!st.sol||!st.faixa)st=def;
+  function visible(p){const L=LANES[p.L];if(st.sent!=='ALL'&&L.side!==st.sent)return false;if(L.grp!=='DRN'&&!st.faixa.includes(L.grp))return false;return st.sol.includes(p.info.fam)}
+  const saidaVisible=side=>(st.sent==='ALL'||st.sent===side)&&(st.sol.includes('DR')||st.sol.includes('DP'));
+  const isDefault=()=>st.sent==='ALL'&&st.faixa.length===3&&st.sol.length===Data.FAM_ORDER.length;
+  return {get:()=>st,set:(k,v)=>{st={...st,[k]:v};store.set('filters',st);emit('filters',st)},visible,saidaVisible,isDefault};
+})();
+
+
+Router.onInit('mapab4',function(){
+const map=L.map('b4_map',{zoomControl:false,preferCanvas:true,maxZoom:20,zoomSnap:0.5,rotate:!!L.Map.prototype.setBearing,touchRotate:true,rotateControl:false,shiftKeyRotate:true,bearing:0});
+window.__mapB4=map;const canRotate=typeof map.setBearing==='function';
+const bearing=()=>canRotate?((map.getBearing()%360)+360)%360:0;
+['b4_estaq','b4_searchBox','b4_northBtn','b4_toolTab','b4_toolScrim','b4_tools','b4_toast'].forEach(id=>{const el=$(id);if(el){L.DomEvent.disableClickPropagation(el);L.DomEvent.disableScrollPropagation(el)}});
+map.setView([LAT[0],LON[0]],12);
+L.control.zoom({position:'bottomleft'}).addTo(map);
+const renderer=L.canvas({padding:0.5,tolerance:8});
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const Layers=(function(){
+  const BASES=[
+    {k:'sat',t:'Satélite',l:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:20,maxNativeZoom:19,attribution:'Imagem © Esri'})},
+    {k:'osm',t:'Mapa',l:L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:20,maxNativeZoom:19,attribution:'© OpenStreetMap'})},
+    {k:'none',t:'Sem fundo',l:null}];
+  let bi=Math.max(0,BASES.findIndex(b=>b.k===store.get('base','sat')));
+  function setBase(i){BASES.forEach(b=>b.l&&map.hasLayer(b.l)&&map.removeLayer(b.l));bi=i;const b=BASES[i];if(b.l)b.l.addTo(map).bringToBack();$('b4_baseTxt').textContent=b.t;store.set('base',b.k)}
+  const axisLL=[];for(let i=0;i<N;i++)axisLL.push([LAT[i],LON[i]]);
+  L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
+  const axis=L.polyline(axisLL,{renderer,color:css('--axis')||'#222',weight:2.5,interactive:false}).addTo(map);
+  const mpp=z=>156543.03392*Math.cos(Geo.lat0*Math.PI/180)/Math.pow(2,z);
+  const exag=z=>Math.max(1,5*mpp(z)/3.6);
+  const panoLayer=L.layerGroup().addTo(map),lines=[];
+  function geom(p,k){const o=LANES[p.L].off*k,pts=[],last=Math.min(N-1,p.i1+1);for(let i=p.i0;i<=last;i++)pts.push(Geo.off(i,o));
+    if(p.i1+1>=N){const i=N-1;pts.push(Geo.toLL(X[i]+NX[i]*o-NY[i]*20,Y[i]+NY[i]*o+NX[i]*20))}return pts}
+  PANOS.forEach(p=>{const drn=LANES[p.L].grp==='DRN';
+    const pl=L.polyline(geom(p,1),{renderer,color:p.info.color,weight:4,opacity:1,lineCap:'butt',lineJoin:'round',dashArray:drn?(p.code==='DP'?'12 3 2 3':'4 3'):null});
+    pl.on('click',e=>{L.DomEvent.stopPropagation(e);openPano(p.id)});lines[p.id]=pl});
+  let curK=0;
+  function applyFilters(){panoLayer.clearLayers();PANOS.forEach(p=>{if(Filters.visible(p))panoLayer.addLayer(lines[p.id])});axis.bringToFront();detail()}
+  function restyle(){const z=map.getZoom();const k=exag(z),m=mpp(z);
+    if(k!==curK){PANOS.forEach(p=>lines[p.id].setLatLngs(geom(p,k)));curK=k}
+    PANOS.forEach(p=>{const L0=LANES[p.L];const w=L0.grp==='DRN'?(p.code==='DP'?(z>=17?3:2.4):(z>=17?2.2:1.8)):Math.max(2,L0.w*k/m-0.6);lines[p.id].setStyle({weight:w})});
+    $('b4_map').style.setProperty('--ls',z<=13?0.85:z<=16?0.95:z<18?1:1.1);axis.bringToFront()}
+  const dyn=L.layerGroup().addTo(map);let hot=-1;
+  const stepFor=z=>z>=18?1:z>=17?2:z>=16?5:z>=15?10:z>=14?25:0;
+  function detail(){dyn.clearLayers();const z=map.getZoom(),k=exag(z),m=mpp(z),b=map.getBounds().pad(0.15);const edge=-(12.6*k+2*m);
+    const kmStep=z>=12?1:z>=10?5:10;
+    Data.KM_FIRST.forEach((i,km)=>{if(km%kmStep||z>=16||!b.contains([LAT[i],LON[i]]))return;
+      L.marker(Geo.off(i,edge-10*m),{interactive:false,icon:L.divIcon({className:'',html:`<span class="kml">km ${km}</span>`,iconSize:[0,0]})}).addTo(dyn)});
+    const step=stepFor(z);
+    if(step){const ax=css('--axis'),ac=css('--accent');let n=0;
+      for(let i=0;i<N;i++){if(!b.contains([LAT[i],LON[i]]))continue;const o=Data.splitName(R[i][0])[1],isHot=i===hot;
+        const ref=(o/20)%step===0;if(z<16&&!ref&&!isHot)continue;if(++n>1500)break;
+        const mk=L.circleMarker([LAT[i],LON[i]],{renderer,radius:isHot?6:(z>=17?3.5:2.5),color:isHot?'#141715':ax,weight:isHot?2:1,fillColor:isHot?ac:(z>=17?'#fff':ax),fillOpacity:1});
+        mk.on('click',e=>{L.DomEvent.stopPropagation(e);openStation(i)});mk.addTo(dyn);
+        if(ref||isHot){const p0=map.latLngToContainerPoint([LAT[i],LON[i]]),p1=map.latLngToContainerPoint(Geo.off(i,edge));let a=Math.atan2(p1.y-p0.y,p1.x-p0.x)*180/Math.PI;const flip=Math.abs(a)>90;if(flip)a+=180;
+          const style=flip?`right:0;transform-origin:100% 50%;transform:rotate(${a.toFixed(1)}deg)`:`left:0;transform-origin:0 50%;transform:rotate(${a.toFixed(1)}deg)`;
+          L.marker(Geo.off(i,edge),{interactive:false,zIndexOffset:isHot?900:0,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="stl${isHot?' hot':''}" style="${style}">${R[i][0]}</span>`})}).addTo(dyn)}}}
+    if(z>=16)for(const side of ['C','D']){if(!Filters.saidaVisible(side))continue;const o=(side==='C'?12.6:-12.6)*k;
+      for(let i=0;i<N;i++){if(!Data.saidaAt(side,i)||!b.contains([LAT[i],LON[i]]))continue;{const q=PANO_AT[side==='C'?6:7][i];if(q>=0&&!Filters.visible(PANOS[q]))continue}
+        const dp=PANO_AT[side==='C'?6:7][i],dc=dp>=0?PANOS[dp].info.color:Data.FAM.DR.color;
+        L.circleMarker(Geo.off(i,o+(side==='C'?1:-1)*2.5*m),{renderer,radius:z>=18?4.5:3.2,color:'#fff',weight:1.5,fillColor:dc,fillOpacity:1}).on('click',e=>{L.DomEvent.stopPropagation(e);openSaida(side,i)}).addTo(dyn)}}
+    if(z>=14){const gap=z>=18?420:z>=16?520:640;let n=0;
+      for(const p of PANOS){if(!Filters.visible(p))continue;const L0=LANES[p.L];if(L0.grp==='DRN'&&z<16)continue;
+        const lenPx=20*(p.i1-p.i0+1)/m;const txt=z>=17?p.code:p.info.fam;const need=txt.length*7*(z>=18?1.1:1)+10;if(lenPx<need)continue;
+        const cnt=Math.max(1,Math.floor(lenPx/gap));
+        for(let c=0;c<cnt;c++){const f=(c+0.5)/cnt;const fi=p.i0+f*(p.i1-p.i0+1);const i=Math.min(N-1,Math.floor(fi)),t=fi-i,j=Math.min(N-1,i+1);
+          const lat=LAT[i]+(LAT[j]-LAT[i])*t,lon=LON[i]+(LON[j]-LON[i])*t;if(!b.contains([lat,lon]))continue;if(++n>500)break;
+          const o=L0.off*k+(L0.grp==='DRN'?Math.sign(L0.off)*3*m:0);const xx=X[i]+(X[j]-X[i])*t+NX[i]*o,yy=Y[i]+(Y[j]-Y[i])*t+NY[i]*o;
+          const ia=j===i?Math.max(0,i-1):i,ib=j===i?i:j,q0=map.latLngToContainerPoint([LAT[ia],LON[ia]]),q1=map.latLngToContainerPoint([LAT[ib],LON[ib]]);let a=Math.atan2(q1.y-q0.y,q1.x-q0.x)*180/Math.PI;if(a>90)a-=180;if(a<-90)a+=180;
+          L.marker(Geo.toLL(xx,yy),{interactive:false,icon:L.divIcon({className:'',iconSize:[0,0],html:`<span class="sol" style="background:${p.info.color};color:${p.info.ink};transform:translate(-50%,-50%) rotate(${a.toFixed(1)}deg)">${txt}</span>`})}).addTo(dyn)}}
+      if(z>=17){const tc=css('--ink');for(const p of PANOS){if(!Filters.visible(p)||LANES[p.L].grp==='DRN')continue;
+        for(const i of [p.i0,Math.min(N-1,p.i1+1)]){if(!b.contains([LAT[i],LON[i]]))continue;const L0=LANES[p.L],c=L0.off*k,hw=L0.w*k/2;
+          L.polyline([Geo.off(i,c-hw),Geo.off(i,c+hw)],{renderer,color:tc,weight:2,opacity:.85,interactive:false}).addTo(dyn)}}}}}
+  map.on('zoomend',()=>{restyle();detail()});map.on('moveend',detail);
+  let rotT=0;map.on('rotate',()=>{clearTimeout(rotT);rotT=setTimeout(detail,120);showBearing()});
+  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i}};
+})();
+
+const tagHtml=(inf,cls)=>`<span class="tag${cls?' '+cls:''}" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
+const laneName=L0=>`${SIDE[L0.side]} — ${L0.name}`;
+/* sentido crescente: inicial = menor estaca; decrescente: inicial = maior estaca */
+function panoEnds(p){const lo=R[p.i0][0],hi=Data.endName(p.i1),D=LANES[p.L].side==='D';
+  return {ini:D?hi:lo,fim:D?lo:hi,oIni:D?ODO[p.i1]+20:ODO[p.i0],oFim:D?ODO[p.i0]:ODO[p.i1]+20}}
+function panoRows(p){const inf=p.info,L0=LANES[p.L],e=panoEnds(p),drn=L0.grp==='DRN',s=p.src;
+  const nn=(v,d)=>typeof v==='number'?v.toLocaleString('pt-BR',{maximumFractionDigits:d==null?6:d}):v;
+  const av=s?B4.avisos.get(s.n):null;
+  return [
+  ['Pano',p.tag],s?['Nº no unifilar',s.n]:null,['Sigla',s?s.sigla:inf.code],['Tipo de solução',s?s.tipo_solucao:inf.desc],
+  ['Sentido',SIDE[L0.side]],[drn?'Lado':'Faixa / elemento',s?s.faixa_elemento:L0.name],['Estaca inicial',e.ini,1],['Estaca final',e.fim,1],
+  s?['No unifilar',`${s.estaca_inicial} → ${s.estaca_final}`]:null,
+  ['Extensão',s&&s.extensao_m!=null?nn(s.extensao_m)+' m':fmtM(20*(p.i1-p.i0+1)),1],['Blocos de 20 m',s?s.qtd_quadrados:p.i1-p.i0+1],
+  s?['Largura média',s.largura_media_m==null?'não informada no unifilar':nn(s.largura_media_m)+' m']:null,
+  s?['Espessura',s.espessura_m==null?'não informada no unifilar':`${nn(s.espessura_m)} m (${nn(s.espessura_m*100,2)} cm)`]:null,
+  s&&s.area_m2_ou_secao_m2!=null?[/^PA/.test(s.sigla)?'Seção (largura × espessura)':'Área',nn(s.area_m2_ou_secao_m2)+' m²']:null,
+  s?['Quantidade',s.quantidade==null?'—':`${nn(s.quantidade,3)} ${s.unidade||''}`,1]:null,
+  ['Marco km',R[p.i0][5]],['Hodômetro',`${fmtKm(e.oIni)} → ${fmtKm(e.oFim)}`],
+  s?['Unifilar',`coluna ${s.coluna_unifilar} · linhas ${s.linha_inicial_unifilar} a ${s.linha_final_unifilar}`]:null,
+  s&&s.observacao?['Observação',s.observacao]:null,s?['Conferência',s.conferencia]:null,
+  av?['Aviso',av,1]:null,s?null:['Aviso','Pano sem registro correspondente no unifilar',1]].filter(Boolean)}
+function saidaRows(side,i){const o=B4.sai[side].get(i);if(!o)return [['Aviso','Saída sem registro correspondente no unifilar',1]];
+  return [['Nº no unifilar',o.n],['Sigla',o.sigla],['Tipo de solução',o.tipo_solucao],['Trecho no unifilar',`${o.estaca_inicial} → ${o.estaca_final}`],
+    ['Quantidade do grupo',`${o.quantidade} ${o.unidade||''}`],['Unifilar',`coluna ${o.coluna_unifilar} · linhas ${o.linha_inicial_unifilar} a ${o.linha_final_unifilar}`],
+    o.observacao?['Observação',o.observacao]:null,B4.avisos.get(o.n)?['Aviso',B4.avisos.get(o.n),1]:null].filter(Boolean)}
+const dl=rows=>`<dl>${rows.map(([a,b,h])=>`<dt>${a}</dt><dd${h?' class="hl"':''}>${b}</dd>`).join('')}</dl>`;
+let modalKind=null;
+function openModal(title,body,kind){$('b4_imTitle').innerHTML=title;$('b4_imBody').innerHTML=body;$('b4_imBody').scrollTop=0;$('b4_infoModal').hidden=false;modalKind=kind||null}
+function closeModal(){$('b4_infoModal').hidden=true;modalKind=null}
+$('b4_imClose').onclick=closeModal;
+$('b4_infoModal').addEventListener('click',e=>{if(e.target.id==='b4_infoModal')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('b4_infoModal').hidden)closeModal()});
+function saidasOf(p){const sd=LANES[p.L].side,out=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(sd,i))out.push(i);return sd==='D'?out.reverse():out}
+function openPano(id){const p=PANOS[id],L0=LANES[p.L],drn=L0.grp==='DRN';emit('select',{type:'pano',pano:p});
+  let extra='';if(drn){const sa=saidasOf(p);extra=`<h4>Saídas de dreno neste trecho</h4>`+(sa.length?`<p style="margin:4px 0 0;font-weight:600">${sa.map(i=>R[i][0]).join(' · ')}</p>`:`<p class="note" style="margin:4px 0 0">Nenhuma saída marcada no unifilar para este trecho.</p>`)}
+  openModal(`<div class="t1">${tagHtml(p.info)}<span class="chip">${SIDE[L0.side]}</span><span class="chip alt">${L0.name}</span></div><div class="t2">Pano ${p.tag} · ${p.info.desc}${p.info.esp?' '+p.info.esp:''}</div>`,dl(panoRows(p))+extra,'pano')}
+function openStation(i){emit('select',{type:'estaca',i});
+  const rows=[0,1,2,3,4,5,6,7].map(L=>{const c=Data.codeAt(L,i);return `<tr><td>${laneName(LANES[L])}</td><td style="text-align:right">${c?tagHtml(Data.info(c),'sm'):'—'}</td></tr>`}).join('');
+  const sd=[Data.saidaAt('C',i)?'crescente':null,Data.saidaAt('D',i)?'decrescente':null].filter(Boolean).join(' e ');
+  openModal(`<div class="t1">Estaca ${R[i][0]}</div><div class="t2">Marco km ${R[i][5]} · B${R[i][4]}</div>`,
+    dl([['Hodômetro',fmtKm(ODO[i])],['Coordenadas',`${LAT[i].toFixed(5)}, ${LON[i].toFixed(5)}`],['Marco km',R[i][5]],['Bloco do contrato','B'+R[i][4]],sd?['Saída de dreno',sd]:null].filter(Boolean))+
+    `<h4>Soluções nesta estaca</h4><table>${rows}</table><button class="go" type="button" id="b4_imGo">Consultar esta estaca</button>`,'estaca');
+  $('b4_imGo').onclick=()=>{closeModal();consult(i,0)}}
+function openSaida(side,i){const id=PANO_AT[side==='C'?6:7][i],p=id>=0?PANOS[id]:null;emit('select',{type:'saida',i,side});
+  const e=p?panoEnds(p):null;
+  openModal(`<div class="t1">${p?tagHtml(p.info):''}<span>Saída de dreno</span><span class="chip">${SIDE[side]}</span></div><div class="t2">Estaca ${R[i][0]}${p?' · vinculada ao '+p.info.code+' – '+p.info.desc:''}</div>`,
+    dl([['Estaca da saída',R[i][0],1],['Sentido / lado',SIDE[side]],p?['Dreno vinculado',`${p.info.code} – ${p.info.desc}`]:['Dreno vinculado','não há dreno marcado no unifilar nesta estaca'],
+      p?['Trecho do dreno',`${e.ini} a ${e.fim}`,1]:null,p?['Extensão do dreno',fmtM(20*(p.i1-p.i0+1))]:null,p?['Pano',p.tag]:null,['Marco km',R[i][5]],...saidaRows(side,i)].filter(Boolean))+
+    (p?`<button class="go" type="button" id="b4_imGoD">Ver detalhes do dreno</button>`:''),'saida');
+  if(p)$('b4_imGoD').onclick=()=>openPano(p.id)}
+function posHtml(st){const r=st&&st.r;if(!r)return '<p class="note">Sem posição. Ligue o GPS ou toque no mapa para simular.</p>';
+  const g=Loc.gps,age=g.lastFix?Math.round((Date.now()-g.lastFix)/1000):null;
+  const modeT={gps:'GPS do aparelho',sim:'Simulada (toque no mapa)',consulta:'Consulta manual',exemplo:'Exemplo'}[st.mode]||st.mode;
+  const base=[['Origem da posição',modeT],['Precisão',`±${Math.round(st.acc)} m`],st.mode==='gps'&&age!=null?['Última leitura',age<=1?'agora':`há ${age} s`]:null,['Coordenadas',`${st.lat.toFixed(6)}, ${st.lon.toFixed(6)}`]].filter(Boolean);
+  if(r.outside)return `<div class="kv2"><div><span>Situação</span><b>Fora do trecho</b></div><div><span>Distância</span><b>${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)}</b></div></div>`+dl([['Estaca mais próxima',R[r.nearest][0],1],...base]);
+  const s=r.s,bi=r.bi,top=r.probs[0],j=Math.min(N-1,bi+1),la=r.main.lat;
+  const side=Math.abs(la)<1?'no eixo':`${nf(Math.abs(la),1)} m ${la>0?'à direita (lado crescente)':'à esquerda (lado decrescente)'}`;
+  const near=top?top.k:bi,dN=Math.abs(s-ODO[near]);
+  const toNext=st.dirSign<0?s-ODO[bi]:ODO[bi]+20-s,nextName=st.dirSign<0?R[bi][0]:R[j][0];
+  const probs=(r.probs||[]).slice(0,4).map(q=>`<div style="display:grid;grid-template-columns:78px 1fr 44px;gap:8px;align-items:center;margin:6px 0"><b style="font:700 16px var(--cond)">${R[q.k][0]}</b><div class="pbar"><i style="width:${(q.p*100).toFixed(0)}%"></i></div><span style="text-align:right;font-weight:600">${Math.round(q.p*100)}%</span></div>`).join('');
+  return `<div class="kv2"><div><span>Estaca atual</span><b>${Data.fmtName(bi,s-ODO[bi])}</b></div><div><span>Confiança</span><b>${top?Math.round(top.p*100)+'%':'—'}</b></div></div>`+
+    dl([['Estaca mais próxima',top?R[top.k][0]:R[bi][0],1],['Distância até a estaca',fmtM(dN)],['Distância do eixo',side],['Entre as estacas',`${R[bi][0]} e ${R[j][0]}`],
+      st.dirSign?['Sentido de deslocamento',st.dirSign>0?'Crescente':'Decrescente']:['Sentido de deslocamento','indefinido (parado ou lento)'],
+      st.dirSign?[`Próxima estaca no sentido`,`${nextName} em ${fmtM(Math.max(0,toNext))}`]:null,['Hodômetro',fmtKm(s)],['Marco km',R[bi][5]],['Bloco do contrato','B'+R[bi][4]],...base].filter(Boolean))+
+    (probs?`<h4>Probabilidade por estaca</h4>${probs}<p class="note" style="margin:6px 0 0">Estimativa pela projeção da posição no eixo e pela precisão informada pelo GPS.</p>`:'')}
+function openPos(){openModal(`<div class="t1">Informações de posicionamento</div><div class="t2">Atualiza com o GPS enquanto esta janela estiver aberta</div>`,posHtml(Loc.st),'pos')}
+
+let follow=true,simAcc=store.get('acc',5);
+const me=L.layerGroup().addTo(map);
+function setFollow(v){follow=v;$('b4_followBtn').setAttribute('aria-pressed',v)}
+function toast(msg,ms){const t=$('b4_toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);if(ms)toast.h=setTimeout(()=>t.hidden=true,ms)}
+$('b4_toast').onclick=()=>$('b4_toast').hidden=true;
+function onPosition(st){const r=st.r;if(!r)return;const {lat,lon,acc}=st;
+  renderMode();if(modalKind==='pos')$('b4_imBody').innerHTML=posHtml(st);
+  me.clearLayers();
+  L.circle([lat,lon],{renderer,radius:acc,color:css('--me'),weight:1,fillColor:css('--me'),fillOpacity:.12,interactive:false}).addTo(me);
+  if(!r.outside)L.polyline([[lat,lon],Geo.toLL(r.main.qx,r.main.qy)],{renderer,color:css('--me'),weight:1.5,dashArray:'3 4',interactive:false}).addTo(me);
+  L.circleMarker([lat,lon],{renderer,radius:8,color:'#fff',weight:3,fillColor:css('--me'),fillOpacity:1,interactive:false}).addTo(me);
+  Layers.setHot(r.outside?-1:(r.probs[0]?r.probs[0].k:r.bi));
+  renderEstaq(st);renderPoint(st);
+  if(follow&&st.src!=='tap'&&Router.cur()==='mapab4')map.panTo([lat,lon],{animate:true});else Layers.detail()}
+function accChip(a,mode){const c=a<=6?'acc-good':a<=15?'acc-mid':'acc-bad';return `<span class="${c}">${mode==='gps'?'GPS':'Precisão'} ±${Math.round(a)} m</span>`}
+function renderMode(){const g=Loc.gps,st=Loc.st,m=$('b4_mode');
+  if(g.on){m.className='mode'+(g.status==='on'?' live':'');$('b4_modeTxt').textContent=g.status==='on'?'GPS ligado':g.status==='waiting'?'GPS aguardando':'GPS sem sinal'}
+  else{m.className='mode off';$('b4_modeTxt').textContent=({sim:'GPS off · simulado',consulta:'GPS off · consulta',exemplo:'GPS desligado'})[st.mode]||'GPS desligado'}}
+function renderEstaq(st){const r=st.r;const a=st.acc,c=a<=6?'acc-good':a<=15?'acc-mid':'acc-bad';
+  $('b4_eAcc').className=c;$('b4_eAcc').textContent=`±${Math.round(a)} m`;
+  if(r.outside){$('b4_big').className='big out';$('b4_big').textContent='Fora do trecho';$('b4_eDir').textContent='';return}
+  const nm=Data.fmtName(r.bi,r.s-ODO[r.bi]).split('+');
+  $('b4_big').className='big';$('b4_big').innerHTML=`${nm[0]}<small>+</small>${nm[1]}`;
+  $('b4_eDir').textContent=st.dirSign?(st.dirSign>0?'▲ Crescente':'▼ Decrescente'):''}
+function renderPoint(st){const r=st.r;
+  if(r.outside){$('b4_blockTxt').textContent='—';$('b4_xs').innerHTML='';$('b4_groups').innerHTML='<p class="none">Fora do trecho do projeto.</p>';drawReti(null);return}
+  const bi=r.bi,s=r.s;$('b4_blockTxt').textContent=`${R[bi][0]} → ${Data.endName(bi)}`;
+  const likely=r.lane.indexOf(Math.max(...r.lane));
+  const cell=L=>{const c=Data.codeAt(L,bi),inf=c?Data.info(c):null,L0=LANES[L];
+    return `<button type="button" class="cell${c?'':' empty'}${L===likely&&r.lane[likely]>0.35?' likely':''}" data-l="${L}" style="${inf?`background:${inf.color};color:${inf.ink};border-color:${inf.color}`:''}"><b>${c||'—'}</b><i>${L0.grp==='F1'?'F1':L0.grp==='F23'?'F2':'Acost.'}</i></button>`};
+  const dcell=L=>{const c=Data.codeAt(L,bi);const inf=c?Data.info(c):null;return `<div class="dcell${c?' on':''}" style="${inf?`background:${inf.color};border-color:${inf.color}`:''}">${c||'—'}</div>`};
+  $('b4_xs').innerHTML=[dcell(7),cell(5),cell(4),cell(3),'<div class="mid"></div>',cell(2),cell(1),cell(0),dcell(6)].join('');
+  $('b4_xs').querySelectorAll('.cell').forEach(el=>el.onclick=()=>{const L=+el.dataset.l,id=PANO_AT[L][bi];if(id>=0){const q=Geo.off(bi,LANES[L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(id)}});
+  const sides=st.dirSign<0?['D','C']:['C','D'];
+  $('b4_groups').innerHTML=sides.map(sd=>{const order=sd==='C'?[2,1,0,6]:[3,4,5,7];
+    const items=order.map(L=>{const id=PANO_AT[L][bi];const L0=LANES[L];if(id<0)return '';const p=PANOS[id],inf=p.info;const vis=Filters.visible(p);
+      const a=ODO[p.i0],b=ODO[p.i1]+20,ext=b-a,fs=Math.max(0,s-a),te=Math.max(0,b-s);
+      const rest=sd==='C'?`faltam ${fmtM(te)} até ${Data.endName(p.i1)}`:`faltam ${fmtM(fs)} até ${R[p.i0][0]}`;
+      return `<div class="item${vis?'':' off'}" data-p="${id}"><span>${tagHtml(inf)}</span><div><div class="t">${L0.name} — ${inf.desc}${inf.esp?' '+inf.esp:''}</div>
+        <div class="d">Pano ${p.tag} · ${panoEnds(p).ini} → ${panoEnds(p).fim} · ${fmtM(ext)}${inf.param?' · parâmetro '+inf.param:''}<br>${rest}${vis?'':' · oculto pelos filtros'}</div>
+        <div class="bar"><i style="left:calc(${(100*fs/ext).toFixed(1)}% - 1px)"></i></div></div></div>`}).join('');
+    const sa=Data.saidaAt(sd,bi)?`<div class="none">● Saída de dreno nesta estaca</div>`:'';
+    const mine=(st.dirSign>0&&sd==='C')||(st.dirSign<0&&sd==='D');
+    return `<div class="grp"><h4>${SIDE[sd]}${mine?'<em>seu sentido</em>':''}</h4>${items||'<p class="none">Sem solução neste bloco.</p>'}${sa}</div>`}).join('');
+  $('b4_groups').querySelectorAll('.item').forEach(el=>el.onclick=()=>{const p=PANOS[+el.dataset.p];const q=Geo.off(bi,LANES[p.L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(p.id)});
+  drawReti(s)}
+function drawReti(s){const cv=$('b4_reti');const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
+  const g=cv.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,W,H);if(s==null)return;
+  const span=200,x=v=>W/2+(v-s)*(W/(2*span));const rowsL=[6,0,1,2,3,4,5,7];const top=8;
+  const hOf=L=>L>=6?9:18,yOf=[];let y=top;rowsL.forEach((L,r)=>{yOf[r]=y;y+=hOf(L)+3+(r===3?6:0)});
+  const i0=Math.max(0,Math.floor((s-span-ODO[0])/20)-1),i1=Math.min(N-1,Math.ceil((s+span-ODO[0])/20)+1);
+  g.font='700 11px "Barlow Condensed", system-ui';g.textBaseline='middle';g.textAlign='center';
+  rowsL.forEach((L,r)=>{const yy=yOf[r],h=hOf(L);let k=i0;while(k<=i1){const c=Data.codeAt(L,k);let j=k;while(j+1<=i1&&PANO_AT[L][j+1]===PANO_AT[L][k]&&c)j++;
+    if(c){const inf=Data.info(c),xa=x(ODO[k]),xb=x(ODO[j]+20);g.fillStyle=inf.color;g.fillRect(xa+0.5,yy,xb-xa-1,h);
+      if(h>12&&xb-xa>30){g.fillStyle=inf.ink;g.fillText(c,(Math.max(xa,0)+Math.min(xb,W))/2,yy+h/2+1)}}k=j+1}});
+  const ym=yOf[4]-5;g.strokeStyle=css('--accent');g.setLineDash([6,5]);g.lineWidth=2;g.beginPath();g.moveTo(0,ym);g.lineTo(W,ym);g.stroke();g.setLineDash([]);
+  const yb=y+2;g.fillStyle=css('--muted');g.strokeStyle=css('--muted');g.lineWidth=1;g.textBaseline='top';g.font='600 11px "Barlow Condensed", system-ui';
+  for(let k=i0;k<=i1;k++){if(Data.splitName(R[k][0])[1]%100)continue;const xx=x(ODO[k]);if(xx<20||xx>W-20)continue;g.beginPath();g.moveTo(xx,top-4);g.lineTo(xx,yb);g.stroke();g.fillText(R[k][0],xx,yb+2)}
+  g.fillStyle=css('--ink');g.fillRect(W/2-1.5,0,3,yb)}
+function renderFilters(){const st=Filters.get();
+  $('b4_fSent').innerHTML=[['C','Crescente'],['D','Decrescente'],['ALL','Todas']].map(([k,t])=>`<button type="button" class="segb" data-k="${k}" aria-pressed="${st.sent===k}">${t}</button>`).join('');
+  $('b4_fFaixa').innerHTML=[['F1','Faixa 1'],['F23','Faixa 2 / adicional'],['AC','Acostamento / bordo']].map(([k,t])=>`<button type="button" class="pill" data-k="${k}" aria-pressed="${st.faixa.includes(k)}"><span class="sw" style="background:var(--ink);color:var(--surface)">${k==='AC'?'AC':k==='F1'?'1':'2'}</span><span>${t}</span></button>`).join('');
+  $('b4_fSol').innerHTML=Data.FAM_ORDER.map(f=>{const inf=Data.info(f==='PA'?'PA3,0':f);
+    const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='G'?'3 cm':f==='REC'||f==='RP'?'25 cm':'';
+    return `<button type="button" class="pill" data-k="${f}" aria-pressed="${st.sol.includes(f)}"><span class="sw" style="background:${inf.color};color:${inf.ink}">${f}</span><span>${Data.FAM[f].desc}${sub?' '+sub:''}<small>${(Data.famCount[f]||0).toLocaleString('pt-BR')} panos</small></span></button>`}).join('');
+  $('b4_fSent').querySelectorAll('button').forEach(b=>b.onclick=()=>Filters.set('sent',b.dataset.k));
+  $('b4_fFaixa').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().faixa);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('faixa',[...s])});
+  $('b4_fSol').querySelectorAll('button').forEach(b=>b.onclick=()=>{const s=new Set(Filters.get().sol);s.has(b.dataset.k)?s.delete(b.dataset.k):s.add(b.dataset.k);Filters.set('sol',[...s])});
+  const n=(st.sent!=='ALL')+(st.faixa.length<3)+(st.sol.length<Data.FAM_ORDER.length);$('b4_fcnt').textContent=n?`(${n})`:'';
+  $('b4_filterSummary').textContent=Filters.isDefault()?'':'Filtros ativos'}
+$('b4_faixaAll').onclick=()=>Filters.set('faixa',['F1','F23','AC']);
+$('b4_solAll').onclick=()=>Filters.set('sol',Data.FAM_ORDER.slice());
+$('b4_solNone').onclick=()=>Filters.set('sol',[]);
+on('filters',()=>{renderFilters();Layers.applyFilters();if(Loc.st.r)renderPoint(Loc.st)});
+function tab(which){$('b4_tabPt').setAttribute('aria-selected',which==='pt');$('b4_tabF').setAttribute('aria-selected',which==='f');$('b4_viewPt').hidden=which!=='pt';$('b4_viewF').hidden=which!=='f';$('b4_pbody').scrollTop=0;
+  if(which==='pt'&&Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s);if(Sheet.h()<=Sheet.snaps()[0]+4)Sheet.to(1)}
+$('b4_tabPt').onclick=()=>tab('pt');$('b4_tabF').onclick=()=>tab('f');
+const Sheet=(function(){const P=$('b4_panel'),mob=()=>matchMedia('(max-width:900px)').matches;
+  const snaps=()=>{const H=$('b4_pMap').clientHeight||innerHeight;return [46,Math.round(H*0.46),Math.round(H*0.82)]};
+  let cur=0;const h=()=>P.getBoundingClientRect().height;
+  function after(){map.invalidateSize();if(Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s)}
+  function set(px,anim){P.classList.toggle('drag',!anim);P.style.height=px+'px';P.classList.toggle('collapsed',px<=snaps()[0]+8)}
+  function to(i){if(!mob())return;cur=Math.max(0,Math.min(2,i));set(snaps()[cur],true);$('b4_sheetHint').textContent=cur?'':'· arraste para abrir';setTimeout(after,260)}
+  let y0=null,h0=0,t0=0,moved=false,lastY=0,lastT=0,vel=0;
+  function down(e){if(!mob()||(e.button!=null&&e.button!==0))return;y0=e.clientY;h0=h();t0=lastT=performance.now();lastY=y0;moved=false;vel=0;try{e.currentTarget.setPointerCapture(e.pointerId)}catch(_){}}
+  function move(e){if(y0==null)return;const dy=y0-e.clientY;if(!moved&&Math.abs(dy)<5)return;moved=true;const S=snaps();
+    const nh=Math.max(S[0],Math.min(S[2]+20,h0+dy));set(nh,false);const t=performance.now();if(t>lastT){vel=(lastY-e.clientY)/(t-lastT);lastY=e.clientY;lastT=t}e.preventDefault()}
+  function up(){if(y0==null)return;y0=null;P.classList.remove('drag');
+    if(!moved){to(cur===0?1:0);return}const S=snaps(),hh=h();let best=0;
+    if(Math.abs(vel)>0.5){best=vel>0?S.findIndex(v=>v>hh+10):[...S.keys()].reverse().find(k=>S[k]<hh-10);if(best==null||best<0)best=vel>0?2:0}
+    else S.forEach((v,k)=>{if(Math.abs(v-hh)<Math.abs(S[best]-hh))best=k});to(best)}
+  ['b4_grab','b4_sheetHead'].forEach(id=>{const el=$(id);el.addEventListener('pointerdown',down);el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)});
+  $('b4_grab').onclick=e=>e.preventDefault();
+  function init(){if(mob())to(cur);else{P.style.height='';P.classList.remove('collapsed')}}
+  window.addEventListener('resize',init);init();
+  return {to,h,snaps,cur:()=>cur}})();
+$('b4_acc').value=simAcc;$('b4_accTxt').textContent='±'+simAcc+' m';
+$('b4_acc').oninput=e=>{simAcc=+e.target.value;$('b4_accTxt').textContent='±'+simAcc+' m';store.set('acc',simAcc);const st=Loc.st;if(st.mode==='sim')Loc.set(st.lat,st.lon,simAcc,null,null,'tap','sim')};
+map.on('click',e=>{if(Loc.gps.on)return;Loc.set(e.latlng.lat,e.latlng.lng,simAcc,null,null,'tap','sim')});
+map.on('dragstart',()=>setFollow(false));
+$('b4_followBtn').onclick=()=>{setFollow(!follow);Tools.open(false);if(follow&&Loc.st.lat!=null)map.panTo([Loc.st.lat,Loc.st.lon])};
+$('b4_centerBtn').onclick=()=>{Tools.open(false);if(Loc.st.lat==null){toast('Ligue o GPS ou toque no mapa para definir uma posição.',4000);return}setFollow(true);map.setView([Loc.st.lat,Loc.st.lon],Math.max(map.getZoom(),17.5))};
+$('b4_baseBtn').onclick=()=>Layers.nextBase();
+const Tools=(function(){const T=$('b4_tools');
+  function open(v){T.classList.toggle('open',v);T.setAttribute('aria-hidden',!v);$('b4_toolScrim').hidden=!v;$('b4_toolTab').setAttribute('aria-expanded',v);$('b4_toolTab').style.visibility=v?'hidden':''}
+  $('b4_toolTab').onclick=()=>open(true);$('b4_toolClose').onclick=()=>open(false);$('b4_toolScrim').onclick=()=>open(false);
+  // abrir deslizando a partir da borda direita; fechar deslizando para a direita
+  let sx=null,sy=0,from=null;const M=$('b4_map');
+  M.addEventListener('touchstart',e=>{if(e.touches.length!==1){sx=null;return}const t=e.touches[0],r=M.getBoundingClientRect();
+    if(T.classList.contains('open')){if(T.contains(e.target)){sx=t.clientX;sy=t.clientY;from='open'}else sx=null}
+    else if(r.right-t.clientX<=24){sx=t.clientX;sy=t.clientY;from='edge';e.stopPropagation()}else sx=null},{capture:true,passive:true});
+  M.addEventListener('touchmove',e=>{if(sx==null||e.touches.length!==1)return;const t=e.touches[0],dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dy)>Math.abs(dx)*1.2&&Math.abs(dy)>14){sx=null;return}
+    if(from==='edge'&&dx<-36){open(true);sx=null}else if(from==='open'&&dx>50){open(false);sx=null}},{capture:true,passive:true});
+  M.addEventListener('touchend',()=>{sx=null},{capture:true,passive:true});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&T.classList.contains('open'))open(false)});
+  return {open,isOpen:()=>T.classList.contains('open')}})();
+function showBearing(){const b=bearing(),sv=$('b4_northBtn').querySelector('svg');sv.style.transform=`rotate(${-b}deg)`;
+  $('b4_northBtn').classList.toggle('rot',Math.round(b)%360!==0);$('b4_bearTxt').textContent=canRotate?`rotação ${Math.round(b>180?b-360:b)}°`:'rotação indisponível'}
+function resetNorth(){if(canRotate)map.setBearing(0);showBearing()}
+$('b4_northBtn').onclick=resetNorth;$('b4_northBtn2').onclick=()=>{resetNorth();Tools.open(false)};
+$('b4_posBtn').onclick=()=>{Tools.open(false);openPos()};
+showBearing();
+$('b4_searchBtn').onclick=()=>{Tools.open(false);const box=$('b4_searchBox');box.hidden=!box.hidden;$('b4_searchBtn').setAttribute('aria-pressed',!box.hidden);$('b4_estaq').style.visibility=box.hidden?'':'hidden';if(!box.hidden)$('b4_q').focus()};
+function closeSearch(){$('b4_searchBox').hidden=true;$('b4_searchBtn').setAttribute('aria-pressed','false');$('b4_estaq').style.visibility=''}
+let lastErrShown=null;
+function renderGps(g){$('b4_gpsBtn').setAttribute('aria-pressed',g.on);$('b4_gpsBtn').querySelector('small').textContent=g.on?(g.status==='on'?'ligado · toque para desligar':g.status==='waiting'?'aguardando sinal…':'sem sinal'):'desligado · toque para ligar';renderMode();
+  if(g.status==='error'&&lastErrShown!==g.err&&Router.cur()==='mapab4'){lastErrShown=g.err;toast(g.err.code==='denied'?'A localização foi bloqueada. No visualizador do Claude o GPS não é liberado: use o endereço publicado no GitHub Pages no Safari e permita a localização. Enquanto isso, toque no mapa para simular.':'Este navegador não oferece localização. Toque no mapa para simular.',12000)}
+  if(g.on&&g.status==='on'&&!renderGps.zoomed){renderGps.zoomed=true;setFollow(true);if(map.getZoom()<17)map.setZoom(18)}if(!g.on)renderGps.zoomed=false}
+$('b4_gpsBtn').onclick=()=>{Loc.gps.on?Loc.stop():(setFollow(true),Loc.start())};
+$('b4_mode').onclick=e=>{e.stopPropagation();Loc.gps.on?Loc.stop():(setFollow(true),Loc.start())};
+function consult(i,extra){if(Loc.gps.on)Loc.stop();const t=Math.min(1,extra/20),j=Math.min(N-1,i+1);
+  const lat=LAT[i]+(LAT[j]-LAT[i])*t,lon=LON[i]+(LON[j]-LON[i])*t;setFollow(true);map.setView([lat,lon],Math.max(map.getZoom(),18));Loc.set(lat,lon,2,null,null,'search','consulta')}
+$('b4_searchBox').addEventListener('submit',e=>{e.preventDefault();$('b4_q').blur();const r=Data.parseKm($('b4_q').value);
+  if(r.err){toast(r.err+' Exemplos: 230+040 ou 230.',5000);return}closeSearch();
+  const i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20)));consult(i,r.s-ODO[i])});
+window.addEventListener('resize',()=>{map.invalidateSize();if(Loc.st.r&&!Loc.st.r.outside)drawReti(Loc.st.r.s)});
+on('position',onPosition);on('gps',renderGps);
+on('page',p=>{if(p==='mapab4')setTimeout(()=>{if(window.__sheetOpen){window.__sheetOpen=0;Sheet.to(1)}map.invalidateSize();Layers.detail();if(Loc.st.r&&!Loc.st.r.outside){drawReti(Loc.st.r.s);if(follow)map.setView([Loc.st.lat,Loc.st.lon],map.getZoom())}},30)});
+Layers.init();renderFilters();B4.renderNote();
+if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
+renderGps(Loc.gps);
+});
+
+
+// ligação de cada pano do mapa ao registro do unifilar (JSON), sem recalcular quantidades
+const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
+  const val=v=>typeof v==='string'&&v[0]==='#'?T[+v.slice(1)]:v;
+  const recs=S.panos.map(r=>{const o={L:r[0],i0:r[1],i1:r[2]};F.forEach((k,j)=>o[k]=val(r[j+3]));return o});
+  const byKey=new Map(),sai={C:new Map(),D:new Map()};let sem=0;
+  recs.forEach(o=>{if(o.i0==null){sem++;return}if(o.L==='SC'||o.L==='SD'){for(let k=o.i0;k<=o.i1;k++)sai[o.L[1]].set(k,o)}else byKey.set(o.L+'|'+o.sigla+'|'+o.i0+'|'+o.i1,o)});
+  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code;p.src=byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
+  const nSai=recs.filter(o=>o.L==='SC'||o.L==='SD').length;
+  const avisos=new Map(S.avisos.map(a=>[a[0],a[1]]));
+  const semCoord=(S.kmz&&S.kmz.sem_coordenada)||[];
+  function renderNote(){const el=document.getElementById('b4_fonte');if(!el)return;
+    el.innerHTML=`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
+      `Importação: ${recs.length.toLocaleString('pt-BR')} panos de ${S.metadados.total_panos.toLocaleString('pt-BR')} — ${lig.toLocaleString('pt-BR')} em faixas, acostamentos e drenos ligados às estacas, ${nSai} de saídas de dreno`+
+      `${sem?`, <b>${sem} sem estaca correspondente</b>`:''}${recs.length-lig-nSai-sem>0?`, <b>${recs.length-lig-nSai-sem} sem pano no mapa</b>`:''}.`+
+      `${avisos.size?` Avisos: ${[...avisos.keys()].map(n=>'nº '+n).join(', ')} (estaca final "Sem linha no unifilar", fim pelo nº de blocos).`:''}`+
+      `${semCoord.length?` <b>Estacas sem coordenada: ${semCoord.join(', ')}</b>.`:' Todas as estacas têm coordenada no KMZ.'}`}
+  // conferência usada nos testes: cada registro do unifilar cobre exatamente as estacas e a faixa do pano no mapa
+  function check(){const bad=[];for(const o of recs){if(o.i0==null){bad.push([o.n,'sem estaca']);continue}
+      if(o.L==='SC'||o.L==='SD'){for(let k=o.i0;k<=o.i1;k++)if(!Data.saidaAt(o.L[1],k)){bad.push([o.n,'saída ausente em '+R[k][0]]);break}continue}
+      for(let k=o.i0;k<=o.i1;k++){const id=PANO_AT[o.L][k];if(id<0||PANOS[id].src!==o){bad.push([o.n,'estaca '+R[k][0]]);break}}
+      if(R[o.i0][0]!==o.estaca_inicial)bad.push([o.n,'estaca inicial '+R[o.i0][0]+' ≠ '+o.estaca_inicial]);
+      const fim=o.i1+1<N?R[o.i1+1][0]:null;if(fim&&fim!==o.estaca_final)bad.push([o.n,'estaca final '+fim+' ≠ '+o.estaca_final]);
+      const lado=o.L==='SC'?'C':o.L==='SD'?'D':LANES[o.L].side;if(SIDE[lado]!==o.sentido)bad.push([o.n,'sentido'])}
+    return bad}
+  window.__b4=()=>({panos:recs.length,ligados:lig,saidas:nSai,semEstaca:sem,mapa:PANOS.length,semRegistro:PANOS.filter(p=>!p.src).length,avisos:[...avisos.keys()],estacas:N,erros:check()});
+  return {recs,sai,avisos,renderNote}})();
+
+// GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
+on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(q=>{if(q.state==='granted')Loc.start()}).catch(()=>{})}catch(e){}});
+})()}else Router.onInit('mapab4',()=>{const m=document.getElementById('b4_map');if(m)m.innerHTML='<div style="padding:90px 20px;color:#fff;font:600 15px/1.5 system-ui;text-align:center">A base da BR-373 B4 ainda não foi carregada no servidor.<br>O administrador envia o arquivo em Administração › Base do projeto.</div>'});
+
 
 /* =====================================================================
    PÁGINA 3 — Calculadora de programação (CBUQ)
@@ -1657,7 +2127,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='02/10/2026 00:52';
+  const CUR_VER='05/10/2026 21:46';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

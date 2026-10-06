@@ -35,6 +35,22 @@ await t('usuário sem permissões não lê a base',()=>assertFails(getDoc(doc(ct
 await t('usuário sem cadastro não lê a base',()=>assertFails(getDoc(doc(ctx('novo','novo@x.com'),'base','r08'))));
 await t('usuário comum não grava a base',()=>assertFails(setDoc(doc(ctx('ativo','ativo@x.com'),'base','r08'),{json:'x'})));
 
+// base da BR-373 B4
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  await setDoc(doc(d,'base','b4'),{json:'{"codes":[],"rows":[]}',version:'t'});
+  await setDoc(doc(d,'users','b4user'),{email:'b4@x.com',name:'B4',profile:null,custom:true,perms:{mapab4:{view:true}},active:true,invited:true});
+  await setDoc(doc(d,'users','b4inativo'),{email:'b4i@x.com',name:'B4i',profile:null,custom:true,perms:{mapab4:{view:true}},active:false,invited:true});
+  await setDoc(doc(d,'users','outracoisa'),{email:'oc@x.com',name:'OC',profile:null,custom:true,perms:{mapa:{view:true}},active:true,invited:true});
+  await setDoc(doc(d,'base','zz'),{json:'x'})});
+await t('B4: usuário com a aba BR-373 B4 lê a base B4',()=>assertSucceeds(getDoc(doc(ctx('b4user','b4@x.com'),'base','b4'))));
+await t('B4: usuário com a aba B4 lê a base BR-277 (o app precisa dela para abrir)',()=>assertSucceeds(getDoc(doc(ctx('b4user','b4@x.com'),'base','r08'))));
+await t('B4: usuário só com a aba BR-277 não lê a base B4',()=>assertFails(getDoc(doc(ctx('outracoisa','oc@x.com'),'base','b4'))));
+await t('B4: usuário inativo não lê a base B4',()=>assertFails(getDoc(doc(ctx('b4inativo','b4i@x.com'),'base','b4'))));
+await t('B4: sem login não lê a base B4',()=>assertFails(getDoc(doc(anon,'base','b4'))));
+await t('B4: usuário comum não grava a base B4',()=>assertFails(setDoc(doc(ctx('b4user','b4@x.com'),'base','b4'),{json:'x'})));
+await t('B4: administrador grava a base B4',()=>assertSucceeds(setDoc(doc(admin,'base','b4'),{json:'{}',version:'2'})));
+await t('outros documentos da coleção base ficam bloqueados',()=>assertFails(getDoc(doc(ctx('ativo','ativo@x.com'),'base','zz'))));
+
 // cadastro e autoatribuição
 const nu=ctx('novo','novo@x.com');
 await t('novo usuário cria o próprio cadastro sem acesso',()=>assertSucceeds(setDoc(doc(nu,'users','novo'),{email:'novo@x.com',name:'Novo',profile:null,custom:true,perms:{},active:false,invited:false})));

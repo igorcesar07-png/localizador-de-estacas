@@ -744,6 +744,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   <div class="nav">
     <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
+    <a href="#mapab4" data-page="mapab4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-373 B4<small>Mapa, soluções e filtros</small></span></a>
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
@@ -840,6 +841,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     </div>
   </aside>
 </section>
+<!--__B4_SECTION__-->
 
 <!-- ===== 6. Administração (só administrador principal) ===== -->
 <section class="page" id="pAdmin" data-page="admin" hidden style="display:flex;flex-direction:column;background:var(--ground)">
@@ -1047,10 +1049,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
 <script>
 const PROJECT_DATA = /*__DATA__*/;
+const PROJECT_DATA_B4 = /*__DATA_B4__*/;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','calculadora','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -1220,7 +1223,7 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','calculadora','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -1549,6 +1552,8 @@ Layers.init();renderFilters();
 if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
 renderGps(Loc.gps);
 });
+
+/*__B4_JS__*/
 
 /* =====================================================================
    PÁGINA 3 — Calculadora de programação (CBUQ)

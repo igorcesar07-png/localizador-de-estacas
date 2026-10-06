@@ -2,7 +2,9 @@
 import re,os,shutil,json,subprocess,datetime,base64
 import os;W=os.environ.get('W',os.path.dirname(os.path.abspath(__file__)));REPO=os.path.dirname(W);OUT=REPO+'/firebase/public'
 os.makedirs(OUT,exist_ok=True)
-t=open(W+'/app.template.html',encoding='utf-8').read()
+import sys;sys.path.insert(0,W+'/b4')
+from b4build import add_b4
+t=add_b4(open(W+'/app.template.html',encoding='utf-8').read())
 css=open(W+'/package/dist/leaflet.css').read()
 b64=lambda f:'data:image/png;base64,'+base64.b64encode(open(W+'/'+f,'rb').read()).decode()
 VER=datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime('%d/%m/%Y %H:%M')
@@ -10,7 +12,9 @@ BUILD=datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
 body=t.replace('/*__VERSION__*/',VER).replace('/*__LEAFLET_CSS__*/',css).replace('/*__LOGO_NEOVIA__*/',b64('logo_neovia.png')).replace('/*__LOGO_VIA__*/',b64('logo_via.png'))
 m=re.search(r'<script>\nconst PROJECT_DATA = /\*__DATA__\*/;(.*?)</script>',body,re.S)
 assert m
-app_js='const PROJECT_DATA = window.PROJECT_DATA;'+m.group(1)
+g=m.group(1)
+assert g.count('const PROJECT_DATA_B4 = /*__DATA_B4__*/;')==1
+app_js='const PROJECT_DATA = window.PROJECT_DATA;'+g.replace('const PROJECT_DATA_B4 = /*__DATA_B4__*/;','const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;')
 shell=body[:m.start()]+f'<script>window.APP_BUILD="{BUILD}";</script>\n<script src="native.js?v={BUILD}"></script>\n<script src="firebase-config.js?v={BUILD}"></script>\n<script src="auth.js?v={BUILD}"></script>'+body[m.end():]
 assert '/*__DATA__*/' not in shell and 'rows' not in shell[:0]
 head='''<!doctype html>
