@@ -1683,6 +1683,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   renderEsp();
   // drenagem: DR (verde-claro, 0,60 m) e DP (verde-escuro, 1,50 m); exibir no resumo e nos segmentos
   const DRN_CODES=['DR','DP'],DRN_PROF={DR:'0,60',DP:'1,50'};
+  const SAIDA_M=8; // extensão considerada para cada saída de dreno (m)
   function renderDrn(){
   $('cDrn').innerHTML=DRN_CODES.map(c=>{const inf=Data.info(c);return `<div class="erow" data-c="${c}"><span class="tag sm" style="background:${inf.color};color:${inf.ink}">${c}</span>
       <span class="dsc"><b>${inf.desc}</b>profundidade de referência · extensão em metros</span><span class="dref">${DRN_PROF[c]}<small>m</small></span>
@@ -1906,14 +1907,14 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(drows.length){h+=`<div class="card" id="cDrn"><h2>Drenagem de ${nIn[0]} a ${nIn[1]}</h2>
       <div class="kpis" style="margin:12px 16px 0"><div class="kpi"><span>DR – Dreno Raso</span><b>${nf(DRN.DR,0)}<small>m</small></b><div class="sub">profundidade 0,60 m</div></div>
         <div class="kpi"><span>DP – Dreno Profundo</span><b>${nf(DRN.DP,0)}<small>m</small></b><div class="sub">profundidade 1,50 m</div></div>
-        <div class="kpi"><span>Saídas de dreno</span><b>${nSai}</b><div class="sub">vinculadas aos drenos programados</div></div>
-        <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP,0)}<small>m</small></b><div class="sub">${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
+        <div class="kpi"><span>Saídas de dreno</span><b>${nf(nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">${nSai} saída${nSai!==1?'s':''} × ${SAIDA_M} m</div></div>
+        <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP+nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">dreno ${nf(DRN.DR+DRN.DP,0)} m + saídas ${nf(nSai*SAIDA_M,0)} m · ${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
       ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''}</td></tr></tfoot></table></div>
+      </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''} · ${nf(nSai*SAIDA_M,0)} m</td></tr></tfoot></table></div>
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação.</div></div>`}
     LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
@@ -2086,7 +2087,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       return {title:T,drn:true,sim:true,items:[['Usinagem para dreno','SIM'],['Quantidade prevista',nf(I.usiQt,2)+' t'],['Preparação da usina',I.uPrep||'—'],['Início da usinagem',I.uIni||'—']]}}
     return {title:T,na:!hasP&&!I.uPrep&&!I.uIni,items:[['Preparação da usina',I.uPrep||'—'],['Início da usinagem',I.uIni||'—']]}}
   // localização das saídas de dreno (tela): uma grade de estacas por segmento
-  function saidasHtml(M,pill){return `<div class="sdx">${M.saidas.map(o=>`<div class="sdb"><div class="sdh"><b class="o">${o.ord}</b><span class="t">${pill(o)} ${esc(o.desc)}</span><span>${esc(o.pista)}</span><span>Serial <b>${o.serial?esc(o.serial):'—'}</b></span><span>Est. <b>${o.ini}</b> a <b>${o.fim}</b></span><span class="n"><b>${o.n}</b> saída${o.n!==1?'s':''}</span></div>
+  function saidasHtml(M,pill){return `<div class="sdx">${M.saidas.map(o=>`<div class="sdb"><div class="sdh"><b class="o">${o.ord}</b><span class="t">${pill(o)} ${esc(o.desc)}</span><span>${esc(o.pista)}</span><span>Serial <b>${o.serial?esc(o.serial):'—'}</b></span><span>Est. <b>${o.ini}</b> a <b>${o.fim}</b></span><span class="n"><b>${o.n}</b> saída${o.n!==1?'s':''} · <b>${nf(o.n*SAIDA_M,0)} m</b></span></div>
       ${o.n?`<div class="sdg">${o.sai.map(k=>`<span>${k}</span>`).join('')}</div>`:'<p class="sdn">Sem saídas previstas neste segmento</p>'}</div>`).join('')}</div>`}
   // Modelo único do relatório: a pré-visualização e o PDF são desenhados a partir dele
   function reportModel(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
@@ -2123,13 +2124,13 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
       sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
-      dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} · ${nSaiTot} saída${nSaiTot!==1?'s':''} de dreno`:null,saidas,nSai:nSaiTot,
-      tiles:hasP?[['Segmentos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]].concat(nD?[['Drenagem',nf(dTot,0)+' m',false]]:[]):
-        [['Segmentos',String(nD),false],['DR – Dreno Raso',nf(D.DR,0)+' m',false],['DP – Dreno Profundo',nf(D.DP,0)+' m',false],['Drenagem total',nf(dTot,0)+' m',true],['Saídas de dreno',String(nSaiTot),false]],
+      dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} = ${nf(dTot,0)} m de dreno + ${nSaiTot} saída${nSaiTot!==1?'s':''} × ${SAIDA_M} m = ${nf(nSaiTot*SAIDA_M,0)} m · total ${nf(dTot+nSaiTot*SAIDA_M,0)} m`:null,saidas,nSai:nSaiTot,saiM:nSaiTot*SAIDA_M,
+      tiles:hasP?[['Segmentos',String(P.seq.length),false],['Extensão',nf(L.totLen,1)+' m',false],['Área'+(L.partial?' (parcial)':''),nf(L.totA,1)+' m²',false],['CBUQ'+(L.partial?' (parcial)':''),L.totT==null?'-':nf(L.totT,2)+' t',true]].concat(nD?[['Drenagem + saídas',nf(dTot+nSaiTot*SAIDA_M,0)+' m',false]]:[]):
+        [['Segmentos',String(nD),false],['DR – Dreno Raso',nf(D.DR,0)+' m',false],['DP – Dreno Profundo',nf(D.DP,0)+' m',false],['Total de dreno',nf(dTot,0)+' m',false],[`Saídas: ${nSaiTot} × ${SAIDA_M} metros`,nf(nSaiTot*SAIDA_M,0)+' m',false],['Total dreno + saídas',nf(dTot+nSaiTot*SAIDA_M,0)+' m',true]],
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
-      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); cada saída de dreno conta '+SAIDA_M+' m de extensão; a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
   // rótulo da equipe de serviço conforme a equipe escolhida
@@ -2166,7 +2167,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(M.total)h+=`<div class="ntot">${esc(M.total)}</div>`;
     if(M.dcount){h+=`<h3 class="nsec">Drenagem <em>${M.dcount} segmento${M.dcount>1?'s':''}</em></h3>`;
       for(const s of M.dsides){for(const p of s.panos)h+=card(p)}
-      h+=`<div class="ntot">${esc(M.dtotal)}</div><h3 class="nsec">Localização das saídas de dreno <em>${M.nSai} saída${M.nSai!==1?'s':''}</em></h3>${saidasHtml(M,pill)}`}
+      h+=`<div class="ntot">${esc(M.dtotal)}</div><h3 class="nsec">Localização das saídas de dreno <em>${M.nSai} saída${M.nSai!==1?'s':''} · ${nf(M.saiM,0)} m</em></h3>${saidasHtml(M,pill)}`}
     h+=`<h3 class="nsec">Resumo da programação</h3><div class="nsum">${M.tiles.map(([k,v,d])=>`<div class="${d?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
     if(M.perda)h+=`<p class="nperda">${M.perda}</p>`;
     h+=`${M.sol.length?'<h3 class="nsec">Por solução</h3>':''}${M.sol.map(o=>`<div class="nsol">${pill(o)}<div><b>${esc(o.desc)}</b><span>${o.line}</span></div><strong>${o.val}</strong></div>`).join('')}
@@ -2272,7 +2273,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
           let x=Mg+1.2*s+ow+2.2*s;const ty=y+th/2+1*s;font(6.8,true);const tw=doc.getTextWidth(o.code)+2;doc.setFillColor(...hex(o.color));doc.roundedRect(x,y+th/2-1.7*s,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(o.ink));doc.text(o.code,x+tw/2,y+th/2+0.8*s,{align:'center'});x+=tw+1.4*s;
           const seg=[[clean(o.desc),true,INK],['   '+o.pista,false,MUT],['   Serial ',false,MUT],[o.serial||'-',true,INK],['   Est. ',false,MUT],[o.ini,true,INK],[' a ',false,MUT],[o.fim,true,INK]];
           for(const [t,b,c] of seg){font(8,b);doc.setTextColor(...c);doc.text(t,x,ty);x+=doc.getTextWidth(t)}
-          font(8,true);doc.setTextColor(...INK);doc.text(`${o.n} saída${o.n!==1?'s':''}`,Mg+CW-2*s,ty,{align:'right'});y+=th+1.2*s;
+          font(8,true);doc.setTextColor(...INK);doc.text(`${o.n} saída${o.n!==1?'s':''} · ${nf(o.n*SAIDA_M,0)} m`,Mg+CW-2*s,ty,{align:'right'});y+=th+1.2*s;
           if(!o.n){para('Sem saídas previstas neste segmento',Mg+2*s,y,CW,7.5,{c:MUT});y+=lh(7.5)+2.4*s;continue}
           font(9.5,true);const gp=1.2*s,cw0=doc.getTextWidth('000+0000')+3*s,cols=Math.max(1,Math.floor((CW+gp)/(cw0+gp))),cw=(CW-(cols-1)*gp)/cols,ch=lh(9.5)+1.8*s;
           o.sai.forEach((k,i)=>{const cx=Mg+(i%cols)*(cw+gp),cy=y+Math.floor(i/cols)*(ch+gp);box(cx,cy,cw,ch,{stroke:LINE,r:0.8});font(9.5,true);doc.setTextColor(...INK);doc.text(k,cx+cw/2,cy+ch/2+1.2*s,{align:'center'})});
@@ -2395,12 +2396,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const totBox=t=>{const h=hPara(t,CW-6,9,true)+5;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:LINE,r:1.5});para(t,M0+3,y+2.5,CW-6,9,{b:true});y+=h+4};
     drawSides(M.sides);if(M.total)totBox(M.total);
     if(M.dcount){secT('Drenagem',`${M.dcount} segmento${M.dcount>1?'s':''}`);drawSides(M.dsides);totBox(M.dtotal);
-      secT('Localização das saídas de dreno',`${M.nSai} saída${M.nSai!==1?'s':''}`);
+      secT('Localização das saídas de dreno',`${M.nSai} saída${M.nSai!==1?'s':''} · ${nf(M.saiM,0)} m`);
       font(10,true);const gp=1.2,cw0=doc.getTextWidth('000+0000')+3,cols=Math.max(1,Math.floor((CW+gp)/(cw0+gp))),cw=(CW-(cols-1)*gp)/cols,ch=lhOf(10)+2;
       for(const o of M.saidas){const info=`${o.pista}  ·  Serial ${o.serial||'-'}  ·  Est. ${o.ini} a ${o.fim}`,x=M0+13,w=CW-13-2.5,hh=2+hPara(`[${o.code}] ${o.desc}`,w-22,8.5,true)+hPara(info,w,7.5,false)+2;
         need(hh+(o.n?ch+2:8));box(M0,y,CW,hh,{fill:LIGHT,r:1.2});doc.setFillColor(11,94,67);doc.roundedRect(M0+1.5,y+1.5,10,hh-3,1.2,1.2,'F');para(o.ord,M0+1.5,y+hh/2-2.4,10,11,{b:true,c:WH,a:'center'});
         font(7.5,true);const tw=doc.getTextWidth(o.code)+2.6;doc.setFillColor(...hex(o.color));doc.roundedRect(x,y+2,tw,3.8,0.8,0.8,'F');doc.setTextColor(...hex(o.ink));doc.text(o.code,x+tw/2,y+4.9,{align:'center'});
-        const h1=para(o.desc,x+tw+1.5,y+2,w-tw-24,8.5,{b:true});para(`${o.n} saída${o.n!==1?'s':''}`,M0,y+2,CW-2.5,8.5,{b:true,a:'right'});para(info,x,y+2+Math.max(h1,4.4),w,7.5,{c:MUT});y+=hh+1.5;
+        const h1=para(o.desc,x+tw+1.5,y+2,w-tw-24,8.5,{b:true});para(`${o.n} saída${o.n!==1?'s':''} · ${nf(o.n*SAIDA_M,0)} m`,M0,y+2,CW-2.5,8.5,{b:true,a:'right'});para(info,x,y+2+Math.max(h1,4.4),w,7.5,{c:MUT});y+=hh+1.5;
         if(!o.n){para('Sem saídas previstas neste segmento',M0+2,y,CW,8,{c:MUT});y+=lhOf(8)+3;continue}
         for(let i=0;i<o.sai.length;i+=cols){need(ch+gp);o.sai.slice(i,i+cols).forEach((k,j)=>{const cx=M0+j*(cw+gp);box(cx,y,cw,ch,{stroke:LINE,r:0.8});font(10,true);doc.setTextColor(...INK);doc.text(k,cx+cw/2,y+ch/2+1.3,{align:'center'})});y+=ch+gp}
         y+=2.5}}
