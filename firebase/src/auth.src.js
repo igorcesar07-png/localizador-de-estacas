@@ -170,10 +170,13 @@ onAuthStateChanged(auth,async user=>{
       if(!anyView(perms)){waitScreen(user,'Sem páginas liberadas.','O administrador ainda não autorizou nenhuma página para você.');watchUser(user);return}}
     else if(normEmail(user.email)===ADMIN&&!user.emailVerified){waitScreen(user,'E-mail não verificado.','Entre com o Google para usar o acesso de administrador.');return}
     window.ACL={admin:isAdm,perms:isAdm?Object.fromEntries(PAGES.map(p=>[p.k,Object.fromEntries(p.acts.map(a=>[a,true]))])):perms,
-      user:{uid:user.uid,email:user.email,name:(ud&&ud.name)||user.displayName||''},pages:PAGES,renderAdmin,signOut:()=>doSignOut()};
+      user:{uid:user.uid,email:user.email,name:(ud&&ud.name)||user.displayName||''},pages:PAGES,renderAdmin,signOut:()=>doSignOut(),
+      // seriais dos apontamentos importados pelo administrador: compartilhados com os outros usuários
+      saveShared:async(id,obj)=>{if(!isAdm||id!=='seriais')throw new Error('sem permissão');const txt=JSON.stringify(obj);if(new Blob([txt]).size>1000000)throw new Error('arquivo grande demais');await setDoc(doc(db,'base','seriais'),{json:txt,version:new Date().toLocaleString('pt-BR'),rows:(obj.recs||[]).length,updatedAt:serverTimestamp(),by:auth.currentUser.email})}};
     let base=null;try{base=await loadBase()}catch(e){if(e.code==='permission-denied'){waitScreen(user,'Acesso negado pelo servidor.','Seu usuário não tem permissão para a base do projeto.');return}throw e}
     if(!base){baseMissing(isAdm);return}
     window.PROJECT_DATA=base.data;window.BASE_VERSION=base.version;
+    try{const sr=await loadBase('seriais');window.SERIAIS_SHARED=sr?sr.data:null}catch(e){window.SERIAIS_SHARED=null}
     const b4=await loadB4(isAdm,window.ACL.perms);window.PROJECT_DATA_B4=b4?b4.data:null;window.BASE_VERSION_B4=b4?b4.version:'';
     if(!isAdm)watchUser(user,true);
     startApp()}

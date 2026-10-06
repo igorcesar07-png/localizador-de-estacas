@@ -273,6 +273,14 @@ details.card > summary .flag{letter-spacing:0;text-transform:none;font-weight:70
 .alert{border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
 .alert.warn{background:var(--warn-bg);border:1px solid var(--warn)}
 .alert.info{background:var(--surface);border:1px solid var(--line)}
+.serbox{padding:4px 16px 16px;display:grid;gap:10px}.serbtns{display:flex;gap:8px;flex-wrap:wrap}
+.serimp{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--surface)}
+.sermsg{font-size:13px;line-height:1.45;border-radius:10px;padding:10px 12px;background:var(--surface-2);border:1px solid var(--line)}.sermsg.bad{border-color:var(--bad);background:var(--bad-bg)}
+table.q td.scell{min-width:190px;white-space:nowrap}
+table.q td.scell input{width:170px;font:600 13px var(--sans,system-ui);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+table.q td.scell input.auto{border-color:#7FB89A;background:#F1FAF4}table.q td.scell input.manual{border-color:var(--me);background:#EEF4FE}table.q td.scell input.multi{border-color:var(--warn);background:var(--warn-bg)}
+table.q td.scell small{display:block;color:var(--muted);font-size:11px;margin-top:2px}table.q td.scell .rserReset{border:0;background:none;color:var(--me);font-weight:700;cursor:pointer;margin-left:4px}
+.hrhint{margin:8px 2px 0;font-size:13px}.sr-t td.ser{font-size:10.5px;white-space:nowrap;text-align:left}.hrhint b{color:var(--ink)}
 .alert.ok{background:color-mix(in srgb,var(--ok) 10%,var(--surface));border:1px solid var(--ok)}
 .badge.edt{background:#FFF4D6;color:#7A5300;border:1px solid #E0B44A}
 .linkb{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
@@ -1002,7 +1010,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="hr" role="row"><b>Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
         <div class="hh u" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
         <div class="hr" role="row"><b>Usina</b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
-      </div></fieldset>
+      </div><p class="hint hrhint" id="rfHrHint"></p></fieldset>
     <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid" style="grid-template-columns:1fr">
       <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
       <div class="fld w2"><label for="rfTempoMsg">Detalhes da previsão <b>*</b> <em>(editável)</em></label><textarea id="rfTempoMsg" rows="5" maxlength="600"></textarea><span class="hint">Começa com a frase padrão (estável ou instável) conforme o status. Complete ou troque o texto; ele vai inteiro para o relatório.</span></div></div></fieldset>
@@ -1011,7 +1019,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </form>
 </div>
 <div id="repView" hidden>
-  <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" class="backBtn" id="rvClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button></div>
+  <div class="rtool"><b>Programação de serviços</b><div class="rtype" role="group" aria-label="Tipo de relatório"><span>Tipo:</span><button type="button" data-rt="full" aria-pressed="true">Completo</button><button type="button" data-rt="simp" aria-pressed="false">Simplificado · 1 pág.</button></div><button type="button" id="rvEdit">Editar dados</button><button type="button" id="rvPrint">Imprimir</button><button type="button" class="go2" id="rvPdf">Gerar PDF</button><button type="button" class="go2" id="rvPng">Baixar imagem (PNG)</button><button type="button" class="backBtn" id="rvClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span>Voltar</span></button></div>
   <div class="rmsg2" id="rvMsg" hidden></div>
   <div class="rscroll"><div id="repDoc"></div></div>
 </div>
@@ -1055,6 +1063,15 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         </div>
       </details>
 
+      <details class="card" id="cSer">
+        <summary><span>Seriais dos apontamentos</span><span class="flag" id="cSerFlag"></span></summary>
+        <div class="serbox">
+          <p class="note" id="cSerInfo"></p>
+          <div class="serbtns"><label class="serimp" data-acl="calculadora:edit"><input type="file" id="cSerFile" accept=".xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden>Importar planilha de apontamentos (.xlsx)</label></div>
+          <div id="cSerMsg"></div>
+          <p class="note">O serial de cada pano é buscado na planilha pela rodovia, sentido, faixa, solução e posição (km inicial e final). Só é preenchido quando há um único registro compatível; nos outros casos o campo fica vazio para digitar. Os seriais digitados ficam salvos com a programação.</p>
+        </div>
+      </details>
       <div id="cOut" style="display:grid;gap:16px"></div>
     </div>
   </div>
@@ -1581,7 +1598,7 @@ renderGps(Loc.gps);
   const filled=v=>v!==''&&v!=null;
   const sw=saved.w||{};
   const S={kmA:saved.kmA??'236+000',kmB:saved.kmB??'237+000',pista:saved.pista||'ALL',sent:saved.sent||'ALL',dens:filled(saved.dens)?saved.dens:DEF_DENS,perda:saved.perda??'',
-    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
+    w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>store.set('calc',S);
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
   const F={kmA:$('cKmA'),kmB:$('cKmB'),pista:$('cPista'),sent:$('cSent'),dens:$('cDens'),perda:$('cPerda')};
@@ -1610,6 +1627,54 @@ renderGps(Loc.gps);
   let LAST=null;
   const tag=inf=>`<span class="tag sm" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
 
+  /* ---------- seriais dos apontamentos (planilha) ---------- */
+  const escH=v=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const loadLib=(src,ok)=>new Promise((res,rej)=>{if(ok())return res();let el=document.querySelector(`script[src="${src}"]`);if(!el){el=document.createElement('script');el.src=src;document.head.appendChild(el)}
+    const t0=Date.now(),iv=setInterval(()=>{if(ok()){clearInterval(iv);res()}else if(Date.now()-t0>30000){clearInterval(iv);rej(new Error('sem conexão para carregar '+src.split('/').pop()))}},120);el.addEventListener('error',()=>{clearInterval(iv);rej(new Error('sem conexão para carregar '+src.split('/').pop()))})});
+  const SER=(function(){
+    let base=store.get('seriais',null);const sh=window.SERIAIS_SHARED;if(sh&&sh.recs&&(!base||sh.at>base.at))base=sh;
+    const norm=v=>String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+    // posição: hodômetro da planilha (km inicial/final); se faltar, a estaca (ex.: 273+520 ou 273,52)
+    const kmS=v=>{const n=typeof v==='number'?v:parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?Math.round(n*1000):null};
+    const estS=v=>{if(v==null||v==='')return null;let t=String(v).trim();if(!/\+/.test(t)){const n=parseFloat(t.replace(',','.'));if(!isFinite(n))return null;const k=Math.floor(n+1e-9);t=k+'+'+String(Math.round((n-k)*1000)).padStart(3,'0')}const r=Data.parseKm(t);return r.err?null:r.s};
+    async function importFile(f){
+      await loadLib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',()=>!!window.XLSX);
+      const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const recs=[],st={lidos:0,ok:0,rod:0,pos:0,fx:0,abas:[],ign:[],by:{}};
+      for(const nm of wb.SheetNames){const ws=wb.Sheets[nm];const raw=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}),txt=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:null});
+        const hi=raw.findIndex(r=>r&&r.some(c=>norm(c)==='serial'));const ns=norm(nm);
+        const fam=/superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':null;
+        if(hi<0||!fam){st.ign.push(nm);continue}st.abas.push(nm);
+        const H=raw[hi].map(norm),col=k=>H.indexOf(k);
+        const cS=col('serial'),cR=col('rodovia'),cKa=col('km inicial'),cKb=col('km final'),cF=col('faixa'),cSe=col('sentido'),cEa=col('estaca inicial'),cEb=col('estaca final'),cT=col('tipo de dreno');
+        for(let i=hi+1;i<raw.length;i++){const r=raw[i],tr=txt[i]||[];if(!r)continue;
+          const serial=tr[cS]!=null?String(tr[cS]).trim():'';if(!serial)continue;st.lidos++;   // serial no formato original da planilha
+          if(cR>=0&&r[cR]!=null&&!/277/.test(String(r[cR]))){st.rod++;continue}
+          const se=norm(r[cSe]),side=se.startsWith('cres')?'C':se.startsWith('decr')?'D':null,fx=norm(r[cF]);let code=fam,L=-1;
+          if(fam==='DRN'){const t=norm(r[cT]);code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':null;L=side==='C'?6:side==='D'?7:-1}
+          else{const g=/faixa 1\b/.test(fx)?'F1':/faixa (2|3)/.test(fx)?'F23':/acost/.test(fx)?'AC':null;if(g&&side)L=LANES.findIndex(l=>l.grp===g&&l.side===side)}
+          if(L<0||!code){st.fx++;continue}
+          let a=cKa>=0?kmS(r[cKa]):null,b=cKb>=0?kmS(r[cKb]):null;if(a==null||b==null){a=estS(tr[cEa]);b=estS(tr[cEb])}
+          if(a==null||b==null||a===b){st.pos++;continue}
+          recs.push([serial,L,code,Math.min(a,b),Math.max(a,b)]);st.ok++;st.by[code]=(st.by[code]||0)+1}}
+      if(!recs.length)throw new Error('nenhum registro com serial reconhecido (abas de Fresagem Funcional, Estrutural, Superficial ou Drenos, com as colunas Serial, Sentido, Faixa e km inicial/final).');
+      base={at:Date.now(),file:f.name,recs,st};store.set('seriais',base);
+      let shared=false;try{if(window.ACL&&ACL.admin&&ACL.saveShared){await ACL.saveShared('seriais',base);shared=true}}catch(e){}
+      return {st,shared}}
+    // candidatos: mesmo pano lógico (faixa/lado e sentido), mesma solução e trecho sobreposto ao segmento programado
+    function cands(p,a,b){if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+    function forRow(r){const c=cands(r.p,r.a,r.b),man=Object.prototype.hasOwnProperty.call(S.serial,r.p.tag)?S.serial[r.p.tag]:null,auto=c.length===1?c[0]:'';
+      return {auto,cands:c,man,val:man!=null?man:auto,st:man!=null?'manual':c.length===1?'auto':c.length>1?'multi':'none'}}
+    return {importFile,forRow,info:()=>base}})();
+  function serInfo(){const b=SER.info();
+    $('cSerInfo').innerHTML=b?`Planilha <b>${escH(b.file)}</b> importada em ${new Date(b.at).toLocaleString('pt-BR')}: ${b.recs.length.toLocaleString('pt-BR')} registros com serial (${Object.entries(b.st&&b.st.by||{}).map(([k,v])=>k+' '+v).join(' · ')}).`:'Nenhuma planilha importada: o campo Serial fica vazio para preenchimento manual.';
+    $('cSerFlag').textContent=b?b.recs.length.toLocaleString('pt-BR')+' seriais':'sem planilha';$('cSerFlag').style.color=b?'var(--ok)':''}
+  serInfo();
+  $('cSerFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;if(!can('calculadora','edit'))return;const m=$('cSerMsg');m.innerHTML='<div class="sermsg">Lendo a planilha…</div>';
+    try{const {st,shared}=await SER.importFile(f);serInfo();
+      m.innerHTML=`<div class="sermsg"><b>${st.ok.toLocaleString('pt-BR')} registros importados</b> de ${st.lidos.toLocaleString('pt-BR')} com serial (abas: ${st.abas.map(escH).join(', ')}).${st.rod?` ${st.rod} de outra rodovia ignorados.`:''}${st.fx?` ${st.fx} sem sentido/faixa/tipo reconhecido.`:''}${st.pos?` ${st.pos} sem km/estaca válidos.`:''}${st.ign.length?` Abas ignoradas: ${st.ign.map(escH).join(', ')}.`:''}${shared?' Disponível também para os outros usuários do app.':''}</div>`;
+      if(S.done)calc(false)}
+    catch(x){m.innerHTML=`<div class="sermsg bad"><b>Não foi possível importar.</b> ${escH(x.message||x)}</div>`}};
+
   /* ---------- edição de segmentos (estaca inicial/final de cada pano na programação) ---------- */
   let EDIT=null,SEGMSG='';const ROWS=new Map();
   // segmento editado só vale se continuar dentro do pano (os dados do projeto não mudam)
@@ -1625,6 +1690,8 @@ renderGps(Loc.gps);
     return {a,b,len:b-a,ini:A.name,fim:B.name}}
   function segCells(r,dig){if(EDIT&&EDIT.tag===r.p.tag)return `<td class="segin"><input class="km segk" data-k="ini" value="${EDIT.ini}" inputmode="text" autocomplete="off" aria-label="Estaca inicial do pano ${r.p.tag}"></td><td class="segin"><input class="km segk" data-k="fim" value="${EDIT.fim}" inputmode="text" autocomplete="off" aria-label="Estaca final do pano ${r.p.tag}"></td><td class="segprev">${nf(r.len,dig)}</td>`;
     return `<td${r.ed?' class="seged"':''}>${Data.nameAt(r.ini)}</td><td${r.ed?' class="seged"':''}>${Data.nameAt(r.fim)}</td><td${r.ed?' class="seged"':''}>${nf(r.len,dig)}</td>`}
+  function serCell(r){const v=r.ser,tg=r.p.tag,lab={auto:'automático (planilha)',manual:'digitado',multi:`${v.cands.length} registros possíveis`,none:'sem correspondência'}[v.st];
+    return `<td class="l scell"><input class="rser ${v.st}" list="dl-${tg}" value="${escH(v.val)}" placeholder="${v.st==='multi'?'escolha ou digite':'digite o serial'}" autocomplete="off" aria-label="Serial do pano ${tg}">${(v.cands.length?`<datalist id="dl-${tg}">${v.cands.map(c=>`<option value="${escH(c)}">`).join('')}</datalist>`:'')}<small>${lab}${v.st==='manual'&&v.cands.length?`<button type="button" class="rserReset" title="Voltar ao serial automático">↺ automático</button>`:''}</small></td>`}
   function segBtns(r){if(r.off)return '';if(EDIT&&EDIT.tag===r.p.tag)return `<div class="segbar"><button type="button" class="segSave">Salvar</button><button type="button" class="segCancel">Cancelar</button>${r.ed?'<button type="button" class="segOrig">Original</button>':''}</div><div class="segErr" role="alert">${EDIT.err||''}</div>`;
     return `<button type="button" class="segEd" aria-label="Editar estacas do pano ${r.p.tag}">✎ Editar</button>`}
   // depois de salvar: atualiza a programação já emitida (relatório e registro em Relatórios)
@@ -1633,7 +1700,7 @@ renderGps(Loc.gps);
       else{const lp=store.get('progLast',null);if(lp&&lp.data&&lp.equipe){const id=lp.data+'|'+lp.equipe,ps=store.get('execProgs',[]),pr=ps.find(x=>x.id===id);
         if(pr&&pr.items.some(it=>it.tag===tag)){if(pr.concluded)note=' A programação emitida já foi concluída: a execução registrada não muda.';
           else if(LAST){const r=[...LAST.rows,...LAST.drn.rows].find(x=>x.p.tag===tag);
-            pr.items=pr.items.map(it=>it.tag===tag?Object.assign({},it,r?{a:r.a,b:r.b}:{}):it).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
+            pr.items=pr.items.map(it=>it.tag===tag?Object.assign({},it,r?{a:r.a,b:r.b,serial:r.serial||''}:{}):it).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
             note=` Programação de ${lp.data.split('-').reverse().join('/')} (${lp.equipe}) atualizada em Relatórios.`}}}}}catch(e){}
     return note}
 
@@ -1690,6 +1757,7 @@ renderGps(Loc.gps);
     const bySol=new Map();for(const r of act){const k=r.p.code;if(!bySol.has(k))bySol.set(k,{info:r.p.info,n:0,len:0,area:0,vol:0,t:0,inc:0,excl:r.excl});const o=bySol.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.vol+=r.vol;o.t+=r.t||0}
     const sol=[...bySol.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const missW=[...new Set(inc.filter(r=>r.miss.includes('largura')).map(r=>r.L0.name))],missE=[...new Set(inc.filter(r=>r.miss.includes('espessura')).map(r=>r.p.code))];
+    [...rows,...drows].forEach(r=>{const v=SER.forRow(r);r.ser=v;r.serial=v.val||''});
     let h=hidTxt;
     const nEd=[...rows,...drows].filter(r=>r.ed).length;
     if(SEGMSG||nEd)h+=`<div class="alert ${SEGMSG?'ok':'info'}">${SEGMSG?`<b>${SEGMSG}</b>`:''}${nEd?`${nEd} pano${nEd>1?'s':''} com estacas editadas nesta programação (marcados como "editado"); os dados do projeto não mudam. <button type="button" class="linkb" id="segAll">Restaurar todos</button>`:''}</div>`;SEGMSG='';
@@ -1712,18 +1780,18 @@ renderGps(Loc.gps);
         <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
         <span>${ordTxt}</span></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
-        <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
+        <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">Serial</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
         <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
-        <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>
+        <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>${serCell(r)}
         ${segCells(r,1)}
         ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
         <td class="wcell"><input type="number" class="rw${r.wCustom?' cust':''}" inputmode="decimal" step="0.01" min="0" value="${r.w!=null?r.w:''}" placeholder="—" aria-label="Largura do pano ${r.p.tag} em metros">${r.wCustom?`<button type="button" class="rwreset" title="Voltar à largura padrão (${r.wBase!=null?nf(r.wBase,2):'—'} m)">↺</button>`:''}</td>
         <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="4">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
+      </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="5">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
       <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação. "Editar" muda a estaca inicial e a final do segmento dentro do pano: a extensão, a área, o volume e o CBUQ são recalculados com a mesma largura e espessura; os dados do projeto não mudam ("Original" desfaz).</div></div>`;
     }else h+=`<div class="alert info"><b>Sem panos de pavimento neste filtro.</b>${S.pista==='DRN'?'Pista "Somente drenagem" selecionada: a programação terá só os serviços de drenagem.':`Entre ${nA} e ${nB} (${scope}) só há drenagem.`}</div>`;
     const dact=drows.filter(r=>!r.off),dOff=drows.length-dact.length,dSum=c=>dact.filter(r=>r.p.code===c).reduce((a,r)=>a+r.len,0),nSai=dact.reduce((a,r)=>a+r.sai.length,0);
@@ -1733,12 +1801,12 @@ renderGps(Loc.gps);
         <div class="kpi"><span>DP – Dreno Profundo</span><b>${nf(DRN.DP,0)}<small>m</small></b><div class="sub">profundidade 1,50 m</div></div>
         <div class="kpi"><span>Saídas de dreno</span><b>${nSai}</b><div class="sub">vinculadas aos drenos programados</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP,0)}<small>m</small></b><div class="sub">${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
-      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno</th></tr></thead><tbody>
+      <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno</th></tr></thead><tbody>
       ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
-        <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${segCells(r,0)}
+        <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
-      </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="3">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''}</td></tr></tfoot></table></div>
+      </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''}</td></tr></tfoot></table></div>
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação.</div></div>`}
     LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()]};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
@@ -1750,6 +1818,9 @@ renderGps(Loc.gps);
       if(rs)rs.onclick=()=>{delete S.rowW[tg];save();calc(false)}});
     ROWS.clear();[...rows,...drows].forEach(r=>ROWS.set(r.p.tag,r));
     out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag,r=ROWS.get(tg);if(!r)return;
+      const si=tr.querySelector('.rser');if(si){si.onchange=()=>{const v=si.value.replace(/^\s+|\s+$/g,'');if(v===r.ser.auto&&r.ser.auto)delete S.serial[tg];else if(v===''&&!r.ser.auto)delete S.serial[tg];else S.serial[tg]=v;save();
+          SEGMSG=`Pano ${tg}: serial ${v?'"'+v+'"':'removido'}${v===r.ser.auto&&v?' (automático)':''}.`;calc(false);const n=segAfter(tg);if(n){SEGMSG+=n;calc(false)}};
+        const rs=tr.querySelector('.rserReset');if(rs)rs.onclick=()=>{delete S.serial[tg];save();SEGMSG=`Pano ${tg}: serial automático restaurado.`;calc(false);const n=segAfter(tg);if(n){SEGMSG+=n;calc(false)}}}
       const eb=tr.querySelector('.segEd');if(eb)eb.onclick=()=>{EDIT={tag:tg,ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),err:''};calc(false);const i=out.querySelector('tr[data-tag="'+tg+'"] .segk');if(i){i.focus();i.select()}};
       if(!(EDIT&&EDIT.tag===tg))return;
       const ins=[...tr.querySelectorAll('.segk')],prev=tr.querySelector('.segprev'),er=tr.querySelector('.segErr'),dig=r.drn?0:1;
@@ -1781,15 +1852,28 @@ renderGps(Loc.gps);
     if(!cur||cur===MSG_EST||cur===MSG_INST)RFF.tempoMsg.value=def;else if(cur.startsWith(MSG_EST)||cur.startsWith(MSG_INST))RFF.tempoMsg.value=def+cur.slice(MSG_EST.length)}
   const grow=()=>{const e=RFF.tempoMsg;e.style.height='auto';e.style.height=Math.max(132,e.scrollHeight+2)+'px'};RFF.tempoMsg.addEventListener('input',grow);
   RFF.tempo.addEventListener('change',()=>{autoMsg();grow()});if(RFF.tempo.value&&!RFF.tempoMsg.value)autoMsg();
-  $('rfNext').onclick=()=>{RFF.data.value=addDay(RFF.data.value||todayISO());RFF.data.removeAttribute('aria-invalid');$('rfDataHint').textContent=''};
+  $('rfNext').onclick=()=>{RFF.data.value=addDay(RFF.data.value||todayISO());RFF.data.removeAttribute('aria-invalid');$('rfDataHint').textContent='';prevHours()};
   Object.entries(RFF).forEach(([k,el])=>{const h=()=>{el.removeAttribute('aria-invalid');obraHint()};el.addEventListener('input',h);el.addEventListener('change',h)});
+  // horários: copiados da programação do dia anterior (mesma obra e equipe); o que o usuário digitou não é sobrescrito
+  const HKEYS=['sCafe','sDds','sSai','eCafe','eDds','eSai','uPrep','uIni'];const HDIRTY={};
+  const hist=()=>store.get('progHist',{});
+  (function seedHist(){const H=hist();if(LASTP&&LASTP.data&&LASTP.equipe&&LASTP.obra){const id=LASTP.data+'|'+LASTP.obra+'|'+LASTP.equipe;if(!H[id]){H[id]=LASTP;store.set('progHist',H)}}})();
+  HKEYS.forEach(k=>RFF[k].addEventListener('input',()=>{HDIRTY[k]=true}));
+  const brD=iso=>iso.split('-').reverse().join('/');
+  function prevHours(){const d=RFF.data.value,ob=RFF.obra.value,eq=RFF.equipe.value,hint=$('rfHrHint');
+    if(!d||!ob||!eq){hint.textContent='Escolha a data, a obra e a equipe para trazer os horários da programação do dia anterior.';return}
+    const pd=addDay(d,-1),ref=hist()[pd+'|'+ob+'|'+eq];const kept=HKEYS.filter(k=>HDIRTY[k]).length;
+    if(ref){HKEYS.forEach(k=>{if(!HDIRTY[k]&&ref[k]){RFF[k].value=ref[k];RFF[k].removeAttribute('aria-invalid')}});
+      hint.innerHTML=`Horários preenchidos a partir da programação de <b>${brD(pd)}</b> (${escH(eq)} · ${escH(ob)}).${kept?` ${kept} horário${kept>1?'s':''} alterado${kept>1?'s':''} por você ${kept>1?'foram mantidos':'foi mantido'}.`:''} Todos continuam editáveis.`}
+    else{HKEYS.forEach(k=>{if(!HDIRTY[k])RFF[k].value=''});hint.innerHTML=`Não há programação salva em <b>${brD(pd)}</b> para esta obra e equipe: preencha os horários.`}}
+  ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',prevHours));
   function obraHint(){$('rfObraHint').textContent=/BR-373/.test(RFF.obra.value)?'Atenção: os panos desta calculadora são do R08 da BR-277 (Blocos 2 e 3).':''}
   obraHint();
   let PROG=null;
   function openForm(){if(S.done)calc(false);
     if(!LAST||!(LAST.rows.length||LAST.drn.rows.length)){fieldErr('eKmA',LAST?'':'Calcule um trecho com panos antes de emitir o relatório.');$('cOut').scrollIntoView({behavior:'smooth'});
       if(!LAST){$('cOut').insertAdjacentHTML('afterbegin','<div class="alert warn"><b>Nenhum pano para programar.</b>Informe um trecho válido com panos e toque em Calcular.</div>')}return}
-    $('rfPend').hidden=true;$('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
+    $('rfPend').hidden=true;prevHours();$('repForm').hidden=false;setTimeout(grow,0);setTimeout(()=>{const f=Object.values(RFF).find(e=>!e.value);(f||RFF.data).focus()},50)}
   $('cRep').onclick=()=>{if(can('calculadora','create'))openForm()};
   $('rfCancel').onclick=()=>$('repForm').hidden=true;
   $('repForm').addEventListener('click',e=>{if(e.target.id==='repForm')$('repForm').hidden=true});
@@ -1798,6 +1882,7 @@ renderGps(Loc.gps);
     Object.keys(RFF).forEach(k=>RFF[k].setAttribute('aria-invalid',miss.includes(k)?'true':'false'));
     if(miss.length){$('rfPend').innerHTML=`<b>Campos pendentes:</b> ${miss.map(k=>RFL[k]).join(', ')}.`;$('rfPend').hidden=false;RFF[miss[0]].focus();return}
     const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());store.set('progLast',info);
+    {const H=hist();H[info.data+'|'+info.obra+'|'+info.equipe]=info;const ks=Object.keys(H).sort((a,b)=>a<b?1:-1);ks.slice(200).forEach(k=>delete H[k]);store.set('progHist',H);Object.keys(HDIRTY).forEach(k=>delete HDIRTY[k])}
     $('repForm').hidden=true;buildProg(info);showReport()});
   // sequência de execução: crescente da menor para a maior estaca, depois decrescente da maior para a menor
   function buildProg(info){const L=LAST;const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
@@ -1809,7 +1894,7 @@ renderGps(Loc.gps);
     PROG={info,seq,dseq,sol,L,made:new Date()};
     // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
     try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,created:Date.now(),concluded:false,
-      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code}))})}catch(e){}}
+      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||''}))})}catch(e){}}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
   const ordTxt=n=>n+'º';
@@ -1828,15 +1913,15 @@ renderGps(Loc.gps);
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,
         esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:espColor(r.excl?null:r.e),
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
-        qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc});
-      const q=cur.panos[cur.panos.length-1];q.chips=[['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
+        qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc,serial:r.serial||''});
+      const q=cur.panos[cur.panos.length-1];q.chips=[['Serial',q.serial||'—','ser',!!q.serial],['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
     const dsides=[];cur=null;const D=L.drn;
     for(const r of P.dseq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Drenagem · pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};dsides.push(cur)}
       const inf=r.p.info,ini=Data.nameAt(r.ini),fim=Data.nameAt(r.fim),ext=nf(r.len,0)+' m';
       cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||'-',sai:r.sai,
-        chips:[['Extensão',ext,'',true],['Profundidade',inf.esp||'-','',true],['Saídas de dreno',r.sai.length?r.sai.join(' · '):'nenhuma','',true]],
-        qty:nf(r.len,0),unit:'m',inc:false})}
+        chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||'-','',true],['Saídas de dreno',r.sai.length?r.sai.join(' · '):'nenhuma','',true]],
+        qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||''})}
     const dTot=D.DR+D.DP,nD=P.dseq.length,hasP=P.seq.length>0;
     const drnTxt=[D.DR?`DR ${nf(D.DR,0)} m`:null,D.DP?`DP ${nf(D.DP,0)} m`:null].filter(Boolean).join(' · ');
     const fd=P.dseq[0];
@@ -1914,19 +1999,19 @@ renderGps(Loc.gps);
         <div class="sr-us"><span>Usina</span><div><small>Preparação</small><b>${esc(hr[2].items[0][1])}</b></div><div><small>Início usinagem</small><b>${esc(hr[2].items[1][1])}</b></div></div></div>
       <div class="sr-go"><b>1º</b><p>${esc(M.start)}</p></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
-      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
-      ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="11">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
+      ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>Área</th><th>CBUQ (t)</th></tr></thead><tbody>
+      ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:#fff"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td>${r.area.replace(' m²','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
-      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno</th></tr></thead><tbody>
-        ${M.dsides.map(s=>`<tr class="b"><td colspan="7">${s.title} <span>· ${s.sub}</span></td></tr>`+s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
+      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">Serial</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th class="l">Saídas de dreno</th></tr></thead><tbody>
+        ${M.dsides.map(s=>`<tr class="b"><td colspan="8">${s.title} <span>· ${s.sub}</span></td></tr>`+s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="l">${r.sai.length?r.sai.join(' · '):'—'}</td></tr>`).join('')).join('')}
         </tbody></table></div>`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
         <div class="sr-sol">${M.sol.map(o=>`<span>${pill(o)} ${o.line.replace(/ panos?/,'p')} · <b>${o.val}</b></span>`).join('')}</div></div>
       ${M.perda?`<p class="sr-note"><b>${M.perda}</b></p>`:''}<p class="sr-note">${esc(M.note)}</p>
       <div class="sr-close">${M.close[0]} <b>${M.close[1]}</b></div></div>`;
     $('repDoc').innerHTML=h;$('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0;if(!miss.length)preparePdf()}
-  async function makePdfSimple(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
+  async function makePdfSimple(opt){opt=opt||{};const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
     const {jsPDF}=window.jspdf;const W=210,H0=297,Mg=9,CW=W-2*Mg;
@@ -1936,7 +2021,7 @@ renderGps(Loc.gps);
     const PT=0.3528;const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
     const aN=await imgSize(LOGOS.neo),aV=await imgSize(LOGOS.via);const rows=simpRows(M);
     // desenha com escala s; se não couber em 1 página, reduz espaçamentos e fontes até o mínimo legível
-    const draw=(s,H)=>{const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
+    const draw=(s,H)=>{const doc=new jsPDF({orientation:H>=W?'portrait':'landscape',unit:'mm',format:[W,H]}); // página mais baixa que larga (imagem com poucos panos): paisagem, senão o jsPDF troca largura e altura
       const font=(z,b)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(z*s)};
       const lh=z=>z*s*PT*1.25;
       const para=(str,x,yy,w,z,o={})=>{font(z,o.b);const ls=doc.splitTextToSize(clean(str),w);doc.setTextColor(...(o.c||INK));ls.forEach((l,k)=>doc.text(l,o.a==='right'?x+w:o.a==='center'?x+w/2:x,yy+z*s*PT+k*lh(z),o.a?{align:o.a}:undefined));return ls.length*lh(z)};
@@ -1966,25 +2051,25 @@ renderGps(Loc.gps);
         para('1º',Mg+2,y+(h-7.5*s)/2+1.2*s,11*s,12,{b:true,c:WH,a:'center'});para(M.start,Mg+15*s,y+2*s,w,9,{b:true});y+=h+g}
       if(M.warn){const h=hP(M.warn,CW-4,7.5,false)+2.4*s;box(Mg,y,CW,h,{fill:LIGHT,r:1});para(M.warn,Mg+2,y+1.2*s,CW-4,7.5,{});y+=h+g*0.7}
       // tabela de panos
-      const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:11,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
-        [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
+      const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
+        [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
          {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:WH,fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
          r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),clean(r.area.replace(' m²','')),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}}]);
-      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','Área (m2)','CBUQ (t)']],body,
+      if(M.count)doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Faixa','Serial','Est. inicial','Est. final','Solução','Esp.','Larg. (m)','Ext. (m)','Área (m2)','CBUQ (t)']],body,
         theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
         headStyles:{fillColor:INK,textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
-        columnStyles:{0:{cellWidth:10*s},1:{cellWidth:12*s},2:{cellWidth:13*s},3:{halign:'right'},4:{halign:'right'},6:{cellWidth:14*s},7:{halign:'right'},8:{halign:'right'},9:{halign:'right'},10:{halign:'right',cellWidth:17*s}},
+        columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},2:{cellWidth:12.5*s},3:{cellWidth:26*s},4:{halign:'right'},5:{halign:'right'},7:{cellWidth:13*s},8:{halign:'right'},9:{halign:'right'},10:{halign:'right'},11:{halign:'right',cellWidth:16*s}},
         didParseCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(raw.raw.code)+2;d.cell.styles.cellPadding={top:1.1*s,bottom:1.1*s,left:1.2*s+tw+1.4,right:1.2*s}}},
         didDrawCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){const p=raw.raw;doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(p.code)+2;
           const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'});
 }}});
       if(M.count)y=doc.lastAutoTable.finalY+g;
-      if(M.dcount){const dbody=[];for(const sd of M.dsides){dbody.push([{content:`${sd.title.toUpperCase()}  ·  ${sd.sub}`,colSpan:7,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]);
-          for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},r.sai.length?r.sai.join(' · '):'-'])}
-        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Est. inicial','Est. final','Ext. (m)','Saídas de dreno']],body:dbody,
+      if(M.dcount){const dbody=[];for(const sd of M.dsides){dbody.push([{content:`${sd.title.toUpperCase()}  ·  ${sd.sub}`,colSpan:8,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]);
+          for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},r.sai.length?r.sai.join(' · '):'-'])}
+        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço','Serial','Est. inicial','Est. final','Ext. (m)','Saídas de dreno']],body:dbody,
           theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
           headStyles:{fillColor:[11,94,67],textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
-          columnStyles:{0:{cellWidth:10*s},1:{cellWidth:12*s},3:{halign:'right'},4:{halign:'right'},5:{halign:'right',cellWidth:15*s}},
+          columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},3:{cellWidth:27*s},4:{halign:'right'},5:{halign:'right'},6:{halign:'right',cellWidth:15*s}},
           didParseCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(raw.raw.code)+2;d.cell.styles.cellPadding={top:1.1*s,bottom:1.1*s,left:1.2*s+tw+1.4,right:1.2*s}}},
           didDrawCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){const p=raw.raw;doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(p.code)+2;
             const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'})}}});
@@ -2004,6 +2089,8 @@ renderGps(Loc.gps);
       return {doc,y}};
     // a descrição da solução é escrita pelo autotable depois da etiqueta: reserva o espaço com espaços iniciais
     const fits=r=>r.doc.getNumberOfPages()===1&&r.y<=r.H-6;
+    // imagem: escala cheia e altura ajustada ao conteúdo (sem reduzir a letra quando há muitos panos)
+    if(opt.tall){const probe=draw(1,H0*12);const hNeed=Math.max(120,Math.ceil(probe.y+10));return draw(1,hNeed).doc.output('blob')}
     let res=null;for(const s of [1,0.95,0.9,0.85,0.8,0.76,0.72]){res=draw(s,H0);res.H=H0;if(fits(res))break}
     if(!fits(res)){ // muitos panos: continua em 1 página, estendendo a altura da página (A4 de largura)
       const probe=draw(0.72,H0*12);const hNeed=Math.ceil(probe.y+10);res=draw(0.72,hNeed);res.H=hNeed}
@@ -2015,7 +2102,7 @@ renderGps(Loc.gps);
   $('rvEdit').onclick=()=>{$('repView').hidden=true;openForm()};
   const isMobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   // O PDF é preparado assim que a pré-visualização abre: o toque em Imprimir/Gerar PDF usa o arquivo pronto
-  function preparePdf(){PROG.pdfP=(PROG.type==='simp'?makePdfSimple():makePdf()).catch(e=>{PROG.pdfErr=e;return null})}
+  function preparePdf(){PROG.pdfP=(PROG.type==='simp'?makePdfSimple():makePdf()).catch(e=>{PROG.pdfErr=e;return null});PROG.pngP=null;PROG.pngErr=null;setTimeout(()=>{if(PROG&&!PROG.pngP&&!$('repView').hidden)preparePng()},400)}
   async function getPdf(){if(!PROG.pdfP)preparePdf();const b=await PROG.pdfP;if(!b)throw PROG.pdfErr||new Error('falha ao gerar');return b}
   $('rvPrint').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Preparando a impressão…';
     let blob;try{blob=await getPdf()}catch(e){msg.textContent='Não foi possível preparar a impressão ('+(e.message||e)+').';return}
@@ -2135,6 +2222,25 @@ renderGps(Loc.gps);
       catch(e){if(e&&e.name==='AbortError'){msg.textContent='PDF gerado; compartilhamento cancelado. Toque em Gerar PDF de novo para enviar ou salvar em Arquivos.';return}}}
     try{const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
       msg.textContent=`PDF gerado (${name}). O download foi solicitado ao navegador; confira na pasta de downloads.`}catch(e){msg.textContent='PDF gerado, mas o navegador bloqueou o download. Use Imprimir e escolha salvar como PDF.'}};
+  /* ---------- imagem PNG (layout do relatório simplificado, altura conforme o nº de panos) ---------- */
+  const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  async function makePng(){const pdf=await makePdfSimple({tall:true});
+    await loadLib(PDFJS+'pdf.min.js',()=>!!window.pdfjsLib);window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
+    const doc=await window.pdfjsLib.getDocument({data:new Uint8Array(await pdf.arrayBuffer())}).promise;const pg=await doc.getPage(1);
+    const v1=pg.getViewport({scale:1});let sc=1800/v1.width;if(v1.width*sc*v1.height*sc>16e6)sc=Math.sqrt(16e6/(v1.width*v1.height)); // limite de área do canvas no iPhone
+    const vp=pg.getViewport({scale:sc});const cv=document.createElement('canvas');cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);
+    const g=cv.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,cv.width,cv.height);await pg.render({canvasContext:g,viewport:vp}).promise;
+    const png=await new Promise((ok,bad)=>cv.toBlob(b=>b?ok(b):bad(new Error('imagem')),'image/png'));try{doc.destroy()}catch(e){}return {png,w:cv.width,h:cv.height}}
+  const pngName=()=>pdfName().replace(/\.pdf$/i,'')+'.png';
+  function preparePng(){if(!PROG)return;PROG.pngP=makePng().catch(e=>{PROG.pngErr=e;return null})}
+  $('rvPng').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Gerando a imagem…';
+    let r=null;try{if(!PROG.pngP)preparePng();r=await PROG.pngP;if(!r){const e=PROG.pngErr;PROG.pngP=null;throw e||new Error('falha')}}catch(e){msg.textContent='Não foi possível gerar a imagem ('+(e&&e.message||e)+'). Tente de novo com internet ou use Gerar PDF.';return}
+    const name=pngName(),file=new File([r.png],name,{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Programação de serviços'});msg.textContent=`Imagem gerada (${r.w}×${r.h} px) e compartilhada.`;return}
+      catch(e){if(e&&e.name==='AbortError'){msg.textContent='Imagem pronta; compartilhamento cancelado. Toque em Baixar imagem de novo para enviar.';return}
+        if(e&&e.name==='NotAllowedError'){msg.textContent='Imagem pronta. Toque em Baixar imagem (PNG) de novo para enviar ou salvar.';return}}}
+    try{const u=URL.createObjectURL(r.png);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
+      msg.textContent=`Imagem gerada (${name}, ${r.w}×${r.h} px). O download foi solicitado ao navegador.`}catch(e){msg.textContent='Imagem gerada, mas o navegador bloqueou o download.'}};
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('repForm').hidden=true}});
   Router.onInit('calculadora',()=>{if(S.done)calc(false)});
 })();

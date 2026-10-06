@@ -32,6 +32,11 @@ service cloud.firestore {
       allow read: if isAdmin() || activeWithAccess();
       allow write: if isAdmin();
     }
+    // Seriais dos apontamentos (planilha importada pelo administrador na Calculadora)
+    match /base/seriais {
+      allow read: if isAdmin() || activeWithAccess();
+      allow write: if isAdmin();
+    }
     // Base da BR-373 B4: só para usuários ativos com a página "Estacas BR-373 B4" liberada
     match /base/b4 {
       allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'mapab4'));

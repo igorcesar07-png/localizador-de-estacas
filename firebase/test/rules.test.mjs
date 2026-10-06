@@ -51,6 +51,12 @@ await t('B4: usuário comum não grava a base B4',()=>assertFails(setDoc(doc(ctx
 await t('B4: administrador grava a base B4',()=>assertSucceeds(setDoc(doc(admin,'base','b4'),{json:'{}',version:'2'})));
 await t('outros documentos da coleção base ficam bloqueados',()=>assertFails(getDoc(doc(ctx('ativo','ativo@x.com'),'base','zz'))));
 
+await env.withSecurityRulesDisabled(async c=>{await setDoc(doc(c.firestore(),'base','seriais'),{json:'{}'})});
+await t('seriais: usuário ativo lê',()=>assertSucceeds(getDoc(doc(ctx('ativo','ativo@x.com'),'base','seriais'))));
+await t('seriais: sem login não lê',()=>assertFails(getDoc(doc(anon,'base','seriais'))));
+await t('seriais: usuário comum não grava',()=>assertFails(setDoc(doc(ctx('ativo','ativo@x.com'),'base','seriais'),{json:'x'})));
+await t('seriais: administrador grava',()=>assertSucceeds(setDoc(doc(admin,'base','seriais'),{json:'{}'})));
+
 // cadastro e autoatribuição
 const nu=ctx('novo','novo@x.com');
 await t('novo usuário cria o próprio cadastro sem acesso',()=>assertSucceeds(setDoc(doc(nu,'users','novo'),{email:'novo@x.com',name:'Novo',profile:null,custom:true,perms:{},active:false,invited:false})));
