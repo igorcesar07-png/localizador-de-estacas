@@ -956,6 +956,10 @@ table.q td.scell{min-width:190px;white-space:nowrap}
 table.q td.scell input{width:170px;font:600 13px var(--sans,system-ui);padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 table.q td.scell input.auto{border-color:#7FB89A;background:#F1FAF4}table.q td.scell input.manual{border-color:var(--me);background:#EEF4FE}table.q td.scell input.multi{border-color:var(--warn);background:var(--warn-bg)}
 table.q td.scell small{display:block;color:var(--muted);font-size:11px;margin-top:2px}table.q td.scell .rserReset{border:0;background:none;color:var(--me);font-weight:700;cursor:pointer;margin-left:4px}
+.usiq{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 18px;align-items:start}@media (max-width:560px){.usiq{grid-template-columns:1fr}}
+.ulbl{display:block;font:600 13px var(--body);color:var(--muted);margin-bottom:6px}.ulbl b{color:var(--bad)}
+.seg2{display:flex;gap:8px}.seg2 label{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1.5px solid #C9CDD2;border-radius:10px;font:700 15px var(--body);cursor:pointer;background:#fff;color:#1A1A1A}
+.seg2 input{width:18px;height:18px;accent-color:#C8101A;margin:0}.seg2 label:has(input:checked){border-color:#C8101A;background:#FDEDEE}.seg2[aria-invalid=true] label{border-color:#C8101A}
 .unote{display:block;font:600 11px var(--sans,system-ui);color:var(--muted);margin-top:2px}.hrhint{margin:8px 2px 0;font-size:13px}.sr-t td.ser{font-size:10.5px;white-space:nowrap;text-align:left}.hrhint b{color:var(--ink)}
 .alert.ok{background:color-mix(in srgb,var(--ok) 10%,var(--surface));border:1px solid var(--ok)}
 .badge.edt{background:#FFF4D6;color:#7A5300;border:1px solid #E0B44A}
@@ -1193,6 +1197,13 @@ table.rt tfoot td{background:#141715;color:#fff;font-weight:700}
 table.sr-ht{border-collapse:collapse;width:100%;border:1px solid var(--nb);border-radius:6px}
 .sr-ht th{font:700 9.5px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--ng);text-align:left;padding:3px 6px}
 .sr-ht tbody th{color:var(--nk);font-size:10.5px}.sr-ht td{font:700 18px var(--cond);padding:2px 6px;border-top:1px solid var(--nb)}
+.sr-us.n4 b{font-size:15px}.sr-us.n4 div{padding:1px 8px}.sr-t td.q.c{text-align:center}
+h3.sdt{margin:10px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;border-left:4px solid var(--nr);padding-left:7px}
+.sdx{display:grid;gap:8px}.sdb{border:1px solid var(--nb);border-radius:8px;overflow:hidden;break-inside:avoid}
+.sdh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;background:#F2F2F2;padding:5px 8px;font:500 12px var(--body);color:var(--ng)}.sdh b{color:var(--nk)}
+.sdh b.o{background:#0B5E43;color:#fff;border-radius:5px;padding:2px 7px;font:700 13px var(--cond)}.sdh .t{color:var(--nk);font-weight:700}.sdh .n{margin-left:auto}
+.sdg{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:4px;padding:6px 8px}.sdg span{border:1px solid var(--nb);border-radius:5px;padding:4px 0;text-align:center;font:700 14px var(--cond);color:var(--nk)}
+.sdn{margin:0;padding:7px 8px;font:italic 12px var(--body);color:var(--ng)}
 .sr-us{border:1px solid var(--nb);border-radius:6px;overflow:hidden}.sr-us span{background:var(--nr);color:#fff;padding:3px 8px}
 .sr-us div{display:flex;justify-content:space-between;align-items:baseline;padding:2px 8px;border-top:1px solid var(--nb)}.sr-us small{color:var(--ng)}.sr-us b{font:700 18px var(--cond)}
 .sr-go{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-top:8px;background:#FDEDEE;border:2px solid var(--nr);border-radius:8px;padding:6px 8px}
@@ -1449,7 +1460,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/10/2026 19:05 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/10/2026 19:31 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1746,13 +1757,18 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="fld"><label for="rfEquipe">Equipe <b>*</b></label><select id="rfEquipe"><option value="">Selecione…</option><option>Pavimentação Johonatan</option><option>Pavimentação Raimundo</option><option>Dreno Sandro</option><option>Reciclagem Leandro</option></select></div>
       <div class="fld w2"><label for="rfObra">Obra <b>*</b></label><select id="rfObra"><option value="">Selecione…</option><option>Restauração BR-277 – Blocos 02 e 03</option><option>Restauração BR-373 – Bloco 04</option></select><span class="hint" id="rfObraHint"></span></div>
     </div>
+    <fieldset class="mset" id="rfUsiSet" hidden><legend>Usinagem para o dreno</legend>
+      <div class="usiq"><div class="fld"><span class="ulbl" id="rfUsiL">Haverá usinagem para o dreno? <b>*</b></span>
+        <div class="seg2" id="rfUsiDr" role="radiogroup" aria-labelledby="rfUsiL"><label><input type="radio" name="rfUsiDr" value="S"><span>Sim</span></label><label><input type="radio" name="rfUsiDr" value="N"><span>Não</span></label></div></div>
+      <div class="fld" id="rfUsiQtF" hidden><label for="rfUsiQt">Quantidade prevista para usinagem (t) <b>*</b></label><input id="rfUsiQt" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 12,50"><span class="hint">Maior que zero; aceita casas decimais (vírgula ou ponto).</span></div></div>
+      <p class="hint hrhint" id="rfUsiHint"></p></fieldset>
     <fieldset class="mset"><legend>Horários</legend>
       <div class="hmx" role="table" aria-label="Horários das equipes">
         <div class="hh" role="row"><span></span><span>Café da manhã</span><span>DDS</span><span>Saída p/ trecho</span></div>
         <div class="hr" role="row"><b>Sinalização</b><input id="rfSCafe" type="time" aria-label="Sinalização – café da manhã"><input id="rfSDds" type="time" aria-label="Sinalização – DDS"><input id="rfSSai" type="time" aria-label="Sinalização – saída para o trecho"></div>
         <div class="hr" role="row"><b id="rfELabel">Serviço</b><input id="rfECafe" type="time" aria-label="Serviço – café da manhã"><input id="rfEDds" type="time" aria-label="Serviço – DDS"><input id="rfESai" type="time" aria-label="Serviço – saída para o trecho"></div>
-        <div class="hh u" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
-        <div class="hr" role="row"><b>Usina<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
+        <div class="hh u" id="rfUHead" role="row"><span></span><span>Preparação</span><span>Início usinagem</span><span></span></div>
+        <div class="hr" id="rfURow" role="row"><b>Usina<small id="rfUsinaNote" class="unote" hidden>opcional: só drenagem</small></b><input id="rfUPrep" type="time" aria-label="Preparação da usina"><input id="rfUIni" type="time" aria-label="Início da usinagem"><span></span></div>
       </div><p class="hint hrhint" id="rfHrHint"></p></fieldset>
     <fieldset class="mset"><legend>Previsão do tempo</legend><div class="mgrid" style="grid-template-columns:1fr">
       <div class="fld w2"><label for="rfTempo">Status <b>*</b></label><select id="rfTempo"><option value="">Selecione…</option><option>Ensolarado</option><option>Parcialmente nublado</option><option>Nublado</option><option>Chuva fraca / garoa</option><option>Chuva moderada</option><option>Chuva forte</option><option>Risco de temporal</option></select></div>
@@ -1822,10 +1838,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261006220514";</script>
-<script src="native.js?v=20261006220514"></script>
-<script src="firebase-config.js?v=20261006220514"></script>
-<script src="auth.js?v=20261006220514"></script>
+<script>window.APP_BUILD="20261006223147";</script>
+<script src="native.js?v=20261006223147"></script>
+<script src="firebase-config.js?v=20261006223147"></script>
+<script src="auth.js?v=20261006223147"></script>
 
 </body>
 </html>
