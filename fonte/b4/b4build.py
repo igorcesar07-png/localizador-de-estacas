@@ -106,7 +106,8 @@ const store={{get:(k,d)=>__G.store.get('b4.'+k,d),set:(k,v)=>__G.store.set('b4.'
 {B4_SRC}
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{{navigator.permissions&&navigator.permissions.query({{name:'geolocation'}}).then(q=>{{if(q.state==='granted')Loc.start()}}).catch(()=>{{}})}}catch(e){{}}}});
-}})()}}else Router.onInit('mapab4',()=>{{const m=document.getElementById('{P}map');if(m)m.innerHTML='<div style="padding:90px 20px;color:#fff;font:600 15px/1.5 system-ui;text-align:center">A base da BR-373 B4 ainda não foi carregada no servidor.<br>O administrador envia o arquivo em Administração › Base do projeto.</div>'}});
+}})()}}else Router.onInit('mapab4',()=>{{const m=document.getElementById('{P}map'),pn=document.getElementById('{P}panel');if(pn)pn.hidden=true;
+  if(m)m.innerHTML=`<div style="max-width:440px;margin:80px auto 0;padding:22px;background:#fff;color:#141715;border:1px solid #d5d8d3;border-radius:14px;font:15px/1.5 system-ui;box-shadow:0 6px 24px rgba(0,0,0,.12)"><b style="font-size:17px">Base da BR-373 B4 ainda não carregada</b><p style="margin:8px 0 0">${{ACL&&ACL.admin?'Envie o arquivo <b>base-BR373-B4.json</b> em Administração › Base do projeto, no quadro "Base da BR-373 B4". Depois reabra o app.':'O administrador precisa enviar a base da BR-373 B4. Tente de novo mais tarde.'}}</p>${{ACL&&ACL.admin?'<a href="#admin" style="display:block;margin-top:14px;text-align:center;background:#f5b400;color:#111;font-weight:700;padding:11px;border-radius:10px;text-decoration:none">Ir para Administração</a>':''}}</div>`}});
 '''
     t=_rep(t,'/*__B4_JS__*/',block)
     return t

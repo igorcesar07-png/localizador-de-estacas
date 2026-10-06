@@ -969,7 +969,8 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
 
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(q=>{if(q.state==='granted')Loc.start()}).catch(()=>{})}catch(e){}});
-})()}else Router.onInit('mapab4',()=>{const m=document.getElementById('b4_map');if(m)m.innerHTML='<div style="padding:90px 20px;color:#fff;font:600 15px/1.5 system-ui;text-align:center">A base da BR-373 B4 ainda não foi carregada no servidor.<br>O administrador envia o arquivo em Administração › Base do projeto.</div>'});
+})()}else Router.onInit('mapab4',()=>{const m=document.getElementById('b4_map'),pn=document.getElementById('b4_panel');if(pn)pn.hidden=true;
+  if(m)m.innerHTML=`<div style="max-width:440px;margin:80px auto 0;padding:22px;background:#fff;color:#141715;border:1px solid #d5d8d3;border-radius:14px;font:15px/1.5 system-ui;box-shadow:0 6px 24px rgba(0,0,0,.12)"><b style="font-size:17px">Base da BR-373 B4 ainda não carregada</b><p style="margin:8px 0 0">${ACL&&ACL.admin?'Envie o arquivo <b>base-BR373-B4.json</b> em Administração › Base do projeto, no quadro "Base da BR-373 B4". Depois reabra o app.':'O administrador precisa enviar a base da BR-373 B4. Tente de novo mais tarde.'}</p>${ACL&&ACL.admin?'<a href="#admin" style="display:block;margin-top:14px;text-align:center;background:#f5b400;color:#111;font-weight:700;padding:11px;border-radius:10px;text-decoration:none">Ir para Administração</a>':''}</div>`});
 
 
 /* =====================================================================
@@ -2127,7 +2128,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='05/10/2026 21:46';
+  const CUR_VER='05/10/2026 21:53';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
