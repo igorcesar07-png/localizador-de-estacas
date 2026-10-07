@@ -83,7 +83,7 @@ def add_b4(t):
     js=_rep(js,"[['F1','Faixa 1'],['F23','Faixa 2/3'],['AC','Acostamento']]","[['F1','Faixa 1'],['F23','Faixa 2 / adicional'],['AC','Acostamento / bordo']]")
     js=_rep(js,"${k==='AC'?'AC':k==='F1'?'1':'2/3'}","${k==='AC'?'AC':k==='F1'?'1':'2'}")
     js=_rep(js,"const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='FS'?'3 cm':f==='DR'?'0,60 m':f==='DP'?'1,50 m':'';",
-               "const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='G'?'3 cm':f==='REC'||f==='RP'?'25 cm':'';")
+               "const sub=f==='FF'?'6 cm':f==='FE'?'10 cm':f==='FS'?'3 cm':f==='REC'||f==='RP'?'25 cm':'';")
     js=_rep(js,"Data.info(f==='REC'?'RECe25':f==='PA'?'PA3,0':f==='RP'?'RPe25':f)","Data.info(f==='PA'?'PA3,0':f)")
     # detalhes do pano e da saída com os dados do unifilar
     pr_a=js.index('function panoRows(p){');pr_b=js.index('const dl=rows=>')
@@ -100,12 +100,15 @@ def add_b4(t):
    ===================================================================== */
 const __G={{emit,on,store}};
 if(PROJECT_DATA_B4){{(function(){{
+// Bloco 04: "Gap Graded (GAP)" (sigla G no unifilar) passa a FS — Fresagem Superficial 3 cm; o nome original fica no registro do unifilar
+if(!PROJECT_DATA_B4.__fs){{PROJECT_DATA_B4.codes=PROJECT_DATA_B4.codes.map(c=>c==='G'?'FS':c);PROJECT_DATA_B4.__fs=1}}
+try{{const f=__G.store.get('b4.filters',null);if(f&&Array.isArray(f.sol)&&f.sol.includes('G')){{f.sol=f.sol.map(x=>x==='G'?'FS':x);__G.store.set('b4.filters',f)}}}}catch(e){{}}
 const emit=(e,d)=>__G.emit('b4:'+e,d),on=(e,f)=>__G.on(e==='page'?e:'b4:'+e,f);
 const store={{get:(k,d)=>__G.store.get('b4.'+k,d),set:(k,v)=>__G.store.set('b4.'+k,v)}};
 {js}
 {B4_SRC}
 // fonte de dados da Calculadora de programação para a obra BR-373 — Bloco 04
-window.__SRC_B4={{Data,R,LANES,SIDE,PANOS,ODO,Loc,B4}};
+window.__SRC_B4={{Data,R,LANES,SIDE,PANOS,ODO,Loc,B4,orig:p=>p.src?{{sigla:p.src.sigla,nome:p.src.tipo_solucao}}:null}};
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{{navigator.permissions&&navigator.permissions.query({{name:'geolocation'}}).then(q=>{{if(q.state==='granted')Loc.start()}}).catch(()=>{{}})}}catch(e){{}}}});
 }})()}}else Router.onInit('mapab4',()=>{{const m=document.getElementById('{P}map'),pn=document.getElementById('{P}panel');if(pn)pn.hidden=true;
@@ -114,17 +117,17 @@ on('page',p=>{{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return
     t=_rep(t,'/*__B4_JS__*/',block)
     return t
 
-FAM_B4='''  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:'',color:'#7FCBD9'},G:{desc:'',color:'#4F5D75'},
+FAM_B4='''  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:'Fresagem Superficial 3 cm',color:'#7FCBD9'},
     REC:{desc:'',color:'#D62839'},PA:{desc:'',color:'#F08A2C'},RP:{desc:'',color:'#B0177A'},
     DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'}};
   (function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos,iS=F.indexOf('sigla')+3,iT=F.indexOf('tipo_solucao')+3,tx=v=>typeof v==='string'&&v[0]==='#'?T[+v.slice(1)]:v;
-    const fam=c=>c==='R'?'DR':c==='P'?'DP':/^PA/.test(c)?'PA':c;
+    const fam=c=>c==='R'?'DR':c==='P'?'DP':c==='G'?'FS':/^PA/.test(c)?'PA':c;
     for(const r of S.panos){const f=fam(tx(r[iS]));if(FAM[f]&&!FAM[f].desc)FAM[f].desc=tx(r[iT])}
     for(const k in FAM)if(!FAM[k].desc)FAM[k].desc=k})();
-  const FAM_ORDER=['FF','FE','G','REC','PA','RP','RF','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c)))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
+  const FAM_ORDER=['FF','FE','FS','REC','PA','RP','RF','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c)))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
 '''
 INFO_B4='''  function info(code){let fam,param=null,esp=null;
-    if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}else if(code==='G'){fam='G';esp='3 cm'}
+    if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}
     else if(code==='DR'){fam='DR'}else if(code==='DP'){fam='DP'}
     else if(code==='REC'){fam='REC';esp='25 cm'}else if(code==='RP'){fam='RP';esp='25 cm'}
     else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else fam='RF';
@@ -135,7 +138,7 @@ PANOROWS_B4='''function panoRows(p){const inf=p.info,L0=LANES[p.L],e=panoEnds(p)
   const nn=(v,d)=>typeof v==='number'?v.toLocaleString('pt-BR',{maximumFractionDigits:d==null?6:d}):v;
   const av=s?B4.avisos.get(s.n):null;
   return [
-  ['Pano',p.tag],s?['Nº no unifilar',s.n]:null,['Sigla',s?s.sigla:inf.code],['Tipo de solução',s?s.tipo_solucao:inf.desc],
+  ['Pano',p.tag],s?['Nº no unifilar',s.n]:null,['Sigla',s?(s.sigla==='G'?'FS (no unifilar: G)':s.sigla):inf.code],['Tipo de solução',s?(s.sigla==='G'?`Fresagem Superficial 3 cm (no unifilar: ${s.tipo_solucao})`:s.tipo_solucao):inf.desc],
   ['Sentido',SIDE[L0.side]],[drn?'Lado':'Faixa / elemento',s?s.faixa_elemento:L0.name],['Estaca inicial',e.ini,1],['Estaca final',e.fim,1],
   s?['No unifilar',`${s.estaca_inicial} → ${s.estaca_final}`]:null,
   ['Extensão',s&&s.extensao_m!=null?nn(s.extensao_m)+' m':fmtM(20*(p.i1-p.i0+1)),1],['Blocos de 20 m',s?s.qtd_quadrados:p.i1-p.i0+1],
@@ -158,7 +161,7 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   const recs=S.panos.map(r=>{const o={L:r[0],i0:r[1],i1:r[2]};F.forEach((k,j)=>o[k]=val(r[j+3]));return o});
   const byKey=new Map(),sai={C:new Map(),D:new Map()};let sem=0;
   recs.forEach(o=>{if(o.i0==null){sem++;return}if(o.L==='SC'||o.L==='SD'){for(let k=o.i0;k<=o.i1;k++)sai[o.L[1]].set(k,o)}else byKey.set(o.L+'|'+o.sigla+'|'+o.i0+'|'+o.i1,o)});
-  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code;p.src=byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
+  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code==='FS'?'G':p.code;p.src=byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
   const nSai=recs.filter(o=>o.L==='SC'||o.L==='SD').length;
   const avisos=new Map(S.avisos.map(a=>[a[0],a[1]]));
   const semCoord=(S.kmz&&S.kmz.sem_coordenada)||[];

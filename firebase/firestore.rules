@@ -21,7 +21,7 @@ service cloud.firestore {
     function canView(p, page) { return p.get(page, {}).get('view', false) == true; }
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
-          || canView(p, 'foto') || canView(p, 'relatorios');
+          || canView(p, 'analise') || canView(p, 'foto') || canView(p, 'relatorios');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
@@ -37,9 +37,9 @@ service cloud.firestore {
       allow read: if isAdmin() || activeWithAccess();
       allow write: if isAdmin();
     }
-    // Base da BR-373 B4: só para usuários ativos com a página "Estacas BR-373 B4" liberada
+    // Base da BR-373 B4: usuários ativos com "Estacas BR-373 B4", "Calculadora de programação" ou "Análise por km" liberada
     match /base/b4 {
-      allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'mapab4'));
+      allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise')));
       allow write: if isAdmin();
     }
 
