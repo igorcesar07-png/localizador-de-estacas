@@ -1,0 +1,8 @@
+- Preparing the list of your Firebase ANDROID apps
+✔ Preparing the list of your Firebase ANDROID apps
+- Preparing the list of your Firebase Android app SHA certificate hashes
+✔ Preparing the list of your Firebase Android app SHA certificate hashes
+- Downloading configuration data of your Firebase ANDROID app
+✔ Downloading configuration data of your Firebase ANDROID app
+clientes OAuth: 1,3,3
+google-services.json gravado para 1:212245936747:android:90ce98d68e896421ba8f2e
