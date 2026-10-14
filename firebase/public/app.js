@@ -1000,14 +1000,14 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),equipe:saved.equipe||'',equipeMan:!!saved.equipeMan,done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>{S.km[SRCK]={a:S.kmA,b:S.kmB};S.src=SRCK;store.set('calc',S)};
   // estado por fonte: estacas editadas, larguras por pano, "programar" e seriais (as estacas das duas rodovias se repetem)
-  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};
+  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={}});
   S.km=saved.km||{};if(!S.km[saved.src||'277'])S.km[saved.src||'277']={a:S.kmA,b:S.kmB};
   const KM0={'277':{a:'236+000',b:'237+000'},B4:{a:'230+000',b:'231+000'}};
   function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
     ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
-    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{}});S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{},obs:{}});if(!b.obs)b.obs={};S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
     const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
-  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
   const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
   let SRC_MISS=false;if(srcOfObra(INIT_OBRA)==='B4')SRC_MISS=!swapSrc('B4');
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
@@ -1149,7 +1149,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       else{const lp=store.get('progLast',null);if(lp&&lp.data&&lp.equipe){const id=lp.data+'|'+lp.equipe,ps=store.get('execProgs',[]),pr=ps.find(x=>x.id===id);
         if(pr&&pr.items.some(it=>it.tag===tag)){if(pr.concluded)note=' A programação emitida já foi concluída: a execução registrada não muda.';
           else if(LAST){const r=[...LAST.rows,...LAST.drn.rows].find(x=>x.p.tag===tag);
-            pr.items=pr.items.map(it=>it.tag===tag?Object.assign({},it,r?{a:r.a,b:r.b,serial:r.serial||''}:{}):it).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
+            pr.items=pr.items.map(it=>{if(it.tag!==tag)return it;const o=Object.assign({},it,r?{a:r.a,b:r.b,serial:r.serial||''}:{});if(r){if(r.obs)o.obs=r.obs;else delete o.obs}return o}).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
             note=` Programação de ${lp.data.split('-').reverse().join('/')} (${lp.equipe}) atualizada em Relatórios.`}}}}}catch(e){}
     return note}
 
@@ -1185,7 +1185,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;if(S.show[p.code]===false){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
-      drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
+      drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,obs:(S.obs[p.tag]||'').trim(),ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
     drows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini));
     // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
@@ -1254,18 +1254,19 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <div class="kpi"><span>Saídas de dreno</span><b>${nf(nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">${nSai} saída${nSai!==1?'s':''} × ${SAIDA_M} m</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP+nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">dreno ${nf(DRN.DR+DRN.DP,0)} m + saídas ${nf(nSai*SAIDA_M,0)} m · ${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
-      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}</td>
+      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}${r.obs?' hasobs':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste segmento (vai para o relatório)" aria-label="Observação de ${inf.code} ${r.p.tag}">${escH(r.obs)}</textarea></label></td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''} · ${nf(nSai*SAIDA_M,0)} m</td></tr></tfoot></table></div>
-      <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação.</div></div>`}
+      <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação (ele continua na lista e os dados do projeto não mudam). A observação fica ligada só ao próprio segmento e vai para o relatório; apague o texto para retirá-la.</div></div>`}
     LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
     out.innerHTML=h;
     [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
     out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw'),rs=tr.querySelector('.rwreset');
       cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};
+      const ob=tr.querySelector('.robs');if(ob){ob.oninput=()=>tr.classList.toggle('hasobs',!!ob.value.trim());ob.onchange=()=>{const v=ob.value.trim();if(v)S.obs[tg]=v;else delete S.obs[tg];save();const r=ROWS.get(tg);if(r)r.obs=v;tr.classList.toggle('hasobs',!!v);const nE=$('dObsN');if(nE){const k=LAST&&LAST.drn?LAST.drn.rows.filter(x=>x.obs).length:0;nE.textContent=k?`${k} com observação`:''}segAfter(tg)}};
       if(wi)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
       if(rs)rs.onclick=()=>{delete S.rowW[tg];save();calc(false)}});
     ROWS.clear();[...rows,...drows].forEach(r=>ROWS.set(r.p.tag,r));
@@ -1388,7 +1389,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     PROG={info,seq,dseq,sol,L,made:new Date()};
     // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
     if(SRCK==='277')try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,usiDr:info.usiDr||null,usiQt:info.usiQt==null?null:info.usiQt,created:Date.now(),concluded:false,
-      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||''}))})}catch(e){}}
+      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||'',...(r.obs?{obs:r.obs}:{})}))})}catch(e){}}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
   const ordTxt=n=>n+'º';
@@ -1453,7 +1454,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),sai,nSai:sai.length,
         chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),'',true],['Qtd. de saídas',String(sai.length),'',true]],
-        qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||''})}
+        qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||'',obs:r.obs||''})}
     const dTot=D.DR+D.DP,nD=P.dseq.length,hasP=P.seq.length>0;
     const drnTxt=[D.DR?`DR ${nf(D.DR,0)} m`:null,D.DP?`DP ${nf(D.DP,0)} m`:null].filter(Boolean).join(' · ');
     const fd=P.dseq[0];
@@ -1503,9 +1504,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       <div class="ntp${M.tempo.unst?' un':''}" style="background:url(${wxImg(M.tempo.status,1400,220,0)}) center/cover no-repeat">${ICON[M.tempo.cls]}<div><span>Previsão do tempo · ${M.tempo.label}</span><b>${esc(M.tempo.status)}</b><p>${esc(M.tempo.msg)}</p></div></div>
       <h3 class="nsec">Horários</h3><div class="nhr">${M.horarios.map(b=>`<div class="nhb"><h4>${b.title}</h4>${b.items.map(([k,v])=>`<div class="it"><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>`).join('')}</div>
       ${M.count?`<h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3>`:''}${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
-    const card=p=>`<div class="npc${p.inc?' inc':''}${p.drn?' drn':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
+    const card=p=>`<div class="npc${p.inc?' inc':''}${p.drn?' drn':''}${p.obs?' hasobs':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
         <div class="l"><b>${p.lane}</b> ${pill(p)} <span>${esc(p.desc)}</span></div>
-        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor};color:${p.espInk}"`:''}>${k} <b>${v}</b></span>`).join('')}</div></div>
+        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor};color:${p.espInk}"`:''}>${k} <b>${v}</b></span>`).join('')}</div>${p.obs?`<div class="nobs"><b>Observações:</b> ${esc(p.obs)}</div>`:''}</div>
         <div class="q">${p.unit?`<b>${p.qty}</b><small>${p.unit}</small>`:`<small>${p.qty}</small>`}</div></div>`;
     for(const s of M.sides){for(const p of s.panos)h+=card(p)}
     if(M.total)h+=`<div class="ntot">${esc(M.total)}</div>`;
@@ -1540,8 +1541,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td><td class="q acc">${r.acc}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
-      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th></tr></thead><tbody>
-        ${M.dsides.map(s=>s.panos.map(r=>`<tr><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td></tr>`).join('')).join('')}
+      ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th><th class="l obs">Observações</th></tr></thead><tbody>
+        ${M.dsides.map(s=>s.panos.map(r=>`<tr class="${r.obs?'hasobs':''}"><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td><td class="l obs">${esc(r.obs)}</td></tr>`).join('')).join('')}
         </tbody></table></div><h3 class="sdt">Localização das saídas de dreno</h3>${saidasHtml(M,pill)}`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
         <div class="sr-sol">${M.sol.map(o=>`<span>${pill(o)} ${o.line.replace(/ panos?/,'p')} · <b>${o.val}</b></span>`).join('')}</div></div>
@@ -1552,7 +1553,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
     const {jsPDF}=window.jspdf;const W=210,H0=297,Mg=9,CW=W-2*Mg;
-    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255];
+    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255],OBS=[251,236,236];
     const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/×/g,'x').replace(/÷/g,'/').replace(/m²/g,'m2').replace(/m³/g,'m3');
     const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
     const PT=0.3528;const imgSize=src=>new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth/im.naturalHeight);im.src=src});
@@ -1601,11 +1602,11 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
 }}});
       if(M.count)y=doc.lastAutoTable.finalY+g;
       if(M.dcount){const dbody=[];for(const sd of M.dsides){
-          for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},{content:String(r.nSai),styles:{fontStyle:'bold',halign:'center'}}])}
-        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço',SRCK==='B4'?'Serial Kartado':'Serial','Est. inicial','Est. final','Ext. (m)','Qtd. de saídas']],body:dbody,
+          for(const r of sd.panos)dbody.push([{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:[11,94,67],textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),{content:clean(r.desc),raw:r},{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},{content:r.qty,styles:{fontStyle:'bold'}},{content:String(r.nSai),styles:{fontStyle:'bold',halign:'center'}},{content:clean(r.obs||''),styles:{fontSize:7*s,halign:'left',valign:'middle'}}].map((c,i)=>{if(!r.obs||i===0)return c;const o=typeof c==='object'?c:{content:c};o.styles=Object.assign({},o.styles||{},{fillColor:OBS});return o}))}
+        doc.autoTable({startY:y,margin:{left:Mg,right:Mg},head:[['Ord.','Pista','Serviço',SRCK==='B4'?'Serial Kartado':'Serial','Est. inicial','Est. final','Ext. (m)','Qtd. de saídas','Observações']],body:dbody,
           theme:'grid',styles:{font:'helvetica',fontSize:8.2*s,cellPadding:{top:1.1*s,bottom:1.1*s,left:1.2*s,right:1.2*s},lineColor:LINE,lineWidth:0.15,textColor:INK,valign:'middle'},
           headStyles:{fillColor:[11,94,67],textColor:WH,fontSize:7.2*s,fontStyle:'bold',halign:'center'},
-          columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},3:{cellWidth:30*s},4:{halign:'right',cellWidth:20*s},5:{halign:'right',cellWidth:20*s},6:{halign:'right',cellWidth:17*s},7:{halign:'center',cellWidth:22*s}},
+          columnStyles:{0:{cellWidth:9*s},1:{cellWidth:11*s},2:{cellWidth:31*s},3:{cellWidth:28*s},4:{halign:'right',cellWidth:16*s},5:{halign:'right',cellWidth:16*s},6:{halign:'right',cellWidth:13*s},7:{halign:'center',cellWidth:14*s},8:{halign:'left'}},
           didParseCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(raw.raw.code)+2;d.cell.styles.cellPadding={top:1.1*s,bottom:1.1*s,left:1.2*s+tw+1.4,right:1.2*s}}},
           didDrawCell:d=>{const raw=d.cell.raw;if(d.section==='body'&&raw&&raw.raw){const p=raw.raw;doc.setFont('helvetica','bold');doc.setFontSize(6.8*s);const tw=doc.getTextWidth(p.code)+2;
             const cx=d.cell.x+1.2*s,cy=d.cell.y+d.cell.height/2-1.7*s;doc.setFillColor(...hex(p.color));doc.roundedRect(cx,cy,tw,3.4*s,0.6,0.6,'F');doc.setTextColor(...hex(p.ink));doc.text(p.code,cx+tw/2,cy+2.5*s,{align:'center'})}}});
@@ -1671,7 +1672,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const {jsPDF}=window.jspdf;
     const W=108,H=192,M0=6,CW=W-2*M0;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
     // identidade Neovia: branco de base, preto/cinza para texto, vermelho para destaque
-    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255];
+    const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255],OBS=[251,236,236];
     const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/×/g,'x').replace(/÷/g,'/').replace(/m²/g,'m2').replace(/m³/g,'m3');
     const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
     const PT=0.3528;
@@ -1724,8 +1725,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const drawSides=sides=>{for(const s of sides){
       for(const p of s.panos){const x=M0+17,qw=21,w=W-M0-3-qw-x;
         const laneTxt=`${p.lane}  [${p.code}]  ${p.desc}`,hE=hPara(`${p.ini}  a  ${p.fim}`,w,12.5,true),hL=hPara(laneTxt,w,8.5,false),CL=chipsLayout(p,x,W-M0-3-x);
-        const h=Math.max(20,3+hE+1+hL+1.8+CL.h+3);need(h+2);
-        box(M0,y,CW,h,{fill:p.inc?[250,250,250]:WH,stroke:p.inc?MUT:LINE,dash:p.inc});
+        const obsT=p.obs?'Observações: '+p.obs:'',hO=obsT?hPara(obsT,W-M0-3-x,8,false)+1.6:0;
+        const h=Math.max(20,3+hE+1+hL+1.8+CL.h+hO+3);need(h+2);
+        box(M0,y,CW,h,{fill:p.inc?[250,250,250]:p.obs?OBS:WH,stroke:p.inc?MUT:LINE,dash:p.inc});
         doc.setFillColor(...(p.drn?[11,94,67]:INK));doc.roundedRect(M0+2,y+2,12,h-4,1.5,1.5,'F');para(p.ord,M0+2,y+h/2-3,12,13.5,{b:true,c:WH,a:'center'});
         let yy=y+3;yy+=para(`${p.ini}  a  ${p.fim}`,x,yy,w,12.5,{b:true})+1;
         const ls=lines(laneTxt,w,8.5,false);ls.forEach((l,k)=>{const ly=yy+8.5*PT+k*lhOf(8.5);const tag=`[${p.code}]`;const ix2=l.indexOf(tag);font(8.5,false);doc.setTextColor(...INK);
@@ -1735,6 +1737,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         for(const c of CL.out){const cy=yy+c.dy;const esp=c.cls==='esp';
           if(esp&&c.ok)box(c.x,cy,c.w,c.h,{fill:hex(p.espColor),r:1});else box(c.x,cy,c.w,c.h,{fill:WH,stroke:esp?RED:LINE,dash:!c.ok,r:1});
           const ek=esp&&c.ok?hex(p.espInk||'#FFFFFF'):null;font(6,true);doc.setTextColor(...(esp?(c.ok?ek:RED):MUT));doc.text(c.k,c.x+1.6,cy+3.6);font(esp?9.5:8.5,true);doc.setTextColor(...(esp?(c.ok?ek:RED):INK));let tv=clean(c.v);while(tv.length>4&&doc.getTextWidth(tv)>c.w-c.kw-4)tv=tv.slice(0,-4)+'...';doc.text(tv,c.x+2.6+c.kw,cy+3.8)}
+        if(obsT)para(obsT,x,yy+CL.h+1.6,W-M0-3-x,8,{});
         const big=!!p.unit;para(p.qty,W-M0-3-qw,y+(big?3.5:5),qw,big?13.5:8,{b:true,a:'right',c:big?INK:MUT});if(big)para(p.unit,W-M0-3-qw,y+10.2,qw,6.5,{c:MUT,a:'right'});
         y+=h+2}}};
     const totBox=t=>{const h=hPara(t,CW-6,9,true)+5;need(h);box(M0,y,CW,h,{fill:LIGHT,stroke:LINE,r:1.5});para(t,M0+3,y+2.5,CW-6,9,{b:true});y+=h+4};
@@ -2695,7 +2698,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/10/2026 21:31';
+  const CUR_VER='14/10/2026 20:03';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

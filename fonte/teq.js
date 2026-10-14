@@ -27,7 +27,7 @@ await p.fill('#rfData','2026-10-09');await p.selectOption('#rfObra','Restauraç�
 for(const [id,v] of [['rfSCafe','04:30'],['rfSDds','05:00'],['rfSSai','05:30'],['rfECafe','04:30'],['rfEDds','05:00'],['rfESai','05:30'],['rfTempoMsg','A previsão do tempo está estável. Seguiremos monitorando.']])await p.fill('#'+id,v);
 await p.selectOption('#rfTempo','Ensolarado');await p.check('input[name=rfUsiDr][value=N]');await p.click('#cRep');await p.waitForTimeout(1000);
 ok(!(await p.isHidden('#repView')),'relatório emitido');await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(600);
-const hd=await p.$$eval('.sr-t thead th',a=>a.map(x=>x.textContent).join(' | '));ok(hd==='Ord. | Pista | Serviço | Serial | Est. inicial | Est. final | Ext. (m) | Qtd. de saídas','colunas: '+hd);
+const hd=await p.$$eval('.sr-t thead th',a=>a.map(x=>x.textContent).join(' | '));ok(hd==='Ord. | Pista | Serviço | Serial | Est. inicial | Est. final | Ext. (m) | Qtd. de saídas | Observações','colunas: '+hd);
 const t=await p.textContent('#repDoc');ok(!/ocultas/.test(t)&&!/CBUQ/.test(t),'relatório de dreno sem pavimento e sem nota de ocultos');
 const dl=p.waitForEvent('download',{timeout:60000});await p.click('#rvPng');await (await dl).saveAs(D+'dreno.png');
 await p.click('#rvClose');await p.waitForTimeout(300);
