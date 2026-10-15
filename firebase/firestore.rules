@@ -19,9 +19,14 @@ service cloud.firestore {
         : get(/databases/$(database)/documents/profiles/$(u.profile)).data.perms;
     }
     function canView(p, page) { return p.get(page, {}).get('view', false) == true; }
+    function canDo(page, act) { return isAdmin() || (hasMe() && me().active == true && permsOf(me()).get(page, {}).get(act, false) == true); }
+    function marcoOk(d) {
+      return d.cat in ['bota', 'rot', 'perim', 'ent', 'agua', 'obs'] && d.rod in ['BR-277', 'BR-373']
+          && d.km is string && d.km.size() <= 20 && d.id is string && d.id.size() <= 80;
+    }
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
-          || canView(p, 'analise') || canView(p, 'foto') || canView(p, 'relatorios');
+          || canView(p, 'analise') || canView(p, 'marcos') || canView(p, 'foto') || canView(p, 'relatorios');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
@@ -37,9 +42,16 @@ service cloud.firestore {
       allow read: if isAdmin() || activeWithAccess();
       allow write: if isAdmin();
     }
+    // Marcos do trecho (bota-esperas, rotatórias, perímetros urbanos, entradas, água outorgada, observações): um documento por marco
+    match /marcos/{id} {
+      allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'marcos'));
+      allow create: if canDo('marcos', 'create') && marcoOk(request.resource.data) && request.resource.data.id == id;
+      allow update: if canDo('marcos', 'edit') && marcoOk(request.resource.data) && request.resource.data.id == id;
+      allow delete: if canDo('marcos', 'delete');
+    }
     // Base da BR-373 B4: usuários ativos com "Estacas BR-373 B4", "Calculadora de programação" ou "Análise por km" liberada
     match /base/b4 {
-      allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise')));
+      allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')));
       allow write: if isAdmin();
     }
 
