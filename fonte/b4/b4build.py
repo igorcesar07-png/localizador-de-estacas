@@ -166,7 +166,7 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   const avisos=new Map(S.avisos.map(a=>[a[0],a[1]]));
   const semCoord=(S.kmz&&S.kmz.sem_coordenada)||[];
   function renderNote(){const el=document.getElementById('b4_fonte');if(!el)return;
-    el.innerHTML=`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
+    const rv=S.revisao;el.innerHTML=(rv?`<b>Unifilar carregado: revisão ${rv.id}</b> (substitui a ${rv.anterior}; soluções alteradas nos km 225 a 230).<br>`:`<b>Unifilar carregado: revisão R00.</b> A revisão R03 REV1 ainda não foi enviada ao servidor (Administração › Base do projeto › Base da BR-373 B4).<br>`)+`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
       `Importação: ${recs.length.toLocaleString('pt-BR')} panos de ${S.metadados.total_panos.toLocaleString('pt-BR')} — ${lig.toLocaleString('pt-BR')} em faixas, acostamentos e drenos ligados às estacas, ${nSai} de saídas de dreno`+
       `${sem?`, <b>${sem} sem estaca correspondente</b>`:''}${recs.length-lig-nSai-sem>0?`, <b>${recs.length-lig-nSai-sem} sem pano no mapa</b>`:''}.`+
       `${avisos.size?` Avisos: ${[...avisos.keys()].map(n=>'nº '+n).join(', ')} (estaca final "Sem linha no unifilar", fim pelo nº de blocos).`:''}`+
