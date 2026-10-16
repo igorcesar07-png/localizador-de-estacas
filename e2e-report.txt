@@ -1,0 +1,23 @@
+Teste de ponta a ponta: 21/21 OK
+
+OK  base sintética B4 gravada no emulador
+OK  base sintética gravada no emulador
+OK  conta nova fica aguardando liberação do administrador
+OK  conta nova não recebe a base do projeto
+OK  administrador entra no aplicativo
+OK  menu Administração visível para o administrador
+OK  usuário novo aparece na lista
+OK  nome informado no cadastro aparece na lista
+OK  status do usuário novo: Aguardando autorização
+OK  administrador salva as permissões
+OK  usuário vê só Localização e Mapa no menu (localizacao,mapa)
+OK  sem a aba BR-373 B4 liberada, a base B4 não é entregue
+OK  URL direta da aba BR-373 B4 é bloqueada
+OK  URL direta da Calculadora é bloqueada
+OK  URL direta da Administração é bloqueada
+OK  API do banco recusa leitura sem credencial (403)
+OK  com a aba liberada, "Estacas BR-373 B4" aparece no menu (localizacao,mapa,mapab4)
+OK  aba B4 recebe a base do servidor e liga os panos às estacas {"panos":3,"ligados":2,"saidas":1,"semEstaca":0,"mapa":2,"semRegistro":0,"avisos":[],"estacas":100,"erros":0}
+OK  usuário desativado não entra
+OK  convidado entra direto com as páginas do perfil (calculadora,relatorios)
+OK  sem "Criar" na Calculadora, botão de emitir programação fica oculto

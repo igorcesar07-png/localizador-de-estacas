@@ -1,0 +1,106 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-estacas", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[33m[1m⚠ [22m[39m It appears you are running in a CI environment. You can avoid downloading the Firestore Emulator repeatedly by caching the /home/runner/.cache/firebase/emulators directory.
+[36m[1mi  firestore:[22m[39m downloading cloud-firestore-emulator-v1.22.0.jar...
+
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m✔  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m✔  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi [22m[39m Running script: [1mREPORT=ci-report/rules-report.txt node test/rules.test.mjs[22m
+[2026-10-16T21:59:29.484Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c6e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L38, false for 'create' @ L104, false for 'update' @ L38, false for 'update' @ L104
+[2026-10-16T21:59:29.864Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c75 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L38, false for 'create' @ L104, false for 'update' @ L38, false for 'update' @ L104
+[2026-10-16T21:59:30.290Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c7e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L54:24 for 'create' @ L54, false for 'create' @ L104, evaluation error at L55:24 for 'update' @ L55, false for 'update' @ L104, false for 'create' @ L54, false for 'create' @ L104
+[2026-10-16T21:59:30.374Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c80 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L54, false for 'create' @ L104, false for 'update' @ L55, false for 'update' @ L104
+[2026-10-16T21:59:30.414Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c81 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L56:24 for 'delete' @ L56, false for 'delete' @ L104, false for 'delete' @ L56, false for 'delete' @ L104
+[2026-10-16T21:59:30.582Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c85 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L48:23 for 'create' @ L48, false for 'create' @ L104, evaluation error at L48:23 for 'update' @ L48, false for 'update' @ L104, false for 'update' @ L48, false for 'update' @ L104
+[2026-10-16T21:59:30.646Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c87 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L61, false for 'create' @ L104, false for 'update' @ L61, false for 'update' @ L104
+[2026-10-16T21:59:30.791Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c8b error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L43, false for 'create' @ L104, false for 'update' @ L43, false for 'update' @ L104
+[2026-10-16T21:59:30.873Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c8d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L71, false for 'create' @ L104, false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:30.890Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c8e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L71, false for 'create' @ L104, false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:30.905Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c8f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L71, false for 'create' @ L104, false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:30.919Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c90 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L71, false for 'create' @ L104, false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:31.014Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c92 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L71:24 for 'create' @ L71, false for 'create' @ L104, false for 'update' @ L67, false for 'update' @ L104, false for 'create' @ L71, false for 'create' @ L104
+[2026-10-16T21:59:31.053Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c93 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:31.089Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c94 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L67, false for 'update' @ L104
+[2026-10-16T21:59:31.227Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c98 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L95, false for 'create' @ L104, false for 'update' @ L95, false for 'update' @ L104
+[2026-10-16T21:59:31.248Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c99 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L101, false for 'create' @ L104, false for 'update' @ L101, false for 'update' @ L104
+[2026-10-16T21:59:31.342Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x6c602c6d error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L104, false for 'update' @ L104
+Regras do Firestore: 52/52 testes OK
+
+OK  sem login não lê a base
+OK  administrador lê e grava a base
+OK  e-mail do admin sem verificação não grava a base
+OK  usuário ativo com página liberada lê a base
+OK  usuário com perfil liberado lê a base
+OK  usuário com perfil sem páginas não lê a base
+OK  usuário inativo não lê a base
+OK  usuário sem permissões não lê a base
+OK  usuário sem cadastro não lê a base
+OK  usuário comum não grava a base
+OK  B4: usuário com a aba BR-373 B4 lê a base B4
+OK  B4: usuário com a aba B4 lê a base BR-277 (o app precisa dela para abrir)
+OK  B4: usuário só com a aba BR-277 não lê a base B4
+OK  Análise por km: usuário só com o painel lê a base B4
+OK  Análise por km: usuário só com o painel lê a base BR-277
+OK  Marcos: quem tem a página lê os marcos
+OK  Marcos: quem não tem a página não lê
+OK  Marcos: só visualizar não grava
+OK  Marcos: com permissão de criar, grava
+OK  Marcos: tipo desconhecido é recusado
+OK  Marcos: sem permissão de excluir não exclui
+OK  Marcos: quem tem a página lê a base B4
+OK  Horário da equipe: quem emite programação grava
+OK  Horário da equipe: sem a Calculadora não lê
+OK  Horário da equipe: só visualizar a Calculadora não grava
+OK  B4: usuário inativo não lê a base B4
+OK  B4: sem login não lê a base B4
+OK  B4: usuário comum não grava a base B4
+OK  B4: administrador grava a base B4
+OK  outros documentos da coleção base ficam bloqueados
+OK  seriais: usuário ativo lê
+OK  seriais: sem login não lê
+OK  seriais: usuário comum não grava
+OK  seriais: administrador grava
+OK  novo usuário cria o próprio cadastro sem acesso
+OK  novo usuário não se cria ativo
+OK  novo usuário não se dá permissões
+OK  novo usuário não escolhe perfil
+OK  não cria cadastro de outra pessoa
+OK  convidado cria cadastro com o perfil do convite
+OK  convidado não altera o perfil do convite
+OK  usuário não altera o próprio cadastro
+OK  usuário não se reativa
+OK  usuário lê o próprio cadastro
+OK  usuário não lê cadastro de outro
+OK  usuário não lista usuários
+OK  usuário não cria perfis
+OK  usuário não cria convites
+OK  administrador lista e altera usuários
+OK  administrador cria perfis e convites
+OK  e-mail do admin sem verificação não gerencia
+OK  coleções desconhecidas bloqueadas
+
+[32m[1m✔ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
