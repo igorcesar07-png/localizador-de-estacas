@@ -187,6 +187,11 @@ onAuthStateChanged(auth,async user=>{
         save:m=>setDoc(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()}),
         saveMany:async ms=>{for(let i=0;i<ms.length;i+=400){const b=writeBatch(db);ms.slice(i,i+400).forEach(m=>b.set(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()}));await b.commit()}},
         del:id=>deleteDoc(doc(db,'marcos',id))}}
+    // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
+    const pc=window.ACL.perms.calculadora||{};
+    if(isAdm||pc.view){const hid=eq=>String(eq).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').slice(0,80)||'_';
+      window.EquipeHorasDB={subscribe:cb=>onSnapshot(collection(db,'equipeHoras'),s=>cb(s.docs.map(d=>d.data())),()=>{}),
+        save:(eq,h,at)=>{if(!(isAdm||pc.create))return Promise.resolve();return setDoc(doc(db,'equipeHoras',hid(eq)),{equipe:String(eq),h,at:Math.round(at),by:user.email}).catch(()=>{})}}}
     if(!isAdm)watchUser(user,true);
     startApp()}
   catch(e){gate(`<div class="gmsg bad">${esc(errTxt(e))}</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);

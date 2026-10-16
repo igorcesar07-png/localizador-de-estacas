@@ -42,6 +42,12 @@ service cloud.firestore {
       allow read: if isAdmin() || activeWithAccess();
       allow write: if isAdmin();
     }
+    // Último horário de cada equipe (Calculadora): lê quem tem a Calculadora; grava quem emite programação
+    match /equipeHoras/{id} {
+      allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'calculadora'));
+      allow write: if canDo('calculadora', 'create') && request.resource.data.keys().hasOnly(['equipe', 'h', 'at', 'by'])
+                   && request.resource.data.equipe is string && request.resource.data.h is map && request.resource.data.at is int;
+    }
     // Marcos do trecho (bota-esperas, rotatórias, perímetros urbanos, entradas, água outorgada, observações): um documento por marco
     match /marcos/{id} {
       allow read: if isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'marcos'));

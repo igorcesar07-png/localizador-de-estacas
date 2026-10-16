@@ -44,6 +44,8 @@ await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
   await setDoc(doc(d,'users','mkver'),{email:'mkv@x.com',name:'MV',profile:null,custom:true,perms:{marcos:{view:true}},active:true,invited:true});
   await setDoc(doc(d,'users','mkedit'),{email:'mke@x.com',name:'ME',profile:null,custom:true,perms:{marcos:{view:true,create:true,edit:true}},active:true,invited:true});
   await setDoc(doc(d,'marcos','m1'),{id:'m1',cat:'bota',rod:'BR-277',km:'233+700'});
+  await setDoc(doc(d,'users','admcalc'),{email:'ac@x.com',name:'AC',profile:null,custom:true,perms:{calculadora:{view:true,create:true}},active:true,invited:true});
+  await setDoc(doc(d,'users','calcver'),{email:'cv@x.com',name:'CV',profile:null,custom:true,perms:{calculadora:{view:true}},active:true,invited:true});
   await setDoc(doc(d,'users','outracoisa'),{email:'oc@x.com',name:'OC',profile:null,custom:true,perms:{mapa:{view:true}},active:true,invited:true});
   await setDoc(doc(d,'base','zz'),{json:'x'})});
 await t('B4: usuário com a aba BR-373 B4 lê a base B4',()=>assertSucceeds(getDoc(doc(ctx('b4user','b4@x.com'),'base','b4'))));
@@ -58,6 +60,9 @@ await t('Marcos: com permissão de criar, grava',()=>assertSucceeds(setDoc(doc(c
 await t('Marcos: tipo desconhecido é recusado',()=>assertFails(setDoc(doc(ctx('mkedit','mke@x.com'),'marcos','m4'),{id:'m4',cat:'xyz',rod:'BR-373',km:'200+000'})));
 await t('Marcos: sem permissão de excluir não exclui',()=>assertFails(deleteDoc(doc(ctx('mkedit','mke@x.com'),'marcos','m1'))));
 await t('Marcos: quem tem a página lê a base B4',()=>assertSucceeds(getDoc(doc(ctx('mkver','mkv@x.com'),'base','b4'))));
+await t('Horário da equipe: quem emite programação grava',()=>assertSucceeds(setDoc(doc(ctx('admcalc','ac@x.com'),'equipeHoras','Equipe_A'),{equipe:'Equipe A',h:{eCafe:'07:00'},at:1760000000000,by:'ac@x.com'})));
+await t('Horário da equipe: sem a Calculadora não lê',()=>assertFails(getDoc(doc(ctx('outracoisa','oc@x.com'),'equipeHoras','Equipe_A'))));
+await t('Horário da equipe: só visualizar a Calculadora não grava',()=>assertFails(setDoc(doc(ctx('calcver','cv@x.com'),'equipeHoras','Equipe_A'),{equipe:'Equipe A',h:{},at:1,by:'cv@x.com'})));
 await t('B4: usuário inativo não lê a base B4',()=>assertFails(getDoc(doc(ctx('b4inativo','b4i@x.com'),'base','b4'))));
 await t('B4: sem login não lê a base B4',()=>assertFails(getDoc(doc(anon,'base','b4'))));
 await t('B4: usuário comum não grava a base B4',()=>assertFails(setDoc(doc(ctx('b4user','b4@x.com'),'base','b4'),{json:'x'})));

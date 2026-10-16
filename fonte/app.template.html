@@ -2151,16 +2151,41 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const DEF_H={sCafe:'04:30',sDds:'05:00',sSai:'05:30',eCafe:'04:30',eDds:'05:00',eSai:'05:30',uPrep:'04:00',uIni:'04:30'};
   const toMin=v=>{v=String(v==null?'':v).trim().toLowerCase().replace(/\s/g,'').replace(/h/,':');let m=v.match(/^(\d{1,2})[:.]?(\d{2})$/);if(!m&&/^\d{1,2}$/.test(v))m=[v,v,'00'];if(!m)return null;const h=+m[1],mi=+m[2];return h>23||mi>59?null:h*60+mi};
   const fmtHM=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
-  const HV=Object.assign({},DEF_H);[LASTP,store.get('progHours',{})||{}].forEach(src=>HKEYS.forEach(k=>{const m=toMin(src[k]);if(m!=null)HV[k]=fmtHM(m)}));
-  const saveH=()=>store.set('progHours',HV);saveH();
-  function setH(k,v){HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid');saveH()}
-  function commitH(k){const el=RFF[k],m=toMin(el.value);if(m==null){el.value=HV[k];el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}else setH(k,fmtHM(m))}
-  HKEYS.forEach(k=>{RFF[k].value=HV[k];RFF[k].addEventListener('change',()=>commitH(k));RFF[k].addEventListener('blur',()=>commitH(k))});
-  document.querySelectorAll('#cHor [data-hstep]').forEach(b=>b.addEventListener('click',()=>{const k=Object.keys(RFF).find(x=>RFF[x].id===b.dataset.k);const m=toMin(RFF[k].value);setH(k,fmtHM((m==null?toMin(HV[k]):m)+(+b.dataset.hstep)))}));
-  $('rfHrHint').textContent='Os últimos horários informados ficam salvos. Use −15 min / +15 min ou digite no formato HH:mm; um valor apagado ou inválido volta ao último válido.';
+  // horários: sinalização e equipe seguem a EQUIPE (último registro salvo dela); usina é comum a todas e não muda ao trocar de equipe
+  const TKEYS=['sCafe','sDds','sSai','eCafe','eDds','eSai'],UKEYS=['uPrep','uIni'];
+  const HV={uPrep:DEF_H.uPrep,uIni:DEF_H.uIni};[LASTP,store.get('progHours',{})||{}].forEach(src=>UKEYS.forEach(k=>{const m=toMin(src[k]);if(m!=null)HV[k]=fmtHM(m)}));
+  const saveH=()=>store.set('progHours',{uPrep:HV.uPrep,uIni:HV.uIni});saveH();
+  // último horário de cada equipe: salvo no aparelho (funciona sem internet) e sincronizado com o servidor; vale o registro mais recente
+  const teamH=()=>store.get('teamHours',null);
+  (function seedTeam(){if(teamH())return;const T={};const H=hist();const all=Object.values(H).concat(LASTP&&LASTP.equipe?[LASTP]:[]);
+    for(const r of all){if(!r||!r.equipe)continue;const h={};let okH=true;TKEYS.forEach(k=>{const m=toMin(r[k]);if(m==null)okH=false;else h[k]=fmtHM(m)});if(!okH)continue;
+      const at=r.data?Date.parse(r.data+'T12:00:00'):0;if(!T[r.equipe]||at>=T[r.equipe].at)T[r.equipe]={h,at,src:'local'}}
+    store.set('teamHours',T)})();
+  let TDIRTY=false;
+  function teamHint(){const eq=RFF.equipe.value,t=(teamH()||{})[eq];
+    $('rfHrHint').innerHTML=!eq?'Escolha a equipe: os horários de sinalização e da equipe vêm do último registro dela. A usina é a mesma para todas as equipes.':
+      t?`Horários de sinalização e da equipe: último registro de <b>${escH(eq)}</b> (${new Date(t.at).toLocaleDateString('pt-BR')}). Ao emitir com outro horário, ele passa a ser o padrão da equipe. Usina: igual para todas.`:
+      `<b>${escH(eq)}</b> ainda não tem horário registrado: preencha os horários de sinalização e da equipe. Usina: igual para todas.`}
+  function loadTeam(eq){const t=(teamH()||{})[eq];TKEYS.forEach(k=>{const v=t&&t.h&&t.h[k]?t.h[k]:'';HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid')});TDIRTY=false;teamHint()}
+  function saveTeam(eq,info){if(!eq)return;const h={};TKEYS.forEach(k=>h[k]=info[k]);const T=teamH()||{};const rec={h,at:Date.now(),src:'local'};T[eq]=rec;store.set('teamHours',T);
+    try{window.EquipeHorasDB&&window.EquipeHorasDB.save(eq,h,rec.at)}catch(e){}teamHint()}
+  // servidor: junta com o aparelho pelo mais recente (offline o Firestore entrega o que estiver em cache e envia depois)
+  if(window.EquipeHorasDB)try{window.EquipeHorasDB.subscribe(list=>{if(!list)return;const T=teamH()||{};let chg=false;
+      for(const r of list){if(!r||!r.equipe||!r.h)continue;const l=T[r.equipe];if(!l||(r.at||0)>(l.at||0)){T[r.equipe]={h:r.h,at:r.at||0,src:'servidor'};chg=true}}
+      for(const [eq,l] of Object.entries(T)){const r=list.find(x=>x.equipe===eq);if(l.src==='local'&&(!r||(r.at||0)<(l.at||0)))try{window.EquipeHorasDB.save(eq,l.h,l.at)}catch(e){}}
+      if(chg){store.set('teamHours',T);if(!TDIRTY&&RFF.equipe.value)loadTeam(RFF.equipe.value);else teamHint()}})}catch(e){}
+  const isT=k=>TKEYS.includes(k);
+  function setH(k,v){HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid');if(isT(k))TDIRTY=true;else saveH()}
+  // valor apagado: na equipe fica vazio (a preencher); inválido volta ao último válido; na usina sempre volta ao último válido
+  function commitH(k){const el=RFF[k],raw=el.value.trim(),m=toMin(raw);if(isT(k)&&raw===''){HV[k]='';return}
+    if(m==null){el.value=HV[k]||'';el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}else if(fmtHM(m)!==HV[k]||el.value!==fmtHM(m))setH(k,fmtHM(m))}
+  HKEYS.forEach(k=>{RFF[k].value=HV[k]||'';RFF[k].addEventListener('change',()=>commitH(k));RFF[k].addEventListener('blur',()=>commitH(k))});
+  document.querySelectorAll('#cHor [data-hstep]').forEach(b=>b.addEventListener('click',()=>{const k=Object.keys(RFF).find(x=>RFF[x].id===b.dataset.k);let m=toMin(RFF[k].value);if(m==null)m=toMin(HV[k]);
+    if(m==null){RFF[k].classList.add('flash');setTimeout(()=>RFF[k].classList.remove('flash'),900);RFF[k].focus();return}setH(k,fmtHM(m+(+b.dataset.hstep)))}));
+  if(RFF.equipe.value)loadTeam(RFF.equipe.value);else teamHint();
   function equipeTitulo(eq){return /dren/i.test(eq||'')?'Equipe de dreno':/pav/i.test(eq||'')?'Equipe de pavimentação':'Equipe de serviço'}
   const eqLabel=()=>{$('rfELabel').textContent=equipeTitulo(RFF.equipe.value)};RFF.equipe.addEventListener('change',eqLabel);eqLabel();
-  RFF.equipe.addEventListener('change',()=>{applyEquipe(RFF.equipe.value);usiSync()});
+  RFF.equipe.addEventListener('change',()=>{loadTeam(RFF.equipe.value);applyEquipe(RFF.equipe.value);usiSync()});
   // usinagem para o dreno: só para equipe de dreno; "Não" dispensa os horários da usina
   const isDrnEq=()=>/dren/i.test(RFF.equipe.value||'');
   const usiVal=()=>{const r=document.querySelector('input[name=rfUsiDr]:checked');return r?r.value:''};
@@ -2195,7 +2220,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(miss.length||ux.length){pend(`<b>Campos pendentes:</b> ${[...ux.map(x=>x[0]),...miss.map(k=>RFL[k])].join(', ')}.`,ux.length?ux[0][2]:RFF[miss[0]]);return}
     $('rfPend').hidden=true;
     const info={};Object.keys(RFF).forEach(k=>info[k]=RFF[k].value.trim());
-    if(isDrnEq()){info.usiDr=usiVal();info.usiQt=info.usiDr==='S'?Math.round(parseT($('rfUsiQt').value)*100)/100:null}USIDIRTY=false;store.set('progLast',info);saveMain();
+    if(isDrnEq()){info.usiDr=usiVal();info.usiQt=info.usiDr==='S'?Math.round(parseT($('rfUsiQt').value)*100)/100:null}USIDIRTY=false;store.set('progLast',info);saveMain();saveTeam(info.equipe,info);TDIRTY=false;
     {const H=hist();H[info.data+'|'+info.obra+'|'+info.equipe]=info;const ks=Object.keys(H).sort((a,b)=>a<b?1:-1);ks.slice(200).forEach(k=>delete H[k]);store.set('progHist',H)}
     buildProg(info);showReport()}
   $('cRep').onclick=()=>{if(can('calculadora','create'))emitReport()};
