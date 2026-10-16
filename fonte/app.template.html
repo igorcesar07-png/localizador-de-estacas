@@ -1813,9 +1813,17 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={}});
   S.km=saved.km||{};if(!S.km[saved.src||'277'])S.km[saved.src||'277']={a:S.kmA,b:S.kmB};
   const KM0={'277':{a:'236+000',b:'237+000'},B4:{a:'230+000',b:'231+000'}};
+  // nova revisão do unifilar da B4: dados digitados em segmentos cuja identificação mudou saem do segmento (ficam guardados à parte)
+  const B4REV=(()=>{try{const d=typeof PROJECT_DATA_B4!=='undefined'?PROJECT_DATA_B4:window.PROJECT_DATA_B4;return d&&d.src&&d.src.revisao||null}catch(e){return null}})();
+  {const b=S.bySrc.B4;if(B4REV&&b&&!(b.revs||[]).includes(B4REV.id)){const tags=new Set(B4REV.tags||[]),moved=[];
+      for(const k of ['rowW','rowOff','rowSeg','serial','obs']){const m=b[k]||{};for(const t of Object.keys(m))if(tags.has(t)){moved.push({tag:t,campo:k,valor:m[t],rev:B4REV.id});delete m[t]}}
+      b.revs=(b.revs||[]).concat(B4REV.id);if(moved.length)b.orphans=(b.orphans||[]).concat(moved);store.set('calc',S)}}
+  const revNote=()=>{const b=S.bySrc.B4;if(SRCK!=='B4'||!B4REV||!b||!b.orphans||b.orphAck===B4REV.id)return '';const o=b.orphans.filter(x=>x.rev===B4REV.id);if(!o.length)return '';
+    const lab={serial:'Serial Kartado',obs:'observação',rowSeg:'estacas editadas',rowOff:'desmarcado',rowW:'largura'},val=x=>x.campo==='rowSeg'?`${x.valor.a!=null?'trecho editado':''}`:x.campo==='rowOff'?'':` "${escH(String(x.valor))}"`;
+    return `<div class="alert info" id="revNote"><b>Unifilar da BR-373 B4 atualizado (${escH(B4REV.id)}, km ${B4REV.km?B4REV.km.join(' a '):''}).</b> ${o.length} dado${o.length>1?'s':''} digitado${o.length>1?'s':''} em segmentos que mudaram foi retirado para não ficar no segmento errado; confira e digite de novo onde couber: ${o.map(x=>`${escH(x.tag)} (${lab[x.campo]||x.campo}${val(x)})`).join(' · ')}. <button type="button" class="linkbtn" id="revAck">Entendi</button></div>`};
   function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
     ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
-    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{},obs:{}});if(!b.obs)b.obs={};S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
     const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
   {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
   const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
@@ -1965,6 +1973,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
 
   function calc(scroll){
     const out=$('cOut');
+    const RN=revNote();
     if(SRC_MISS){LAST=null;out.innerHTML=`<div class="alert warn"><b>Base da BR-373 B4 não carregada.</b>${window.ACL&&ACL.admin?'Envie o arquivo base-BR373-B4.json em Administração › Base do projeto e reabra o app.':'O administrador precisa enviar a base da BR-373 B4.'} Os dados da BR-277 não são usados para esta obra.</div>`;return}['eKmA','eKmB','eDens','ePerda'].forEach(id=>fieldErr(id,''));
     const A=Data.parseKm(S.kmA),B=Data.parseKm(S.kmB);let bad=false;
     if(A.err){fieldErr('eKmA',A.err);bad=true}if(B.err){fieldErr('eKmB',B.err);bad=true}
@@ -2072,7 +2081,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação (ele continua na lista e os dados do projeto não mudam). A observação fica ligada só ao próprio segmento e vai para o relatório; apague o texto para retirá-la.</div></div>`}
     LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
-    out.innerHTML=h;
+    out.innerHTML=RN+h;
+    {const ra=$('revAck');if(ra)ra.onclick=()=>{S.bySrc.B4.orphAck=B4REV.id;save();$('revNote').remove()}}
     [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
     out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw'),rs=tr.querySelector('.rwreset');
       cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};

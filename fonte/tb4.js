@@ -12,9 +12,9 @@ await p.goto('http://localhost:8765/#mapab4');await p.waitForTimeout(2500);
 ok(await p.evaluate(()=>!document.getElementById('b4_pMap').hidden&&document.getElementById('pMap').hidden),'aba BR-373 B4 abre pelo menu/endereço');
 ok(await p.locator('#drawer a[data-page="mapab4"]').count()===1,'item "Estacas BR-373 B4" no menu');
 const s=await p.evaluate(()=>window.__b4());console.log(JSON.stringify({...s,erros:s.erros.slice(0,5)}));
-ok(s.panos===2836,'2.836 panos importados ('+s.panos+')');ok(s.ligados+s.saidas===2836,'todos ligados: '+s.ligados+' em faixas/drenos + '+s.saidas+' saídas');
+ok(s.panos===2733,'2.733 panos importados (R03 REV1) ('+s.panos+')');ok(s.ligados+s.saidas===2733,'todos ligados: '+s.ligados+' em faixas/drenos + '+s.saidas+' saídas');
 ok(s.semEstaca===0&&s.semRegistro===0,'nenhum pano sem estaca ou sem registro');ok(s.erros.length===0,'associação estaca/faixa/sentido sem divergências ('+s.erros.length+')');
-ok(s.estacas===4958,'4.958 estacas georreferenciadas');ok(s.avisos.join(',')==='2821,2827,2832,2835,2836','5 avisos sinalizados');
+ok(s.estacas===4958,'4.958 estacas georreferenciadas');ok(s.avisos.join(',')==='2718,2724,2729,2732,2733','5 avisos sinalizados');
 // GPS na estaca 230+680 + 8 m
 await p.click('#b4_mode');await p.waitForTimeout(2500);
 const big=await p.textContent('#b4_big');ok(/^230\+68[0-9]$/.test(big.replace(/\s/g,'')),'GPS: estaca atual '+big);
@@ -38,7 +38,7 @@ const tt=await p.textContent('#b4_toast');ok(/183\+400 a 282\+480/.test(tt),'bus
 await p.click('#b4_grab');await p.waitForTimeout(500);await p.click('#b4_tabF');await p.waitForTimeout(300);
 const pills=await p.$$eval('#b4_fSol .pill',a=>a.map(x=>x.dataset.k+':'+x.innerText.replace(/\s+/g,' ')));console.log(pills.join(' | '));
 ok(pills.length===9&&pills.some(x=>x.startsWith('FS:')&&/Fresagem Superficial 3 cm/.test(x))&&!pills.some(x=>x.startsWith('G:')),'filtros de solução da B4: GAP grade agora FS – Fresagem Superficial 3 cm');
-const fonte=await p.textContent('#b4_fonte');console.log('fonte:',fonte);ok(/2\.836 panos/.test(fonte),'nota de importação');
+const fonte=await p.textContent('#b4_fonte');console.log('fonte:',fonte);ok(/2\.733 panos/.test(fonte),'nota de importação');
 await p.click('#b4_fSol .pill[data-k="FS"]');await p.waitForTimeout(400);
 ok(await p.evaluate(()=>JSON.parse(localStorage.getItem('br277.b4.filters')).sol.includes('FS')===false),'filtro da B4 salvo separado');
 ok(await p.evaluate(()=>{const f=JSON.parse(localStorage.getItem('br277.filters')||'null');return !f||f.sol.length===9}),'filtros da B2+B3 intactos');
