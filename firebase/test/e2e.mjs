@@ -53,7 +53,7 @@ try{
   // 3. usuário recarrega e vê só as páginas liberadas
   await u.goto(BASE);await u.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});
   const pg=await drawerPages(u);ok(pg.join(',')==='localizacao,mapa','usuário vê só Localização e Mapa no menu ('+pg.join(',')+')');
-  ok(await u.evaluate(()=>window.PROJECT_DATA_B4===null),'sem a aba BR-373 B4 liberada, a base B4 não é entregue');
+  ok(await u.evaluate(()=>window.PROJECT_DATA_B4!==null),'com a Localização estaca liberada, a base B4 é entregue (estaca do Lote 04 / BR-373)');
   await u.goto(BASE+'#mapab4');await sleep(2000);ok(await u.evaluate(()=>document.querySelector('#b4_pMap').hidden),'URL direta da aba BR-373 B4 é bloqueada');
   await u.goto(BASE+'#calculadora');await u.waitForFunction(()=>window.__appStarted,null,{timeout:20000});await sleep(1200);
   ok(await u.evaluate(()=>document.querySelector('#pCalc').hidden&&location.hash!=='#calculadora'),'URL direta da Calculadora é bloqueada');
