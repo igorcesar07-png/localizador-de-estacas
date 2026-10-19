@@ -55,9 +55,10 @@ service cloud.firestore {
       allow update: if canDo('marcos', 'edit') && marcoOk(request.resource.data) && request.resource.data.id == id;
       allow delete: if canDo('marcos', 'delete');
     }
-    // Base da BR-373 B4: usuários ativos com "Estacas BR-373 B4", "Calculadora de programação" ou "Análise por km" liberada
+    // Base da BR-373 B4 (Lote 04): usuários ativos com "Estacas BR-373 B4", Calculadora, Análise por km, Marcos, Localização estaca ou Foto georreferenciada
     match /base/b4 {
-      allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')));
+      allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')
+                    || canView(permsOf(me()), 'localizacao') || canView(permsOf(me()), 'foto')));
       allow write: if isAdmin();
     }
 

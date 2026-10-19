@@ -139,7 +139,9 @@ const Loc=(function(){
       else if(src==='gps'&&st.lastS!=null&&Math.abs(r.s-st.lastS)>4&&Math.abs(r.s-st.lastS)<400)st.dirSign=Math.sign(r.s-st.lastS);
       if(src==='gps')st.lastS=r.s}
     if(src!=='gps')st.dirSign=0;
-    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st)}
+    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st);
+    // a mesma leitura do GPS alimenta a outra rodovia (BR-277 ⇄ BR-373), para a estaca sair da rodovia em que o aparelho está
+    if(src==='gps'&&window.__locMirror)window.__locMirror(st,[lat,lon,acc,heading,speed,src,mode])}
   const gpsEmit=()=>emit('gps',gps);
   async function keepAwake(){if(!('wakeLock' in navigator)){gps.wake=false;return}try{wakeObj=await navigator.wakeLock.request('screen');gps.wake=true;wakeObj.addEventListener('release',()=>{gps.wake=false;gpsEmit()})}catch(e){gps.wake=false}gpsEmit()}
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&gps.on&&!gps.wake)keepAwake()});
@@ -192,10 +194,50 @@ const Router=(function(){
 /* =====================================================================
    PÁGINA 1 — Localização estaca
    ===================================================================== */
+/* ------------------------------ Rodovias do app: BR-277/PR (Lotes 02 e 03) e BR-373/PR (Lote 04) ------------------------------ */
+// A estaca sai da rodovia em que a posição está: cada rodovia tem a sua base (R08 da BR-277; unifilar e KMZ da BR-373 B4)
+// e a mesma busca de estaca (Geo.locate). Lote = bloco da estaca na base (2 e 3 na BR-277; 4 na BR-373).
+const Road=(function(){
+  const DEF={'277':{k:'277',rod:'BR-277/PR',tag:'BR277',lotes:'Lotes 02 e 03',page:'mapa'},
+             'B4':{k:'B4',rod:'BR-373/PR',tag:'BR373',lotes:'Lote 04',page:'mapab4'}};
+  const loteTxt=b=>b==null||b===''?null:'Lote '+String(b).padStart(2,'0');
+  function src(k){if(k==='277')return {Data,R,ODO,N,Geo,Loc};const B=window.__SRC_B4;return B&&B.Geo?{Data:B.Data,R:B.R,ODO:B.ODO,N:B.R.length,Geo:B.Geo,Loc:B.Loc}:null}
+  const keys=()=>['277','B4'].filter(k=>src(k));
+  const range=k=>{const S=src(k);return S?`${S.R[0][0]} a ${S.R[S.N-1][0]}`:''};
+  function stake(S,r){let i=Math.max(0,Math.min(S.N-1,Math.floor((r.s-S.ODO[0])/20))),d=r.s-S.ODO[i];if(Math.round(d)>=20&&i+1<S.N){i++;d=r.s-S.ODO[i]}d=Math.max(0,Math.round(d));
+    return {i,d,name:S.Data.fmtName(i,d),lote:S.R[i][4]}}
+  let last=null;
+  // escolhe a rodovia: dentro do trecho, a de menor distância ao eixo (mantém a anterior se a diferença for < 8 m); fora, a estaca mais próxima
+  function pick(lat,lon,acc){const res=keys().map(k=>({k,r:src(k).Geo.locate(lat,lon,acc)}));if(!res.length)return null;
+    const inn=res.filter(x=>!x.r.outside).sort((a,b)=>Math.abs(a.r.main.lat)-Math.abs(b.r.main.lat));let o;
+    if(inn.length){o=inn[0];const p=last&&inn.find(x=>x.k===last);if(p&&Math.abs(p.r.main.lat)-Math.abs(o.r.main.lat)<8)o=p;last=o.k}
+    else o=res.slice().sort((a,b)=>a.r.dist-b.r.dist)[0];
+    const S=src(o.k),out={...DEF[o.k],r:o.r,S,range:range(o.k)};
+    if(o.r.outside){out.nearest=S.R[o.r.nearest][0];out.lote=S.R[o.r.nearest][4]}else Object.assign(out,stake(S,o.r));
+    out.loteTxt=loteTxt(out.lote)||DEF[o.k].lotes;out.label=`${out.rod} · ${out.loteTxt}`;return out}
+  const ranges=()=>keys().map(k=>`${DEF[k].rod} (${DEF[k].lotes}) de ${range(k)}`).join('; ');
+  // lote de uma estaca pelo nome (fotos antigas, gravadas antes do Lote 04, só guardavam a estaca da BR-277)
+  const idx={};function loteOfName(k,name){const S=src(k);if(!S||!name)return null;if(!idx[k]){idx[k]=new Map();S.R.forEach((r,i)=>idx[k].set(r[0],i))}
+    const m=/^(\d+)\+(\d+)$/.exec(String(name));if(!m)return null;const i=idx[k].get(m[1]+'+'+String(Math.floor(+m[2]/20)*20).padStart(3,'0'));return i==null?null:S.R[i][4]}
+  return {DEF,src,keys,pick,range,ranges,loteTxt,loteOfName,of:rod=>/373/.test(rod||'')?'B4':'277'};
+})();
+// espelho do GPS entre as duas rodovias (cada aba de mapa tem o seu Loc); sem repetição infinita
+(function(){let busy=false;window.__locMirror=(st,a)=>{if(busy)return;const B=window.__SRC_B4;if(!B||!B.Loc)return;busy=true;try{(st===Loc.st?B.Loc:Loc).set(...a)}finally{busy=false}}})();
+
 (function LocPage(){
   const setStatus=(cls,txt)=>{$('lStatus').className='status '+cls;$('lStatusTxt').textContent=txt};
   function msg(kind,title,text){const m=$('lMsg');if(!kind){m.hidden=true;return}m.className='msg '+kind;m.innerHTML=`<div><b>${title}</b>${text}</div>`;m.hidden=false}
-  function render(){const st=Loc.st,g=Loc.gps,r=st.r;
+  // posição exibida: a leitura mais recente entre as duas abas de mapa (consulta/simulação); com GPS, a mesma leitura serve às duas rodovias
+  function view(){const a=Loc.st,B=window.__SRC_B4,b=B&&B.Loc?B.Loc.st:null;let st=a;
+    if(b&&b.lat!=null&&b.mode!=='exemplo'&&(a.lat==null||a.mode==='exemplo'||b.t>a.t+50))st=b;
+    const road=st.lat!=null?Road.pick(st.lat,st.lon,st.acc):null;let dir=0;
+    if(road){const L=road.S.Loc.st;if(L.lat===st.lat&&L.lon===st.lon)dir=L.dirSign}
+    return {st,road,dir}}
+  let ROAD=null;
+  function render(){const V=view(),st=V.st,g=Loc.gps,road=V.road,r=road&&road.r;ROAD=road;
+    const S=road?road.S:Road.src('277'),R=S.R,ODO=S.ODO,N=S.N,Data=S.Data;
+    $('lRod').hidden=!road;if(road){$('lRodTxt').textContent=r.outside?'mais próxima: '+road.rod:road.label;$('lRod').className='lrod'+(road.k==='B4'?' b4':'')}
+    $('lSol').hidden=!!road&&!Router.pages.includes(road.page);
     if(g.status==='on')setStatus('on','Acompanhando');else if(g.status==='waiting')setStatus('wait','Buscando sinal');
     else if(g.status==='nosignal')setStatus('err','Sem sinal');else if(g.status==='error')setStatus('err',g.err&&g.err.code==='denied'?'Sem permissão':'Indisponível');
     else setStatus('',{exemplo:'Exemplo',sim:'Simulado',consulta:'Consulta',gps:'Parado'}[st.mode]||'Parado');
@@ -206,21 +248,21 @@ const Router=(function(){
     else if(g.status==='error')msg('bad','Este navegador não oferece localização.',' Abra o aplicativo no Safari ou no Chrome do celular.');
     else if(g.status==='nosignal')msg('warn','Sem sinal de GPS.',g.err&&g.err.code==='stale'?' A última posição tem mais de 15 s. Procure céu aberto; a estaca mostrada pode estar desatualizada.':' Não foi possível obter a posição. Procure céu aberto e aguarde.');
     else if(g.status==='waiting')msg('info','Buscando sua posição…',' Isso pode levar alguns segundos na primeira vez.');
-    else if(r&&r.outside)msg('info','Fora do trecho.',` Você está a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} da estaca mais próxima (${R[r.nearest][0]}). O trecho vai de 164+700 a 303+800.`);
+    else if(r&&r.outside)msg('info','Fora do trecho.',` Você está a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} da estaca mais próxima (${R[r.nearest][0]}, ${road.rod}). Trechos do app: ${Road.ranges()}.`);
     else if(st.acc!=null&&st.acc>20&&st.mode==='gps')msg('warn','Precisão baixa do GPS.',` Erro estimado de ±${Math.round(st.acc)} m: a posição pode variar mais de uma estaca. Aguarde a precisão melhorar.`);
     else if(r&&!r.outside&&Math.abs(r.main.lat)>25)msg('info','Longe do eixo.',` Você está a ${fmtM(Math.abs(r.main.lat))} do eixo; confira se está sobre a pista.`);
     else if(!g.on&&st.mode==='exemplo')msg('info','Posição de exemplo.',' Toque em Iniciar acompanhamento e permita o acesso à localização.');
     else msg(null);
     if(!r){$('lSt').textContent='—';return}
-    if(r.outside){$('lSt').className='st out';$('lSt').textContent='Fora do trecho';$('lPlus').textContent='';$('lTrack').hidden=true;$('lNext').innerHTML=`Estaca mais próxima: <b>${R[r.nearest][0]}</b>`;
+    if(r.outside){$('lSt').className='st out';$('lSt').textContent='Fora do trecho';$('lPlus').textContent='';$('lTrack').hidden=true;$('lNext').innerHTML=`Estaca mais próxima: <b>${R[r.nearest][0]}</b> · ${road.rod}`;
       $('lEixo').textContent='—';accBox(st.acc);fit($('lSt'));return}
-    let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
+    const i=road.i,d=road.d;
     const j=Math.min(N-1,i+1),endB=i+1<N?R[j][0]:Data.fmtName(i,20);
-    $('lSt').className='st';$('lSt').textContent=Data.fmtName(i,d);$('lPlus').textContent='';
+    $('lSt').className='st';$('lSt').textContent=road.name;$('lPlus').textContent='';
     $('lTrack').hidden=false;const pct=Math.min(100,d/20*100);$('lFill').style.width=pct+'%';$('lKnob').style.left=pct+'%';
     $('lA').textContent=R[i][0];$('lB').textContent=endB;
-    const toNext=st.dirSign<0?d:20-d,nxt=st.dirSign<0?R[i][0]:endB;
-    $('lNext').innerHTML=`Próxima estaca <b>${nxt}</b> em <b>${Math.max(0,toNext)} m</b>${st.dirSign?` · sentido ${st.dirSign>0?'crescente':'decrescente'}`:''}`;
+    const ds=V.dir,toNext=ds<0?d:20-d,nxt=ds<0?R[i][0]:endB;
+    $('lNext').innerHTML=`Próxima estaca <b>${nxt}</b> em <b>${Math.max(0,toNext)} m</b>${ds?` · sentido ${ds>0?'crescente':'decrescente'}`:''}`;
     const la=r.main.lat;$('lEixo').textContent=Math.abs(la)<1?'no eixo':`${nf(Math.abs(la),1)} m ${la>0?'à dir.':'à esq.'}`;
     accBox(st.acc);fit($('lSt'));fit($('lPlus'))}
   function fit(el){el.style.fontSize='';const box=$('pLoc').clientWidth*0.94;if(!box)return;const w=el.scrollWidth;if(w>box){const fs=parseFloat(getComputedStyle(el).fontSize);el.style.fontSize=Math.floor(fs*box/w)+'px'}}
@@ -228,9 +270,9 @@ const Router=(function(){
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{fit($('lSt'));fit($('lPlus'))});
   function accBox(a){const b=$('lAccBox');if(a==null){$('lAcc').textContent='—';b.className='';return}
     $('lAcc').textContent='±'+Math.round(a)+' m';b.className=a<=10?'good':a<=20?'mid':'poor'}
-  on('position',render);on('gps',render);
+  on('position',render);on('gps',render);on('b4:position',render);
   $('lGo').onclick=()=>{Loc.gps.on?Loc.stop():Loc.start()};
-  $('lSol').onclick=()=>{window.__sheetOpen=1;Router.go('mapa')};
+  $('lSol').onclick=()=>{window.__sheetOpen=1;Router.go(ROAD&&ROAD.k==='B4'?'mapab4':'mapa')};
   Router.onInit('localizacao',render);
   try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(p=>{if(p.state==='granted'&&store.get('gpsOn',false))Loc.start()}).catch(()=>{})}catch(e){}
   on('gps',g=>{if(g.status==='on'||g.status==='off')store.set('gpsOn',g.on)});
@@ -632,7 +674,9 @@ const Loc=(function(){
       else if(src==='gps'&&st.lastS!=null&&Math.abs(r.s-st.lastS)>4&&Math.abs(r.s-st.lastS)<400)st.dirSign=Math.sign(r.s-st.lastS);
       if(src==='gps')st.lastS=r.s}
     if(src!=='gps')st.dirSign=0;
-    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st)}
+    Object.assign(st,{mode,lat,lon,acc,r,src,t:Date.now()});emit('position',st);
+    // a mesma leitura do GPS alimenta a outra rodovia (BR-277 ⇄ BR-373), para a estaca sair da rodovia em que o aparelho está
+    if(src==='gps'&&window.__locMirror)window.__locMirror(st,[lat,lon,acc,heading,speed,src,mode])}
   const gpsEmit=()=>emit('gps',gps);
   async function keepAwake(){if(!('wakeLock' in navigator)){gps.wake=false;return}try{wakeObj=await navigator.wakeLock.request('screen');gps.wake=true;wakeObj.addEventListener('release',()=>{gps.wake=false;gpsEmit()})}catch(e){gps.wake=false}gpsEmit()}
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&gps.on&&!gps.wake)keepAwake()});
@@ -974,7 +1018,7 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   return {recs,sai,avisos,renderNote}})();
 
 // fonte de dados da Calculadora de programação para a obra BR-373 — Bloco 04
-window.__SRC_B4={Data,R,LANES,SIDE,PANOS,ODO,Loc,B4,orig:p=>p.src?{sigla:p.src.sigla,nome:p.src.tipo_solucao}:null};
+window.__SRC_B4={Data,R,LANES,SIDE,PANOS,ODO,Loc,Geo,B4,orig:p=>p.src?{sigla:p.src.sigla,nome:p.src.tipo_solucao}:null};
 // GPS: se o acompanhamento já estava ligado no app, liga também nesta aba
 on('page',p=>{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return;try{navigator.permissions&&navigator.permissions.query({name:'geolocation'}).then(q=>{if(q.state==='granted')Loc.start()}).catch(()=>{})}catch(e){}});
 })()}else Router.onInit('mapab4',()=>{const m=document.getElementById('b4_map'),pn=document.getElementById('b4_panel');if(pn)pn.hidden=true;
@@ -1891,17 +1935,17 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const pad2=n=>String(n).padStart(2,'0');
   const fmtDate=d=>`${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
   // estaca pela mesma fonte e lógica da página Localização estaca
-  function stakeFor(fix){if(!fix)return {txt:'indisponível (sem GPS)',warn:true};const r=Geo.locate(fix.lat,fix.lon,fix.acc);
-    if(r.outside)return {txt:`fora do trecho (a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} de ${R[r.nearest][0]})`,warn:true};
-    let i=Math.max(0,Math.min(N-1,Math.floor((r.s-ODO[0])/20))),d=r.s-ODO[i];if(Math.round(d)>=20&&i+1<N){i++;d=r.s-ODO[i]}d=Math.max(0,Math.round(d));
-    return {txt:Data.fmtName(i,d),name:Data.fmtName(i,d),warn:false}}
+  // rodovia e lote pela posição: BR-277/PR (Lotes 02 e 03) ou BR-373/PR (Lote 04), com a base de estacas de cada uma
+  function stakeFor(fix){if(!fix)return {txt:'indisponível (sem GPS)',warn:true,rodTxt:'indisponível (sem GPS)'};const o=Road.pick(fix.lat,fix.lon,fix.acc);
+    if(!o)return {txt:'indisponível (base não carregada)',warn:true,rodTxt:'indisponível'};const r=o.r;
+    if(r.outside)return {txt:`fora do trecho (a ${r.dist>=1000?fmtKm(r.dist):fmtM(r.dist)} de ${o.nearest}, ${o.rod})`,warn:true,rodTxt:`fora do trecho · mais próxima: ${o.rod}`,rod:o.rod};
+    return {txt:o.name,name:o.name,warn:false,rod:o.rod,lote:o.lote,tag:o.tag,rodTxt:o.label}}
   function infoFrom(fix,date,sel){sel=sel||{sent:SENT,faixa:FAIXA,note:NOTE};const lines=[];const low=fix&&fix.acc>20;
     // ordem fixa do quadro da foto
     lines.push({k:'Data e hora',v:fmtDate(date)});
     lines.push({k:'Latitude',v:fix?fix.lat.toFixed(6):'indisponível',warn:!fix});
     lines.push({k:'Longitude',v:fix?fix.lon.toFixed(6):'indisponível',warn:!fix});
-    lines.push({k:'Rodovia',v:'BR-277/PR'});
-    const st=stakeFor(fix);lines.push({k:'Localização',v:`${st.txt} — ${sel.sent} | ${sel.faixa}`,warn:st.warn});
+    const st=stakeFor(fix);lines.push({k:'Rodovia',v:st.rodTxt,warn:!st.name});lines.push({k:'Localização',v:`${st.txt} — ${sel.sent} | ${sel.faixa}`,warn:st.warn});
     if(sel.note)lines.push({k:'Nota',v:sel.note,wrap:true});
     return {lines,stake:st,low,fix}}
   function liveFix(){const g=Loc.gps,st=Loc.st;if(g.on&&g.status==='on'&&st.mode==='gps'&&Date.now()-g.lastFix<=5000)return {lat:st.lat,lon:st.lon,acc:st.acc,t:g.lastFix};return null}
@@ -1989,13 +2033,13 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const out=document.createElement('canvas');out.width=W;out.height=H;compose(out.getContext('2d'),src,W,H,info);
       const b=await new Promise(r=>out.toBlob(r,'image/jpeg',0.95));if(!b)throw new Error('imagem');
       const stk=info.stake.name?info.stake.name.replace('+','-'):'sem-estaca';
-      const name=`BR277_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
+      const name=`${info.stake.tag?info.stake.tag+'_L'+String(info.stake.lote).padStart(2,'0'):'SEMRODOVIA'}_${stk}_${date.getFullYear()}${pad2(date.getMonth()+1)}${pad2(date.getDate())}_${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}.jpg`;
       // no app Android: grava também na galeria do aparelho (álbum "Localizador Estacas"); só marca como salva se a gravação deu certo
       let gal=null;if(window.NATIVE&&NATIVE.saveToGallery){try{await NATIVE.saveToGallery(b,name);gal=true}catch(e){gal=false}}
-      await DB.add({name,blob:b,t:date.getTime(),saved:gal===true,stake:info.stake.name||null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
+      await DB.add({name,blob:b,t:date.getTime(),saved:gal===true,stake:info.stake.name||null,rod:info.stake.name?info.stake.rod:null,lote:info.stake.name?info.stake.lote:null,sent:sel.sent,faixa:sel.faixa,note:sel.note||''});
       if(sel.note)Notes.add(sel.note);
       await galCount();
-      okToast(`✓ ${gal===true?'Salva na galeria do aparelho':'Guardada em Fotos do app'}${info.stake.name?' · '+info.stake.name:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`);
+      okToast(`✓ ${gal===true?'Salva na galeria do aparelho':'Guardada em Fotos do app'}${info.stake.name?' · '+info.stake.name+' · '+info.stake.rodTxt:''}${!fix?' · sem GPS':info.low?' · precisão baixa':''}`);
       if(gal===false)msg('warn','Não foi possível gravar na galeria do aparelho.',' A foto ficou guardada no app; use Salvar selecionadas.')}
     catch(e){msg('bad','Não foi possível gravar a foto.',` ${e&&e.name==='QuotaExceededError'?'Sem espaço no armazenamento do app: exclua fotos já salvas.':'Tente de novo.'}`)}
     finally{busy=false;$('fBusy').hidden=true}}
@@ -2014,16 +2058,25 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   async function galCount(){try{const a=await DB.all();$('fGalN').textContent=a.length;return a}catch(e){$('fGalN').textContent='–';return []}}
   galCount();
   /* ---------- galeria "Fotos": seleção, exclusão e exportação ---------- */
-  const SEL=new Set();let GAL=[];
+  const SEL=new Set();let GAL=[],ALL=[];
+  // rodovia e lote de cada foto; fotos antigas (antes do Lote 04) só têm a estaca, que era sempre da BR-277
+  function fotoRod(f){if(f.rod)return {k:Road.of(f.rod),rod:f.rod,lote:f.lote};if(!f.stake)return {k:null};return {k:'277',rod:'BR-277/PR',lote:Road.loteOfName('277',f.stake)}}
+  const FIL=[['ALL','Todas',()=>true],['L02','Lote 02 · BR-277',x=>x.k==='277'&&+x.lote===2],['L03','Lote 03 · BR-277',x=>x.k==='277'&&+x.lote===3],
+    ['L04','Lote 04 · BR-373',x=>x.k==='B4'],['L277','BR-277 · lote não identificado',x=>x.k==='277'&&+x.lote!==2&&+x.lote!==3],['SEM','Sem estaca',x=>!x.k]];
+  let FK=FIL.some(f=>f[0]===store.get('fotoFil','ALL'))?store.get('fotoFil','ALL'):'ALL';
+  function filUi(){const box=$('gFil');const cnt=FIL.map(([k,,t])=>[k,ALL.filter(f=>t(fotoRod(f))).length]);if(!cnt.find(c=>c[0]===FK)[1])FK='ALL';
+    box.innerHTML=FIL.map(([k,l],n)=>cnt[n][1]||k==='ALL'||k==='L02'||k==='L03'||k==='L04'?`<button type="button" data-fil="${k}" aria-pressed="${k===FK}">${l}<small>${cnt[n][1]}</small></button>`:'').join('');
+    box.querySelectorAll('[data-fil]').forEach(b=>b.onclick=()=>{FK=b.dataset.fil;store.set('fotoFil',FK);[...SEL].forEach(id=>{if(!vis().some(f=>f.id===id))SEL.delete(id)});openGal()})}
+  const vis=()=>{const t=FIL.find(f=>f[0]===FK)[2];return ALL.filter(f=>t(fotoRod(f)))};
   function selUi(){const n=SEL.size;$('gSelN').textContent=n===1?'1 selecionada':n+' selecionadas';
     $('fGalDel').disabled=!n;$('fGalSave').disabled=!n;$('fGalDel').textContent='Excluir';$('fGalSave').textContent=n?`Salvar (${n})`:'Salvar';
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
-  async function openGal(){GAL=(await galCount()).slice().sort((a,b)=>b.t-a.t);const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
+  async function openGal(){ALL=(await galCount()).slice().sort((a,b)=>b.t-a.t);filUi();GAL=vis();const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-acl="foto:delete" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):'<p class="rmsg" style="grid-column:1 / -1">Nenhuma foto guardada ainda.</p>';
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-acl="foto:delete" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${(x=>x.k?`<small class="grod">${x.rod}${x.lote!=null?' · Lote '+String(x.lote).padStart(2,'0'):''}</small>`:'')(fotoRod(f))}${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):`<p class="rmsg" style="grid-column:1 / -1">${ALL.length?'Nenhuma foto neste filtro.':'Nenhuma foto guardada ainda.'}</p>`;
     grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();if(!can('foto','delete'))return;const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
-    const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=GAL.length?`(${GAL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
+    const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=ALL.length?`(${FK!=='ALL'?GAL.length+' de ':''}${ALL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
     $('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: use Selecionar ▾ › "Não salvas no aparelho" e depois "Salvar".`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
     selUi();$('fGal').hidden=false;stopCam()}
   function confirmDel(n,txt){return new Promise(res=>{$('cfTxt').textContent=txt||`${n} foto${n>1?'s serão removidas':' será removida'} do armazenamento do app. Essa ação não pode ser desfeita.`;
@@ -2963,7 +3016,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='16/10/2026 18:58';
+  const CUR_VER='19/10/2026 19:52';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

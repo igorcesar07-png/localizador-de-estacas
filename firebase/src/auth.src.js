@@ -132,7 +132,7 @@ async function ensureUserDoc(user){const ref=doc(db,'users',user.uid);let s;
 
 async function loadBase(id='r08'){const s=await getDoc(doc(db,'base',id));if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
 // BR-373 B4: base separada, entregue só a quem tem a aba liberada (ver firestore.rules)
-async function loadB4(isAdm,perms){const v=k=>!!(perms[k]&&perms[k].view);if(!isAdm&&!(v('mapab4')||v('calculadora')||v('analise')||v('marcos')))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
+async function loadB4(isAdm,perms){const v=k=>!!(perms[k]&&perms[k].view);if(!isAdm&&!(v('mapab4')||v('calculadora')||v('analise')||v('marcos')||v('localizacao')||v('foto')))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
 function startApp(){if(window.__appStarted)return;window.__appStarted=true;const s=document.createElement('script');s.src='app.js?v='+(window.APP_BUILD||'');s.onload=()=>{closeGate();decorateDrawer()};
   s.onerror=()=>gate('<div class="gmsg bad">Não foi possível carregar o aplicativo. Verifique a conexão e tente de novo.</div>');document.body.appendChild(s)}
 function decorateDrawer(){const d=document.querySelector('#drawer .dfoot');if(!d||$('duser'))return;const a=window.ACL;const box=document.createElement('div');box.id='duser';box.className='duser';
