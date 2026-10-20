@@ -112,7 +112,7 @@ await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
   await U('lvreg','lvreg@x.com',{levbe:{view:true,create:true}});await U('lvreg2','lvreg2@x.com',{levbe:{view:true,create:true}});
   await U('lved','lved@x.com',{levbe:{view:true,edit:true}});await U('lvdel','lvdel@x.com',{levbe:{view:true,delete:true}});await U('lvver','lvver@x.com',{levbe:{view:true}});
 });
-const LREC=(id,by,o={})=>({id,v:1,criado_em:1760000000000,criado_por:by,usuario:'U',lat:-25.17522,lon:-50.62046,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
+const LREC=(id,by,o={})=>({id,v:1,criado_em:1760000000000,criado_por:by,usuario:'U',lat:-25.1,lon:-50.1,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
   estaca:'225+080',offset_m:3,estaca_txt:'225+083',odometro_m:225243,dist_eixo_m:1.2,fora_trecho:false,sentido_desloc:'CRESCENTE',sentido_modo:'AUTO',pista:'CRESCENTE',tipo:'EXISTENTE',ocupacao:'LOTADO',
   obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:1760000000000,atualizado_por:by,area_m2:null,dmt_fresado_km:null,...o});
 const lv=(u)=>ctx(u,u+'@x.com');

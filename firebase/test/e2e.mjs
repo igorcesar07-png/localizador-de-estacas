@@ -75,7 +75,7 @@ try{
 
   // 4b. Levantamento de Bota-Espera: sem internet grava no aparelho e, quando volta o sinal, sincroniza sem duplicar (id gerado no aparelho)
   ok((await drawerPages(a)).includes('levbe'),'menu: Levantamento de Bota-Espera visível para o administrador');
-  {const LID='e2e-'+Date.now();const REC={id:LID,v:1,criado_em:Date.now(),criado_por:ADMIN,usuario:'Admin',lat:-25.17522,lon:-50.62046,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
+  {const LID='e2e-'+Date.now();const REC={id:LID,v:1,criado_em:Date.now(),criado_por:ADMIN,usuario:'Admin',lat:-25.1,lon:-50.1,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
       estaca:'225+080',offset_m:3,estaca_txt:'225+083',odometro_m:225243,dist_eixo_m:1.2,fora_trecho:false,sentido_desloc:'CRESCENTE',sentido_modo:'AUTO',pista:'CRESCENTE',tipo:'EXISTENTE',ocupacao:'LOTADO',
       obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:Date.now(),atualizado_por:ADMIN,area_m2:null,dmt_fresado_km:null};
     await a.context().setOffline(true);

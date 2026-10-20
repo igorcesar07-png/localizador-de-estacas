@@ -1,6 +1,8 @@
 const {chromium}=require('/home/claude/work/node_modules/playwright');const fs=require('fs');process.chdir('/home/claude/work');
 const ok=(c,n)=>console.log((c?'OK  ':'FALHOU ')+n);
-const B4={latitude:-25.17522,longitude:-50.62046,accuracy:4},P277={latitude:-25.46628,longitude:-50.53012,accuracy:4},FORA={latitude:-23.5,longitude:-46.6,accuracy:4};
+// coordenadas lidas das bases locais (não ficam no repositório público)
+const ll=(f,n)=>{const r=JSON.parse(fs.readFileSync(f,'utf8')).rows.find(x=>x[0]===n);return {latitude:r[1]/1e5,longitude:r[2]/1e5,accuracy:4}};
+const B4=ll('/home/claude/work/b4/data_b4.json','225+080'),P277=ll('/home/claude/work/data.json','236+000'),FORA={latitude:-23.5,longitude:-46.6,accuracy:4};
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
 const ctx=await b.newContext({viewport:{width:393,height:852},hasTouch:true,permissions:['geolocation','camera'],geolocation:B4});
 const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
@@ -16,7 +18,7 @@ await p.screenshot({path:'/tmp/claude-0/l04_loc.png'});
 await ctx.setGeolocation(P277);await p.waitForTimeout(2500);v=await st();console.log(v);ok(/^23[56]\+\d{3}$/.test(v[0])&&v[1]==='BR-277/PR · Lote 02','GPS na BR-277: estaca da BR-277 e Lote 02');
 await ctx.setGeolocation(FORA);await p.waitForTimeout(2500);v=await st();console.log(v,await p.textContent('#lMsg'));ok(v[0]==='Fora do trecho'&&v[1]==='mais próxima: BR-277/PR'&&/BR-373\/PR \(Lote 04\)/.test(await p.textContent('#lMsg')),'fora: mensagem cita os trechos das duas rodovias');
 await ctx.setGeolocation(B4);await p.waitForTimeout(2500);await p.click('#lSol');await p.waitForTimeout(1500);ok(location=await p.evaluate(()=>location.hash)==='#mapab4','Soluções abre o mapa da BR-373 B4');
-ok(await p.evaluate(()=>{const s=window.__SRC_B4.Loc.st;return s.mode==='gps'&&Math.abs(s.lat+25.17522)<1e-6}),'mapa B4 recebe a mesma leitura do GPS');
+ok(await p.evaluate(la=>{const s=window.__SRC_B4.Loc.st;return s.mode==='gps'&&Math.abs(s.lat-la)<1e-6},B4.latitude),'mapa B4 recebe a mesma leitura do GPS');
 // foto no Lote 04
 await p.goto('http://localhost:8765/#foto');await p.waitForTimeout(3000);
 const shoot=async()=>{const cb=await p.locator('#fCanvas').boundingBox();await p.mouse.click(cb.x+cb.width/2,cb.y+cb.height/2);await p.waitForTimeout(4000)};
