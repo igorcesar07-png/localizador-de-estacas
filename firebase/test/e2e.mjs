@@ -73,6 +73,19 @@ try{
   await a.goto(BASE+'#admin');await a.waitForSelector('.adm-row');await a.locator('.adm-row',{hasText:'apontador@teste.com'}).click();await a.click('#uTog');await a.waitForSelector('.adm-msg.ok');
   await u.goto(BASE);await sleep(3000);ok(/desativado/i.test(await gateText(u)),'usuário desativado não entra');await u.shot('5-desativado');
 
+  // 4b. Levantamento de Bota-Espera: sem internet grava no aparelho e, quando volta o sinal, sincroniza sem duplicar (id gerado no aparelho)
+  ok((await drawerPages(a)).includes('levbe'),'menu: Levantamento de Bota-Espera visível para o administrador');
+  {const LID='e2e-'+Date.now();const REC={id:LID,v:1,criado_em:Date.now(),criado_por:ADMIN,usuario:'Admin',lat:-25.17522,lon:-50.62046,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
+      estaca:'225+080',offset_m:3,estaca_txt:'225+083',odometro_m:225243,dist_eixo_m:1.2,fora_trecho:false,sentido_desloc:'CRESCENTE',sentido_modo:'AUTO',pista:'CRESCENTE',tipo:'EXISTENTE',ocupacao:'LOTADO',
+      obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:Date.now(),atualizado_por:ADMIN,area_m2:null,dmt_fresado_km:null};
+    await a.context().setOffline(true);
+    await a.evaluate(r=>{window.LevDB.save(r);window.LevDB.save({...r,obs:'reenviado pelo aparelho'})},REC);await sleep(800);
+    const pend=await a.evaluate(id=>new Promise(res=>{window.LevDB.subscribe(l=>{const x=(l||[]).filter(d=>d.id===id);if(x.length)res(x.map(d=>d.__pend))})}),LID);
+    ok(pend.length===1&&pend[0]===true,'levantamento sem internet: registro guardado no aparelho, pendente de envio');
+    await a.context().setOffline(false);
+    let n=0,obs='';for(let k=0;k<30&&!n;k++){await sleep(1000);const r=await fetch(`${FS}/levantamento_bota_espera?pageSize=50`,{headers:{'Authorization':'Bearer owner'}});const j=await r.json();
+      const docs=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID));n=docs.length;obs=n?docs[0].fields.obs.stringValue:''}
+    ok(n===1&&obs==='reenviado pelo aparelho','levantamento: com sinal, sincroniza um único documento (sem duplicar), com a última versão')}
   // 5. convite com perfil: acesso imediato no primeiro login
   await a.goto(BASE+'#admin');await a.waitForSelector('.adm-tabs');await a.click('[data-tab="profiles"]');await a.click('#pNew');await a.fill('#pName','Programação');
   await a.check('#pMx input[data-pg="calculadora"][data-a="view"]');await a.check('#pMx input[data-pg="relatorios"][data-a="view"]');await a.click('#pSave');await a.waitForSelector('.adm-msg.ok');

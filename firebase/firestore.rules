@@ -24,9 +24,19 @@ service cloud.firestore {
       return d.cat in ['bota', 'rot', 'perim', 'ent', 'agua', 'obs'] && d.rod in ['BR-277', 'BR-373']
           && d.km is string && d.km.size() <= 20 && d.id is string && d.id.size() <= 80;
     }
+    // Levantamento de Bota-Espera: formato mínimo de cada registro
+    function levOk(d) {
+      return d.id is string && d.id.size() <= 60 && d.tipo in ['EXISTENTE', 'LOCAL_POSSIVEL'] && d.pista in ['CRESCENTE', 'DECRESCENTE']
+          && (d.tipo == 'LOCAL_POSSIVEL' ? d.ocupacao == null : d.ocupacao in ['VAZIO', 'PELA_METADE', 'LOTADO'])
+          && d.rodovia in ['BR-277/PR', 'BR-373/PR'] && d.lote in [2, 3, 4] && d.lat is number && d.lon is number
+          && d.criado_em is int && d.criado_por is string && d.excluido is bool && d.obs is string && d.obs.size() <= 2000
+          && d.fotos is list && d.fotos.size() <= 30 && d.audios is list && d.audios.size() <= 30;
+    }
+    function levRead() { return isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'levbe')); }
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
-          || canView(p, 'analise') || canView(p, 'marcos') || canView(p, 'foto') || canView(p, 'relatorios');
+          || canView(p, 'analise') || canView(p, 'marcos') || canView(p, 'foto') || canView(p, 'relatorios')
+          || canView(p, 'levbe');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
@@ -55,10 +65,32 @@ service cloud.firestore {
       allow update: if canDo('marcos', 'edit') && marcoOk(request.resource.data) && request.resource.data.id == id;
       allow delete: if canDo('marcos', 'delete');
     }
+    // Levantamento de Bota-Espera: cria quem tem "registrar" (sempre em nome próprio); o autor complementa e desfaz os próprios;
+    // "editar" corrige qualquer um sem excluir; "excluir" só marca a exclusão (lógica). Nunca apaga o documento.
+    match /levantamento_bota_espera/{id} {
+      allow read: if levRead();
+      allow create: if canDo('levbe', 'create') && levOk(request.resource.data) && request.resource.data.id == id
+                    && request.resource.data.criado_por == request.auth.token.email && request.resource.data.excluido == false;
+      allow update: if levOk(request.resource.data) && request.resource.data.id == id
+                    && request.resource.data.criado_por == resource.data.criado_por && request.resource.data.criado_em == resource.data.criado_em
+                    && ((canDo('levbe', 'create') && resource.data.criado_por == request.auth.token.email)
+                        || (canDo('levbe', 'edit') && request.resource.data.excluido == resource.data.excluido)
+                        || (canDo('levbe', 'delete') && request.resource.data.diff(resource.data).affectedKeys()
+                              .hasOnly(['excluido', 'excluido_em', 'excluido_por', 'excluido_motivo', 'atualizado_em', 'atualizado_por'])));
+      allow delete: if false;
+    }
+    // fotos e áudios comprimidos do levantamento (um documento por arquivo, até ~700 KB)
+    match /levantamento_bota_espera_midia/{id} {
+      allow read: if levRead();
+      allow create: if (canDo('levbe', 'create') || canDo('levbe', 'edit')) && request.resource.data.id == id
+                    && request.resource.data.tipo in ['foto', 'audio'] && request.resource.data.data is string && request.resource.data.data.size() < 1000000
+                    && request.resource.data.reg is string && request.resource.data.criado_por == request.auth.token.email;
+      allow update, delete: if false;
+    }
     // Base da BR-373 B4 (Lote 04): usuários ativos com "Estacas BR-373 B4", Calculadora, Análise por km, Marcos, Localização estaca ou Foto georreferenciada
     match /base/b4 {
       allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')
-                    || canView(permsOf(me()), 'localizacao') || canView(permsOf(me()), 'foto')));
+                    || canView(permsOf(me()), 'localizacao') || canView(permsOf(me()), 'foto') || canView(permsOf(me()), 'levbe')));
       allow write: if isAdmin();
     }
 

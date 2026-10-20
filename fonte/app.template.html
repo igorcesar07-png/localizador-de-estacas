@@ -439,6 +439,64 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .mk-ib{display:flex;gap:8px;margin-top:8px}.mk-ib button{min-height:40px}
 #mkForm .mbox{width:min(720px,100%)}#mkForm textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 15px var(--body);padding:8px 10px}
 @media (max-width:980px){.mk-body{grid-template-columns:1fr}.mk-map{height:62vh;min-height:360px}.mk-side{max-height:none;min-height:0}.mk-tools{grid-template-columns:1fr 1fr}.mk-q{grid-column:1 / -1}.mk-fl2{padding:0}}
+#pLev{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pLev .topbar{background:var(--plate);color:var(--plate-ink);gap:10px}
+#pLev .topbar h1{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lv-tabs{display:flex;gap:4px;flex:none}.lv-tab{min-height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--plate-line);background:var(--plate-2);color:var(--plate-ink);font:700 14px var(--body);cursor:pointer}
+.lv-tab[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.lv-tab em{font-style:normal;opacity:.8;margin-left:2px}
+.lv-reg{flex:1;min-height:0;display:flex;flex-direction:column;position:relative}
+.lv-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.lv-sent{font:800 clamp(18px,5vw,26px)/1 var(--cond);letter-spacing:.03em;padding:8px 12px;border-radius:10px;color:#fff;background:#56605A;white-space:nowrap}
+.lv-sent.up{background:#0B6E3A}.lv-sent.down{background:#8E1B12}
+.lv-ti{display:flex;flex-direction:column;min-width:0;font-size:14px;line-height:1.3}.lv-ti>b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lv-ti span{color:var(--muted)}
+#lvAcc.good{color:var(--ok)}#lvAcc.mid{color:var(--warn)}#lvAcc.poor,#lvAcc.bad{color:var(--bad)}
+.lv-mode{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.lv-mode small{width:100%;text-align:right;color:var(--muted);font-size:12px}
+.lv-mode button{min-height:40px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:700 13px var(--body);cursor:pointer}
+.lv-mode button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.lv-warn{margin:6px 12px 0;padding:8px 10px;border-radius:9px;background:var(--warn-bg,#FFF1C2);border:1px solid var(--warn);font-size:14px}
+.lv-grid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr) minmax(0,1fr);grid-template-areas:"l m r";gap:10px;padding:10px 12px}
+.lv-mid{grid-area:m;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--plate);color:var(--plate-ink);border-radius:16px;padding:10px;min-width:0}
+.lv-mid small{color:var(--plate-muted);font-size:14px;margin-top:6px}
+.lv-st{font:700 clamp(40px,8.5vw,110px)/1 var(--cond);font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%}.lv-st.out{font-size:clamp(28px,5vw,54px)}
+.lv-rod{margin-top:10px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.lv-col{display:flex;flex-direction:column;gap:8px;min-width:0;will-change:transform}.lv-col.lv-left{grid-area:l}.lv-col.lv-right{grid-area:r}
+.lv-ch{display:flex;flex-direction:column;align-items:center;padding:4px 0}.lv-ch b{font:800 clamp(15px,2.6vw,20px)/1.1 var(--cond);letter-spacing:.06em}.lv-ch small{color:var(--muted);font:700 11px var(--body);text-transform:uppercase;letter-spacing:.12em}
+.lv-right .lv-ch b{color:var(--ink)}.lv-right .lv-ch small{color:var(--accent)}
+.lv-btn{flex:1;min-height:64px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:14px;border:3px solid rgba(0,0,0,.25);color:#fff;font:inherit;text-align:left;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.lv-btn svg{width:34px;height:34px;flex:none}.lv-btn span{display:flex;flex-direction:column;min-width:0}.lv-btn b{font:800 clamp(17px,2.6vw,24px)/1.05 var(--cond);letter-spacing:.02em}.lv-btn small{font:600 12px/1.2 var(--body);opacity:.92}
+.lv-btn:active{transform:translateY(2px);box-shadow:none}.lv-btn.lv-hit{animation:lvhit .5s ease-out}@keyframes lvhit{0%{outline:5px solid #fff;outline-offset:-5px}100%{outline:0 solid transparent}}
+.lv-g{background:#13803F}.lv-y{background:#F2B705;color:#141715}.lv-r{background:#C62828}.lv-b{background:#1557B0}
+.lv-foot{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:0 12px 10px}.lv-foot small{color:var(--muted)}
+.lv-pend{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--body);cursor:pointer}.lv-pend:disabled{opacity:.6;cursor:default}
+.lv-toast{position:absolute;left:6px;right:6px;bottom:6px;top:auto;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;border-radius:12px;text-align:left;background:#141715;color:#fff;font:700 16px/1.3 var(--body);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.lv-toast span{flex:1;min-width:0}.lv-toast button{flex:none;min-height:48px;padding:0 16px;border-radius:10px;border:2px solid #fff;background:transparent;color:#fff;font:800 15px var(--body);cursor:pointer}
+.lv-toast.lv-g{background:#0E6B33}.lv-toast.lv-y{background:#7A5C00}.lv-toast.lv-r{background:#9B1C1C}.lv-toast.lv-b{background:#0F4A97}.lv-toast.bad{background:#7A1A12}
+.lv-lw{max-width:1100px}.lv-fil{padding:12px 16px;display:grid;gap:10px}.lv-fg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}.lv-fg .fld{grid-column:auto}
+.lv-fr{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}.lv-fr button{min-height:44px}.lv-sp{flex:1}
+.lv-items{display:flex;flex-direction:column;gap:6px;padding:4px 10px 12px}
+.lv-it{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.lv-it.lv-exc{opacity:.6}
+.lv-dot{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.2)}.lv-itb{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:14px}.lv-itb small{color:var(--muted);font-size:12.5px;overflow-wrap:anywhere}
+.lv-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}.lv-tag{font:700 11px var(--body);font-style:normal;padding:2px 7px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted)}
+.lv-tag.warn{background:#FFF1C2;border-color:#F5B400;color:#6B4E00}.lv-tag.bad{background:var(--bad-bg,#FBECEC);border-color:var(--bad);color:var(--bad)}.lv-ed{flex:none;min-height:44px}
+.lv-edb{width:min(640px,100%)}.lv-edb textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 15px var(--body);padding:8px 10px}
+.lv-edm{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.lv-edm>*{min-height:46px}.lv-addf{display:inline-flex;align-items:center;padding:0 14px;border-radius:12px;cursor:pointer;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.lv-media{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:8px}.lv-media img{width:100%;border-radius:10px;display:block}.lv-media audio{width:100%}
+#lvMv .lv-media{grid-template-columns:1fr}.lv-del{color:var(--bad);border-color:var(--bad)}
+@media (orientation:portrait),(max-width:700px){
+  .lv-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"m m" "l r";gap:8px;padding:8px}
+  .lv-mid{padding:8px 6px}.lv-st{font-size:clamp(52px,17vw,96px)}
+  .lv-top{grid-template-columns:auto minmax(0,1fr);padding:8px}.lv-mode{grid-column:1 / -1;justify-content:flex-start}.lv-mode small{width:100%;text-align:left}
+  .lv-ch b{white-space:nowrap;font-size:clamp(12px,3.9vw,18px);letter-spacing:.02em}
+  .lv-btn{gap:8px;padding:6px 8px}.lv-btn svg{width:28px;height:28px}
+  .lv-tab{padding:0 9px;font-size:13px}#pLev .topbar h1{font-size:15px}
+  .lv-fg{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (orientation:landscape) and (max-height:520px){
+  #pLev .topbar{padding:3px 10px;gap:8px}#pLev .topbar .menuBtn{width:38px;height:38px}.lv-tab{min-height:34px}
+  .lv-top{padding:3px 10px;gap:4px 10px}.lv-sent{padding:4px 10px;font-size:18px}.lv-ti{font-size:12.5px;line-height:1.2}.lv-ti>b{font-size:13.5px}
+  .lv-mode small{display:none}.lv-mode button{min-height:34px}
+  .lv-grid{padding:4px 10px;gap:4px 10px}.lv-col{gap:4px}.lv-ch{flex-direction:row;gap:8px;align-items:baseline;justify-content:center;padding:0;height:18px;line-height:1;white-space:nowrap;overflow:hidden}.lv-ch b{font-size:15px;line-height:1;letter-spacing:.03em}.lv-ch small{line-height:1}.lv-left .lv-ch small{display:none}
+  .lv-btn{min-height:64px;padding:3px 10px}.lv-btn small{font-size:11px}.lv-mid .lbl{font-size:12px}.lv-mid small{font-size:12px;margin-top:2px}.lv-rod{margin-top:4px}
+  .lv-foot{display:none}.lv-toast{font-size:13px;padding:6px 8px}.lv-toast button{min-height:40px;padding:0 10px;font-size:13px}}
 .pend{margin:0 16px;border-radius:10px;padding:10px 12px;background:var(--bad-bg);border:1px solid var(--bad);font-size:14px;line-height:1.4}
 #repView{position:fixed;inset:0;z-index:3000;background:#5C645F;display:flex;flex-direction:column}
 .rtool{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:var(--plate);color:var(--plate-ink);flex-wrap:wrap}
@@ -866,6 +924,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#calculadora" data-page="calculadora"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/></svg><span>Calculadora de programação<small>CBUQ por pano no trecho</small></span></a>
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#marcos" data-page="marcos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-6-5.4-6-10a6 6 0 0 1 12 0c0 4.6-6 10-6 10z"/><path d="M3 21h18"/><circle cx="12" cy="11" r="2"/></svg><span>Marcos do trecho<small>Bota-esperas, rotatórias, entradas e observações</small></span></a>
+    <a href="#levbe" data-page="levbe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 18h16l-3.6-7-2.5 2.8-2.6-5z"/><path d="M12 3v3M19 5l-2 2M5 5l2 2"/></svg><span>Levantamento de Bota-Espera</span></a>
     <a href="#analise" data-page="analise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 20h18"/><path d="M5 17V9M9 17V5M13 17v-6M17 17V7"/></svg><span>Análise por km<small>Estratégia de execução e simulação</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
@@ -1023,6 +1082,58 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <div class="mfoot"><button type="button" class="secondary" id="mkFCancel">Cancelar</button><button type="submit" class="primary">Salvar marco</button></div>
   </form>
 </div>
+<section class="page" id="pLev" data-page="levbe" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Levantamento de Bota-Espera</h1>
+    <div class="lv-tabs" role="tablist"><button type="button" class="lv-tab" role="tab" data-v="reg" aria-selected="true">Registrar</button><button type="button" class="lv-tab" role="tab" data-v="list" aria-selected="false">Registros <em id="lvTabN"></em></button></div></div>
+  <div id="lvReg" class="lv-reg">
+    <div class="lv-top">
+      <div class="lv-sent none" id="lvSent" aria-live="polite"><b>SENTIDO ?</b></div>
+      <div class="lv-ti"><b id="lvCtr">—</b><span><span id="lvLote">—</span> · GPS <b id="lvAcc" class="bad">sem GPS</b></span></div>
+      <div class="lv-mode" id="lvMode" role="group" aria-label="Sentido"><small id="lvSentHow">automático</small>
+        <button type="button" data-m="AUTO" aria-pressed="true">Auto</button><button type="button" data-m="C" aria-pressed="false">Travar ↑</button><button type="button" data-m="D" aria-pressed="false">Travar ↓</button></div>
+    </div>
+    <div class="lv-warn" id="lvWarn" hidden></div>
+    <div class="lv-grid" id="lvGrid">
+      <div class="lv-mid"><div class="lbl">Estaca</div><div class="lv-st" id="lvSt">—</div><div class="lrod lv-rod"><i aria-hidden="true"></i><span id="lvRod">Aguardando GPS</span></div><small id="lvAx"></small><div class="lv-toast" id="lvToast" hidden role="status" aria-live="assertive"></div></div>
+    </div>
+    <div class="lv-foot"><button type="button" class="lv-pend" id="lvGoList">Pendentes de complemento: 0</button><small>Foto, áudio e observação: complete depois, com o carro parado.</small></div>
+  </div>
+  <div id="lvList" class="cscroll" hidden>
+    <div class="cwrap lv-lw">
+      <div class="card lv-fil">
+        <p class="note" id="lvMode0" hidden>Sem login: os registros ficam salvos só neste aparelho.</p>
+        <div class="lv-fg">
+          <div class="fld"><label for="lvFCtr">Contrato</label><select id="lvFCtr"></select></div>
+          <div class="fld"><label for="lvFLote">Lote</label><select id="lvFLote"></select></div>
+          <div class="fld"><label for="lvFPista">Pista</label><select id="lvFPista"></select></div>
+          <div class="fld"><label for="lvFTipo">Tipo</label><select id="lvFTipo"></select></div>
+          <div class="fld"><label for="lvFOc">Ocupação</label><select id="lvFOc"></select></div>
+          <div class="fld"><label for="lvFData">Data</label><select id="lvFData"></select></div>
+        </div>
+        <div class="lv-fr"><label class="an-chk"><input type="checkbox" id="lvFPend"> Só pendentes de complemento</label><label class="an-chk"><input type="checkbox" id="lvFExc"> Mostrar excluídos</label>
+          <button type="button" class="secondary" id="lvPendBtn">Pendentes de complemento</button>
+          <span class="lv-sp"></span><button type="button" class="secondary" id="lvCsv">Exportar CSV</button><button type="button" class="primary" id="lvXlsx">Exportar Excel</button></div>
+      </div>
+      <div class="card"><h2>Registros por estaca <em class="rcnt" id="lvCnt"></em></h2><div class="lv-items" id="lvItems"></div></div>
+    </div>
+  </div>
+</section>
+<div class="modal" id="lvEd" hidden role="dialog" aria-modal="true" aria-labelledby="lvEdT">
+  <div class="mbox lv-edb"><h2 id="lvEdT">Registro</h2><p class="msub" id="lvEdInfo"></p>
+    <div class="mgrid">
+      <div class="fld"><label for="lvEdTipo">Tipo / ocupação</label><select id="lvEdTipo"><option value="VAZIO">Existente — Vazio</option><option value="PELA_METADE">Existente — Pela metade</option><option value="LOTADO">Existente — Lotado</option><option value="LOCAL">Local possível</option></select></div>
+      <div class="fld"><label for="lvEdPista">Pista</label><select id="lvEdPista"><option value="CRESCENTE">Pista Crescente</option><option value="DECRESCENTE">Pista Decrescente</option></select></div>
+      <div class="fld w2"><label for="lvEdObs">Observação</label><textarea id="lvEdObs" rows="3" maxlength="2000"></textarea></div>
+    </div>
+    <div class="lv-edm"><label class="secondary lv-addf" id="lvEdAddF" tabindex="0"><input type="file" id="lvEdFile" accept="image/*" capture="environment" multiple hidden>📷 Adicionar foto</label>
+      <button type="button" class="secondary" id="lvEdRec">🎙 Gravar áudio (até 30 s)</button></div>
+    <div class="lv-media" id="lvEdMedia"></div>
+    <label class="an-chk"><input type="checkbox" id="lvEdOk"> Não precisa de complemento</label>
+    <p class="note" id="lvEdMsg" aria-live="polite"></p>
+    <div class="mfoot"><button type="button" class="secondary lv-del" id="lvEdDel">Excluir</button><span class="lv-sp"></span><button type="button" class="secondary" id="lvEdClose">Fechar</button><button type="button" class="primary" id="lvEdSave">Salvar</button></div>
+  </div>
+</div>
+<div class="modal" id="lvMv" hidden role="dialog" aria-modal="true" aria-labelledby="lvMvT"><div class="mbox lv-edb"><h2 id="lvMvT">Arquivo do levantamento</h2><div class="lv-media" id="lvMvBody"></div><div class="mfoot"><span class="lv-sp"></span><button type="button" class="primary" id="lvMvClose">Fechar</button></div></div></div>
 <section class="page" id="pAna" data-page="analise" hidden>
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Análise por km</h1></div>
   <div class="cscroll">
@@ -1295,7 +1406,7 @@ const PROJECT_DATA_B4 = /*__DATA_B4__*/;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','mapab4','calculadora','analise','marcos','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','analise','marcos','levbe','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -1467,7 +1578,7 @@ const Filters=(function(){
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','mapab4','calculadora','analise','marcos','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','analise','marcos','levbe','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -3822,6 +3933,256 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
   Router.onInit('marcos',init);
   on('page',p=>{if(p==='marcos'&&map)setTimeout(()=>{map.invalidateSize();drawStakes();renderLegend()},60)});
   window.__marcos=()=>({ALL,view:view(),placeOf,kmPos,nearest,utmToLL,drn:drnObs()});
+})();
+
+/* =====================================================================
+   PÁGINA 8 — Levantamento de Bota-Espera (registro em deslocamento + lista de registros)
+   Página nova e independente: só LÊ o que já existe (Road.pick, Loc/GPS, store, can, Router).
+   Dados: coleção "levantamento_bota_espera" (um documento por registro, id gerado no aparelho)
+   e "levantamento_bota_espera_midia" (fotos e áudios comprimidos, um documento por arquivo).
+   ===================================================================== */
+(function LevBotaEsperaPage(){
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const pad2=n=>String(n).padStart(2,'0');
+  const fmtDT=t=>{const d=new Date(t);return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`};
+  const fmtD=t=>{const d=new Date(t);return `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`};
+  const canC=()=>can('levbe','create'),canE=()=>can('levbe','edit'),canD=()=>can('levbe','delete');
+  const MODEL_V=1;
+  // contratos informados pelo usuário (Lotes 02 e 03 → BR-277; Lote 04 → BR-373)
+  const CONTRATO={'277':'VIAR-GDA-430/2026','B4':'VIAR-GDA-470/2026'};
+  const ORD_ROD={'BR-277/PR':0,'BR-373/PR':1};
+  const OCUP={VAZIO:{t:'Vazio',c:'lv-g'},PELA_METADE:{t:'Pela metade',c:'lv-y'},LOTADO:{t:'Lotado',c:'lv-r'}};
+  const TIPO={EXISTENTE:'Bota-espera existente',LOCAL_POSSIVEL:'Local possível'};
+  const PISTA={CRESCENTE:'Pista Crescente',DECRESCENTE:'Pista Decrescente'};
+  const BTN=[
+    {k:'VAZIO',tipo:'EXISTENTE',oc:'VAZIO',t:'VAZIO',s:'Bota-espera existente',c:'lv-g',ic:'<rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/>'},
+    {k:'PELA_METADE',tipo:'EXISTENTE',oc:'PELA_METADE',t:'PELA METADE',s:'Bota-espera existente',c:'lv-y',ic:'<rect x="4" y="5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M5 12h14v6H5z" fill="currentColor"/>'},
+    {k:'LOTADO',tipo:'EXISTENTE',oc:'LOTADO',t:'LOTADO',s:'Bota-espera existente',c:'lv-r',ic:'<rect x="4" y="5" width="16" height="14" rx="2" fill="currentColor"/><path d="M8 9l8 6M16 9l-8 6" stroke="#fff" stroke-width="2"/>'},
+    {k:'LOCAL',tipo:'LOCAL_POSSIVEL',oc:null,t:'LOCAL POSSÍVEL',s:'para bota-espera',c:'lv-b',ic:'<path d="M12 21s-6-5.4-6-10a6 6 0 0 1 12 0c0 4.6-6 10-6 10z" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 8v6M9 11h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'}];
+  const BY_K=Object.fromEntries(BTN.map(b=>[b.k,b]));
+  const uuid=()=>{try{if(crypto.randomUUID)return crypto.randomUUID()}catch(e){}const b=new Uint8Array(16);crypto.getRandomValues(b);b[6]=b[6]&15|64;b[8]=b[8]&63|128;const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`};
+  const me=()=>{const u=window.ACL&&ACL.user;return u?{email:u.email,name:u.name||u.email}:{email:'local',name:'Este aparelho'}};
+
+  /* ---------- armazenamento: Firestore (LevDB, criado no login) ou, sem login, só o aparelho ---------- */
+  const IDB=(()=>{let p=null;const open=()=>p||(p=new Promise((res,rej)=>{const r=indexedDB.open('levbe_midia',1);r.onupgradeneeded=()=>r.result.createObjectStore('m',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+    const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const x=db.transaction('m',mode);const q=fn(x.objectStore('m'));x.oncomplete=()=>res(q&&q.result);x.onerror=()=>rej(x.error)})};
+    return {put:o=>tx('readwrite',s=>s.put(o)),get:id=>tx('readonly',s=>s.get(id))}})();
+  const DB=window.LevDB||{local:true,
+    subscribe(cb){LCB=cb;cb(store.get('levbe.recs',[]).map(r=>({...r,__pend:false})));return ()=>{}},
+    async save(r){const a=store.get('levbe.recs',[]).filter(x=>x.id!==r.id);a.push(r);store.set('levbe.recs',a);if(LCB)LCB(a.map(x=>({...x,__pend:false})))},
+    saveMedia:m=>IDB.put(m),getMedia:id=>IDB.get(id)};
+  let LCB=null;
+  const clean=r=>{const x={};for(const [k,v] of Object.entries(r))if(!k.startsWith('__'))x[k]=v===undefined?null:v;return x};
+  const put=r=>{const p=DB.save(clean(r));if(p&&p.catch)p.catch(e=>toast(`Não foi possível gravar no servidor: ${e&&e.code==='permission-denied'?'sem permissão':(e&&e.message)||e}`,'bad'));return p};
+
+  let ALL=[];const BYID=new Map();
+  function setAll(list,err){if(err){toast('Sem acesso aos registros do levantamento.','bad');return}ALL=list||[];BYID.clear();ALL.forEach(r=>BYID.set(r.id,r));refresh()}
+
+  /* ---------- posição e sentido ---------- */
+  // sentido pela tendência das estacas: 3 leituras seguidas no mesmo sentido somando ≥ 20 m (para inverter um sentido já definido: 4 leituras e ≥ 40 m);
+  // abaixo de ~5 km/h mantém o último sentido; saltos do GPS são ignorados; o usuário pode travar o sentido
+  const DIR=(()=>{const st={sent:null,mode:store.get('levbe.mode','AUTO'),run:null,prev:null,k:null};
+    const V_MIN=5/3.6;
+    function reset(){st.run=null;st.prev=null}
+    function feed(o,t){if(!o||o.r.outside){return}const s=o.r.s;
+      if(st.k!==o.k){if(st.k!=null)st.sent=null;st.k=o.k;reset()}   // outra rodovia: a tendência anterior não vale
+      const p=st.prev;st.prev={s,t};if(!p)return;const dt=(t-p.t)/1000;if(dt<0.3)return;const ds=s-p.s;
+      if(Math.abs(ds)>Math.max(300,70*dt)){st.run=null;return}           // salto do GPS
+      if(Math.abs(ds)/dt<V_MIN){st.run=null;return}                     // parado ou devagar: mantém o sentido
+      const sg=Math.sign(ds);if(!st.run||st.run.sg!==sg)st.run={sg,n:0,cum:0};
+      st.run.n++;st.run.cum+=Math.abs(ds);
+      const want=sg>0?'C':'D';if(want===st.sent)return;
+      const need=st.sent?{n:4,m:40}:{n:3,m:20};
+      if(st.run.n>=need.n&&st.run.cum>=need.m)st.sent=want}
+    const cur=()=>st.mode==='C'||st.mode==='D'?st.mode:st.sent;
+    function setMode(m){st.mode=m;store.set('levbe.mode',m)}
+    return {feed,cur,setMode,st}})();
+  let FIX=null;   // última leitura do GPS já resolvida para rodovia/estaca
+  function onPos(s){if(s.src!=='gps'||s.lat==null)return;const t=Loc.gps.lastFix||Date.now();
+    if(FIX&&FIX.lat===s.lat&&FIX.lon===s.lon&&t-FIX.t<500)return;   // mesma leitura vinda do espelho da outra rodovia
+    const o=Road.pick(s.lat,s.lon,s.acc);FIX={lat:s.lat,lon:s.lon,acc:s.acc,t,o};DIR.feed(o,t);if(Router.cur()==='levbe')renderTop()}
+  on('position',onPos);on('gps',()=>{if(Router.cur()==='levbe')renderTop()});
+
+  /* ---------- tela de registro ---------- */
+  let ORIENT=null;
+  function renderTop(){const g=Loc.gps,f=FIX,o=f&&f.o,sent=DIR.cur(),age=f?(Date.now()-f.t)/1000:Infinity;
+    const sEl=$('lvSent');sEl.className='lv-sent '+(sent==='C'?'up':sent==='D'?'down':'none');
+    sEl.innerHTML=sent==='C'?'<b>↑ CRESCENTE</b>':sent==='D'?'<b>↓ DECRESCENTE</b>':'<b>SENTIDO ?</b>';
+    $('lvSentHow').textContent=DIR.st.mode==='AUTO'?(sent?'automático':'ande alguns metros ou trave'):'travado';
+    document.querySelectorAll('#lvMode [data-m]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===DIR.st.mode)));
+    $('lvCtr').textContent=o?`${CONTRATO[o.k]} · ${o.rod}`:'—';$('lvLote').textContent=o?(o.r.outside?'fora do trecho':o.loteTxt):'—';
+    const acc=f&&age<=15?f.acc:null;const ge=$('lvAcc');ge.textContent=acc==null?(g.status==='waiting'?'buscando':g.status==='error'?'sem permissão':'sem GPS'):`±${Math.round(acc)} m`;
+    ge.className=acc==null?'bad':acc<=10?'good':acc<=20?'mid':'poor';
+    if(o&&!o.r.outside){$('lvSt').textContent=o.name;$('lvSt').classList.remove('out');$('lvRod').textContent=o.label;$('lvAx').textContent=Math.abs(o.r.main.lat)<1?'no eixo':`${nf(Math.abs(o.r.main.lat),1)} m do eixo`}
+    else if(o){$('lvSt').textContent='Fora do trecho';$('lvSt').classList.add('out');$('lvRod').textContent='mais próxima: '+o.nearest+' · '+o.rod;$('lvAx').textContent=fmtM(o.r.dist)}
+    else{$('lvSt').textContent='—';$('lvRod').textContent=g.status==='waiting'?'Buscando sua posição…':'Aguardando GPS';$('lvAx').textContent=''}
+    const stale=f&&age>15;$('lvWarn').hidden=!stale;if(stale)$('lvWarn').textContent=`Última posição há ${Math.round(age)} s: procure céu aberto.`;
+    fit();orient(sent)}
+  // estaca sempre inteira no quadro central (mesmo ajuste da tela de localização)
+  function fit(){const el=$('lvSt'),box=el.parentElement.clientWidth-16;if(!box)return;el.style.fontSize='';const w=el.scrollWidth;if(w>box)el.style.fontSize=Math.floor(parseFloat(getComputedStyle(el).fontSize)*box/w)+'px'}
+  window.addEventListener('resize',()=>{if(Router.cur()==='levbe')fit()});
+  // lado DIREITO = pista em que estou; ESQUERDO = pista oposta (sem sentido definido: crescente à direita)
+  function orient(sent){const right=sent==='D'?'DECRESCENTE':'CRESCENTE';if(ORIENT===right)return;
+    const cols=[...document.querySelectorAll('#lvGrid .lv-col')];const before=new Map(cols.map(c=>[c,c.getBoundingClientRect()]));
+    cols.forEach(c=>{const isR=c.dataset.p===right;c.classList.toggle('lv-right',isR);c.classList.toggle('lv-left',!isR);
+      c.querySelector('.lv-side').textContent=isR?'minha pista':'pista oposta'});
+    if(ORIENT!=null)cols.forEach(c=>{const a=before.get(c),b=c.getBoundingClientRect(),dx=a.left-b.left;if(!dx)return;
+      c.style.transition='none';c.style.transform=`translateX(${dx}px)`;requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transition='transform .45s cubic-bezier(.2,.7,.2,1)';c.style.transform=''}))});
+    ORIENT=right}
+  function colHtml(p){return `<div class="lv-col" data-p="${p}"><div class="lv-ch"><b>PISTA ${p}</b><small class="lv-side"></small></div>
+    ${BTN.map(b=>`<button type="button" class="lv-btn ${b.c}" data-k="${b.k}" data-p="${p}" data-acl="levbe:create" aria-label="${b.t} — ${b.s} — ${PISTA[p]}"><svg viewBox="0 0 24 24" aria-hidden="true">${b.ic}</svg><span><b>${b.t}</b><small>${b.s}</small></span></button>`).join('')}</div>`}
+
+  // registro com um toque
+  let LASTTAP=0;
+  function tap(k,pista){if(!canC()){toast('Sem permissão para registrar.','bad');return}const now=Date.now();if(now-LASTTAP<600)return;LASTTAP=now;
+    const f=FIX,b=BY_K[k];if(!f||now-f.t>10000||!f.o){buzz([60,60,60]);toast('Sem posição do GPS: registro não feito. Aguarde o sinal.','bad');return}
+    const o=f.o,out=o.r.outside,S=o.S,sent=DIR.cur(),u=me();
+    const i=out?o.r.nearest:o.i;
+    const r={id:uuid(),v:MODEL_V,criado_em:now,criado_por:u.email,usuario:u.name,lat:+f.lat.toFixed(7),lon:+f.lon.toFixed(7),precisao_m:f.acc==null?null:Math.round(f.acc*10)/10,
+      rodovia:o.rod,contrato:CONTRATO[o.k],lote:S.R[i][4],estaca:S.R[i][0],offset_m:out?null:o.d,estaca_txt:out?null:o.name,odometro_m:out?Math.round(S.ODO[i]):Math.round(o.r.s*10)/10,
+      dist_eixo_m:out?Math.round(o.r.dist):Math.round(o.r.main.lat*10)/10,fora_trecho:out,
+      sentido_desloc:sent==='C'?'CRESCENTE':sent==='D'?'DECRESCENTE':null,sentido_modo:DIR.st.mode==='AUTO'?'AUTO':'TRAVADO',
+      pista,tipo:b.tipo,ocupacao:b.oc,obs:'',fotos:[],audios:[],complemento_ok:false,
+      excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:now,atualizado_por:u.email,area_m2:null,dmt_fresado_km:null};
+    BYID.set(r.id,{...r,__pend:true});put(r);buzz(40);
+    const what=b.tipo==='EXISTENTE'?OCUP[b.oc].t:'Local possível';
+    toast(`${what} registrado: Est. ${out?r.estaca+' (fora do trecho)':r.estaca_txt}, ${PISTA[pista]}`,b.c,()=>undo(r.id));flash(k,pista)}
+  function undo(id){const r=BYID.get(id);if(!r)return;const u=me();put({...r,excluido:true,excluido_em:Date.now(),excluido_por:u.email,excluido_motivo:'DESFEITO',atualizado_em:Date.now(),atualizado_por:u.email});toast('Registro desfeito.','')}
+  function buzz(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+  function flash(k,p){const el=document.querySelector(`#lvGrid .lv-btn[data-k="${k}"][data-p="${p}"]`);if(!el)return;el.classList.remove('lv-hit');void el.offsetWidth;el.classList.add('lv-hit')}
+  let TT=0;function toast(msg,cls,undoFn){const t=$('lvToast');clearTimeout(TT);t.className='lv-toast '+(cls||'');t.innerHTML=`<span>${esc(msg)}</span>${undoFn?'<button type="button" id="lvUndo">DESFAZER</button>':''}`;t.hidden=false;
+    if(undoFn)$('lvUndo').onclick=()=>{clearTimeout(TT);t.hidden=true;undoFn()};TT=setTimeout(()=>{t.hidden=true},undoFn?5000:3500)}
+
+  /* ---------- tela ligada enquanto a página estiver aberta ---------- */
+  let WL=null;async function wake(){try{if('wakeLock' in navigator&&!WL){WL=await navigator.wakeLock.request('screen');WL.addEventListener('release',()=>{WL=null})}}catch(e){WL=null}}
+  function sleep(){try{WL&&WL.release()}catch(e){}WL=null}
+  document.addEventListener('visibilitychange',()=>{if(Router.cur()==='levbe'&&document.visibilityState==='visible')wake()});
+
+  /* ---------- lista de registros ---------- */
+  const F=Object.assign({ctr:'ALL',lote:'ALL',pista:'ALL',tipo:'ALL',oc:'ALL',data:'ALL',pend:false,exc:false},store.get('levbe.f',{}));
+  const saveF=()=>store.set('levbe.f',F);
+  const live=()=>ALL.filter(r=>!r.excluido);
+  const pendC=r=>!r.excluido&&!r.complemento_ok&&!(r.obs||'').trim()&&!(r.fotos||[]).length&&!(r.audios||[]).length;
+  // possível duplicado: mesmo tipo, mesma pista e mesma rodovia a menos de 50 m (pela estaca), sem bloquear
+  function dupOf(r){if(r.excluido)return [];return live().filter(x=>x.id!==r.id&&x.rodovia===r.rodovia&&x.pista===r.pista&&x.tipo===r.tipo&&Math.abs((x.odometro_m||0)-(r.odometro_m||0))<50)}
+  const sync=r=>DB.local?'SÓ NO APARELHO':r.__pend?'PENDENTE DE ENVIO':'SINCRONIZADO';
+  const sortK=(a,b)=>(ORD_ROD[a.rodovia]-ORD_ROD[b.rodovia])||((a.odometro_m||0)-(b.odometro_m||0))||(a.criado_em-b.criado_em);
+  function filtered(){return ALL.filter(r=>(F.exc||!r.excluido)&&(F.ctr==='ALL'||r.contrato===F.ctr)&&(F.lote==='ALL'||String(r.lote)===F.lote)&&(F.pista==='ALL'||r.pista===F.pista)
+    &&(F.tipo==='ALL'||r.tipo===F.tipo)&&(F.oc==='ALL'||r.ocupacao===F.oc)&&(F.data==='ALL'||fmtD(r.criado_em)===F.data)&&(!F.pend||pendC(r))).sort(sortK)}
+  function renderFilters(){const opt=(id,vals,cur)=>{$(id).innerHTML=vals.map(([v,t])=>`<option value="${esc(v)}"${String(v)===String(cur)?' selected':''}>${esc(t)}</option>`).join('')};
+    opt('lvFCtr',[['ALL','Todos'],[CONTRATO['277'],CONTRATO['277']+' · BR-277/PR'],[CONTRATO.B4,CONTRATO.B4+' · BR-373/PR']],F.ctr);
+    opt('lvFLote',[['ALL','Todos'],['2','Lote 02'],['3','Lote 03'],['4','Lote 04']],F.lote);
+    opt('lvFPista',[['ALL','Ambas'],['CRESCENTE','Crescente'],['DECRESCENTE','Decrescente']],F.pista);
+    opt('lvFTipo',[['ALL','Todos'],['EXISTENTE','Bota-espera existente'],['LOCAL_POSSIVEL','Local possível']],F.tipo);
+    opt('lvFOc',[['ALL','Todas'],['VAZIO','Vazio'],['PELA_METADE','Pela metade'],['LOTADO','Lotado']],F.oc);
+    const ds=[...new Set(ALL.map(r=>fmtD(r.criado_em)))].sort((a,b)=>b.split('/').reverse().join('').localeCompare(a.split('/').reverse().join('')));
+    if(F.data!=='ALL'&&!ds.includes(F.data))F.data='ALL';opt('lvFData',[['ALL','Todas'],...ds.map(d=>[d,d])],F.data);
+    $('lvFPend').checked=F.pend;$('lvFExc').checked=F.exc}
+  function renderList(){if(!$('lvList'))return;renderFilters();const L=filtered(),np=ALL.filter(pendC).length;
+    $('lvCnt').textContent=`${L.length} de ${live().length}`;$('lvTabN').textContent=live().length||'';
+    $('lvPendBtn').textContent=np?`Pendentes de complemento: ${np}`:'Nenhum pendente de complemento';$('lvPendBtn').disabled=!np;
+    $('lvMode0').hidden=!DB.local;
+    $('lvItems').innerHTML=L.length?L.map(r=>{const d=dupOf(r),b=r.tipo==='EXISTENTE'?BY_K[r.ocupacao]:BY_K.LOCAL;
+      return `<div class="lv-it${r.excluido?' lv-exc':''}" data-id="${esc(r.id)}"><i class="lv-dot ${b?b.c:''}" aria-hidden="true"></i><div class="lv-itb">
+        <b>${esc(r.estaca_txt||r.estaca)}${r.fora_trecho?' <em class="lv-tag">fora do trecho</em>':''} · ${esc(PISTA[r.pista]||r.pista)}</b>
+        <span>${esc(r.tipo==='EXISTENTE'?'Existente — '+(OCUP[r.ocupacao]||{t:r.ocupacao}).t:'Local possível')}</span>
+        <small>${esc(r.rodovia)} · Lote ${pad2(r.lote)} · ${esc(r.contrato)} · ${fmtDT(r.criado_em)} · ${esc(r.usuario||r.criado_por)}</small>
+        <small>${(r.fotos||[]).length?`📷 ${(r.fotos||[]).length} `:''}${(r.audios||[]).length?`🎙 ${(r.audios||[]).length} `:''}${r.obs?'📝 '+esc(r.obs.slice(0,80)):''}</small>
+        <div class="lv-tags">${r.excluido?`<em class="lv-tag bad">excluído${r.excluido_motivo==='DESFEITO'?' (desfeito)':''}</em>`:''}${pendC(r)?'<em class="lv-tag">pendente de complemento</em>':''}${d.length?`<em class="lv-tag warn">possível duplicado (${d.length} a menos de 50 m)</em>`:''}<em class="lv-tag ${r.__pend?'warn':''}">${sync(r)}</em></div></div>
+        ${r.excluido?'':`<button type="button" class="secondary lv-ed" data-ed="${esc(r.id)}">${canE()||(canC()&&r.criado_por===me().email)?'Complementar':'Ver'}</button>`}</div>`}).join(''):'<p class="note">Nenhum registro neste filtro.</p>';
+    $('lvItems').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>openEd(b.dataset.ed))}
+  function refresh(){renderList();upPend();if($('lvEd')&&!$('lvEd').hidden&&ED)edMedia()}
+  [['lvFCtr','ctr'],['lvFLote','lote'],['lvFPista','pista'],['lvFTipo','tipo'],['lvFOc','oc'],['lvFData','data']].forEach(([id,k])=>$(id).onchange=e=>{F[k]=e.target.value;saveF();renderList()});
+  $('lvFPend').onchange=e=>{F.pend=e.target.checked;saveF();renderList()};$('lvFExc').onchange=e=>{F.exc=e.target.checked;saveF();renderList()};
+  $('lvPendBtn').onclick=()=>{F.pend=true;saveF();renderList()};
+
+  /* ---------- complemento / edição ---------- */
+  let ED=null,REC=null;
+  const mayEdit=r=>canE()||(canC()&&r.criado_por===me().email);
+  function openEd(id){const r=BYID.get(id);if(!r)return;ED={...r,fotos:[...(r.fotos||[])],audios:[...(r.audios||[])]};const w=mayEdit(r);
+    $('lvEdT').textContent=`${r.estaca_txt||r.estaca} · ${PISTA[r.pista]}`;
+    $('lvEdInfo').innerHTML=`${esc(r.rodovia)} · Lote ${pad2(r.lote)} · ${esc(r.contrato)}<br>${fmtDT(r.criado_em)} · ${esc(r.usuario||r.criado_por)} · ${r.lat}, ${r.lon} (±${r.precisao_m==null?'—':nf(r.precisao_m,1)} m)<br>Sentido de deslocamento: ${esc(r.sentido_desloc?r.sentido_desloc.toLowerCase():'não definido')} (${r.sentido_modo==='TRAVADO'?'travado':'automático'})`;
+    $('lvEdTipo').value=r.tipo==='EXISTENTE'?r.ocupacao:'LOCAL';$('lvEdPista').value=r.pista;$('lvEdObs').value=r.obs||'';$('lvEdOk').checked=!!r.complemento_ok;
+    ['lvEdTipo','lvEdPista','lvEdObs','lvEdOk'].forEach(i=>$(i).disabled=!w);$('lvEdAddF').hidden=!w;$('lvEdRec').hidden=!w||!window.MediaRecorder;$('lvEdSave').hidden=!w;
+    $('lvEdDel').hidden=!(canD()||(canC()&&r.criado_por===me().email));$('lvEdMsg').textContent='';edMedia();$('lvEd').hidden=false}
+  const MEDIA=new Map();
+  async function media(id){if(MEDIA.has(id))return MEDIA.get(id);try{const m=await DB.getMedia(id);if(m)MEDIA.set(id,m);return m}catch(e){return null}}
+  async function edMedia(){if(!ED)return;const box=$('lvEdMedia');const ids=[...ED.fotos.map(i=>['foto',i]),...ED.audios.map(i=>['audio',i])];
+    if(!ids.length){box.innerHTML='<p class="note">Sem fotos nem áudios.</p>';return}
+    box.innerHTML=ids.map(([t,i])=>`<div class="lv-m" data-mid="${esc(i)}">${t==='foto'?'<span class="note">carregando foto…</span>':'<span class="note">carregando áudio…</span>'}</div>`).join('');
+    for(const [t,i] of ids){const m=await media(i);const el=box.querySelector(`[data-mid="${CSS.escape(i)}"]`);if(!el)continue;
+      el.innerHTML=!m?'<span class="note">arquivo ainda não disponível neste aparelho (sem internet?)</span>':t==='foto'?`<img src="${m.data}" alt="Foto do registro">`:`<audio controls src="${m.data}"></audio>`}}
+  async function comprImg(file){const u=URL.createObjectURL(file);try{const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=u});
+      let side=1600,q=0.72,out='';for(let k=0;k<8;k++){const sc=Math.min(1,side/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);out=c.toDataURL('image/jpeg',q);if(out.length<700000)break;if(q>0.5)q-=0.1;else side=Math.round(side*0.8)}
+      return out}finally{URL.revokeObjectURL(u)}}
+  async function addMedia(tipo,mime,data){if(data.length>950000)throw new Error('arquivo grande demais');const m={id:uuid(),reg:ED.id,tipo,mime,data,bytes:Math.round(data.length*0.75),criado_em:Date.now(),criado_por:me().email};
+    const p=DB.saveMedia(m);if(p&&p.catch)p.catch(e=>toast('Não foi possível gravar o arquivo no servidor.','bad'));MEDIA.set(m.id,m);(tipo==='foto'?ED.fotos:ED.audios).push(m.id);edMedia();return m}
+  $('lvEdFile').onchange=async e=>{const fs=[...(e.target.files||[])];e.target.value='';for(const f of fs){try{$('lvEdMsg').textContent='Comprimindo foto…';await addMedia('foto','image/jpeg',await comprImg(f));$('lvEdMsg').textContent='Foto adicionada. Toque em Salvar.'}catch(x){$('lvEdMsg').textContent='Não foi possível usar a foto: '+(x.message||x)}}};
+  $('lvEdRec').onclick=async()=>{if(REC){REC.stop();return}try{const st=await navigator.mediaDevices.getUserMedia({audio:true});
+      const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
+      const mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:32000}:undefined),ch=[];REC=mr;let left=30;$('lvEdRec').textContent='■ Parar (30 s)';
+      const iv=setInterval(()=>{left--;$('lvEdRec').textContent=`■ Parar (${left} s)`;if(left<=0)mr.stop()},1000);
+      mr.ondataavailable=e=>e.data.size&&ch.push(e.data);
+      mr.onstop=async()=>{clearInterval(iv);st.getTracks().forEach(t=>t.stop());REC=null;$('lvEdRec').textContent='🎙 Gravar áudio (até 30 s)';
+        const blob=new Blob(ch,{type:mr.mimeType||mt||'audio/webm'});const data=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(blob)});
+        try{await addMedia('audio',blob.type,data);$('lvEdMsg').textContent='Áudio adicionado. Toque em Salvar.'}catch(x){$('lvEdMsg').textContent='Áudio grande demais.'}};
+      mr.start()}catch(e){$('lvEdMsg').textContent='Microfone indisponível ou sem permissão.'}};
+  $('lvEdSave').onclick=()=>{if(!ED)return;const k=$('lvEdTipo').value,b=BY_K[k],u=me();const prev=BYID.get(ED.id)||ED;
+    const n={...prev,tipo:b.tipo,ocupacao:b.oc,pista:$('lvEdPista').value,obs:$('lvEdObs').value.trim().slice(0,2000),fotos:ED.fotos,audios:ED.audios,complemento_ok:$('lvEdOk').checked,
+      atualizado_em:Date.now(),atualizado_por:u.email};
+    if(n.tipo!==prev.tipo||n.ocupacao!==prev.ocupacao||n.pista!==prev.pista)n.corrigido_de=`${prev.tipo}/${prev.ocupacao||'-'}/${prev.pista}`;
+    BYID.set(n.id,{...n,__pend:true});put(n);closeEd();toast('Registro atualizado.','')};
+  $('lvEdDel').onclick=()=>{if(!ED)return;if(!confirm('Excluir este registro? Ele fica marcado como excluído e não aparece mais na lista nem na exportação.'))return;const u=me(),prev=BYID.get(ED.id)||ED;
+    put({...prev,excluido:true,excluido_em:Date.now(),excluido_por:u.email,excluido_motivo:'EXCLUIDO',atualizado_em:Date.now(),atualizado_por:u.email});closeEd();toast('Registro excluído.','')};
+  function closeEd(){if(REC)try{REC.stop()}catch(e){}$('lvEd').hidden=true;ED=null}
+  $('lvEdClose').onclick=closeEd;$('lvEd').addEventListener('click',e=>{if(e.target.id==='lvEd')closeEd()});
+
+  /* ---------- exportação (Excel e CSV) ---------- */
+  const link=id=>`${location.origin}${location.pathname}?lbmidia=${encodeURIComponent(id)}#levbe`;
+  const HEAD=['ID','Data/hora','Usuário','E-mail','Latitude','Longitude','Precisão GPS (m)','Rodovia','Contrato','Lote','Estaca','Offset (m)','Estaca + offset','Odômetro (m)','Distância ao eixo (m)','Fora do trecho',
+    'Sentido de deslocamento','Sentido (modo)','Pista do registro','Tipo','Ocupação','Status de sincronização','Possível duplicado','Pendente de complemento','Observação','Fotos (links)','Áudios (links)',
+    'Correção (antes)','Excluído','Excluído em','Excluído por','Motivo da exclusão','Atualizado em','Atualizado por','Área (m²) — etapa futura','DMT do fresado (km) — etapa futura'];
+  function rowOf(r){const sn=b=>b?'Sim':'Não';return [r.id,fmtDT(r.criado_em),r.usuario||'',r.criado_por||'',r.lat,r.lon,r.precisao_m,r.rodovia,r.contrato,r.lote==null?'':'Lote '+pad2(r.lote),r.estaca,r.offset_m,r.estaca_txt||'',r.odometro_m,r.dist_eixo_m,sn(r.fora_trecho),
+    r.sentido_desloc||'NÃO DEFINIDO',r.sentido_modo,r.pista,r.tipo,r.ocupacao||'',sync(r),sn(dupOf(r).length),sn(pendC(r)),r.obs||'',(r.fotos||[]).map(link).join(' | '),(r.audios||[]).map(link).join(' | '),
+    r.corrigido_de||'',sn(r.excluido),r.excluido_em?fmtDT(r.excluido_em):'',r.excluido_por||'',r.excluido_motivo||'',r.atualizado_em?fmtDT(r.atualizado_em):'',r.atualizado_por||'',r.area_m2==null?'':r.area_m2,r.dmt_fresado_km==null?'':r.dmt_fresado_km]}
+  const fname=ext=>`Levantamento_bota-espera_${new Date().toISOString().slice(0,10)}.${ext}`;
+  async function give(blob,name){const file=new File([blob],name,{type:blob.type});if(navigator.canShare&&navigator.canShare({files:[file]})&&/iPhone|iPad|Android/i.test(navigator.userAgent)){try{await navigator.share({files:[file],title:'Levantamento de bota-espera'});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000)}
+  function exportCsv(){const L=filtered();if(!L.length){toast('Nada para exportar neste filtro.','');return}
+    // separador ";" e decimal com vírgula: abre direto no Excel em português; BOM para os acentos
+    const cell=v=>{if(v==null)return '';if(typeof v==='number')return String(v).replace('.',',');const s=String(v);return /[;"\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+    const txt='﻿'+[HEAD,...L.map(rowOf)].map(r=>r.map(cell).join(';')).join('\r\n');give(new Blob([txt],{type:'text/csv;charset=utf-8'}),fname('csv'));toast(`CSV gerado com ${L.length} registros.`,'')}
+  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const loadX=()=>new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src=XLSX_URL;s.onload=res;s.onerror=()=>rej(new Error('sem internet para carregar a biblioteca do Excel: use Exportar CSV'));document.head.appendChild(s)});
+  async function exportXlsx(){const L=filtered();if(!L.length){toast('Nada para exportar neste filtro.','');return}
+    try{await loadX()}catch(e){toast(e.message,'bad');return}
+    const ws=XLSX.utils.aoa_to_sheet([HEAD,...L.map(rowOf)]);ws['!cols']=HEAD.map((h,i)=>({wch:i===0?38:Math.max(10,Math.min(40,h.length+2))}));ws['!autofilter']={ref:XLSX.utils.encode_range({s:{r:0,c:0},e:{r:L.length,c:HEAD.length-1}})};
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Levantamento');
+    give(new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),fname('xlsx'));toast(`Excel gerado com ${L.length} registros.`,'')}
+  $('lvXlsx').onclick=exportXlsx;$('lvCsv').onclick=exportCsv;
+
+  /* ---------- link de foto/áudio da exportação (?lbmidia=id) ---------- */
+  async function openMediaLink(){const id=new URLSearchParams(location.search).get('lbmidia');if(!id)return;
+    $('lvMv').hidden=false;$('lvMvBody').innerHTML='<p class="note">Carregando…</p>';const m=await media(id);
+    $('lvMvBody').innerHTML=!m?'<p class="note">Arquivo não encontrado ou sem acesso.</p>':m.tipo==='foto'?`<img src="${m.data}" alt="Foto do levantamento">`:`<audio controls src="${m.data}"></audio>`;
+    const r=m&&BYID.get(m.reg);$('lvMvT').textContent=r?`${r.estaca_txt||r.estaca} · ${PISTA[r.pista]} · ${fmtDT(r.criado_em)}`:'Arquivo do levantamento'}
+  $('lvMvClose').onclick=()=>{$('lvMv').hidden=true;try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}};
+
+  /* ---------- montagem ---------- */
+  function view(v){$('lvReg').hidden=v!=='reg';$('lvList').hidden=v!=='list';document.querySelectorAll('#pLev .lv-tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===v)));store.set('levbe.view',v);if(v==='list')renderList();else renderTop()}
+  $('lvGrid').insertAdjacentHTML('afterbegin',colHtml('DECRESCENTE'));$('lvGrid').insertAdjacentHTML('beforeend',colHtml('CRESCENTE'));
+  $('lvGrid').addEventListener('click',e=>{const b=e.target.closest('.lv-btn');if(b)tap(b.dataset.k,b.dataset.p)});
+  document.querySelectorAll('#lvMode [data-m]').forEach(b=>b.onclick=()=>{DIR.setMode(b.dataset.m);renderTop()});
+  document.querySelectorAll('#pLev .lv-tab').forEach(b=>b.onclick=()=>view(b.dataset.v));
+  $('lvGoList').onclick=()=>{F.pend=true;saveF();view('list')};
+  setInterval(()=>{if(Router.cur()==='levbe'&&!$('lvReg').hidden)renderTop()},2000);
+  Router.onInit('levbe',()=>{view(store.get('levbe.view','reg')==='list'?'list':'reg');openMediaLink()});
+  on('page',p=>{if(p==='levbe'){if(!Loc.gps.on)Loc.start();wake();renderTop()}else sleep()});
+  // pendentes de complemento na tela de registro
+  function upPend(){const n=ALL.filter(pendC).length;$('lvGoList').textContent=`Pendentes de complemento: ${n}`;$('lvGoList').disabled=!n}
+  DB.subscribe(setAll);upPend();
+  window.__LEVBE={DIR,tap,rec:()=>ALL,fix:()=>FIX};
 })();
 
 on('page',p=>{if(p==='admin'&&ACL&&ACL.admin&&ACL.renderAdmin)ACL.renderAdmin($('admRoot'))});

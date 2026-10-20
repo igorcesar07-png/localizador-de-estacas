@@ -105,6 +105,38 @@ await t('administrador cria perfis e convites',async()=>{await assertSucceeds(se
 await t('e-mail do admin sem verificação não gerencia',()=>assertFails(getDocs(collection(fakeAdmin,'users'))));
 await t('coleções desconhecidas bloqueadas',()=>assertFails(setDoc(doc(admin,'outra','x'),{a:1})));
 
+
+// Levantamento de Bota-Espera (coleção nova)
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  const U=(id,email,perms)=>setDoc(doc(d,'users',id),{email,name:id,profile:null,custom:true,perms,active:true,invited:true});
+  await U('lvreg','lvreg@x.com',{levbe:{view:true,create:true}});await U('lvreg2','lvreg2@x.com',{levbe:{view:true,create:true}});
+  await U('lved','lved@x.com',{levbe:{view:true,edit:true}});await U('lvdel','lvdel@x.com',{levbe:{view:true,delete:true}});await U('lvver','lvver@x.com',{levbe:{view:true}});
+});
+const LREC=(id,by,o={})=>({id,v:1,criado_em:1760000000000,criado_por:by,usuario:'U',lat:-25.17522,lon:-50.62046,precisao_m:4,rodovia:'BR-373/PR',contrato:'VIAR-GDA-470/2026',lote:4,
+  estaca:'225+080',offset_m:3,estaca_txt:'225+083',odometro_m:225243,dist_eixo_m:1.2,fora_trecho:false,sentido_desloc:'CRESCENTE',sentido_modo:'AUTO',pista:'CRESCENTE',tipo:'EXISTENTE',ocupacao:'LOTADO',
+  obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:1760000000000,atualizado_por:by,area_m2:null,dmt_fresado_km:null,...o});
+const lv=(u)=>ctx(u,u+'@x.com');
+await t('Levantamento: quem registra cria o próprio registro',()=>assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com'))));
+await t('Levantamento: não cria em nome de outro usuário',()=>assertFails(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r2'),LREC('r2','lvreg2@x.com'))));
+await t('Levantamento: só visualizar não cria',()=>assertFails(setDoc(doc(lv('lvver'),'levantamento_bota_espera','r3'),LREC('r3','lvver@x.com'))));
+await t('Levantamento: local possível não aceita ocupação',()=>assertFails(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r4'),LREC('r4','lvreg@x.com',{tipo:'LOCAL_POSSIVEL',ocupacao:'LOTADO'}))));
+await t('Levantamento: existente exige ocupação válida',()=>assertFails(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r5'),LREC('r5','lvreg@x.com',{ocupacao:'CHEIO'}))));
+await t('Levantamento: quem tem a página lê',()=>assertSucceeds(getDoc(doc(lv('lvver'),'levantamento_bota_espera','r1'))));
+await t('Levantamento: sem a página não lê',()=>assertFails(getDoc(doc(ctx('outracoisa','oc@x.com'),'levantamento_bota_espera','r1'))));
+await t('Levantamento: o autor complementa e desfaz o próprio registro',async()=>{await assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{obs:'portão fechado'})));
+  await assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{obs:'portão fechado',excluido:true,excluido_motivo:'DESFEITO'})));
+  await assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{obs:'portão fechado'})))});
+await t('Levantamento: outro usuário só com "registrar" não altera o registro alheio',()=>assertFails(setDoc(doc(lv('lvreg2'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{obs:'x'}))));
+await t('Levantamento: "editar" corrige registro alheio',()=>assertSucceeds(setDoc(doc(lv('lved'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{ocupacao:'PELA_METADE'}))));
+await t('Levantamento: "editar" não exclui',()=>assertFails(setDoc(doc(lv('lved'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{ocupacao:'PELA_METADE',excluido:true}))));
+await t('Levantamento: ninguém troca o autor do registro',()=>assertFails(setDoc(doc(lv('lved'),'levantamento_bota_espera','r1'),LREC('r1','lved@x.com',{ocupacao:'PELA_METADE'}))));
+await t('Levantamento: "excluir" só marca a exclusão',async()=>{await assertFails(setDoc(doc(lv('lvdel'),'levantamento_bota_espera','r1'),LREC('r1','lvreg@x.com',{ocupacao:'VAZIO',excluido:true})));
+  await assertSucceeds(updateDoc(doc(lv('lvdel'),'levantamento_bota_espera','r1'),{excluido:true,excluido_em:1760000001000,excluido_por:'lvdel@x.com',excluido_motivo:'EXCLUIDO',atualizado_em:1760000001000,atualizado_por:'lvdel@x.com'}))});
+await t('Levantamento: o documento nunca é apagado',()=>assertFails(deleteDoc(doc(admin,'levantamento_bota_espera','r1'))));
+await t('Levantamento: foto comprimida do registro é gravada e lida',async()=>{await assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera_midia','m1'),{id:'m1',reg:'r1',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'lvreg@x.com'}));
+  await assertSucceeds(getDoc(doc(lv('lvver'),'levantamento_bota_espera_midia','m1')))});
+await t('Levantamento: só visualizar não grava foto',()=>assertFails(setDoc(doc(lv('lvver'),'levantamento_bota_espera_midia','m2'),{id:'m2',reg:'r1',tipo:'foto',mime:'image/jpeg',data:'x',bytes:1,criado_em:1,criado_por:'lvver@x.com'})));
+await t('Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)',()=>assertSucceeds(getDoc(doc(lv('lvver'),'base','b4'))));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
 const txt=`Regras do Firestore: ${ok}/${results.length} testes OK\n\n`+results.map(r=>r.join('  ')).join('\n')+'\n';
