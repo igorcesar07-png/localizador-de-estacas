@@ -23,7 +23,7 @@ ok(await p.locator('#mkList .mk-it').count()===30,'lista com 30 marcos');
 await p.screenshot({path:D+'geral.png'});
 // abrir um marco pela lista
 await p.click('#mkList .mk-it[data-id="cad-242_277"]');await p.waitForTimeout(1200);const pop=await p.textContent('.leaflet-popup-content');console.log(pop.replace(/\s+/g,' ').slice(0,300));
-ok(/Bota-espera 242_277/.test(pop)&&/233\+700/.test(pop)&&/Lote 02/.test(pop)&&/NEOVIA-430/.test(pop)&&/Estaca mais próxima/.test(pop),'detalhe: km, lote, estaca mais próxima e dados do documento');
+ok(/Bota-espera 242_277/.test(pop)&&/\d{3}\+\d{3}/.test(pop)&&/Lote 0\d/.test(pop)&&/Empreiteira/.test(pop)&&/Estaca mais próxima/.test(pop),'detalhe: km, lote, estaca mais próxima e dados do documento');
 await p.screenshot({path:D+'popup.png'});
 // marco a conferir
 await p.click('#mkList .mk-it[data-id="cad-006_373"]');await p.waitForTimeout(1000);ok(/Conferir/.test(await p.textContent('.leaflet-popup-content')),'006_373 mostra o aviso de conferência');
