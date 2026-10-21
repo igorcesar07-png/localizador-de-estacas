@@ -25,6 +25,10 @@ HTML='''<section class="page" id="pLev" data-page="levbe" hidden>
     <div class="lv-foot"><button type="button" class="lv-pend" id="lvGoList">Pendentes de complemento: 0</button><small>Foto, áudio e observação: complete depois, com o carro parado.</small></div>
   </div>
   <div id="lvList" class="cscroll" hidden>
+    <div class="lv-here" id="lvHere">
+      <div class="lv-hpos"><div class="lv-hl"><small>Você está em</small><b id="lvHSt">—</b></div><div class="lv-hr"><span id="lvHRod">Aguardando GPS</span><small id="lvHAcc"></small></div></div>
+      <div class="lv-hnear" id="lvHNear" hidden></div>
+    </div>
     <div class="cwrap lv-lw">
       <div class="card lv-fil">
         <p class="note" id="lvMode0" hidden>Sem login: os registros ficam salvos só neste aparelho.</p>
@@ -119,6 +123,25 @@ CSS='''#pLev{display:flex;flex-direction:column;background:var(--ground);color:v
   .lv-grid{padding:4px 10px;gap:4px 10px}.lv-col{gap:4px}.lv-ch{flex-direction:row;gap:8px;align-items:baseline;justify-content:center;padding:0;height:18px;line-height:1;white-space:nowrap;overflow:hidden}.lv-ch b{font-size:15px;line-height:1;letter-spacing:.03em}.lv-ch small{line-height:1}.lv-left .lv-ch small{display:none}
   .lv-btn{min-height:64px;padding:3px 10px}.lv-btn small{font-size:11px}.lv-mid .lbl{font-size:12px}.lv-mid small{font-size:12px;margin-top:2px}.lv-rod{margin-top:4px}
   .lv-foot{display:none}.lv-toast{font-size:13px;padding:6px 8px}.lv-toast button{min-height:40px;padding:0 10px;font-size:13px}}
+.lv-here{position:sticky;top:0;z-index:6;background:var(--plate);color:var(--plate-ink);padding:10px 16px;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+.lv-hpos,.lv-hnear{max-width:1068px;margin-left:auto;margin-right:auto}.lv-hpos{display:flex;align-items:center;gap:12px}
+.lv-hl{display:flex;flex-direction:column;min-width:0}.lv-hl small{color:var(--plate-muted);font:700 11px var(--body);text-transform:uppercase;letter-spacing:.12em}
+.lv-hl b{font:700 clamp(30px,9vw,46px)/1.02 var(--cond);font-variant-numeric:tabular-nums;white-space:nowrap}.lv-hl b.out{font-size:clamp(22px,6vw,30px)}
+.lv-hr{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:2px;font-size:14px;line-height:1.3}.lv-hr small{color:var(--plate-muted);font-size:12.5px}
+.lv-hnear{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:8px;padding:8px 10px;border-radius:12px;background:var(--plate-2);border:1px solid var(--plate-line);font-size:14px;line-height:1.3}
+.lv-hnear.none{color:var(--plate-muted)}.lv-hnear.on{background:#F2B705;border-color:#F2B705;color:#141715}
+.lv-hnt{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}.lv-hnt small{opacity:.8;font-size:12.5px}
+.lv-hnear.on .lv-hnt>b{font:800 clamp(18px,4.8vw,22px)/1.15 var(--cond);letter-spacing:.02em}
+.lv-hb{flex:none;min-height:48px;padding:0 14px;border-radius:10px;border:2px solid var(--plate-line);background:transparent;color:inherit;font:800 15px var(--body);cursor:pointer;touch-action:manipulation}
+.lv-hnear.on .lv-hb{border-color:#141715}.lv-hnear.on .lv-hb1{background:#141715;color:#fff}
+.lv-here.lv-flash{animation:lvflash 1.2s ease-out}@keyframes lvflash{0%,40%{box-shadow:0 0 0 6px #F2B705}100%{box-shadow:0 4px 14px rgba(0,0,0,.22)}}
+.lv-it.lv-pendit{border-color:var(--warn);border-left:6px solid #F2B705;background:var(--warn-bg)}
+.lv-it.lv-near{outline:3px solid #F2B705;outline-offset:1px;box-shadow:0 0 0 6px rgba(242,183,5,.28)}
+.lv-it.lv-flash{animation:lvitf 1.4s ease-out}@keyframes lvitf{0%,35%{box-shadow:0 0 0 8px rgba(242,183,5,.75)}100%{box-shadow:0 0 0 0 rgba(242,183,5,0)}}
+.lv-tag.lv-dist{color:var(--ink)}.lv-tag.lv-dist.near{background:#F2B705;border-color:#F2B705;color:#141715}
+.lv-mk{display:flex;align-items:center;gap:8px;margin:2px 0;color:var(--me);font:800 12.5px var(--body);letter-spacing:.05em}
+.lv-mk::before,.lv-mk::after{content:"";flex:1;height:2px;background:var(--me);border-radius:2px}.lv-mk span{white-space:nowrap;padding:3px 10px;border:2px solid var(--me);border-radius:999px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+@media (orientation:landscape) and (max-height:520px){.lv-here{padding:4px 12px}.lv-hl small,.lv-hnt small{display:none}.lv-hl b{font-size:28px}.lv-hnear{margin-top:4px;padding:4px 8px}.lv-hb{min-height:40px}}
 '''
 NAV='''    <a href="#levbe" data-page="levbe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 18h16l-3.6-7-2.5 2.8-2.6-5z"/><path d="M12 3v3M19 5l-2 2M5 5l2 2"/></svg><span>Levantamento de Bota-Espera</span></a>
     <a href="#analise" data-page="analise">'''

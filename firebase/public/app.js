@@ -3175,14 +3175,14 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
     $('lvPendBtn').textContent=np?`Pendentes de complemento: ${np}`:'Nenhum pendente de complemento';$('lvPendBtn').disabled=!np;
     $('lvMode0').hidden=!DB.local;
     $('lvItems').innerHTML=L.length?L.map(r=>{const d=dupOf(r),b=r.tipo==='EXISTENTE'?BY_K[r.ocupacao]:BY_K.LOCAL;
-      return `<div class="lv-it${r.excluido?' lv-exc':''}" data-id="${esc(r.id)}"><i class="lv-dot ${b?b.c:''}" aria-hidden="true"></i><div class="lv-itb">
+      return `<div class="lv-it${r.excluido?' lv-exc':''}${pendC(r)?' lv-pendit':''}" data-id="${esc(r.id)}"><i class="lv-dot ${b?b.c:''}" aria-hidden="true"></i><div class="lv-itb">
         <b>${esc(r.estaca_txt||r.estaca)}${r.fora_trecho?' <em class="lv-tag">fora do trecho</em>':''} · ${esc(PISTA[r.pista]||r.pista)}</b>
         <span>${esc(r.tipo==='EXISTENTE'?'Existente — '+(OCUP[r.ocupacao]||{t:r.ocupacao}).t:'Local possível')}</span>
         <small>${esc(r.rodovia)} · Lote ${pad2(r.lote)} · ${esc(r.contrato)} · ${fmtDT(r.criado_em)} · ${esc(r.usuario||r.criado_por)}</small>
         <small>${(r.fotos||[]).length?`📷 ${(r.fotos||[]).length} `:''}${(r.audios||[]).length?`🎙 ${(r.audios||[]).length} `:''}${r.obs?'📝 '+esc(r.obs.slice(0,80)):''}</small>
-        <div class="lv-tags">${r.excluido?`<em class="lv-tag bad">excluído${r.excluido_motivo==='DESFEITO'?' (desfeito)':''}</em>`:''}${pendC(r)?'<em class="lv-tag">pendente de complemento</em>':''}${d.length?`<em class="lv-tag warn">possível duplicado (${d.length} a menos de 50 m)</em>`:''}<em class="lv-tag ${r.__pend?'warn':''}">${sync(r)}</em></div></div>
+        <div class="lv-tags">${r.excluido?`<em class="lv-tag bad">excluído${r.excluido_motivo==='DESFEITO'?' (desfeito)':''}</em>`:''}${pendC(r)?'<em class="lv-tag">pendente de complemento</em>':''}${d.length?`<em class="lv-tag warn">possível duplicado (${d.length} a menos de 50 m)</em>`:''}<em class="lv-tag ${r.__pend?'warn':''}">${sync(r)}</em><em class="lv-tag lv-dist" hidden></em></div></div>
         ${r.excluido?'':`<button type="button" class="secondary lv-ed" data-ed="${esc(r.id)}">${canE()||(canC()&&r.criado_por===me().email)?'Complementar':'Ver'}</button>`}</div>`}).join(''):'<p class="note">Nenhum registro neste filtro.</p>';
-    $('lvItems').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>openEd(b.dataset.ed))}
+    $('lvItems').querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>openEd(b.dataset.ed));near()}
   function refresh(){renderList();upPend();if($('lvEd')&&!$('lvEd').hidden&&ED)edMedia()}
   [['lvFCtr','ctr'],['lvFLote','lote'],['lvFPista','pista'],['lvFTipo','tipo'],['lvFOc','oc'],['lvFData','data']].forEach(([id,k])=>$(id).onchange=e=>{F[k]=e.target.value;saveF();renderList()});
   $('lvFPend').onchange=e=>{F.pend=e.target.checked;saveF();renderList()};$('lvFExc').onchange=e=>{F.exc=e.target.checked;saveF();renderList()};
@@ -3261,6 +3261,62 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
     const r=m&&BYID.get(m.reg);$('lvMvT').textContent=r?`${r.estaca_txt||r.estaca} · ${PISTA[r.pista]} · ${fmtDT(r.criado_em)}`:'Arquivo do levantamento'}
   $('lvMvClose').onclick=()=>{$('lvMv').hidden=true;try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}};
 
+  /* ---------- aba Registros: estaca atual e pendentes de complemento por perto ---------- */
+  // Só lê o que já existe: a mesma leitura do GPS da tela de registro (FIX) e o sentido detectado (DIR).
+  // Pendente "por perto" = registro sem complemento, que este usuário pode complementar, a até NEAR_M da posição atual.
+  const NEAR_M=500;
+  const hav=(a,b,c,d)=>{const R=6371000,k=Math.PI/180,x=(c-a)*k,y=(d-b)*k,h=Math.sin(x/2)**2+Math.cos(a*k)*Math.cos(c*k)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+  const fmtDist=m=>m<1000?Math.max(10,Math.round(m/10)*10)+'\u00a0m':nf(m/1000,1)+'\u00a0km';
+  // distância até o registro: pela estaca, na mesma rodovia (com lado: à frente / atrás conforme o sentido); senão, em linha reta
+  function rel(r,f){const o=f.o,sent=DIR.cur();
+    if(o&&!o.r.outside&&r.rodovia===o.rod&&r.odometro_m!=null){const ds=r.odometro_m-o.r.s,dist=Math.abs(ds);
+      return {dist,side:dist<20?'aqui':!sent?null:(sent==='C'?ds>0:ds<0)?'frente':'atras'}}
+    return r.lat==null||f.lat==null?null:{dist:hav(f.lat,f.lon,r.lat,r.lon),side:null}}
+  const relTxt=x=>x.side==='aqui'?'você está aqui':fmtDist(x.dist)+(x.side==='frente'?' à frente':x.side==='atras'?' atrás':'');
+  const kindTxt=r=>r.tipo==='EXISTENTE'?'Existente — '+(OCUP[r.ocupacao]||{t:r.ocupacao}).t:'Local possível';
+  const NOTIF=new Set();let UTOUCH=0,HN='';
+  function setHN(cls,key,html,dyn){const hn=$('lvHNear');hn.hidden=false;hn.className='lv-hnear '+cls;
+    if(HN!==key){HN=key;hn.innerHTML=html}else{const d=hn.querySelector('.lv-hnd');if(d&&d.textContent!==dyn)d.textContent=dyn}}
+  function near(){if(!$('lvHere')||$('lvList').hidden)return;const f=FIX,o=f&&f.o,age=f?(Date.now()-f.t)/1000:Infinity,sent=DIR.cur(),ok=!!f&&age<=30;
+    // posição atual
+    if(o&&!o.r.outside){$('lvHSt').textContent=o.name;$('lvHSt').classList.remove('out');$('lvHRod').textContent=o.label+(sent?` · ${sent==='C'?'↑\u00a0crescente':'↓\u00a0decrescente'}`:'')}
+    else if(o){$('lvHSt').textContent='Fora do trecho';$('lvHSt').classList.add('out');$('lvHRod').textContent='mais próxima: '+o.nearest+' · '+o.rod}
+    else{$('lvHSt').textContent='—';$('lvHSt').classList.remove('out');$('lvHRod').textContent=Loc.gps.status==='waiting'?'Buscando sua posição…':'Aguardando GPS'}
+    $('lvHAcc').textContent=!f?'':age>15?`posição de ${Math.round(age)} s atrás: procure céu aberto`:f.acc==null?'':`GPS ±${Math.round(f.acc)} m`;
+    // pendentes que eu posso complementar, do mais perto ao mais longe
+    const P=ok?ALL.filter(r=>pendC(r)&&mayEdit(r)).map(r=>({r,x:rel(r,f)})).filter(p=>p.x).sort((a,b)=>a.x.dist-b.x.dist):[];
+    const close=P.filter(p=>p.x.dist<=NEAR_M),isClose=new Set(close.map(p=>p.r.id));
+    // registros da lista: distância de cada um e destaque dos pendentes por perto
+    const els=[...$('lvItems').querySelectorAll('.lv-it[data-id]')];
+    els.forEach(el=>{const r=BYID.get(el.dataset.id),t=el.querySelector('.lv-dist');if(!r||!t)return;const x=ok&&!r.excluido?rel(r,f):null,nr=isClose.has(r.id);
+      el.classList.toggle('lv-near',nr);t.hidden=!x;t.classList.toggle('near',nr);if(x){const s=(nr?'PERTO · ':'')+'📍 '+relTxt(x);if(t.textContent!==s)t.textContent=s}});
+    marker(els,ok?o:null);
+    // aviso no topo
+    if(!ok)$('lvHNear').hidden=true;
+    else if(close.length){const p=close.find(q=>q.x.side==='aqui')||close.find(q=>q.x.side==='frente')||close[0],r=p.r,dyn=relTxt(p.x);   // prefere o que ainda vem pela frente
+      setHN('on',`near|${r.id}|${close.length}`,`<div class="lv-hnt"><b>⚠ Pendente de complemento · <span class="lv-hnd">${esc(dyn)}</span></b><span>Est. ${esc(r.estaca_txt||r.estaca)} · ${esc(PISTA[r.pista]||r.pista)} · ${esc(kindTxt(r))}</span>${close.length>1?`<small>+${close.length-1} pendente${close.length>2?'s':''} a menos de ${NEAR_M} m</small>`:''}</div><button type="button" class="lv-hb lv-hb1" data-hed="${esc(r.id)}">Complementar</button><button type="button" class="lv-hb" data-hgo="${esc(r.id)}">Ver na lista</button>`,dyn)}
+    else if(P.length){const p=P.find(q=>q.x.side==='frente')||P[0],r=p.r,dyn=relTxt(p.x);
+      setHN('',`next|${r.id}|${P.length}`,`<div class="lv-hnt"><span>Próximo pendente: <b>Est. ${esc(r.estaca_txt||r.estaca)}</b> · ${esc(PISTA[r.pista]||r.pista)} · <b class="lv-hnd">${esc(dyn)}</b></span><small>${P.length} pendente${P.length>1?'s':''} de complemento</small></div><button type="button" class="lv-hb" data-hgo="${esc(r.id)}">Ver</button>`,dyn)}
+    else setHN('none','none','<div class="lv-hnt"><span>✓ Nenhum registro seu pendente de complemento</span></div>','');
+    // chegou perto de um pendente: vibra, pisca o aviso e mostra o registro (se a pessoa não estiver mexendo na lista)
+    for(const id of [...NOTIF]){const p=P.find(q=>q.r.id===id);if(!p||p.x.dist>NEAR_M*1.5)NOTIF.delete(id)}
+    const fresh=close.find(p=>!NOTIF.has(p.r.id));
+    if(fresh){close.forEach(p=>NOTIF.add(p.r.id));buzz([90,60,90]);const h=$('lvHere');h.classList.remove('lv-flash');void h.offsetWidth;h.classList.add('lv-flash');if(Date.now()-UTOUCH>10000)goTo(fresh.r.id,true)}}
+  // linha "VOCÊ ESTÁ AQUI" entre os registros (a lista já é ordenada por rodovia e estaca)
+  function marker(els,o){const box=$('lvItems');let mk=$('lvHereMk');
+    if(!o||o.r.outside||!els.length){if(mk)mk.remove();return}
+    if(!mk){mk=document.createElement('div');mk.id='lvHereMk';mk.className='lv-mk';mk.setAttribute('role','separator');mk.innerHTML='<span></span>'}
+    const s=`VOCÊ ESTÁ AQUI · Est. ${o.name}`;if(mk.firstChild.textContent!==s)mk.firstChild.textContent=s;
+    const cur={rodovia:o.rod,odometro_m:o.r.s,criado_em:Date.now()},nx=els.find(el=>{const r=BYID.get(el.dataset.id);return r&&sortK(r,cur)>0})||null;
+    if(nx){if(mk.nextElementSibling!==nx)box.insertBefore(mk,nx)}else if(box.lastElementChild!==mk)box.appendChild(mk)}
+  function goTo(id,soft){const q=()=>$('lvItems').querySelector(`.lv-it[data-id="${CSS.escape(id)}"]`);let el=q();
+    if(!el&&!soft){Object.assign(F,{ctr:'ALL',lote:'ALL',pista:'ALL',tipo:'ALL',oc:'ALL',data:'ALL'});saveF();renderList();el=q()}
+    if(!el)return;el.scrollIntoView({block:'center',behavior:'smooth'});el.classList.remove('lv-flash');void el.offsetWidth;el.classList.add('lv-flash')}
+  $('lvHNear').addEventListener('click',e=>{const a=e.target.closest('[data-hed]'),b=e.target.closest('[data-hgo]');if(a)openEd(a.dataset.hed);else if(b){UTOUCH=Date.now();goTo(b.dataset.hgo)}});
+  ['touchstart','wheel','mousedown'].forEach(ev=>$('lvList').addEventListener(ev,()=>{UTOUCH=Date.now()},{passive:true}));
+  on('position',()=>{if(Router.cur()==='levbe')near()});
+  setInterval(()=>{if(Router.cur()==='levbe')near()},2000);
+
   /* ---------- montagem ---------- */
   function view(v){$('lvReg').hidden=v!=='reg';$('lvList').hidden=v!=='list';document.querySelectorAll('#pLev .lv-tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.v===v)));store.set('levbe.view',v);if(v==='list')renderList();else renderTop()}
   $('lvGrid').insertAdjacentHTML('afterbegin',colHtml('DECRESCENTE'));$('lvGrid').insertAdjacentHTML('beforeend',colHtml('CRESCENTE'));
@@ -3274,7 +3330,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
   // pendentes de complemento na tela de registro
   function upPend(){const n=ALL.filter(pendC).length;$('lvGoList').textContent=`Pendentes de complemento: ${n}`;$('lvGoList').disabled=!n}
   DB.subscribe(setAll);upPend();
-  window.__LEVBE={DIR,tap,rec:()=>ALL,fix:()=>FIX};
+  window.__LEVBE={DIR,tap,rec:()=>ALL,fix:()=>FIX,near,NEAR_M};
 })();
 
 on('page',p=>{if(p==='admin'&&ACL&&ACL.admin&&ACL.renderAdmin)ACL.renderAdmin($('admRoot'))});
@@ -3286,7 +3342,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='21/10/2026 07:32';
+  const CUR_VER='21/10/2026 17:59';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
