@@ -36,6 +36,7 @@ await p.selectOption('#rfObra','Restauração BR-277 – Blocos 02 e 03');await 
 await p.fill('#rfSSai','05:10');await p.fill('#rfData','2026-10-08');await p.dispatchEvent('#rfData','change');await p.waitForTimeout(150);
 await p.fill('#rfData','2026-10-07');await p.dispatchEvent('#rfData','change');await p.waitForTimeout(150);
 if(!(await p.inputValue('#rfTempo')))await p.selectOption('#rfTempo','Ensolarado');if(!(await p.inputValue('#rfTempoMsg')))await p.fill('#rfTempoMsg','A previsão do tempo está estável. Seguiremos monitorando.');
+for(const i of ['rfSCafe','rfSDds','rfSSai','rfECafe','rfEDds','rfESai']){await p.fill('#'+i,'06:00');await p.press('#'+i,'Tab')}
 await p.click('#cRep');await p.waitForTimeout(1200);ok(!(await p.isHidden('#repView')),'relatório emitido mesmo com pano sem serial');
 const repTxt=await p.textContent('#repDoc');ok(/Serial/.test(repTxt)&&rows.slice(1).every(r=>!r.ser||repTxt.includes(r.ser)),'relatório completo mostra o serial de cada pano');
 await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(800);const simp=await p.textContent('#repDoc');ok(/Serial/.test(simp)&&rows.slice(1).every(r=>!r.ser||simp.includes(r.ser)),'relatório simplificado com coluna Serial');

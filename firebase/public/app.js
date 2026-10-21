@@ -1127,8 +1127,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const kmS=v=>{const n=typeof v==='number'?v:parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?Math.round(n*1000):null};
     const estS=v=>{if(v==null||v==='')return null;let t=String(v).trim();if(!/\+/.test(t)){const n=parseFloat(t.replace(',','.'));if(!isFinite(n))return null;const k=Math.floor(n+1e-9);t=k+'+'+String(Math.round((n-k)*1000)).padStart(3,'0')}const r=Data.parseKm(t);return r.err?null:r.s};
     // uma linha de apontamento (planilha ou JSON) → [serial, faixa do app, solução, hodômetro inicial, final, status]
-    function recOf(get,txt,fam,st){const serial=String(txt('serial')==null?'':txt('serial')).trim();if(!serial)return null;st.lidos++;
-      const rod=get('rodovia');if(rod!=null&&rod!==''&&!/277/.test(String(rod))){st.rod++;return null}
+    function recOf(get,txt,fam,st,b4){const serial=String(txt('serial')==null?'':txt('serial')).trim();if(!serial||/^totais?$/i.test(serial))return null;
+      const rod=get('rodovia');if(/373/.test(String(rod==null?'':rod)))return recB4(get,txt,fam,b4,serial);if(fam==='PA')return null;st.lidos++;
+      if(rod!=null&&rod!==''&&!/277/.test(String(rod))){st.rod++;return null}
       const se=norm(get('sentido')),side=se.startsWith('cres')?'C':se.startsWith('decr')?'D':null,fx=norm(get('faixa'));let code=fam,L=-1;
       if(fam==='DRN'){const t=norm(get('tipo de dreno'));code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':null;L=side==='C'?6:side==='D'?7:-1}
       else{const g=/faixa 1\b/.test(fx)?'F1':/faixa (2|3)/.test(fx)?'F23':/acost/.test(fx)?'AC':null;if(g&&side)L=LANES.findIndex(l=>l.grp===g&&l.side===side)}
@@ -1136,43 +1137,62 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       let a=kmS(get('km inicial')),b=kmS(get('km final'));if(a==null||b==null){a=estS(txt('estaca inicial'));b=estS(txt('estaca final'))}
       if(a==null||b==null||a===b){st.pos++;return null}
       st.ok++;st.by[code]=(st.by[code]||0)+1;return [serial,L,code,Math.min(a,b),Math.max(a,b),String(get('status')||'')]}
-    const famOf=name=>{const ns=norm(name);return /superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':null};
-    async function importFile(f){const recs=[],st={lidos:0,ok:0,rod:0,pos:0,fx:0,abas:[],ign:[],by:{}};
+    const famOf=name=>{const ns=norm(name);return /superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':/preenchimento|acostamento/.test(ns)?'PA':null};
+    // BR-373 (Bloco 04): o km do Kartado é a estaca da base B4 (ex.: 205,2 = 205+200), convertida para o hodômetro da base;
+    // faixa 2/3 → Faixa 2 / adicional; marginais não entram (não fazem parte do unifilar); solução pela aba (FF, FE, FS, PA = preenchimento de acostamento, dreno)
+    function recB4(get,txt,fam,st,serial){st.lidos++;const B=window.__SRC_B4;if(!B){st.sem=(st.sem||0)+1;return null}
+      const se=norm(get('sentido')),side=se.startsWith('cres')?'C':se.startsWith('decr')?'D':null,fx=norm(get('faixa'));let code=fam,L=-1;
+      if(fam==='DRN'){const t=norm(get('tipo de dreno'));code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':null;L=side==='C'?6:side==='D'?7:-1}
+      else if(!/marginal/.test(fx)){const g=/faixa 1\b/.test(fx)?'F1':/faixa (2|3)/.test(fx)?'F23':/acost/.test(fx)?'AC':null;if(g&&side)L=B.LANES.findIndex(l=>l.grp===g&&l.side===side)}
+      if(L<0||!code){st.fx++;st.fxs=(st.fxs||[]).concat(serial+' ('+(get('faixa')||'sem faixa')+')');return null}
+      const est=v=>{const n=typeof v==='number'?v:parseFloat(String(v==null?'':v).replace(',','.'));if(!isFinite(n))return null;const k=Math.floor(n+1e-9);const r=B.Data.parseKm(k+'+'+String(Math.round((n-k)*1000)).padStart(3,'0'));return r.err?null:r.s};
+      let a=est(get('km inicial')),b=est(get('km final'));if(a==null||b==null){const t=v=>{if(v==null||v==='')return null;const r=B.Data.parseKm(String(v).trim());return r.err?null:r.s};a=t(txt('estaca inicial'));b=t(txt('estaca final'))}
+      if(a==null||b==null||a===b){st.pos++;return null}
+      st.ok++;st.by[code]=(st.by[code]||0)+1;return [serial,L,code,Math.min(a,b),Math.max(a,b),String(get('status')||'')]}
+    async function importFile(f){const recs=[],st={lidos:0,ok:0,rod:0,pos:0,fx:0,abas:[],ign:[],by:{}};const r4=[],s4={lidos:0,ok:0,pos:0,fx:0,abas:[],by:{}};
       if(/\.json$/i.test(f.name)||/json/.test(f.type)){let arr;try{arr=JSON.parse((await f.text()).replace(/^\uFEFF/,''))}catch(e){throw new Error('o arquivo não é um JSON válido.')}
         if(!Array.isArray(arr))arr=Array.isArray(arr.apontamentos)?arr.apontamentos:Array.isArray(arr.registros)?arr.registros:null;if(!arr)throw new Error('o JSON não tem uma lista de apontamentos.');
         const grupos=new Set();
         for(const o of arr){if(!o||typeof o!=='object')continue;const K={};Object.keys(o).forEach(k=>K[norm(k)]=o[k]);const fam=famOf(K['solucao']||K['solução']||'');
           if(!fam){if(K['serial'])st.ign.push(String(K['solucao']||'sem solução'));continue}grupos.add(String(K['solucao']));
           // números do JSON vêm como texto com vírgula ("273,5600"): kmS e estS tratam os dois formatos
-          const r=recOf(k=>K[k],k=>K[k],fam,st);if(r)recs.push(r)}
+          const r=recOf(k=>K[k],k=>K[k],fam,st,s4);if(r)(/373/.test(String(K['rodovia']||''))?r4:recs).push(r)}
         st.abas=[...grupos];st.ign=[...new Set(st.ign)]}
       else{await loadLib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',()=>!!window.XLSX);
         const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
         for(const nm of wb.SheetNames){const ws=wb.Sheets[nm];const raw=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}),txt=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:null});
           // aba por solução (nome da aba) ou aba consolidada com a coluna "Solução" (ex.: exportação em uma aba só)
           const hi=raw.findIndex(r=>r&&r.some(c=>norm(c)==='serial'));const H=hi>=0?raw[hi].map(norm):[],col=k=>H.indexOf(k),cSol=col('solucao'),fam=famOf(nm);
-          if(hi<0||(!fam&&cSol<0)){st.ign.push(nm);continue}const n0=st.ok;
+          if(hi<0||(!fam&&cSol<0)){st.ign.push(nm);continue}const n0=st.ok,m0=s4.ok;
           for(let i=hi+1;i<raw.length;i++){const r=raw[i],tr=txt[i]||[];if(!r)continue;const f=fam||famOf(r[cSol]);if(!f)continue;
-            const rr=recOf(k=>col(k)>=0?r[col(k)]:null,k=>col(k)>=0?tr[col(k)]:null,f,st);if(rr)recs.push(rr)}
-          if(st.ok>n0)st.abas.push(nm);else st.ign.push(nm)}}
-      if(!recs.length)throw new Error(`nenhum registro com serial reconhecido em "${f.name}"${st.ign.length?` (abas/soluções lidas: ${st.ign.slice(0,6).join(', ')})`:''}. Use o arquivo de apontamentos exportado (planilha por solução ou JSON), com Serial, Solução, Sentido, Faixa e km inicial/final.`);
-      base={at:Date.now(),file:f.name,recs,st};store.set('seriais',base);
+            const g=k=>col(k)>=0?r[col(k)]:null;const rr=recOf(g,k=>col(k)>=0?tr[col(k)]:null,f,st,s4);if(rr)(/373/.test(String(g('rodovia')||''))?r4:recs).push(rr)}
+          if(s4.ok>m0)s4.abas.push(nm);if(st.ok>n0)st.abas.push(nm);else if(s4.ok===m0)st.ign.push(nm)}}
+      if(!recs.length&&!r4.length)throw new Error(`nenhum registro com serial reconhecido em "${f.name}"${s4.sem?' (as linhas da BR-373 precisam da base da BR-373 B4 carregada)':''}${st.ign.length?` (abas/soluções lidas: ${st.ign.slice(0,6).join(', ')})`:''}. Use o arquivo de apontamentos exportado (planilha por solução ou JSON), com Serial, Solução, Sentido, Faixa e km inicial/final.`);
+      // cada rodovia guarda a sua última planilha: importar só a BR-373 não apaga os seriais da BR-277 (e vice-versa)
+      const prev=base||null,now=Date.now();
+      base=recs.length?{at:now,file:f.name,recs,st,b4:prev&&prev.b4||null}:{...(prev||{recs:[],st:null,file:null}),at:now};
+      if(r4.length)base.b4={at:now,file:f.name,recs:r4,st:s4};store.set('seriais',base);
       let shared=false;try{if(window.ACL&&ACL.admin&&ACL.saveShared){await ACL.saveShared('seriais',base);shared=true}}catch(e){}
-      return {st,shared}}
+      return {st,s4,shared}}
     // candidatos: mesmo pano lógico (faixa/lado e sentido), mesma solução e trecho sobreposto ao segmento programado
-    function cands(p,a,b){if(!base||SRCK==='B4')return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+    const famB4=c=>/^PA/.test(c)?'PA':c;
+    function cands(p,a,b){if(SRCK==='B4'){const B=base&&base.b4;if(!B)return [];const out=[];for(const r of B.recs){if(r[1]!==p.L||r[2]!==famB4(p.code))continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+      if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
     function forRow(r){const c=cands(r.p,r.a,r.b),man=Object.prototype.hasOwnProperty.call(S.serial,r.p.tag)?S.serial[r.p.tag]:null,auto=c.length===1?c[0]:'';
       return {auto,cands:c,man,val:man!=null?man:auto,st:man!=null?'manual':c.length===1?'auto':c.length>1?'multi':'none'}}
         // índice usado também no mapa e nos Relatórios (BR-277)
     window.SeriaisIdx={of:(L,code,a,b)=>{if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==L||r[2]!==code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.some(x=>x[0]===r[0]))out.push(r)}return out},info:()=>base};
     return {importFile,forRow,info:()=>base}})();
-  function serInfo(){const b=SER.info();
-    $('cSerInfo').innerHTML=b?`Planilha <b>${escH(b.file)}</b> importada em ${new Date(b.at).toLocaleString('pt-BR')}: ${b.recs.length.toLocaleString('pt-BR')} registros com serial (${Object.entries(b.st&&b.st.by||{}).map(([k,v])=>k+' '+v).join(' · ')}).`:'Nenhuma planilha importada: o campo Serial fica vazio para preenchimento manual.';
+  function serInfo(){const b0=SER.info(),b=SRCK==='B4'?(b0&&b0.b4||null):(b0&&b0.file?b0:null);
+    $('cSerInfo').innerHTML=b?`Planilha <b>${escH(b.file)}</b> importada em ${new Date(b.at).toLocaleString('pt-BR')}: ${b.recs.length.toLocaleString('pt-BR')} registros com serial${SRCK==='B4'?' da BR-373 — Bloco 04':' da BR-277'} (${Object.entries(b.st&&b.st.by||{}).map(([k,v])=>k+' '+v).join(' · ')}).`:'Nenhuma planilha importada: o campo Serial fica vazio para preenchimento manual.';
     $('cSerFlag').textContent=b?b.recs.length.toLocaleString('pt-BR')+' seriais':'sem planilha';$('cSerFlag').style.color=b?'var(--ok)':''}
   serInfo();
   $('cSerFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;if(!can('calculadora','edit'))return;const m=$('cSerMsg');m.innerHTML='<div class="sermsg">Lendo a planilha…</div>';
-    try{const {st,shared}=await SER.importFile(f);serInfo();
-      m.innerHTML=`<div class="sermsg"><b>${st.ok.toLocaleString('pt-BR')} registros importados</b> de ${st.lidos.toLocaleString('pt-BR')} com serial (${/json$/i.test(f.name)?'soluções':'abas'}: ${st.abas.map(escH).join(', ')}).${st.rod?` ${st.rod} de outra rodovia ignorados.`:''}${st.fx?` ${st.fx} sem sentido/faixa/tipo reconhecido.`:''}${st.pos?` ${st.pos} sem km/estaca válidos.`:''}${st.ign.length?` Abas ignoradas: ${st.ign.map(escH).join(', ')}.`:''}${shared?' Disponível também para os outros usuários do app.':''}</div>`;
+    try{const {st,s4,shared}=await SER.importFile(f);serInfo();
+      const n=v=>v.toLocaleString('pt-BR'),kind=/json$/i.test(f.name)?'soluções':'abas';
+      const m277=st.lidos?`<b>BR-277: ${n(st.ok)} registros importados</b> de ${n(st.lidos)} com serial (${kind}: ${st.abas.map(escH).join(', ')}).${st.rod?` ${st.rod} de outra rodovia ignorados.`:''}${st.fx?` ${st.fx} sem sentido/faixa/tipo reconhecido.`:''}${st.pos?` ${st.pos} sem km/estaca válidos.`:''}`:'';
+      const m373=s4.lidos?`<b>BR-373 — Bloco 04: ${n(s4.ok)} registros importados</b> de ${n(s4.lidos)} com serial (${kind}: ${s4.abas.map(escH).join(', ')}; km do Kartado = estaca da base B4).${s4.sem?` <b>${s4.sem} não lidos: a base da BR-373 B4 não está carregada.</b>`:''}${s4.fx?` ${s4.fx} fora das faixas do unifilar: ${(s4.fxs||[]).map(escH).join(', ')}.`:''}${s4.pos?` ${s4.pos} sem km/estaca válidos.`:''}`:'';
+      m.innerHTML=`<div class="sermsg">${[m277,m373].filter(Boolean).join('<br>')}${st.ign.length&&!s4.lidos?` Abas ignoradas: ${st.ign.map(escH).join(', ')}.`:''}${shared?' Disponível também para os outros usuários do app.':''}</div>`;
       if(S.done)calc(false)}
     catch(x){m.innerHTML=`<div class="sermsg bad"><b>Não foi possível importar.</b> ${escH(x.message||x)}</div>`}};
 
@@ -1438,7 +1458,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   ['data','obra','equipe'].forEach(k=>RFF[k].addEventListener('change',usiLoad));
   function usiErrs(){if(!isDrnEq())return [];const v=usiVal();if(!v)return [['Haverá usinagem para o dreno? (Sim ou Não)',$('rfUsiDr'),document.querySelector('input[name=rfUsiDr]')]];
     if(v==='S'&&!(parseT($('rfUsiQt').value)>0))return [['Quantidade prevista para usinagem (t), maior que zero',$('rfUsiQt'),$('rfUsiQt')]];return []}
-  function obraHint(){const k=srcOfObra(RFF.obra.value);$('rfObraHint').textContent=k==='B4'?(window.__SRC_B4?'Fonte: unifilar da BR-373 B4 · Serial Kartado digitado em cada segmento':'Base da BR-373 B4 não carregada'):'Fonte: R08 unifilar B2+B3 da BR-277'}
+  function obraHint(){const k=srcOfObra(RFF.obra.value);$('rfObraHint').textContent=k==='B4'?(window.__SRC_B4?'Fonte: unifilar da BR-373 B4 · Serial Kartado da planilha de apontamentos importada (ou digitado no segmento)':'Base da BR-373 B4 não carregada'):'Fonte: R08 unifilar B2+B3 da BR-277'}
   RFF.obra.addEventListener('change',()=>{setObra(RFF.obra.value);saveMain();obraHint()});
   obraHint();setTimeout(()=>usiLoad(),0);
   let PROG=null;
@@ -3266,7 +3286,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='20/10/2026 12:39';
+  const CUR_VER='21/10/2026 07:32';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
