@@ -30,7 +30,7 @@ const prev=await p.textContent(`tr[data-tag="${tag}"] .segprev`);ok(/^60,0/.test
 await p.click(`tr[data-tag="${tag}"] .segSave`);await p.waitForTimeout(400);
 R1=await rowsInfo();const r1=R1.find(r=>r.tag===tag);console.log(r1.td.slice(5,13).join(' | '));
 ok(r1.td[5]==='186+120'&&r1.td[6]==='186+180'&&r1.td[7]==='60,0','salvo: 186+120 → 186+180 com 60 m');
-const w=parseFloat(await p.inputValue(`tr[data-tag="${tag}"] .rw`)),e=parseFloat(r1.td[9].replace(',','.')),area=parseFloat(r1.td[10].replace(/\./g,'').replace(',','.')),vol=parseFloat(r1.td[11].replace(/\./g,'').replace(',','.')),t=parseFloat(r1.td[12].replace(/\./g,'').replace(',','.'));
+const w=parseFloat(await p.inputValue(`tr[data-tag="${tag}"] .rw:not(.re)`)),e=parseFloat(await p.inputValue(`tr[data-tag="${tag}"] .re`)),area=parseFloat(r1.td[10].replace(/\./g,'').replace(',','.')),vol=parseFloat(r1.td[11].replace(/\./g,'').replace(',','.')),t=parseFloat(r1.td[12].replace(/\./g,'').replace(',','.'));
 ok(Math.abs(area-60*w)<0.06&&Math.abs(vol-area*e/100)<0.01&&Math.abs(t-vol*2.528)<0.02,`área ${area} = 60 × ${w}; volume ${vol}; CBUQ ${t} t (largura e espessura mantidas)`);
 const tot1=await p.textContent('#cOut .kpi.main b');ok(tot1!==tot0,'total de CBUQ atualizado: '+tot0+' → '+tot1);
 console.log('td0',JSON.stringify(r1.td[0]));ok(/editado/i.test(r1.td[0]),'pano marcado como editado, com os limites originais do pano');

@@ -1044,22 +1044,22 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),equipe:saved.equipe||'',equipeMan:!!saved.equipeMan,done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>{S.km[SRCK]={a:S.kmA,b:S.kmB};S.src=SRCK;store.set('calc',S)};
   // estado por fonte: estacas editadas, larguras por pano, "programar" e seriais (as estacas das duas rodovias se repetem)
-  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={}});
+  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={};if(!b.rowE)b.rowE={}});
   S.km=saved.km||{};if(!S.km[saved.src||'277'])S.km[saved.src||'277']={a:S.kmA,b:S.kmB};
   const KM0={'277':{a:'236+000',b:'237+000'},B4:{a:'230+000',b:'231+000'}};
   // nova revisão do unifilar da B4: dados digitados em segmentos cuja identificação mudou saem do segmento (ficam guardados à parte)
   const B4REV=(()=>{try{const d=typeof PROJECT_DATA_B4!=='undefined'?PROJECT_DATA_B4:window.PROJECT_DATA_B4;return d&&d.src&&d.src.revisao||null}catch(e){return null}})();
   {const b=S.bySrc.B4;if(B4REV&&b&&!(b.revs||[]).includes(B4REV.id)){const tags=new Set(B4REV.tags||[]),moved=[];
-      for(const k of ['rowW','rowOff','rowSeg','serial','obs']){const m=b[k]||{};for(const t of Object.keys(m))if(tags.has(t)){moved.push({tag:t,campo:k,valor:m[t],rev:B4REV.id});delete m[t]}}
+      for(const k of ['rowW','rowE','rowOff','rowSeg','serial','obs']){const m=b[k]||{};for(const t of Object.keys(m))if(tags.has(t)){moved.push({tag:t,campo:k,valor:m[t],rev:B4REV.id});delete m[t]}}
       b.revs=(b.revs||[]).concat(B4REV.id);if(moved.length)b.orphans=(b.orphans||[]).concat(moved);store.set('calc',S)}}
   const revNote=()=>{const b=S.bySrc.B4;if(SRCK!=='B4'||!B4REV||!b||!b.orphans||b.orphAck===B4REV.id)return '';const o=b.orphans.filter(x=>x.rev===B4REV.id);if(!o.length)return '';
     const lab={serial:'Serial Kartado',obs:'observação',rowSeg:'estacas editadas',rowOff:'desmarcado',rowW:'largura'},val=x=>x.campo==='rowSeg'?`${x.valor.a!=null?'trecho editado':''}`:x.campo==='rowOff'?'':` "${escH(String(x.valor))}"`;
     return `<div class="alert info" id="revNote"><b>Unifilar da BR-373 B4 atualizado (${escH(B4REV.id)}, km ${B4REV.km?B4REV.km.join(' a '):''}).</b> ${o.length} dado${o.length>1?'s':''} digitado${o.length>1?'s':''} em segmentos que mudaram foi retirado para não ficar no segmento errado; confira e digite de novo onde couber: ${o.map(x=>`${escH(x.tag)} (${lab[x.campo]||x.campo}${val(x)})`).join(' · ')}. <button type="button" class="linkbtn" id="revAck">Entendi</button></div>`};
   function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
     ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
-    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowE:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};S.rowW=b.rowW;S.rowE=b.rowE;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
     const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
-  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowE=b.rowE;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
   const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
   let SRC_MISS=false;if(srcOfObra(INIT_OBRA)==='B4')SRC_MISS=!swapSrc('B4');
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
@@ -1250,10 +1250,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       // BR-373 B4: largura e espessura do próprio unifilar (o cadastro vale só quando o unifilar não informa)
       const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?Math.round(us.espessura_m*1000)/10:null;
       const ow=S.rowW[p.tag],wBase=uw!=null?uw:num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
-      const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:(ue!=null?ue:num(S.esp[p.code])),off=S.rowOff[p.tag]===true;
+      // espessura de projeto (unifilar na BR-373; cadastro na BR-277) e, se o usuário alterou, a espessura da programação
+      const eProj=ue!=null?ue:num(S.esp[p.code]),oe=S.rowE[p.tag],eCustom=oe!=null&&oe!==''&&num(oe)>0&&num(oe)!==eProj;
+      const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:(eCustom?num(oe):eProj),off=S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
-      rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),excl,miss,area,vol,t})}
+      rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),eProj:eProj>0?eProj:null,eCustom:!excl&&eCustom,excl,miss,area,vol,t})}
     const drows=[];
     if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;if(S.show[p.code]===false){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
@@ -1304,6 +1306,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <option value="asc"${S.ordem==='asc'?' selected':''}>Estaca inicial: menor → maior</option>
         <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
         <span>${ordTxt}</span></div>
+      ${(()=>{const W=act.filter(r=>!r.excl),ws=[...new Set(W.map(r=>r.w))],same=W.length&&ws.length===1&&W.every(r=>r.wCustom)?ws[0]:null,nW=rows.filter(r=>r.wCustom).length;
+        return W.length?`<div class="wall"><label for="cWAll">Largura média da programação</label><input id="cWAll" type="number" inputmode="decimal" step="0.01" min="0" placeholder="m" value="${same!=null?same:''}"><button type="button" class="primary" id="cWAllGo">Aplicar a todos os panos</button>${nW?`<button type="button" class="secondary" id="cWAllRst">Voltar às larguras de projeto (${nW})</button>`:''}<small>Copia a largura para os ${W.length} pano${W.length>1?'s':''} programado${W.length>1?'s':''} desta lista (com CBUQ). Cada pano continua editável na coluna Largura.</small></div>`:''})()}
+      ${(()=>{const E=rows.filter(r=>r.eCustom);return E.length?`<div class="alert ealert" style="margin:10px 16px 0"><b>Espessura alterada em ${E.length} pano${E.length>1?'s':''} (diferente do projeto).</b> ${E.slice(0,8).map(r=>`${r.p.tag}: ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join(' · ')}${E.length>8?' …':''}. A alteração vai sinalizada no relatório da programação. Toque em ↺ para voltar à espessura de projeto.</div>`:''})()}
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
         <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
       ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
@@ -1314,7 +1319,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         ${segCells(r,1)}
         ${r.excl?'<td class="l" colspan="5"><span class="badge muted">não leva CBUQ</span></td>':`
         <td class="wcell"><input type="number" class="rw${r.wCustom?' cust':''}" inputmode="decimal" step="0.01" min="0" value="${r.w!=null?r.w:''}" placeholder="—" aria-label="Largura do pano ${r.p.tag} em metros">${r.wCustom?`<button type="button" class="rwreset" title="Voltar à largura padrão (${r.wBase!=null?nf(r.wBase,2):'—'} m)">↺</button>`:''}</td>
-        <td class="${r.e==null?'miss':''}">${r.e==null?'sem espessura':nf(r.e,1)}</td>
+        <td class="wcell${r.e==null?' miss':''}${r.eCustom?' ecust':''}"><input type="number" class="re rw${r.eCustom?' cust':''}" inputmode="decimal" step="0.1" min="0" value="${r.e!=null?r.e:''}" placeholder="—" aria-label="Espessura do pano ${r.p.tag} em cm${r.eCustom?' (alterada; projeto '+(r.eProj!=null?nf(r.eProj,1)+' cm':'sem espessura')+')':''}">${r.eCustom?`<button type="button" class="rwreset rereset" title="Voltar à espessura de projeto (${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})">↺</button><span class="ealt">alterada · projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'}</span>`:r.e==null?'<span class="ealt" style="color:var(--warn)">sem espessura</span>':''}</td>
         <td>${fmt(r.area,1)}</td><td>${fmt(r.vol,2)}</td><td>${r.miss.length||r.t==null?'—':nf(r.t,2)}</td>`}</tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total${partial?' parcial':''}</td><td></td><td class="l" colspan="5">${comp.length} de ${valid.length} panos com CBUQ somados${nOff?` · ${nOff} não programado${nOff>1?'s':''}`:''}</td><td>${nf(totLen,1)}</td><td></td><td></td><td>${fmt(comp.length?totA:null,1)}</td><td>${fmt(comp.length?totV:null,2)}</td><td class="big2">${totT==null||!comp.length?'—':nf(totT,2)}</td></tr></tfoot></table></div>
       <div class="tnote">CBUQ (t) = comprimento (m) × largura (m) × espessura (cm) ÷ 100 × densidade (t/m³). Panos parcialmente dentro do intervalo entram só com a parte interna. No R08 cada pano tem uma única solução por faixa, portanto não há camadas sobrepostas. Perdas não entram no total${perdaT!=null?'; o adicional aparece separado no cartão de CBUQ':''}. Km inicial e final seguem o sentido de execução: no decrescente a estaca inicial é maior que a final. O comprimento é sempre a diferença positiva entre as duas. A ordenação muda só a sequência das linhas, não os quantitativos. Identificação: km do início · pista-sentido · sequência no km (ex.: 236-F1-C-02). A largura pode ser ajustada por pano (borda azul = largura própria; ↺ volta ao padrão). Desmarque "Programar" para tirar o segmento dos totais e da programação. "Editar" muda a estaca inicial e a final do segmento dentro do pano: a extensão, a área, o volume e o CBUQ são recalculados com a mesma largura e espessura; os dados do projeto não mudam ("Original" desfaz).</div></div>`;
@@ -1338,7 +1343,15 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     out.innerHTML=RN+h;
     {const ra=$('revAck');if(ra)ra.onclick=()=>{S.bySrc.B4.orphAck=B4REV.id;save();$('revNote').remove()}}
     [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
-    out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw'),rs=tr.querySelector('.rwreset');
+    {const wa=$('cWAll'),go=$('cWAllGo'),rst=$('cWAllRst');
+      if(go)go.onclick=()=>{const v=num(wa.value);if(!(v>0)){wa.setAttribute('aria-invalid','true');wa.focus();return}wa.removeAttribute('aria-invalid');let n=0;
+        for(const r of LAST.rows)if(!r.excl){S.rowW[r.p.tag]=String(v);n++}save();SEGMSG=`Largura média de ${nf(v,2)} m aplicada a ${n} pano${n>1?'s':''} da programação.`;calc(false)};
+      if(wa)wa.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go.click()}};
+      if(rst)rst.onclick=()=>{let n=0;for(const r of LAST.rows.concat(LAST.valid||[]))if(S.rowW[r.p.tag]!=null){delete S.rowW[r.p.tag];n++}save();SEGMSG=`Larguras de projeto restauradas em ${n} pano${n>1?'s':''}.`;calc(false)}}
+    out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw:not(.re)'),rs=tr.querySelector('.rwreset:not(.rereset)'),ei=tr.querySelector('.re'),er=tr.querySelector('.rereset');
+      if(ei)ei.onchange=()=>{const v=ei.value.trim(),r=ROWS.get(tg);const pj=r?r.eProj:null;if(v===''||!(num(v)>0)||num(v)===pj)delete S.rowE[tg];else S.rowE[tg]=v;save();
+        SEGMSG=S.rowE[tg]!=null?`Pano ${tg}: espessura alterada para ${nf(num(v),1)} cm (projeto ${pj!=null?nf(pj,1)+' cm':'sem espessura'}).`:`Pano ${tg}: espessura de projeto.`;calc(false)};
+      if(er)er.onclick=()=>{delete S.rowE[tg];save();SEGMSG=`Pano ${tg}: espessura de projeto restaurada.`;calc(false)};
       cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};
       const ob=tr.querySelector('.robs');if(ob){ob.oninput=()=>tr.classList.toggle('hasobs',!!ob.value.trim());ob.onchange=()=>{const v=ob.value.trim();if(v)S.obs[tg]=v;else delete S.obs[tg];save();const r=ROWS.get(tg);if(r)r.obs=v;tr.classList.toggle('hasobs',!!v);const nE=$('dObsN');if(nE){const k=LAST&&LAST.drn?LAST.drn.rows.filter(x=>x.obs).length:0;nE.textContent=k?`${k} com observação`:''}segAfter(tg)}};
       if(wi)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
@@ -1524,7 +1537,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const url=cv.toDataURL('image/png');WXC.set(key,url);return url}
   const tempoCls=s=>/temporal|forte/i.test(s)?'bad':/chuva|garoa/i.test(s)?'rain':/nublado/i.test(s)?'cloud':'sun';
   const TEMPO_RGB={bad:[[253,232,230],[192,57,43]],rain:[[226,238,252],[26,115,232]],cloud:[[236,239,236],[86,96,90]],sun:[[255,244,219],[183,121,31]]};
-  function cellVals(r){return {ext:nf(r.len,1),larg:r.excl||r.w==null?(r.excl?'-':'sem largura'):nf(r.w,2),area:r.area==null?'-':nf(r.area,1),esp:r.excl?'-':r.e==null?'sem espessura':nf(r.e,1),t:r.excl?'não leva CBUQ':r.miss.length||r.t==null?'-':nf(r.t,2)}}
+  function cellVals(r){return {ext:nf(r.len,1),larg:r.excl||r.w==null?(r.excl?'-':'sem largura'):nf(r.w,2),area:r.area==null?'-':nf(r.area,1),esp:r.excl?'-':r.e==null?'sem espessura':nf(r.e,1)+(r.eCustom?` (alterada; proj. ${r.eProj!=null?nf(r.eProj,1):'—'})`:''),t:r.excl?'não leva CBUQ':r.miss.length||r.t==null?'-':nf(r.t,2)}}
   // quadro "Usina e qualidade": equipe de dreno informa se haverá usinagem (Sim: quantidade e horários; Não: só o aviso)
   function usinaBox(I,hasP){const T='Usina e qualidade';
     if(/dren/i.test(I.equipe||'')&&I.usiDr){if(I.usiDr==='N')return {title:T,drn:true,sim:false,items:[['Usinagem para dreno','NÃO']]};
@@ -1539,8 +1552,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
-        meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}`,
-        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm':'sem espessura',espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:inf.color,espInk:inf.ink,
+        meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}${r.eCustom?` (alterada; projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`:''}`,
+        esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm'+(r.eCustom?` · alterada (projeto ${r.eProj!=null?nf(r.eProj,r.eProj%1?1:0)+' cm':'—'})`:''):'sem espessura',eAlt:!!r.eCustom,espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:r.eCustom?'#FDE68A':inf.color,espInk:r.eCustom?'#7C2D12':inf.ink,
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
         qty:r.excl?'sem CBUQ':inc||r.t==null?'sem dados':nf(r.t,2),unit:r.excl||inc||r.t==null?'':'t CBUQ',inc,serial:r.serial||''});
       const q=cur.panos[cur.panos.length-1];const tOk=!r.excl&&!inc&&r.t!=null;if(tOk)acc+=r.t;q.tOk=tOk;q.accN=acc;q.acc=nf(acc,2);q.chips=[['Serial',q.serial||'—','ser',!!q.serial],['Espessura',q.esp,'esp',q.espOk],['Largura',q.larg,'',q.largOk],['Extensão',q.ext,'',true],['Área',q.area,'',true]]}
@@ -1565,7 +1578,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
                 {title:equipeTitulo(I.equipe),items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
                 usinaBox(I,hasP)],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
-      warn:L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,
+      warn:[L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
       sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} = ${nf(dTot,0)} m de dreno + ${nSaiTot} saída${nSaiTot!==1?'s':''} × ${SAIDA_M} m = ${nf(nSaiTot*SAIDA_M,0)} m · total ${nf(dTot+nSaiTot*SAIDA_M,0)} m`:null,saidas,nSai:nSaiTot,saiM:nSaiTot*SAIDA_M,
@@ -3342,7 +3355,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='21/10/2026 17:59';
+  const CUR_VER='25/10/2026 11:01';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
