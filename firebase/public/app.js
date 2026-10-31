@@ -2092,25 +2092,30 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   galCount();
   /* ---------- galeria "Fotos": seleção, exclusão e exportação ---------- */
   const SEL=new Set();let GAL=[],ALL=[];
+  // abas: "A salvar" (fotos ainda não salvas na galeria do aparelho, selecionáveis) e "Salvas na galeria" (só consulta: não entram mais na seleção)
+  let GT='pend';const inTab=f=>GT==='saved'?!!f.saved:!f.saved;
   // rodovia e lote de cada foto; fotos antigas (antes do Lote 04) só têm a estaca, que era sempre da BR-277
   function fotoRod(f){if(f.rod)return {k:Road.of(f.rod),rod:f.rod,lote:f.lote};if(!f.stake)return {k:null};return {k:'277',rod:'BR-277/PR',lote:Road.loteOfName('277',f.stake)}}
   const FIL=[['ALL','Todas',()=>true],['L02','Lote 02 · BR-277',x=>x.k==='277'&&+x.lote===2],['L03','Lote 03 · BR-277',x=>x.k==='277'&&+x.lote===3],
     ['L04','Lote 04 · BR-373',x=>x.k==='B4'],['L277','BR-277 · lote não identificado',x=>x.k==='277'&&+x.lote!==2&&+x.lote!==3],['SEM','Sem estaca',x=>!x.k]];
   let FK=FIL.some(f=>f[0]===store.get('fotoFil','ALL'))?store.get('fotoFil','ALL'):'ALL';
-  function filUi(){const box=$('gFil');const cnt=FIL.map(([k,,t])=>[k,ALL.filter(f=>t(fotoRod(f))).length]);if(!cnt.find(c=>c[0]===FK)[1])FK='ALL';
+  function filUi(){const box=$('gFil');const cnt=FIL.map(([k,,t])=>[k,ALL.filter(f=>inTab(f)&&t(fotoRod(f))).length]);if(!cnt.find(c=>c[0]===FK)[1])FK='ALL';
     box.innerHTML=FIL.map(([k,l],n)=>cnt[n][1]||k==='ALL'||k==='L02'||k==='L03'||k==='L04'?`<button type="button" data-fil="${k}" aria-pressed="${k===FK}">${l}<small>${cnt[n][1]}</small></button>`:'').join('');
     box.querySelectorAll('[data-fil]').forEach(b=>b.onclick=()=>{FK=b.dataset.fil;store.set('fotoFil',FK);[...SEL].forEach(id=>{if(!vis().some(f=>f.id===id))SEL.delete(id)});openGal()})}
-  const vis=()=>{const t=FIL.find(f=>f[0]===FK)[2];return ALL.filter(f=>t(fotoRod(f)))};
+  const vis=()=>{const t=FIL.find(f=>f[0]===FK)[2];return ALL.filter(f=>inTab(f)&&t(fotoRod(f)))};
+  function tabUi(){const np=ALL.filter(f=>!f.saved).length,ns=ALL.length-np;$('gTabPN').textContent=np;$('gTabSN').textContent=ns;
+    $('gTabP').setAttribute('aria-selected',String(GT==='pend'));$('gTabS').setAttribute('aria-selected',String(GT==='saved'));$('fGal').classList.toggle('gsaved',GT==='saved')}
+  ['gTabP','gTabS'].forEach(id=>$(id).onclick=()=>{GT=$(id).dataset.gt;SEL.clear();closePops();openGal()});
   function selUi(){const n=SEL.size;$('gSelN').textContent=n===1?'1 selecionada':n+' selecionadas';
     $('fGalDel').disabled=!n;$('fGalSave').disabled=!n;$('fGalDel').textContent='Excluir';$('fGalSave').textContent=n?`Salvar (${n})`:'Salvar';
     $('fGalGrid').querySelectorAll('.gi').forEach(el=>{const on=SEL.has(+el.dataset.id);el.classList.toggle('sel',on);el.setAttribute('aria-pressed',on)})}
-  async function openGal(){ALL=(await galCount()).slice().sort((a,b)=>b.t-a.t);filUi();GAL=vis();const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
+  async function openGal(){ALL=(await galCount()).slice().sort((a,b)=>b.t-a.t);tabUi();filUi();GAL=vis();if(GT==='saved')SEL.clear();const ids=new Set(GAL.map(f=>f.id));[...SEL].forEach(id=>{if(!ids.has(id))SEL.delete(id)});
     const grid=$('fGalGrid');grid.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));
-    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-acl="foto:delete" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${(x=>x.k?`<small class="grod">${x.rod}${x.lote!=null?' · Lote '+String(x.lote).padStart(2,'0'):''}</small>`:'')(fotoRod(f))}${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):`<p class="rmsg" style="grid-column:1 / -1">${ALL.length?'Nenhuma foto neste filtro.':'Nenhuma foto guardada ainda.'}</p>`;
-    grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
+    grid.innerHTML=GAL.length?GAL.map(f=>`<div class="gi" data-id="${f.id}" role="button" tabindex="0" aria-pressed="false" aria-label="Selecionar foto de ${new Date(f.t).toLocaleString('pt-BR')}"><div class="gimg"><img src="${URL.createObjectURL(f.blob)}" alt="" loading="lazy"><span class="ck" aria-hidden="true"></span><button type="button" class="gdel" data-acl="foto:delete" data-del="${f.id}" aria-label="Excluir esta foto">✕</button></div><div class="gcap"><span><b>${f.stake||'sem estaca'}</b>${(x=>x.k?`<small class="grod">${x.rod}${x.lote!=null?' · Lote '+String(x.lote).padStart(2,'0'):''}</small>`:'')(fotoRod(f))}${f.sent?`<small>${f.sent} | ${f.faixa}</small>`:''}<small>${new Date(f.t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</small></span><i class="${f.saved?'ok':''}">${f.saved?'salva':'só no app'}</i></div></div>`).join(''):`<p class="rmsg" style="grid-column:1 / -1">${!ALL.length?'Nenhuma foto guardada ainda.':GT==='pend'&&!ALL.some(f=>!f.saved)?'Nenhuma foto a salvar: todas já estão na aba "Salvas na galeria".':GT==='saved'&&!ALL.some(f=>f.saved)?'Nenhuma foto salva na galeria ainda.':'Nenhuma foto neste filtro.'}</p>`;
+    grid.querySelectorAll('.gi').forEach(el=>{const id=+el.dataset.id;if(GT==='saved'){el.removeAttribute('role');el.removeAttribute('tabindex');el.removeAttribute('aria-pressed');el.setAttribute('aria-label','Foto já salva na galeria');return}const tg=()=>{SEL.has(id)?SEL.delete(id):SEL.add(id);selUi()};el.onclick=e=>{if(e.target.closest('.gdel'))return;tg()};el.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();tg()}}});
     grid.querySelectorAll('[data-del]').forEach(b=>b.onclick=async e=>{e.stopPropagation();if(!can('foto','delete'))return;const id=+b.dataset.del;if(!await confirmDel(1,'Excluir esta foto do armazenamento do app?'))return;await DB.del(id);SEL.delete(id);$('fGalMsg').textContent='Foto excluída.';openGal()});
     const np=GAL.filter(f=>!f.saved).length;$('gTot').textContent=ALL.length?`(${FK!=='ALL'?GAL.length+' de ':''}${ALL.length})`:'';$('gPendMini').textContent=np?`${np} não salva${np>1?'s':''} no aparelho`:(GAL.length?'todas salvas no aparelho':'');
-    $('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: use Selecionar ▾ › "Não salvas no aparelho" e depois "Salvar".`:(GAL.length?'Todas as fotos já foram enviadas ao aparelho.':'');
+    $('fGalPend').innerHTML=np?`<b>${np} foto${np>1?'s ainda não foram salvas':' ainda não foi salva'} no app Fotos do aparelho.</b> O navegador não grava na galeria sozinho: use Selecionar ▾ › "Não salvas no aparelho" e depois "Salvar".`:(ALL.length?'Todas as fotos já foram salvas na galeria: estão na aba "Salvas na galeria".':'');
     selUi();$('fGal').hidden=false;stopCam()}
   function confirmDel(n,txt){return new Promise(res=>{$('cfTxt').textContent=txt||`${n} foto${n>1?'s serão removidas':' será removida'} do armazenamento do app. Essa ação não pode ser desfeita.`;
     $('cfYes').textContent=n>1?`Excluir ${n} fotos`:'Excluir';$('confModal').hidden=false;const done=v=>{$('confModal').hidden=true;res(v)};
@@ -2136,13 +2141,13 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   $('fGalSave').onclick=async()=>{const m=$('fGalMsg');const a=GAL.filter(f=>SEL.has(f.id));if(!a.length)return;
     const files=a.map(f=>new File([f.blob],f.name,{type:'image/jpeg'}));
     if(window.NATIVE&&NATIVE.saveToGallery){let ok=0,err='';for(const f of a){try{await NATIVE.saveToGallery(f.blob,f.name);ok++;await markSaved([f.id])}catch(e){err=e&&e.message||String(e)}}
-      m.textContent=ok===a.length?`${ok} foto${ok>1?'s salvas':' salva'} na galeria do aparelho (álbum Localizador Estacas).`:`${ok} de ${a.length} salvas na galeria. Erro: ${err}`;openGal();return}
-    if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files});await markSaved(a.map(f=>f.id));
-        m.textContent=`Se você tocou em "Salvar ${files.length>1?files.length+' Imagens':'Imagem'}", ${files.length>1?'elas estão':'ela está'} no app Fotos. As fotos continuam guardadas aqui até você excluir.`;openGal()}
+      SEL.clear();m.textContent=ok===a.length?`${ok} foto${ok>1?'s salvas':' salva'} na galeria do aparelho (álbum Localizador Estacas) e ${ok>1?'movidas':'movida'} para "Salvas na galeria".`:`${ok} de ${a.length} salvas na galeria e movidas para "Salvas na galeria". Erro nas demais: ${err}`;openGal();return}
+    if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files});await markSaved(a.map(f=>f.id));SEL.clear();
+        m.textContent=`${files.length>1?files.length+' fotos movidas':'Foto movida'} para "Salvas na galeria". Se você tocou em "Salvar ${files.length>1?files.length+' Imagens':'Imagem'}", ${files.length>1?'elas estão':'ela está'} no app Fotos.`;openGal()}
       catch(e){m.textContent=e&&e.name==='AbortError'?'Cancelado: nada foi salvo no aparelho.':'Não foi possível abrir o salvar ('+(e.message||e.name)+').'}return}
     // sem folha de compartilhamento (computador): baixa cada arquivo
     try{for(const f of files){const u=URL.createObjectURL(f);const el=document.createElement('a');el.href=u;el.download=f.name;document.body.appendChild(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);await new Promise(r=>setTimeout(r,250))}
-      m.textContent=`Download de ${files.length} foto${files.length>1?'s':''} solicitado ao navegador; confira a pasta de downloads. As fotos continuam guardadas aqui.`}
+      await markSaved(a.map(f=>f.id));SEL.clear();m.textContent=`Download de ${files.length} foto${files.length>1?'s':''} solicitado ao navegador (confira a pasta de downloads); ${files.length>1?'movidas':'movida'} para "Salvas na galeria".`;openGal()}
     catch(e){m.textContent='O navegador bloqueou o download.'}};
   Router.onInit('foto',()=>{});
   const galOpen=()=>!$('fGal').hidden;
@@ -3355,7 +3360,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='30/10/2026 22:34';
+  const CUR_VER='31/10/2026 09:50';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

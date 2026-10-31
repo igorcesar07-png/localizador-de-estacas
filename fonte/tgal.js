@@ -1,0 +1,27 @@
+const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modules/playwright');
+const ok=(c,n)=>console.log((c?'OK  ':'FALHOU ')+n);
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
+const ctx=await b.newContext({viewport:{width:393,height:852},acceptDownloads:true,permissions:['camera','geolocation'],geolocation:{latitude:-25.46628,longitude:-50.53012,accuracy:5}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route(/(openstreetmap|arcgisonline)/,r=>r.abort());
+await p.goto('http://localhost:8771/#foto');await p.waitForTimeout(2500);
+// 4 fotos a salvar e 2 já salvas
+await p.evaluate(()=>new Promise(res=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>{const x=r.result.transaction('fotos','readwrite'),st=x.objectStore('fotos');
+  for(let i=0;i<6;i++)st.add({name:'BR277_L02_236-0'+i+'0_x.jpg',blob:new Blob([new Uint8Array(200)],{type:'image/jpeg'}),t:Date.now()-i*60000,saved:i>=4,stake:'236+0'+i+'0',rod:'BR-277/PR',lote:2,sent:'Crescente',faixa:'Faixa 1',note:''});x.oncomplete=res}}));
+await p.click('#fGalBtn');await p.waitForTimeout(800);
+const n=()=>p.$$eval('#fGalGrid .gi',a=>a.length);
+console.log(await p.textContent('#gTabP'),'|',await p.textContent('#gTabS'));
+ok(await n()===4&&/A salvar4/.test(await p.textContent('#gTabP'))&&/2/.test(await p.textContent('#gTabS')),'aba "A salvar": só as 4 não salvas');
+await p.click('#fGalGrid .gi >> nth=0');await p.click('#fGalGrid .gi >> nth=1');ok(await p.textContent('#gSelN')==='2 selecionadas','seleciona 2');
+const dls=[];p.on('download',d=>dls.push(d.suggestedFilename()));
+await p.click('#fGalSave');await p.waitForTimeout(2000);
+console.log(await p.textContent('#fGalMsg'));
+ok(await n()===2&&/A salvar2/.test(await p.textContent('#gTabP'))&&/Salvas na galeria4/.test(await p.textContent('#gTabS')),'depois de salvar, as 2 saem de "A salvar" e vão para "Salvas na galeria"');
+ok(dls.length===2,'2 arquivos salvos ('+dls.join(', ')+')');
+await p.click('#gSelBtn');await p.click('#gSelAll');ok(await p.textContent('#gSelN')==='2 selecionadas','"Selecionar todas" pega só as não salvas');
+await p.click('#gTabS');await p.waitForTimeout(500);ok(await n()===4,'aba "Salvas na galeria": 4 fotos');
+await p.click('#fGalGrid .gi >> nth=0',{force:true});await p.waitForTimeout(200);
+ok(await p.textContent('#gSelN')==='0 selecionadas'&&await p.$$eval('#fGalGrid .gi.sel',a=>a.length)===0,'fotos salvas não podem ser selecionadas');
+ok(await p.isHidden('#fGalSave')&&await p.isHidden('#gSelBtn'),'na aba Salvas não há "Salvar" nem "Selecionar"');
+await p.screenshot({path:'/tmp/claude-0/off/gal_salvas.png'});
+await p.click('#gTabP');await p.waitForTimeout(400);await p.screenshot({path:'/tmp/claude-0/off/gal_pend.png'});
+ok(errs.length===0,'sem erros JS '+JSON.stringify(errs.slice(0,3)));await b.close()})();

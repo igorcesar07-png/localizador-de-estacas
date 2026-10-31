@@ -1,8 +1,8 @@
 // App sem internet: na instalação o aparelho guarda o app inteiro (páginas, código, bibliotecas e fontes).
 // Abre do aparelho na hora; com internet, a página principal é conferida no servidor (versão nova entra no próximo acesso).
 // Login e banco de dados nunca passam por aqui (o banco tem a própria fila offline).
-const C='estacas-app-20261031013432';
-const CORE=["./", "index.html", "app.js?v=20261031013432", "auth.js?v=20261031013432", "native.js?v=20261031013432", "firebase-config.js?v=20261031013432", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "logo_neovia.png", "logo_via.png"];
+const C='estacas-app-20261031125015';
+const CORE=["./", "index.html", "app.js?v=20261031125015", "auth.js?v=20261031125015", "native.js?v=20261031125015", "firebase-config.js?v=20261031125015", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "logo_neovia.png", "logo_via.png"];
 const LIBS=["lib/barlow-condensed-latin-500-normal.woff2", "lib/barlow-condensed-latin-600-normal.woff2", "lib/barlow-condensed-latin-700-normal.woff2", "lib/barlow-latin-400-normal.woff2", "lib/barlow-latin-500-normal.woff2", "lib/barlow-latin-600-normal.woff2", "lib/barlow-latin-700-normal.woff2", "lib/fonts.css", "lib/jspdf.plugin.autotable.min.js", "lib/jspdf.umd.min.js", "lib/leaflet-rotate-src.js", "lib/leaflet.js", "lib/pdf.min.js", "lib/pdf.worker.min.js", "lib/xlsx.full.min.js"];
 const TILE=/tile\.openstreetmap|arcgisonline/;
 const EXT=/cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/;

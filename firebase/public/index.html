@@ -1458,10 +1458,15 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 .rmsg.warn{color:#FFE9B0}.rmsg.ok{color:#9CF0C2}
 .fgal{min-height:40px;border-radius:10px;border:1px solid #3A423D;background:#1A1F1C;color:#fff;font:700 13px var(--body);padding:0 10px;cursor:pointer;white-space:nowrap}
 .fgal b{display:inline-block;min-width:20px;background:#C8101A;border-radius:10px;padding:1px 6px;margin-left:4px}
-#fGal{position:absolute;inset:0;z-index:25;background:#000;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+#fGal{position:absolute;inset:0;z-index:25;background:#000;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
 .gtop{position:relative;display:flex;align-items:center;gap:8px;padding:6px 8px;min-height:52px;box-sizing:border-box;border-bottom:1px solid #1E2421}
 .gtt{flex:1;min-width:0;font:700 15px var(--body);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gtt small{font:600 13px var(--body);letter-spacing:0;text-transform:none;color:#A9B3AD;margin-left:4px}
 .gib{flex:none;width:44px;height:40px;border-radius:10px;border:1px solid #3A423D;background:#141816;color:#fff;font:700 20px/1 var(--body);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}.gib svg{width:20px;height:20px}
+.gtabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px 8px 0}
+.gtabs button{min-height:44px;border-radius:10px;border:1px solid #3A423D;background:#141816;color:#DDE3DE;font:700 14px var(--body);cursor:pointer}
+.gtabs button small{font-weight:600;color:#9CA69F;margin-left:4px}.gtabs button[aria-selected="true"]{background:#F2B705;border-color:#F2B705;color:#141715}.gtabs button[aria-selected="true"] small{color:#3A3000}
+#fGal.gsaved .gi{cursor:default}#fGal.gsaved .gi .ck{display:none}#fGal.gsaved .gi img{opacity:.85}
+#fGal.gsaved .gsb,#fGal.gsaved #fGalSave{display:none}
 .gfil{display:flex;gap:6px;padding:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:1px solid #1E2421;scrollbar-width:none}.gfil::-webkit-scrollbar{display:none}
 .gfil button{flex:none;height:34px;border-radius:999px;border:1px solid #3A423D;background:#141816;color:#DDE3DE;font:600 13px var(--body);padding:0 12px;cursor:pointer;white-space:nowrap}
 .gfil button small{color:#9CA69F;font-weight:600;margin-left:4px}
@@ -1629,7 +1634,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 30/10/2026 22:34 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 31/10/2026 09:50 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2028,10 +2033,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="gpop" id="gSelMenu" hidden><button type="button" id="gSelAll">Selecionar todas</button><button type="button" id="gSelRec">Recentes · últimos 15 min</button><button type="button" id="gSelPend">Não salvas no aparelho</button><button type="button" id="gSelNone">Selecionar nenhuma</button></div>
       <div class="gpop" id="fGalMenu" hidden><button type="button" id="fGalNote">Nota para as próximas capturas</button></div>
     </div>
+    <div class="gtabs" role="tablist" aria-label="Fotos a salvar e já salvas"><button type="button" role="tab" id="gTabP" data-gt="pend" aria-selected="true">A salvar<small id="gTabPN"></small></button><button type="button" role="tab" id="gTabS" data-gt="saved" aria-selected="false">Salvas na galeria<small id="gTabSN"></small></button></div>
     <div class="gfil" id="gFil" role="group" aria-label="Filtrar fotos por rodovia e lote"></div>
     <div class="ggrid" id="fGalGrid"></div>
     <div class="gfoot">
-      <div class="ginfo" id="gInfo" hidden><p class="rmsg" id="fGalPend"></p><p class="rmsg">Cada foto tirada fica guardada aqui. Toque nas fotos para selecionar e use "Salvar" para gravar no aparelho (no iPhone, escolha "Salvar Imagens"). As fotos continuam aqui até você excluir.</p></div>
+      <div class="ginfo" id="gInfo" hidden><p class="rmsg" id="fGalPend"></p><p class="rmsg">Cada foto tirada fica guardada aqui. Toque nas fotos para selecionar e use "Salvar" para gravar no aparelho (no iPhone, escolha "Salvar Imagens"). Depois de salvas, as fotos passam para a aba "Salvas na galeria" e não podem mais ser selecionadas; continuam guardadas até você excluir.</p></div>
       <p class="gmsg" id="fGalMsg" hidden></p>
       <div class="gact2">
         <button type="button" class="ginfoBtn" id="gInfoBtn" aria-expanded="false" aria-controls="gInfo"><b id="gSelN">0 selecionadas</b><span id="gPendMini"></span><i aria-hidden="true">ⓘ</i></button>
@@ -2171,10 +2177,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261031013432";</script>
-<script src="native.js?v=20261031013432"></script>
-<script src="firebase-config.js?v=20261031013432"></script>
-<script src="auth.js?v=20261031013432"></script>
+<script>window.APP_BUILD="20261031125015";</script>
+<script src="native.js?v=20261031125015"></script>
+<script src="firebase-config.js?v=20261031125015"></script>
+<script src="auth.js?v=20261031125015"></script>
 
 </body>
 </html>
