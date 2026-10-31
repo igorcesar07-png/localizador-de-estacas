@@ -1,0 +1,14 @@
+{
+ "build": "20261031125015",
+ "url": "https://localizador-estacas.web.app/app-bundle/app-20261031125015.zip",
+ "sha256": "c83319926463c4f588e375ba8076b369b9b45be2cdbc6f1e33a1510ea20c7ff6",
+ "requires": [
+  "CapacitorUpdater",
+  "FirebaseAuthentication",
+  "Media",
+  "Share",
+  "Filesystem"
+ ],
+ "apk": "https://github.com/igorcesar07-png/localizador-de-estacas/releases/latest/download/Localizador-Estacas.apk",
+ "files": 27
+}
