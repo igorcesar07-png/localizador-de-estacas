@@ -90,7 +90,7 @@ try{
   {const o=await session('offline');const ctx=o.context();const LOG=[];o.on('console',m=>LOG.push(new Date().toISOString().slice(11,23)+' '+m.type()+' '+m.text().slice(0,1500)));
     try{
     await ctx.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'onLine',{configurable:true,get(){return !window.__off&&!localStorage.getItem('__off')}})});
-    await signin(o,ADMIN,'admin123');await o.goto(BASE.replace('emu=1','emu=1&fsdebug=1'));await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(1500);
+    await signin(o,ADMIN,'admin123');await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await o.goto(BASE.replace('emu=1','emu=1&fsdebug=1'));await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(1500);
     // corta o servidor (banco e login) e o aparelho fica "sem internet"
     await o.evaluate(()=>localStorage.setItem('__off','1'));await ctx.route(/127\.0\.0\.1:(8080|9099)/,r=>r.abort());
     const t0=Date.now();await o.reload();
