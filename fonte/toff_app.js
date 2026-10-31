@@ -1,0 +1,20 @@
+const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modules/playwright');
+const ok=(c,n)=>console.log((c?'OK  ':'FALHOU ')+n);
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1280,height:900},acceptDownloads:true});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.route(/(openstreetmap|arcgisonline)/,r=>r.abort());
+await p.goto('http://localhost:8771/#calculadora');await p.waitForTimeout(2500);
+await p.evaluate(async()=>{await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready});await p.waitForTimeout(1500);
+await p.reload();await p.waitForTimeout(2500);await ctx.setOffline(true);await p.reload();await p.waitForTimeout(3000);
+console.log(await p.evaluate(()=>[location.href,[...document.querySelectorAll('.page')].filter(s=>!s.hidden).map(s=>s.id)]));ok(await p.evaluate(()=>!!window.L&&!!document.querySelector('#rfObra')),'sem internet: app abre com o mapa (Leaflet) e a Calculadora');
+await p.selectOption('#rfObra','Restauração BR-277 – Blocos 02 e 03');await p.selectOption('#rfEquipe','Pavimentação Johonatan');
+await p.fill('#cKmA','236+000');await p.fill('#cKmB','237+000');await p.selectOption('#cPista','F1');await p.selectOption('#cSent','ALL');await p.click('#cForm button[type=submit]');await p.waitForTimeout(800);
+ok((await p.$$('#cOut table.q tbody tr[data-tag]')).length>0,'sem internet: cálculo da programação');
+for(const i of ['rfSCafe','rfSDds','rfSSai','rfECafe','rfEDds','rfESai']){await p.fill('#'+i,'06:00');await p.press('#'+i,'Tab')}
+await p.selectOption('#rfTempo','Ensolarado');await p.click('#cRep');await p.waitForTimeout(1500);ok(!(await p.isHidden('#repView')),'sem internet: relatório emitido');
+const [d]=await Promise.all([p.waitForEvent('download',{timeout:20000}).catch(()=>null),p.click('#rvPdf').catch(()=>p.click('text=Gerar PDF'))]);
+ok(d&&/\.pdf$/.test(d.suggestedFilename()),'sem internet: PDF gerado ('+(d&&d.suggestedFilename())+')');
+await p.click('#rvClose').catch(()=>{});
+await p.goto('http://localhost:8771/#mapa');await p.waitForTimeout(2500);ok(await p.evaluate(()=>document.querySelectorAll('.leaflet-container path,.leaflet-container svg').length>0),'sem internet: mapa com estacas e soluções desenhadas');
+await p.goto('http://localhost:8771/#relatorios');await p.waitForTimeout(2500);
+const [x]=await Promise.all([p.waitForEvent('download',{timeout:20000}).catch(()=>null),p.click('#rXls')]);ok(x&&/\.xlsx$/.test(x.suggestedFilename()),'sem internet: Excel dos Relatórios ('+(x&&x.suggestedFilename())+')');
+ok(errs.length===0,'sem erros JS '+JSON.stringify(errs.slice(0,3)));await b.close()})();

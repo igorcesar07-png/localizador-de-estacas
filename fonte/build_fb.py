@@ -17,6 +17,19 @@ assert g.count('const PROJECT_DATA_B4 = /*__DATA_B4__*/;')==1
 app_js='const PROJECT_DATA = window.PROJECT_DATA;'+g.replace('const PROJECT_DATA_B4 = /*__DATA_B4__*/;','const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;')
 shell=body[:m.start()]+f'<script>window.APP_BUILD="{BUILD}";</script>\n<script src="native.js?v={BUILD}"></script>\n<script src="firebase-config.js?v={BUILD}"></script>\n<script src="auth.js?v={BUILD}"></script>'+body[m.end():]
 assert '/*__DATA__*/' not in shell and 'rows' not in shell[:0]
+# app sem internet: as bibliotecas e as fontes vão junto com o app (mesmas versões que vinham do CDN)
+LIBMAP={'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js':'lib/leaflet.js',
+  'https://cdn.jsdelivr.net/npm/leaflet-rotate@0.2.8/dist/leaflet-rotate-src.js':'lib/leaflet-rotate-src.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js':'lib/jspdf.umd.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js':'lib/jspdf.plugin.autotable.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js':'lib/xlsx.full.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/':'lib/'}
+for a,b in LIBMAP.items():shell=shell.replace(a,b);app_js=app_js.replace(a,b)
+shell=shell.replace('<link rel="preconnect" href="https://fonts.googleapis.com">\n','').replace('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">','<link rel="stylesheet" href="lib/fonts.css">')
+assert 'cdnjs.cloudflare' not in shell+app_js and 'cdn.jsdelivr' not in shell+app_js and 'fonts.googleapis' not in shell,'URL de CDN que não foi trocada'
+os.makedirs(OUT+'/lib',exist_ok=True)
+VEND=sorted(os.listdir(W+'/vendor'))
+for f in VEND:shutil.copy(W+'/vendor/'+f,OUT+'/lib/'+f)
 head='''<!doctype html>
 <html lang="pt-BR" data-pwa="1">
 <head>
@@ -38,19 +51,30 @@ for f in ['icon-180.png','icon-192.png','icon-512.png']:shutil.copy(W+'/site/'+f
 shutil.copy(W+'/logo_neovia.png',OUT+'/logo_neovia.png');shutil.copy(W+'/logo_via.png',OUT+'/logo_via.png')
 json.dump({"name":"Localizador de Estacas","short_name":"Estacas","start_url":"./","display":"standalone","background_color":"#1A1E1C","theme_color":"#1A1E1C",
  "icons":[{"src":"icon-192.png","sizes":"192x192","type":"image/png"},{"src":"icon-512.png","sizes":"512x512","type":"image/png"}]},open(OUT+'/manifest.webmanifest','w'),ensure_ascii=False)
-open(OUT+'/sw.js','w').write('''// cache só do app e das bibliotecas; nunca dos serviços de login e banco de dados
-const C='estacas277-fb-%s';
-const LIB=/cdnjs\\.cloudflare\\.com|cdn\\.jsdelivr\\.net|fonts\\.(googleapis|gstatic)\\.com/;
+CORE=['./','index.html',f'app.js?v={BUILD}',f'auth.js?v={BUILD}',f'native.js?v={BUILD}',f'firebase-config.js?v={BUILD}','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','logo_neovia.png','logo_via.png']
+open(OUT+'/sw.js','w').write('''// App sem internet: na instalação o aparelho guarda o app inteiro (páginas, código, bibliotecas e fontes).
+// Abre do aparelho na hora; com internet, a página principal é conferida no servidor (versão nova entra no próximo acesso).
+// Login e banco de dados nunca passam por aqui (o banco tem a própria fila offline).
+const C='estacas-app-%s';
+const CORE=%s;
+const LIBS=%s;
 const TILE=/tile\\.openstreetmap|arcgisonline/;
-self.addEventListener('install',e=>{self.skipWaiting()});
+const EXT=/cdnjs\\.cloudflare\\.com|cdn\\.jsdelivr\\.net|fonts\\.(googleapis|gstatic)\\.com/;
+self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(async c=>{await c.addAll(CORE.map(u=>new Request(u,{cache:'reload'})));
+  await Promise.all(LIBS.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))}).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='tiles277').map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+const put=(r,x)=>{if(x&&(x.ok||x.type==='opaque')){const cp=x.clone();caches.open(C).then(c=>c.put(r,cp))}return x};
+const timeout=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))]);
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);
   if(TILE.test(u.host)){e.respondWith(caches.open('tiles277').then(async c=>{const hit=await c.match(r);if(hit)return hit;try{const x=await fetch(r);if(x.ok||x.type==='opaque')c.put(r,x.clone());return x}catch(_){return new Response('',{status:504})}}));return}
   const same=u.origin===self.location.origin;
-  if(same&&u.pathname.startsWith('/__/'))return; // páginas internas do login do Firebase
-  if(!same&&!LIB.test(u.host))return;              // Firestore, Auth etc.: sempre direto na rede
-  e.respondWith(fetch(r,same?{cache:'no-store'}:undefined).then(x=>{if(x.ok){const cp=x.clone();caches.open(C).then(c=>c.put(r,cp))}return x}).catch(()=>caches.match(r).then(x=>x||(same?caches.match('/index.html'):undefined))))});
-''' % BUILD)
+  if(same&&(u.pathname.startsWith('/__/')||u.pathname.startsWith('/app-bundle/')))return; // login do Firebase e pacote do app Android: sempre na rede
+  if(!same&&!EXT.test(u.host))return;              // Firestore, Auth etc.: direto na rede
+  const page=same&&(r.mode==='navigate'||u.pathname==='/'||u.pathname.endsWith('/index.html'));
+  if(page){e.respondWith(timeout(fetch(u.href,{cache:'no-store',credentials:'same-origin'}),4000).then(x=>put(new Request('index.html'),x)).catch(()=>caches.match('index.html').then(x=>x||caches.match('./'))));return}
+  // demais arquivos: do aparelho; se faltar, busca e guarda
+  e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(x=>put(r,x)).catch(()=>same?new Response('',{status:504}):undefined)))});
+''' % (BUILD,json.dumps(CORE),json.dumps(['lib/'+f for f in VEND])))
 if not os.path.exists(OUT+'/firebase-config.js'):
     open(OUT+'/firebase-config.js','w').write('// gerado na publicação (GitHub Actions)\nwindow.FIREBASE_CONFIG=null;\n')
 r=subprocess.run(['npm','run','-s','bundle'],capture_output=True,text=True,cwd=REPO+'/firebase')

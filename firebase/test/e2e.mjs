@@ -86,6 +86,42 @@ try{
     let n=0,obs='';for(let k=0;k<30&&!n;k++){await sleep(1000);const r=await fetch(`${FS}/levantamento_bota_espera?pageSize=50`,{headers:{'Authorization':'Bearer owner'}});const j=await r.json();
       const docs=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID));n=docs.length;obs=n?docs[0].fields.obs.stringValue:''}
     ok(n===1&&obs==='reenviado pelo aparelho','levantamento: com sinal, sincroniza um único documento (sem duplicar), com a última versão')}
+  // 4c. App sem internet: abre com os dados guardados no aparelho, grava na fila do aparelho e o botão Sincronizar envia sem duplicar
+  {const o=await session('offline');const ctx=o.context();
+    await ctx.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'onLine',{configurable:true,get(){return !window.__off&&!localStorage.getItem('__off')}})});
+    await signin(o,ADMIN,'admin123');await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(1500);
+    // corta o servidor (banco e login) e o aparelho fica "sem internet"
+    await o.evaluate(()=>localStorage.setItem('__off','1'));await ctx.route(/127\.0\.0\.1:(8080|9099)/,r=>r.abort());
+    const t0=Date.now();await o.reload();
+    const opened=await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate')&&!!window.PROJECT_DATA,null,{timeout:20000}).then(()=>true,()=>false);
+    ok(opened,`sem internet: o app abre com a base guardada no aparelho (${((Date.now()-t0)/1000).toFixed(1)} s)`);await o.shot('8-offline-aberto');
+    const txt=async()=>o.evaluate(()=>(document.getElementById('dsTxt')||{}).textContent||'');
+    ok(/Sem internet/.test(await txt()),'painel de sincronização: "Sem internet" ('+await txt()+')');
+    ok(await o.evaluate(()=>document.documentElement.classList.contains('sync-off')),'aviso no botão do menu (sem internet)');
+    // gravação sem internet: não trava e fica na fila do aparelho
+    const LID='off-'+Date.now();const REC={id:LID,v:1,criado_em:Date.now(),criado_por:ADMIN,usuario:'Admin',lat:-25.1,lon:-50.1,precisao_m:4,rodovia:'BR-277/PR',contrato:'VIAR-GDA-430/2026',lote:2,
+      estaca:'236+000',offset_m:0,estaca_txt:'236+000',odometro_m:236000,dist_eixo_m:0,fora_trecho:false,sentido_desloc:null,sentido_modo:'AUTO',pista:'CRESCENTE',tipo:'LOCAL_POSSIVEL',ocupacao:null,
+      obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:Date.now(),atualizado_por:ADMIN,area_m2:null,dmt_fresado_km:null};
+    const tw=Date.now();await o.evaluate(r=>{window.LevDB.save(r)},REC);ok(Date.now()-tw<3000,'sem internet: gravação não trava o app');
+    await sleep(500);ok(/guardadas no aparelho/.test(await txt()),'painel: alterações guardadas no aparelho ('+await txt()+')');
+    // fecha e abre o app de novo, ainda sem internet: a fila continua no aparelho
+    await o.reload();await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(800);
+    ok(/guardadas no aparelho/.test(await txt()),'reaberto sem internet: a alteração continua guardada no aparelho');
+    let n0=0;{const r=await fetch(`${FS}/levantamento_bota_espera?pageSize=100`,{headers:{'Authorization':'Bearer owner'}});const j=await r.json();n0=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID)).length}
+    ok(n0===0,'enquanto sem internet, nada chega ao servidor');
+    // volta a internet: botão Sincronizar envia a fila
+    await ctx.unroute(/127\.0\.0\.1:(8080|9099)/);await o.evaluate(()=>{localStorage.removeItem('__off');dispatchEvent(new Event('online'))});
+    await o.evaluate(()=>document.getElementById('dsBtn').click());
+    const synced=await o.waitForFunction(()=>/sincronizado/i.test((document.getElementById('dsTxt')||{}).textContent||''),null,{timeout:60000}).then(()=>true,()=>false);
+    ok(synced,'com internet, o botão Sincronizar envia tudo ('+await txt()+')');await o.shot('9-sincronizado');
+    let n=0;for(let k=0;k<20&&!n;k++){const r=await fetch(`${FS}/levantamento_bota_espera?pageSize=100`,{headers:{'Authorization':'Bearer owner'}});const j=await r.json();n=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID)).length;if(!n)await sleep(500)}
+    ok(n===1,'registro feito sem internet chegou ao servidor uma única vez');
+    // dado novo no servidor enquanto o app está aberto: o painel avisa e o Sincronizar aplica
+    await fetch(`${FS}/base/r08`,{method:'PATCH',headers:{'Authorization':'Bearer owner','Content-Type':'application/json'},body:JSON.stringify({fields:{json:{stringValue:JSON.stringify(base)},version:{stringValue:'v-nova'}}})});
+    const nw=await o.waitForFunction(()=>/dados novos/i.test((document.getElementById('dsTxt')||{}).textContent||''),null,{timeout:30000}).then(()=>true,()=>false);
+    ok(nw,'base nova no servidor: o painel avisa que há dados novos');
+    await o.evaluate(()=>document.getElementById('dsBtn').click());await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate')&&window.BASE_VERSION==='v-nova',null,{timeout:30000}).then(()=>ok(true,'Sincronizar aplica a base nova'),()=>ok(false,'Sincronizar aplica a base nova'));
+    if(o.errs.length)ok(false,'erros de JavaScript (offline): '+o.errs.join(' | '))}
   // 5. convite com perfil: acesso imediato no primeiro login
   await a.goto(BASE+'#admin');await a.waitForSelector('.adm-tabs');await a.click('[data-tab="profiles"]');await a.click('#pNew');await a.fill('#pName','Programação');
   await a.check('#pMx input[data-pg="calculadora"][data-a="view"]');await a.check('#pMx input[data-pg="relatorios"][data-a="view"]');await a.click('#pSave');await a.waitForSelector('.adm-msg.ok');

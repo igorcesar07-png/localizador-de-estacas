@@ -9,7 +9,8 @@ if(!build)throw new Error('APP_BUILD não encontrado no index.html');
 if(/FIREBASE_CONFIG=null/.test(readFileSync(PUB+'/firebase-config.js','utf8')))throw new Error('firebase-config.js ainda sem configuração');
 rmSync(DIR,{recursive:true,force:true});mkdirSync(DIR,{recursive:true});
 const zip=`app-${build}.zip`;
-const files=readdirSync(PUB).filter(f=>f!=='app-bundle'&&statSync(PUB+'/'+f).isFile());
+// arquivos do app + pasta lib/ (bibliotecas e fontes, para o app funcionar sem internet)
+const files=readdirSync(PUB).filter(f=>f!=='app-bundle'&&statSync(PUB+'/'+f).isFile()).concat(readdirSync(PUB+'/lib').filter(f=>statSync(PUB+'/lib/'+f).isFile()).map(f=>'lib/'+f));
 execSync(`cd ${PUB} && zip -q -X ../${DIR}/${zip} ${files.map(f=>JSON.stringify(f)).join(' ')}`.replace('../'+DIR,'app-bundle'));
 const sha=createHash('sha256').update(readFileSync(`${DIR}/${zip}`)).digest('hex');
 const requires=JSON.parse(readFileSync('../mobile/native-plugins.json','utf8'));

@@ -1,0 +1,16 @@
+const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modules/playwright');
+const ok=(c,n)=>console.log((c?'OK  ':'FALHOU ')+n);
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext();const p=await ctx.newPage();
+const ext=[];p.on('request',r=>{const u=r.url();if(!/localhost:8770/.test(u))ext.push(u)});
+await p.goto('http://localhost:8770/index.html');await p.waitForTimeout(800);
+await p.evaluate(async()=>{await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready});await p.waitForTimeout(1500);
+const keys=await p.evaluate(async()=>{const ks=await caches.keys();const c=await caches.open(ks.find(k=>k.startsWith('estacas-app-')));return {ks,n:(await c.keys()).length,urls:(await c.keys()).map(r=>r.url.replace(location.origin,''))}});
+console.log(keys.ks,keys.n);ok(keys.n>=27,'app inteiro guardado no aparelho na instalação ('+keys.n+' arquivos)');
+await ctx.setOffline(true);await p.reload();await p.waitForTimeout(1200);
+const t=await p.evaluate(()=>document.body.innerText.slice(0,200));console.log(t.replace(/\n/g,' | '));
+ok(/Localizador de Estacas/.test(t),'sem internet: a página abre do aparelho');
+const r=await p.evaluate(async()=>{const B=window.APP_BUILD;const out={};for(const u of ['app.js?v='+B,'auth.js?v='+B,'lib/leaflet.js','lib/xlsx.full.min.js','lib/jspdf.umd.min.js','lib/pdf.worker.min.js','lib/fonts.css','lib/barlow-latin-700-normal.woff2']){try{const x=await fetch(u);out[u]=x.status+':'+(await x.blob()).size}catch(e){out[u]='erro'}}return out});
+console.log(r);ok(Object.values(r).every(v=>/^200:[1-9]/.test(v)),'sem internet: código, bibliotecas e fontes vêm do aparelho');
+ok(await p.evaluate(()=>document.fonts.check('700 16px Barlow')||[...document.fonts].some(f=>f.family.includes('Barlow'))),'fonte Barlow local');
+const html=await p.content();ok(!/cdnjs|jsdelivr|fonts\.googleapis/.test(html),'nenhuma biblioteca de CDN na página');
+console.log('pedidos externos:',ext.filter(u=>!/firebase|google/.test(u)).slice(0,5));await b.close()})();

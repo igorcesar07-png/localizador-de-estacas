@@ -1158,7 +1158,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
           // números do JSON vêm como texto com vírgula ("273,5600"): kmS e estS tratam os dois formatos
           const r=recOf(k=>K[k],k=>K[k],fam,st,s4);if(r)(/373/.test(String(K['rodovia']||''))?r4:recs).push(r)}
         st.abas=[...grupos];st.ign=[...new Set(st.ign)]}
-      else{await loadLib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',()=>!!window.XLSX);
+      else{await loadLib('lib/xlsx.full.min.js',()=>!!window.XLSX);
         const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});
         for(const nm of wb.SheetNames){const ws=wb.Sheets[nm];const raw=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null}),txt=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:null});
           // aba por solução (nome da aba) ou aba consolidada com a coluna "Solução" (ex.: exportação em uma aba só)
@@ -1662,8 +1662,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       <div class="sr-close">${M.close[0]} <b>${M.close[1]}</b></div></div>`;
     $('repDoc').innerHTML=h;$('repView').hidden=false;$('repView').querySelector('.rscroll').scrollTop=0;if(!miss.length)preparePdf()}
   async function makePdfSimple(opt){opt=opt||{};const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js');
+    await loadScript('lib/jspdf.umd.min.js');
+    await loadScript('lib/jspdf.plugin.autotable.min.js');
     const {jsPDF}=window.jspdf;const W=210,H0=297,Mg=9,CW=W-2*Mg;
     const INK=[26,26,26],MUT=[107,107,107],LINE=[217,217,217],LIGHT=[242,242,242],RED=[200,16,26],PINK=[253,237,238],WH=[255,255,255],OBS=[251,236,236];
     const clean=s=>String(s).replace(/[–—]/g,'-').replace(/→/g,'>').replace(/×/g,'x').replace(/÷/g,'/').replace(/m²/g,'m2').replace(/m³/g,'m3');
@@ -1780,7 +1780,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)){res();return}const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load'));document.head.appendChild(s)});
   const pdfName=()=>{const I=PROG.info;return `Programacao_${I.data}_${I.equipe.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_')}${PROG.type==='simp'?'_simplificado':''}.pdf`};
   async function makePdf(){const M=PROG.M||reportModel();const miss=validateModel(M);if(miss.length)throw new Error('dados incompletos: '+miss.join(', '));
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    await loadScript('lib/jspdf.umd.min.js');
     const {jsPDF}=window.jspdf;
     const W=108,H=192,M0=6,CW=W-2*M0;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:[W,H]});
     // identidade Neovia: branco de base, preto/cinza para texto, vermelho para destaque
@@ -1890,7 +1890,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     try{const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);
       msg.textContent=`PDF gerado (${name}). O download foi solicitado ao navegador; confira na pasta de downloads.`}catch(e){msg.textContent='PDF gerado, mas o navegador bloqueou o download. Use Imprimir e escolha salvar como PDF.'}};
   /* ---------- imagem PNG (layout do relatório simplificado, altura conforme o nº de panos) ---------- */
-  const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  const PDFJS='lib/';
   async function makePng(){const pdf=await makePdfSimple({tall:true});
     await loadLib(PDFJS+'pdf.min.js',()=>!!window.pdfjsLib);window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS+'pdf.worker.min.js';
     const doc=await window.pdfjsLib.getDocument({data:new Uint8Array(await pdf.arrayBuffer())}).promise;const pg=await doc.getPage(1);
@@ -2160,8 +2160,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)&&(src.includes('xlsx')?window.XLSX:src.includes('autotable')?(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable):window.jspdf)){res();return}
     const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar a biblioteca (sem internet?)'));document.head.appendChild(s)});
-  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-  const JSPDF_URL='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',AT_URL='https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+  const XLSX_URL='lib/xlsx.full.min.js';
+  const JSPDF_URL='lib/jspdf.umd.min.js',AT_URL='lib/jspdf.plugin.autotable.min.js';
   const OBRA='Restauração BR-277 – Blocos 02 e 03',RODOVIA='BR-277/PR';
   const STATUS={nao:'Não executado',prog:'Programado',and:'Em execução',exec:'Executado'};
   const ST_COLOR={nao:'#9AA19D',prog:'#1A73E8',and:'#E08A00',exec:'#1E7A4C'};
@@ -2765,7 +2765,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   let LASTSIM=null;
 
   /* ---------- exportação (Excel) ---------- */
-  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const XLSX_URL='lib/xlsx.full.min.js';
   const loadX=()=>new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src=XLSX_URL;s.onload=res;s.onerror=()=>rej(new Error('sem internet para carregar a biblioteca de planilhas'));document.head.appendChild(s)});
   async function exportX(){const m=$('aExpMsg');m.hidden=false;m.textContent='Gerando planilha…';try{await loadX()}catch(e){m.textContent='Não foi possível gerar: '+e.message;return}
     const X=window.XLSX,wb=X.utils.book_new(),{ks,A}=scopeA(),D=RES.SRC.Data;
@@ -2980,7 +2980,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
     $('mkForm').hidden=true;SELID=o.id;await act(()=>DB.save(stamp(o)),`Marco "${esc(o.nome||CATS[o.cat].t)}" salvo no km ${esc(o.km)}.`);setTimeout(()=>focusMk(o.id),300)}
 
   /* ---------- importação: planilha do controle de áreas de apoio (ou CSV/JSON) ---------- */
-  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const XLSX_URL='lib/xlsx.full.min.js';
   const loadX=()=>new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src=XLSX_URL;s.onload=res;s.onerror=()=>rej(new Error('sem internet para ler a planilha'));document.head.appendChild(s)});
   const norm=s=>String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
   const catOf=(c,t)=>{const s=norm(c+' '+t);return /bota|fresad|deposit/.test(s)?'bota':/rotat/.test(s)?'rot':/perimetro|urban/.test(s)?'perim':/entrada|acesso/.test(s)?'ent':/agua|outorg|captac/.test(s)?'agua':'obs'};
@@ -3258,7 +3258,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
     // separador ";" e decimal com vírgula: abre direto no Excel em português; BOM para os acentos
     const cell=v=>{if(v==null)return '';if(typeof v==='number')return String(v).replace('.',',');const s=String(v);return /[;"\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
     const txt='﻿'+[HEAD,...L.map(rowOf)].map(r=>r.map(cell).join(';')).join('\r\n');give(new Blob([txt],{type:'text/csv;charset=utf-8'}),fname('csv'));toast(`CSV gerado com ${L.length} registros.`,'')}
-  const XLSX_URL='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  const XLSX_URL='lib/xlsx.full.min.js';
   const loadX=()=>new Promise((res,rej)=>{if(window.XLSX)return res();const s=document.createElement('script');s.src=XLSX_URL;s.onload=res;s.onerror=()=>rej(new Error('sem internet para carregar a biblioteca do Excel: use Exportar CSV'));document.head.appendChild(s)});
   async function exportXlsx(){const L=filtered();if(!L.length){toast('Nada para exportar neste filtro.','');return}
     try{await loadX()}catch(e){toast(e.message,'bad');return}
@@ -3355,7 +3355,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='25/10/2026 11:01';
+  const CUR_VER='30/10/2026 22:11';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

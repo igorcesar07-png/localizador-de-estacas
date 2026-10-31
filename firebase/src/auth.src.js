@@ -5,7 +5,7 @@ import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWith
   createUserWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,signOut,connectAuthEmulator,updateProfile,
   setPersistence,indexedDBLocalPersistence,browserLocalPersistence} from 'firebase/auth';
 import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memoryLocalCache,doc,getDoc,getDocFromServer,setDoc,collection,getDocs,
-  updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch} from 'firebase/firestore';
+  updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork} from 'firebase/firestore';
 
 const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
@@ -80,7 +80,7 @@ if(!cfg){gate(`<div class="gmsg bad">Configuração do Firebase ausente. A publi
 const app=initializeApp(cfg);
 const auth=getAuth(app);
 let db;
-try{db=initializeFirestore(app,{localCache:emu?memoryLocalCache():persistentLocalCache({tabManager:persistentSingleTabManager()})})}catch(e){db=initializeFirestore(app,{localCache:memoryLocalCache()})}
+try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentSingleTabManager(),cacheSizeBytes:300*1024*1024})})}catch(e){db=initializeFirestore(app,{localCache:memoryLocalCache()})}
 if(emu){connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});connectFirestoreEmulator(db,'127.0.0.1',8080)}
 setPersistence(auth,indexedDBLocalPersistence).catch(()=>setPersistence(auth,browserLocalPersistence).catch(()=>{}));
 
@@ -117,28 +117,97 @@ function waitScreen(u,title,txt){
     <button type="button" class="gbtn gsec" id="gRetry">Verificar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
   $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>doSignOut().then(()=>location.reload())}
 
+/* ---------------- modo offline: leitura da entrada e sincronização ---------------- */
+// Lê um documento para abrir o app. Com internet: espera a resposta do servidor por até "ms" (sem mudança, o servidor
+// só confirma); se demorar, abre com o que está guardado no aparelho. Sem internet: abre direto com o do aparelho.
+// O ouvinte continua ligado: quando o servidor tiver uma versão nova, o painel de sincronização avisa.
+const NEWDATA=new Map(),LIVE=[];
+function fresh(ref,label,sig,ms=5000){return new Promise((res,rej)=>{let done=false,cached=null,used=null;
+  const fin=s=>{if(done)return;done=true;used=sig(s);res(s)};
+  const wait=setTimeout(()=>{if(!done&&cached)fin(cached)},ms),dead=setTimeout(()=>{if(!done){done=true;const e=new Error('Sem conexão com o servidor.');e.code='unavailable';rej(e)}},45000);
+  const un=onSnapshot(ref,{includeMetadataChanges:true},s=>{
+      if(!done){if(!s.metadata.fromCache){clearTimeout(wait);clearTimeout(dead);fin(s);return}
+        if(s.exists()){cached=s;if(!navigator.onLine){clearTimeout(wait);clearTimeout(dead);fin(s)}}
+        else if(!navigator.onLine){clearTimeout(wait);clearTimeout(dead);done=true;const e=new Error('offline sem cache');e.code='offline-nocache';rej(e)}
+        return}
+      if(s.metadata.hasPendingWrites){used=sig(s);return}   // alteração feita neste aparelho: já está aplicada
+      if(!s.metadata.fromCache&&label&&sig(s)!==used){NEWDATA.set(label,true);syncUi()}},
+    e=>{clearTimeout(wait);clearTimeout(dead);if(!done){done=true;rej(e)}});
+  LIVE.push(un)})}
+const sigBase=s=>s.exists()?String(s.data().version||''):'-';
+const sigJson=s=>s.exists()?JSON.stringify(s.data().perms||{})+'|'+String(s.data().active)+'|'+String(s.data().profile||''):'-';
+// gravações: entram na fila do aparelho na hora; o app não fica esperando o servidor (sem internet, seguem quando houver conexão)
+const SYNC={pend:0,queued:false,err:'',last:0,busy:false,msg:''};
+function track(p){SYNC.pend++;syncUi();Promise.resolve(p).then(()=>{SYNC.last=Date.now()},e=>{SYNC.err=errTxt(e)}).finally(()=>{SYNC.pend=Math.max(0,SYNC.pend-1);syncUi()});return p}
+const soft=p=>{track(p);return Promise.race([p,new Promise(r=>setTimeout(r,1500))])};
+function watchPending(){SYNC.queued=true;syncUi();waitForPendingWrites(db).then(()=>{SYNC.queued=false;SYNC.last=Date.now();syncUi()},()=>{SYNC.queued=false;syncUi()})}
+const hhmm=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const SYNC_CSS=`.dsync{margin:10px 0 0;padding:10px 0 0;border-top:1px solid var(--line,#ddd);display:grid;gap:8px;font-size:13px}
+.dsync .dsst{display:flex;align-items:center;gap:8px;line-height:1.35}.dsync .dsst i{flex:none;width:10px;height:10px;border-radius:50%;background:#1E8E4E}
+.dsync.off .dsst i{background:#9AA39D}.dsync.pend .dsst i{background:#E3A008}.dsync.new .dsst i{background:#1A73E8}.dsync.err .dsst i{background:#C0392B}
+.dsync button{min-height:44px;border-radius:10px;border:0;background:var(--ink,#161A18);color:var(--surface,#fff);font:700 14px var(--body);cursor:pointer}.dsync button:disabled{opacity:.6;cursor:default}
+.dsync small{color:var(--muted,#56605A);font-size:12px;line-height:1.35}
+html.sync-off [data-menu],html.sync-pend [data-menu],html.sync-new [data-menu]{position:relative}
+html.sync-off [data-menu]::after,html.sync-pend [data-menu]::after,html.sync-new [data-menu]::after{content:'';position:absolute;top:5px;right:5px;width:11px;height:11px;border-radius:50%;border:2px solid #111;background:#9AA39D}
+html.sync-pend [data-menu]::after{background:#E3A008}html.sync-new [data-menu]::after{background:#1A73E8}
+#syncToast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 14px);z-index:4900;max-width:min(560px,calc(100% - 24px));display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:12px;background:#141715;color:#fff;font:600 14px/1.35 var(--body,system-ui);box-shadow:0 6px 22px rgba(0,0,0,.35)}
+#syncToast button{flex:none;min-height:40px;border-radius:9px;border:1px solid #fff;background:transparent;color:#fff;font:700 13px var(--body);padding:0 12px;cursor:pointer}`;
+function syncCss(){if($('syncCss'))return;const s=document.createElement('style');s.id='syncCss';s.textContent=SYNC_CSS;document.head.appendChild(s)}
+function syncState(){const on=navigator.onLine,pend=SYNC.pend>0||SYNC.queued,nw=NEWDATA.size>0;
+  if(SYNC.busy)return {k:'pend',t:'Sincronizando…'};
+  if(!on)return {k:'off',t:pend?'Sem internet. As alterações estão guardadas no aparelho e serão enviadas quando houver conexão.':'Sem internet. O app funciona com os dados guardados no aparelho.'};
+  if(nw)return {k:'new',t:'Há dados novos do servidor (base do projeto ou permissões). Toque em Sincronizar para aplicar.'};
+  if(pend)return {k:'pend',t:`Enviando ${SYNC.pend>0?SYNC.pend+' alteraç'+(SYNC.pend>1?'ões':'ão'):'alterações guardadas no aparelho'}…`};
+  if(SYNC.err)return {k:'err',t:'Última gravação recusada pelo servidor: '+SYNC.err};
+  return {k:'ok',t:SYNC.last?`Sincronizado às ${hhmm(SYNC.last)}.`:'Conectado e sincronizado.'}}
+function syncUi(){const st=syncState(),h=document.documentElement;['off','pend','new'].forEach(k=>h.classList.toggle('sync-'+k,st.k===k));
+  const b=$('dsync');if(!b)return;b.className='dsync '+st.k;$('dsTxt').textContent=SYNC.msg||st.t;$('dsBtn').disabled=SYNC.busy}
+let TT=0;function toast(t,btn,fn,ms=4500){syncCss();let el=$('syncToast');if(!el){el=document.createElement('div');el.id='syncToast';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.innerHTML=`<span>${esc(t)}</span>${btn?`<button type="button">${esc(btn)}</button>`:''}`;el.hidden=false;if(btn)el.querySelector('button').onclick=()=>{el.hidden=true;fn()};
+  clearTimeout(TT);if(ms)TT=setTimeout(()=>{el.hidden=true},ms)}
+function applyNew(){SYNC.msg='Dados novos recebidos. Atualizando o app…';syncUi();setTimeout(()=>location.reload(),600)}
+// botão "Sincronizar agora": envia o que está na fila do aparelho, busca versão nova do app e aplica os dados novos do servidor
+async function doSync(){if(SYNC.busy)return;SYNC.msg='';SYNC.err='';
+  if(!navigator.onLine){SYNC.msg='Sem internet agora. Nada se perde: as alterações ficam no aparelho e são enviadas quando houver conexão (ou toque de novo em Sincronizar).';syncUi();return}
+  SYNC.busy=true;syncUi();
+  try{await enableNetwork(db).catch(()=>{});
+    const ok=await Promise.race([waitForPendingWrites(db).then(()=>true),new Promise(r=>setTimeout(()=>r(false),45000))]);
+    try{const rs=navigator.serviceWorker?await navigator.serviceWorker.getRegistrations():[];await Promise.all(rs.map(r=>r.update().catch(()=>{})))}catch(e){}
+    SYNC.busy=false;SYNC.queued=!ok;if(ok)SYNC.last=Date.now();
+    if(NEWDATA.size){applyNew();return}
+    SYNC.msg=ok?`Tudo sincronizado às ${hhmm(Date.now())}.`:'A conexão está lenta: o envio continua em segundo plano.';syncUi()}
+  catch(e){SYNC.busy=false;SYNC.msg='Não foi possível sincronizar: '+errTxt(e);syncUi()}}
+function syncPanel(d){syncCss();if($('dsync'))return;const b=document.createElement('div');b.id='dsync';b.className='dsync';
+  b.innerHTML='<div class="dsst"><i aria-hidden="true"></i><span id="dsTxt" aria-live="polite"></span></div><button type="button" id="dsBtn">Sincronizar agora</button><small>O app funciona sem internet. Registros e alterações ficam guardados no aparelho e são enviados quando houver conexão.</small>';
+  d.appendChild(b);$('dsBtn').onclick=doSync;syncUi()}
+window.addEventListener('online',()=>{SYNC.msg='';enableNetwork(db).catch(()=>{});syncUi();if(!window.__appStarted)return;
+  toast('Conexão restabelecida: sincronizando…');watchPending();
+  waitForPendingWrites(db).then(()=>{SYNC.last=Date.now();syncUi();if(NEWDATA.size)toast('Dados novos do servidor recebidos.','Atualizar agora',applyNew,0);else toast('Sincronizado.')}).catch(()=>{})});
+window.addEventListener('offline',()=>{SYNC.msg='';syncUi();if(window.__appStarted)toast('Sem internet: o app continua funcionando com os dados do aparelho.')});
+setInterval(syncUi,30000);
+
 /* ---------------- permissões ---------------- */
 const emptyPerms=()=>({});
 async function effectivePerms(u){if(!u)return {};if(u.custom||!u.profile)return u.perms||{};
-  try{const p=await getDoc(doc(db,'profiles',u.profile));return p.exists()?(p.data().perms||{}):{}}catch(e){return {}}}
+  try{const p=await fresh(doc(db,'profiles',u.profile),'perfil',s=>s.exists()?JSON.stringify(s.data().perms||{}):'-');return p.exists()?(p.data().perms||{}):{}}catch(e){return {}}}
 const anyView=p=>PAGES.some(pg=>p&&p[pg.k]&&p[pg.k].view);
 
 async function ensureUserDoc(user){const ref=doc(db,'users',user.uid);let s;
-  try{s=await getDoc(ref)}catch(e){throw e}
+  s=await fresh(ref,null,sigJson);
   if(s.exists())return s.data();
   const key=normEmail(user.email);let inv=null;try{const i=await getDoc(doc(db,'invites',key));if(i.exists())inv=i.data()}catch(e){}
   const data=inv?{email:user.email,name:inv.name||user.displayName||window.__pendingName||'',profile:inv.profile??null,custom:inv.custom===true,perms:inv.perms||{},active:inv.active===true,invited:true,createdAt:serverTimestamp()}
     :{email:user.email,name:user.displayName||window.__pendingName||'',profile:null,custom:true,perms:{},active:false,invited:false,createdAt:serverTimestamp()};
   await setDoc(ref,data);return data}
 
-async function loadBase(id='r08'){const s=await getDoc(doc(db,'base',id));if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
+async function loadBase(id='r08'){const s=await fresh(doc(db,'base',id),'base:'+id,sigBase,id==='seriais'?3000:5000);if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
 // BR-373 B4: base separada, entregue só a quem tem a aba liberada (ver firestore.rules)
 async function loadB4(isAdm,perms){const v=k=>!!(perms[k]&&perms[k].view);if(!isAdm&&!(v('mapab4')||v('calculadora')||v('analise')||v('marcos')||v('localizacao')||v('foto')||v('levbe')))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
 function startApp(){if(window.__appStarted)return;window.__appStarted=true;const s=document.createElement('script');s.src='app.js?v='+(window.APP_BUILD||'');s.onload=()=>{closeGate();decorateDrawer()};
   s.onerror=()=>gate('<div class="gmsg bad">Não foi possível carregar o aplicativo. Verifique a conexão e tente de novo.</div>');document.body.appendChild(s)}
 function decorateDrawer(){const d=document.querySelector('#drawer .dfoot');if(!d||$('duser'))return;const a=window.ACL;const box=document.createElement('div');box.id='duser';box.className='duser';
   box.innerHTML=`<div><b>${esc(a.user.name||a.user.email)}</b>${esc(a.user.email)}${a.admin?' · administrador':''}</div><button type="button" id="dOut">Sair</button>`;d.appendChild(box);
-  $('dOut').onclick=()=>doSignOut().then(()=>{location.hash='';location.reload()})}
+  $('dOut').onclick=()=>doSignOut().then(()=>{location.hash='';location.reload()});syncPanel(d)}
 
 async function baseMissing(isAdm){
   if(!isAdm){gate('<div class="gmsg">A base do projeto ainda não foi carregada pelo administrador. Tente mais tarde.</div><button type="button" class="gbtn gsec" id="gOut">Sair</button>');$('gOut').onclick=()=>doSignOut().then(()=>location.reload());return}
@@ -148,7 +217,7 @@ async function baseMissing(isAdm){
   $('gOut').onclick=()=>doSignOut().then(()=>location.reload());
   $('gBase').onchange=async e=>{const f=e.target.files[0];if(!f)return;const m=$('gBaseMsg');m.innerHTML='<div class="gmsg">Enviando…</div>';
     try{await uploadBase(f);m.innerHTML='<div class="gmsg ok">Base carregada. Abrindo o aplicativo…</div>';setTimeout(()=>location.reload(),900)}catch(x){m.innerHTML=`<div class="gmsg bad">${esc(errTxt(x))}</div>`}}}
-async function uploadBase(file,id='r08'){const txt=await file.text();let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
+async function uploadBase(file,id='r08'){if(!navigator.onLine)throw new Error('Sem internet: envie a base quando houver conexão.');const txt=await file.text();let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
   if(!d||!Array.isArray(d.codes)||!Array.isArray(d.rows)||!d.rows.length)throw new Error('O arquivo não tem o formato da base (codes e rows).');
   const isB4=!!(d.src&&Array.isArray(d.src.panos)&&d.base==='BR-373 B4');
   if(id==='b4'&&!isB4)throw new Error('Este não é o arquivo da BR-373 B4 (base-BR373-B4.json).');
@@ -158,7 +227,7 @@ async function uploadBase(file,id='r08'){const txt=await file.text();let d;try{d
 
 /* ---------------- fluxo principal ---------------- */
 gate('<div class="gspin" aria-label="Carregando"></div>');
-getRedirectResult(auth).catch(e=>loginScreen(errTxt(e),'bad'));
+getRedirectResult(auth).catch(e=>{if(!navigator.onLine||/network/.test(e&&e.code||''))return;loginScreen(errTxt(e),'bad')});
 let handled=false;
 onAuthStateChanged(auth,async user=>{
   if(!user){if(handled){location.reload();return}handled=true;loginScreen();return}
@@ -175,7 +244,7 @@ onAuthStateChanged(auth,async user=>{
     window.ACL={admin:isAdm,perms:isAdm?Object.fromEntries(PAGES.map(p=>[p.k,Object.fromEntries(p.acts.map(a=>[a,true]))])):perms,
       user:{uid:user.uid,email:user.email,name:(ud&&ud.name)||user.displayName||''},pages:PAGES,renderAdmin,signOut:()=>doSignOut(),
       // seriais dos apontamentos importados pelo administrador: compartilhados com os outros usuários
-      saveShared:async(id,obj)=>{if(!isAdm||id!=='seriais')throw new Error('sem permissão');const txt=JSON.stringify(obj);if(new Blob([txt]).size>1000000)throw new Error('arquivo grande demais');await setDoc(doc(db,'base','seriais'),{json:txt,version:new Date().toLocaleString('pt-BR'),rows:(obj.recs||[]).length,updatedAt:serverTimestamp(),by:auth.currentUser.email})}};
+      saveShared:async(id,obj)=>{if(!isAdm||id!=='seriais')throw new Error('sem permissão');const txt=JSON.stringify(obj);if(new Blob([txt]).size>1000000)throw new Error('arquivo grande demais');await soft(setDoc(doc(db,'base','seriais'),{json:txt,version:new Date().toLocaleString('pt-BR'),rows:(obj.recs||[]).length,updatedAt:serverTimestamp(),by:auth.currentUser.email}))}};
     let base=null;try{base=await loadBase()}catch(e){if(e.code==='permission-denied'){waitScreen(user,'Acesso negado pelo servidor.','Seu usuário não tem permissão para a base do projeto.');return}throw e}
     if(!base){baseMissing(isAdm);return}
     window.PROJECT_DATA=base.data;window.BASE_VERSION=base.version;
@@ -185,25 +254,26 @@ onAuthStateChanged(auth,async user=>{
     const pm=window.ACL.perms.marcos||{};
     if(isAdm||pm.view){const col=collection(db,'marcos'),rm=o=>{const x={};for(const [k,v] of Object.entries(o))if(v!==undefined&&!k.startsWith('__'))x[k]=v;return x};
       window.MarcosDB={subscribe:cb=>onSnapshot(col,s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),
-        save:m=>setDoc(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()}),
-        saveMany:async ms=>{for(let i=0;i<ms.length;i+=400){const b=writeBatch(db);ms.slice(i,i+400).forEach(m=>b.set(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()}));await b.commit()}},
-        del:id=>deleteDoc(doc(db,'marcos',id))}}
+        save:m=>soft(setDoc(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()})),
+        saveMany:async ms=>{for(let i=0;i<ms.length;i+=400){const b=writeBatch(db);ms.slice(i,i+400).forEach(m=>b.set(doc(db,'marcos',m.id),{...rm(m),by:user.email,upd:Date.now()}));await soft(b.commit())}},
+        del:id=>soft(deleteDoc(doc(db,'marcos',id)))}}
     // levantamento de bota-espera: coleção nova, um documento por registro (id gerado no aparelho → reenviar não duplica);
     // fotos e áudios comprimidos ficam em outra coleção (um documento por arquivo) e só são lidos quando abertos
     const pl=window.ACL.perms.levbe||{};
     if(isAdm||pl.view){const C='levantamento_bota_espera',CM='levantamento_bota_espera_midia';
       window.LevDB={subscribe:cb=>onSnapshot(collection(db,C),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
-        save:r=>setDoc(doc(db,C,r.id),r),
-        saveMedia:m=>setDoc(doc(db,CM,m.id),{...m,criado_por:user.email}),
+        save:r=>track(setDoc(doc(db,C,r.id),r)),
+        saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
     // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
     const pc=window.ACL.perms.calculadora||{};
     if(isAdm||pc.view){const hid=eq=>String(eq).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').slice(0,80)||'_';
       window.EquipeHorasDB={subscribe:cb=>onSnapshot(collection(db,'equipeHoras'),s=>cb(s.docs.map(d=>d.data())),()=>{}),
-        save:(eq,h,at)=>{if(!(isAdm||pc.create))return Promise.resolve();return setDoc(doc(db,'equipeHoras',hid(eq)),{equipe:String(eq),h,at:Math.round(at),by:user.email}).catch(()=>{})}}}
+        save:(eq,h,at)=>{if(!(isAdm||pc.create))return Promise.resolve();return track(setDoc(doc(db,'equipeHoras',hid(eq)),{equipe:String(eq),h,at:Math.round(at),by:user.email})).catch(()=>{})}}}
     if(!isAdm)watchUser(user,true);
-    startApp()}
-  catch(e){gate(`<div class="gmsg bad">${esc(errTxt(e))}</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
+    watchPending();startApp()}
+  catch(e){if(e&&(e.code==='offline-nocache'||e.code==='unavailable')){gate(`<div class="gmsg bad">Sem internet e sem os dados do projeto neste aparelho.</div><div class="gmsg">No primeiro acesso (ou depois de sair da conta) é preciso estar conectado uma vez para baixar a base do projeto. Depois disso o app abre e funciona sem internet.</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button>`);$('gRetry').onclick=()=>location.reload();return}
+    gate(`<div class="gmsg bad">${esc(errTxt(e))}</div><button type="button" class="gbtn gsec" id="gRetry">Tentar de novo</button><button type="button" class="gbtn gsec" id="gOut">Sair</button>`);
     $('gRetry').onclick=()=>location.reload();$('gOut').onclick=()=>doSignOut().then(()=>location.reload())}
 });
 // mudanças feitas pelo administrador (liberar, bloquear, desativar) valem sem precisar sair
