@@ -5,7 +5,7 @@ import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWith
   createUserWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,signOut,connectAuthEmulator,updateProfile,
   setPersistence,indexedDBLocalPersistence,browserLocalPersistence} from 'firebase/auth';
 import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memoryLocalCache,doc,getDoc,getDocFromServer,setDoc,collection,getDocs,
-  updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork} from 'firebase/firestore';
+  updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork,setLogLevel} from 'firebase/firestore';
 
 const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
@@ -81,6 +81,7 @@ const app=initializeApp(cfg);
 const auth=getAuth(app);
 let db;
 try{db=initializeFirestore(app,{localCache:persistentLocalCache({tabManager:persistentSingleTabManager(),cacheSizeBytes:300*1024*1024})})}catch(e){db=initializeFirestore(app,{localCache:memoryLocalCache()})}
+if(emu&&/[?&]fsdebug=1/.test(location.search))setLogLevel('debug'); // só nos testes (emulador)
 if(emu){connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});connectFirestoreEmulator(db,'127.0.0.1',8080)}
 setPersistence(auth,indexedDBLocalPersistence).catch(()=>setPersistence(auth,browserLocalPersistence).catch(()=>{}));
 

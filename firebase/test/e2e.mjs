@@ -87,9 +87,10 @@ try{
       const docs=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID));n=docs.length;obs=n?docs[0].fields.obs.stringValue:''}
     ok(n===1&&obs==='reenviado pelo aparelho','levantamento: com sinal, sincroniza um único documento (sem duplicar), com a última versão')}
   // 4c. App sem internet: abre com os dados guardados no aparelho, grava na fila do aparelho e o botão Sincronizar envia sem duplicar
-  {const o=await session('offline');const ctx=o.context();
+  {const o=await session('offline');const ctx=o.context();const LOG=[];o.on('console',m=>LOG.push(new Date().toISOString().slice(11,23)+' '+m.type()+' '+m.text().slice(0,1500)));
+    try{
     await ctx.addInitScript(()=>{Object.defineProperty(Navigator.prototype,'onLine',{configurable:true,get(){return !window.__off&&!localStorage.getItem('__off')}})});
-    await signin(o,ADMIN,'admin123');await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(1500);
+    await signin(o,ADMIN,'admin123');await o.goto(BASE.replace('emu=1','emu=1&fsdebug=1'));await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate'),null,{timeout:20000});await sleep(1500);
     // corta o servidor (banco e login) e o aparelho fica "sem internet"
     await o.evaluate(()=>localStorage.setItem('__off','1'));await ctx.route(/127\.0\.0\.1:(8080|9099)/,r=>r.abort());
     const t0=Date.now();await o.reload();
@@ -121,7 +122,7 @@ try{
     const nw=await o.waitForFunction(()=>/dados novos/i.test((document.getElementById('dsTxt')||{}).textContent||''),null,{timeout:30000}).then(()=>true,()=>false);
     ok(nw,'base nova no servidor: o painel avisa que há dados novos');
     await o.evaluate(()=>document.getElementById('dsBtn').click());await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate')&&window.BASE_VERSION==='v-nova',null,{timeout:30000}).then(()=>ok(true,'Sincronizar aplica a base nova'),()=>ok(false,'Sincronizar aplica a base nova'));
-    if(o.errs.length)ok(false,'erros de JavaScript (offline): '+o.errs.join(' | '))}
+    if(o.errs.length)ok(false,'erros de JavaScript (offline): '+[...new Set(o.errs)].join(' | '))}finally{writeFileSync(`${OUT}/offline-console.txt`,LOG.join('\n'))}}
   // 5. convite com perfil: acesso imediato no primeiro login
   await a.goto(BASE+'#admin');await a.waitForSelector('.adm-tabs');await a.click('[data-tab="profiles"]');await a.click('#pNew');await a.fill('#pName','Programação');
   await a.check('#pMx input[data-pg="calculadora"][data-a="view"]');await a.check('#pMx input[data-pg="relatorios"][data-a="view"]');await a.click('#pSave');await a.waitForSelector('.adm-msg.ok');
