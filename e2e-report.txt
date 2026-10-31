@@ -1,0 +1,38 @@
+Teste de ponta a ponta: 36/36 OK
+
+OK  base sintética B4 gravada no emulador
+OK  base sintética gravada no emulador
+OK  conta nova fica aguardando liberação do administrador
+OK  conta nova não recebe a base do projeto
+OK  administrador entra no aplicativo
+OK  menu Administração visível para o administrador
+OK  usuário novo aparece na lista
+OK  nome informado no cadastro aparece na lista
+OK  status do usuário novo: Aguardando autorização
+OK  administrador salva as permissões
+OK  usuário vê só Localização e Mapa no menu (localizacao,mapa)
+OK  com a Localização estaca liberada, a base B4 é entregue (estaca do Lote 04 / BR-373)
+OK  URL direta da aba BR-373 B4 é bloqueada
+OK  URL direta da Calculadora é bloqueada
+OK  URL direta da Administração é bloqueada
+OK  API do banco recusa leitura sem credencial (403)
+OK  com a aba liberada, "Estacas BR-373 B4" aparece no menu (localizacao,mapa,mapab4)
+OK  aba B4 recebe a base do servidor e liga os panos às estacas {"panos":3,"ligados":2,"saidas":1,"semEstaca":0,"mapa":2,"semRegistro":0,"avisos":[],"estacas":100,"erros":0}
+OK  usuário desativado não entra
+OK  menu: Levantamento de Bota-Espera visível para o administrador
+OK  levantamento sem internet: registro guardado no aparelho, pendente de envio
+OK  levantamento: com sinal, sincroniza um único documento (sem duplicar), com a última versão
+OK  sem internet: o app abre com a base guardada no aparelho (0.2 s)
+OK  painel de sincronização: "Sem internet" (Sem internet. O app funciona com os dados guardados no aparelho.)
+OK  aviso no botão do menu (sem internet)
+OK  sem internet: gravação não trava o app
+OK  painel: alterações guardadas no aparelho (Sem internet. As alterações estão guardadas no aparelho e serão enviadas quando houver conexão.)
+OK  reaberto sem internet: a alteração continua guardada no aparelho
+OK  enquanto sem internet, nada chega ao servidor
+OK  erro interno do Firebase na reconexão: o app reabriu sozinho e continuou (recuperação automática)
+OK  com internet, o botão Sincronizar envia tudo (Sincronizado às 13:05.)
+OK  registro feito sem internet chegou ao servidor uma única vez
+OK  base nova no servidor: o painel avisa que há dados novos
+OK  Sincronizar aplica a base nova
+OK  convidado entra direto com as páginas do perfil (calculadora,relatorios)
+OK  sem "Criar" na Calculadora, botão de emitir programação fica oculto
