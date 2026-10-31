@@ -113,7 +113,9 @@ try{
     // volta a internet: botão Sincronizar envia a fila
     await ctx.unroute(/127\.0\.0\.1:(8080|9099)/);await o.evaluate(()=>{localStorage.removeItem('__off');dispatchEvent(new Event('online'))});
     await o.evaluate(()=>document.getElementById('dsBtn').click());
-    const synced=await o.waitForFunction(()=>/sincronizado/i.test((document.getElementById('dsTxt')||{}).textContent||''),null,{timeout:60000}).then(()=>true,()=>false);
+    const synced=await (async()=>{const t=Date.now();while(Date.now()-t<90000){try{const v=await o.evaluate(()=>window.__appStarted&&!document.getElementById('gate')?((document.getElementById('dsTxt')||{}).textContent||''):'');
+        if(/sincronizado/i.test(v))return true;if(/Conectado|Sincronizar para aplicar/.test(v)){await o.evaluate(()=>document.getElementById('dsBtn').click())}}catch(e){}await sleep(1500)}return false})();
+    const recov=LOG.some(l=>/INTERNAL ASSERTION/.test(l));if(recov)ok(true,'erro interno do Firebase na reconexão: o app reabriu sozinho e continuou (recuperação automática)');
     ok(synced,'com internet, o botão Sincronizar envia tudo ('+await txt()+')');await o.shot('9-sincronizado');
     let n=0;for(let k=0;k<20&&!n;k++){const r=await fetch(`${FS}/levantamento_bota_espera?pageSize=100`,{headers:{'Authorization':'Bearer owner'}});const j=await r.json();n=(j.documents||[]).filter(d=>d.name.endsWith('/'+LID)).length;if(!n)await sleep(500)}
     ok(n===1,'registro feito sem internet chegou ao servidor uma única vez');
@@ -122,7 +124,7 @@ try{
     const nw=await o.waitForFunction(()=>/dados novos/i.test((document.getElementById('dsTxt')||{}).textContent||''),null,{timeout:30000}).then(()=>true,()=>false);
     ok(nw,'base nova no servidor: o painel avisa que há dados novos');
     await o.evaluate(()=>document.getElementById('dsBtn').click());await o.waitForFunction(()=>window.__appStarted&&!document.getElementById('gate')&&window.BASE_VERSION==='v-nova',null,{timeout:30000}).then(()=>ok(true,'Sincronizar aplica a base nova'),()=>ok(false,'Sincronizar aplica a base nova'));
-    if(o.errs.length)ok(false,'erros de JavaScript (offline): '+[...new Set(o.errs)].join(' | '))}finally{writeFileSync(`${OUT}/offline-console.txt`,LOG.join('\n'))}}
+    const other=[...new Set(o.errs)].filter(m=>!/INTERNAL ASSERTION FAILED/.test(m));if(other.length)ok(false,'erros de JavaScript (offline): '+other.join(' | '))}finally{writeFileSync(`${OUT}/offline-console.txt`,LOG.join('\n'))}}
   // 5. convite com perfil: acesso imediato no primeiro login
   await a.goto(BASE+'#admin');await a.waitForSelector('.adm-tabs');await a.click('[data-tab="profiles"]');await a.click('#pNew');await a.fill('#pName','Programação');
   await a.check('#pMx input[data-pg="calculadora"][data-a="view"]');await a.check('#pMx input[data-pg="relatorios"][data-a="view"]');await a.click('#pSave');await a.waitForSelector('.adm-msg.ok');

@@ -186,6 +186,15 @@ window.addEventListener('online',()=>{SYNC.msg='';enableNetwork(db).catch(()=>{}
   waitForPendingWrites(db).then(()=>{SYNC.last=Date.now();syncUi();if(NEWDATA.size)toast('Dados novos do servidor recebidos.','Atualizar agora',applyNew,0);else toast('Sincronizado.')}).catch(()=>{})});
 window.addEventListener('offline',()=>{SYNC.msg='';syncUi();if(window.__appStarted)toast('Sem internet: o app continua funcionando com os dados do aparelho.')});
 setInterval(syncUi,30000);
+// proteção: se o banco local do Firebase travar (erro interno), o app reabre sozinho; a fila de gravações fica guardada
+// no aparelho e é enviada na reabertura (no máximo uma vez a cada 2 minutos, para não entrar em repetição)
+function fsDead(m){if(!/FIRESTORE .*INTERNAL ASSERTION FAILED/.test(String(m||'')))return;if(window.__fsDead)return;window.__fsDead=true;
+  let last=0;try{last=+sessionStorage.getItem('fsRecover')||0}catch(e){}
+  if(Date.now()-last<120000){SYNC.msg='O banco local do app teve um erro. Feche e abra o app para continuar a sincronização (nada foi perdido).';syncUi();return}
+  try{sessionStorage.setItem('fsRecover',String(Date.now()))}catch(e){}
+  SYNC.msg='Reiniciando a conexão com o banco (nada foi perdido)…';syncUi();setTimeout(()=>location.reload(),1500)}
+window.addEventListener('error',e=>fsDead(e&&(e.message||(e.error&&e.error.message))));
+window.addEventListener('unhandledrejection',e=>fsDead(e&&e.reason&&(e.reason.message||e.reason)));
 
 /* ---------------- permissões ---------------- */
 const emptyPerms=()=>({});
