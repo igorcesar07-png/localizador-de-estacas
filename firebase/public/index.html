@@ -1489,18 +1489,24 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 #fGal .ginfo{max-height:32vh;overflow-y:auto;padding:2px 4px 8px;display:grid;gap:6px}
 #fGal .ginfo .rmsg{font-size:13px}
 #fGal .gmsg{margin:0 4px 6px;font:500 13px/1.35 var(--body);color:#FFE9B0}
-#fGal .gact2{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center}
+#fGal .gact2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"info del" "sh sv";gap:8px;align-items:center}
+#fGal .gact2 .ginfoBtn{grid-area:info}#fGal .gact2 .delBtn{grid-area:del;justify-self:end}#fGal .gact2 #fGalShare{grid-area:sh}#fGal .gact2 #fGalSave{grid-area:sv}
+#fGal .gact2 .shBtn{min-height:46px;border-radius:12px;border:1px solid #25D366;background:#0F2A1B;color:#C9F7DA;font:700 15px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;padding:0 10px}
+#fGal .gact2 .shBtn:disabled{opacity:.38;cursor:default}#fGal .gact2 .shBtn svg{width:20px;height:20px;flex:none}
+#fGal.gsaved .gact2{grid-template-areas:"info del"}#fGal.gsaved #fGalShare{display:none}
+.gi .gsh{position:absolute;top:6px;left:6px;width:32px;height:32px;border-radius:8px;border:0;background:#128C4A;color:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0}.gi .gsh svg{width:18px;height:18px}#fGal.gsaved .gi .gsh{display:flex}
 .ginfoBtn{min-height:46px;min-width:0;border:0;background:none;color:#fff;text-align:left;display:flex;flex-direction:column;justify-content:center;padding:0 4px;cursor:pointer;position:relative}
 .ginfoBtn b{font:700 14px var(--body);color:#F2B705;white-space:nowrap}.ginfoBtn span{font:500 11.5px var(--body);color:#A9B3AD;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ginfoBtn i{position:absolute;right:2px;top:50%;transform:translateY(-50%);font-style:normal;color:#A9B3AD;font-size:16px}
 .ginfoBtn{padding-right:24px}
 #fGal .gact2 .delBtn,#fGal .gact2 .bigBtn{min-height:46px;padding:0 16px;font-size:15px;white-space:nowrap}
-#fGal .gact2 .bigBtn{min-width:110px}
+#fGal .gact2 .bigBtn{min-width:0;width:100%}
 @media (orientation:landscape) and (max-height:520px){
   .gtop{min-height:44px;padding:3px 8px}.gib,.gsb{height:36px}
   #fGal .ggrid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:6px;padding:6px}
   #fGal .gfoot{padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px))}
-  #fGal .gact2 .delBtn,#fGal .gact2 .bigBtn,.ginfoBtn{min-height:40px}
+  #fGal .gact2 .delBtn,#fGal .gact2 .bigBtn,.ginfoBtn,#fGal .gact2 .shBtn{min-height:40px}
+  #fGal .gact2{grid-template-columns:minmax(0,1fr) auto auto auto;grid-template-areas:"info del sh sv"}#fGal .gact2 .shBtn,#fGal .gact2 .bigBtn{width:auto;padding:0 16px}
   #fGal .ginfo{max-height:38vh}}
 @media (min-width:900px){#fGal .ggrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}}
 .gbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px}
@@ -1634,7 +1640,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 31/10/2026 09:50 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 31/10/2026 11:02 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2037,12 +2043,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <div class="gfil" id="gFil" role="group" aria-label="Filtrar fotos por rodovia e lote"></div>
     <div class="ggrid" id="fGalGrid"></div>
     <div class="gfoot">
-      <div class="ginfo" id="gInfo" hidden><p class="rmsg" id="fGalPend"></p><p class="rmsg">Cada foto tirada fica guardada aqui. Toque nas fotos para selecionar e use "Salvar" para gravar no aparelho (no iPhone, escolha "Salvar Imagens"). Depois de salvas, as fotos passam para a aba "Salvas na galeria" e não podem mais ser selecionadas; continuam guardadas até você excluir.</p></div>
+      <div class="ginfo" id="gInfo" hidden><p class="rmsg" id="fGalPend"></p><p class="rmsg">Cada foto tirada fica guardada aqui. Toque nas fotos para selecionar e use "Salvar na galeria" para gravar no aparelho ou "Compartilhar" para enviar pelo WhatsApp e outros apps (no iPhone, escolha "Salvar Imagens"). Depois de salvas, as fotos passam para a aba "Salvas na galeria" e não podem mais ser selecionadas; continuam guardadas até você excluir.</p></div>
       <p class="gmsg" id="fGalMsg" hidden></p>
       <div class="gact2">
         <button type="button" class="ginfoBtn" id="gInfoBtn" aria-expanded="false" aria-controls="gInfo"><b id="gSelN">0 selecionadas</b><span id="gPendMini"></span><i aria-hidden="true">ⓘ</i></button>
         <button class="delBtn" type="button" id="fGalDel" data-acl="foto:delete" disabled>Excluir</button>
-        <button class="bigBtn" type="button" id="fGalSave" disabled>Salvar</button>
+        <button class="shBtn" type="button" id="fGalShare" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>Compartilhar</span></button>
+        <button class="bigBtn" type="button" id="fGalSave" disabled>Salvar na galeria</button>
       </div>
     </div>
   </div>
@@ -2177,10 +2184,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261031125015";</script>
-<script src="native.js?v=20261031125015"></script>
-<script src="firebase-config.js?v=20261031125015"></script>
-<script src="auth.js?v=20261031125015"></script>
+<script>window.APP_BUILD="20261031140241";</script>
+<script src="native.js?v=20261031140241"></script>
+<script src="firebase-config.js?v=20261031140241"></script>
+<script src="auth.js?v=20261031140241"></script>
 
 </body>
 </html>
