@@ -1338,7 +1338,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
       </tbody><tfoot><tr><td class="l sticky">Total</td><td></td><td class="l" colspan="4">${dact.length} segmento${dact.length!==1?'s':''} programado${dact.length!==1?'s':''}</td><td class="big2">${nf(DRN.DR+DRN.DP,0)}</td><td class="l">${nSai} saída${nSai!==1?'s':''} · ${nf(nSai*SAIDA_M,0)} m</td></tr></tfoot></table></div>
       <div class="tnote">Drenagem medida em metros, a partir do R08 (DR – Dreno Raso, 0,60 m; DP – Dreno Profundo, 1,50 m). No decrescente a estaca inicial é a maior. As saídas de dreno não são serviços separados: aparecem junto do dreno a que pertencem. Desmarque "Programar" para tirar o segmento da programação (ele continua na lista e os dados do projeto não mudam). A observação fica ligada só ao próprio segmento e vai para o relatório; apague o texto para retirá-la.</div></div>`}
-    LAST={drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
+    LAST={ordem,drn:DRN,rows:act,nOff,valid,comp,inc,totLen,totA,totV,totT,perdaT,perda,dens,partial,nIn,scope,hiddenN:[...hidden.values()].reduce((a,b)=>a+b,0),hiddenCodes:[...hidden.keys()],byTeam:!!(S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan)};
     const prevScroll=[...out.querySelectorAll('.tscroll')].map(e=>e.scrollLeft);
     out.innerHTML=RN+h;
     {const ra=$('revAck');if(ra)ra.onclick=()=>{S.bySrc.B4.orphAck=B4REV.id;save();$('revNote').remove()}}
@@ -1493,7 +1493,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   $('cRep').onclick=()=>{if(can('calculadora','create'))emitReport()};
   // sequência de execução: crescente da menor para a maior estaca, depois decrescente da maior para a menor
   function buildProg(info){const L=LAST;const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
-    const seq=L.rows.slice().sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini)||LORD[x.p.L]-LORD[y.p.L]);
+    // dentro de cada pista (crescente, depois decrescente) segue a mesma ordem escolhida em "Ordenar segmentos" na Calculadora
+    const ord=L.ordem||'exec',side=(x,y)=>x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1;
+    const seq=L.rows.slice().sort((x,y)=>side(x,y)||(ord==='asc'?x.ini-y.ini:ord==='desc'?y.ini-x.ini:(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini))||LORD[x.p.L]-LORD[y.p.L]);
     seq.forEach((r,k)=>r.ord=k+1);
     const by=new Map();for(const r of seq){const k=r.p.code;if(!by.has(k))by.set(k,{info:r.p.info,n:0,len:0,area:0,t:0,inc:0,excl:r.excl});const o=by.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.t+=r.t||0}
     const sol=[...by.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
@@ -1549,7 +1551,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   // Modelo único do relatório: a pré-visualização e o PDF são desenhados a partir dele
   function reportModel(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
     const sides=[];let cur=null;let acc=0;
-    for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:r.L0.side==='C'?'da menor para a maior estaca':'da maior para a menor estaca',panos:[]};sides.push(cur)}
+    const ORD=L.ordem||'exec',subOf=sd=>ORD==='asc'?'estaca inicial da menor para a maior':ORD==='desc'?'estaca inicial da maior para a menor':sd==='C'?'da menor para a maior estaca':'da maior para a menor estaca';
+    for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:subOf(r.L0.side),panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}${r.eCustom?` (alterada; projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`:''}`,
@@ -1587,7 +1590,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
-      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); cada saída de dreno conta '+SAIDA_M+' m de extensão; a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego. Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); cada saída de dreno conta '+SAIDA_M+' m de extensão; a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} ${ORD==='asc'?'Segmentos em cada pista pela estaca inicial, da menor para a maior (ordem escolhida na Calculadora).':ORD==='desc'?'Segmentos em cada pista pela estaca inicial, da maior para a menor (ordem escolhida na Calculadora).':'Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego.'} Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
   // rótulo da equipe de serviço conforme a equipe escolhida
@@ -3368,7 +3371,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='31/10/2026 11:02';
+  const CUR_VER='03/11/2026 09:17';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
