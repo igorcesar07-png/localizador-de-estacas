@@ -173,6 +173,22 @@ const Filters=(function(){
   return {get:()=>st,set:(k,v)=>{st={...st,[k]:v};store.set('filters',st);emit('filters',st)},visible,saidaVisible,isDefault};
 })();
 
+/* ------------------------------ Tema do app (um só para todas as páginas) ------------------------------ */
+// Automático segue o aparelho (inclusive se ele mudar com o app aberto); Diurno e Noturno fixam o tema. As cores vêm dos tokens em :root.
+const Theme=(function(){const mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+  const get=()=>{const t=store.get('theme','auto');return ['auto','light','dark'].includes(t)?t:'auto'};
+  const eff=()=>{const t=get();return t==='auto'?(mq&&mq.matches?'dark':'light'):t};
+  function apply(){const t=get(),h=document.documentElement;if(t==='auto')h.removeAttribute('data-theme');else h.setAttribute('data-theme',t);
+    const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',eff()==='dark'?'#121614':'#1A1E1C');
+    document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===t)));
+    const hn=$('dThemeHint');if(hn)hn.textContent=t==='auto'?`Segue a aparência do aparelho (agora ${eff()==='dark'?'noturno':'diurno'}).`:t==='dark'?'Noturno fixo, mesmo com o aparelho no modo claro.':'Diurno fixo, mesmo com o aparelho no modo escuro.';
+    try{window.dispatchEvent(new CustomEvent('apptheme',{detail:eff()}))}catch(e){}}
+  function set(t){store.set('theme',t);apply()}
+  if(mq){const f=()=>{if(get()==='auto')apply()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-theme-set]');if(b)set(b.dataset.themeSet)});
+  apply();return {get,set,eff,apply}})();
+window.Theme=Theme;
+
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
   const PAGES=['localizacao','mapa','mapab4','calculadora','analise','marcos','levbe','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
@@ -298,8 +314,10 @@ const Layers=(function(){
   let bi=Math.max(0,BASES.findIndex(b=>b.k===store.get('base','sat')));
   function setBase(i){BASES.forEach(b=>b.l&&map.hasLayer(b.l)&&map.removeLayer(b.l));bi=i;const b=BASES[i];if(b.l)b.l.addTo(map).bringToBack();$('baseTxt').textContent=b.t;store.set('base',b.k)}
   const axisLL=[];for(let i=0;i<N;i++)axisLL.push([LAT[i],LON[i]]);
-  L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
+  const axCas=L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
   const axis=L.polyline(axisLL,{renderer,color:css('--axis')||'#222',weight:2.5,interactive:false}).addTo(map);
+  // troca de tema: redesenha eixo, rótulos e o unifilar com as cores do tema novo
+  window.addEventListener('apptheme',()=>{try{axCas.setStyle({color:css('--axis-casing')||'#fff'});axis.setStyle({color:css('--axis')||'#222'});map.fire('zoomend');if(Loc.st.r)renderPoint(Loc.st)}catch(e){}});
   const mpp=z=>156543.03392*Math.cos(Geo.lat0*Math.PI/180)/Math.pow(2,z);
   const exag=z=>Math.max(1,5*mpp(z)/3.6);
   const panoLayer=L.layerGroup().addTo(map),lines=[];
@@ -713,6 +731,22 @@ const Filters=(function(){
   return {get:()=>st,set:(k,v)=>{st={...st,[k]:v};store.set('filters',st);emit('filters',st)},visible,saidaVisible,isDefault};
 })();
 
+/* ------------------------------ Tema do app (um só para todas as páginas) ------------------------------ */
+// Automático segue o aparelho (inclusive se ele mudar com o app aberto); Diurno e Noturno fixam o tema. As cores vêm dos tokens em :root.
+const Theme=(function(){const mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+  const get=()=>{const t=store.get('theme','auto');return ['auto','light','dark'].includes(t)?t:'auto'};
+  const eff=()=>{const t=get();return t==='auto'?(mq&&mq.matches?'dark':'light'):t};
+  function apply(){const t=get(),h=document.documentElement;if(t==='auto')h.removeAttribute('data-theme');else h.setAttribute('data-theme',t);
+    const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',eff()==='dark'?'#121614':'#1A1E1C');
+    document.querySelectorAll('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.themeSet===t)));
+    const hn=$('dThemeHint');if(hn)hn.textContent=t==='auto'?`Segue a aparência do aparelho (agora ${eff()==='dark'?'noturno':'diurno'}).`:t==='dark'?'Noturno fixo, mesmo com o aparelho no modo claro.':'Diurno fixo, mesmo com o aparelho no modo escuro.';
+    try{window.dispatchEvent(new CustomEvent('apptheme',{detail:eff()}))}catch(e){}}
+  function set(t){store.set('theme',t);apply()}
+  if(mq){const f=()=>{if(get()==='auto')apply()};if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)}
+  document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-theme-set]');if(b)set(b.dataset.themeSet)});
+  apply();return {get,set,eff,apply}})();
+window.Theme=Theme;
+
 
 Router.onInit('mapab4',function(){
 const map=L.map('b4_map',{zoomControl:false,preferCanvas:true,maxZoom:20,zoomSnap:0.5,rotate:!!L.Map.prototype.setBearing,touchRotate:true,rotateControl:false,shiftKeyRotate:true,bearing:0});
@@ -731,8 +765,10 @@ const Layers=(function(){
   let bi=Math.max(0,BASES.findIndex(b=>b.k===store.get('base','sat')));
   function setBase(i){BASES.forEach(b=>b.l&&map.hasLayer(b.l)&&map.removeLayer(b.l));bi=i;const b=BASES[i];if(b.l)b.l.addTo(map).bringToBack();$('b4_baseTxt').textContent=b.t;store.set('base',b.k)}
   const axisLL=[];for(let i=0;i<N;i++)axisLL.push([LAT[i],LON[i]]);
-  L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
+  const axCas=L.polyline(axisLL,{renderer,color:css('--axis-casing')||'#fff',weight:6,opacity:.85,interactive:false}).addTo(map);
   const axis=L.polyline(axisLL,{renderer,color:css('--axis')||'#222',weight:2.5,interactive:false}).addTo(map);
+  // troca de tema: redesenha eixo, rótulos e o unifilar com as cores do tema novo
+  window.addEventListener('apptheme',()=>{try{axCas.setStyle({color:css('--axis-casing')||'#fff'});axis.setStyle({color:css('--axis')||'#222'});map.fire('zoomend');if(Loc.st.r)renderPoint(Loc.st)}catch(e){}});
   const mpp=z=>156543.03392*Math.cos(Geo.lat0*Math.PI/180)/Math.pow(2,z);
   const exag=z=>Math.max(1,5*mpp(z)/3.6);
   const panoLayer=L.layerGroup().addTo(map),lines=[];
@@ -3434,7 +3470,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='05/11/2026 18:53';
+  const CUR_VER='05/11/2026 19:23';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
