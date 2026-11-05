@@ -867,6 +867,7 @@ button{font-family:inherit}
 .cell.likely{outline:3px solid var(--me);outline-offset:1px}
 .dcell{border-radius:5px;display:flex;align-items:center;justify-content:center;font:700 12px var(--cond);border:1px dashed var(--line);color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg)}
 .dcell.on{border-style:solid;color:#fff}
+.xs-lbl em{font-style:normal;margin-left:4px;padding:1px 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:700 10px var(--body);letter-spacing:.04em;text-transform:uppercase}
 .xs-lbl{display:flex;justify-content:space-between;font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .grp{margin-top:14px}
 .grp h4{margin:0 0 6px;font:700 13px var(--body);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
@@ -1046,6 +1047,9 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .mgrid .fld label b{color:var(--bad)}
 .mfoot{display:flex;gap:10px;justify-content:flex-end;padding:4px 16px 16px;flex-wrap:wrap}
 table.q tr.hasobs td{background:#FBECEC}table.q tr.hasobs td.sticky{background:#FBECEC}
+#manDlg .man-box{width:min(620px,100%);max-height:calc(100vh - 32px);overflow:auto}#manDlg textarea{width:100%;box-sizing:border-box}#manErr{color:var(--bad);font-weight:600;min-height:1.2em}
+table.q tr.man td{background:#F1F6FF}table.q tr.man td.sticky{box-shadow:inset 4px 0 0 #1A56DB}.badge.man{background:#DBE7FF;color:#123E9C;border:1px solid #9DB8F5}
+.segbar .manDel{color:var(--bad)}.nobs.man{border-color:#9DB8F5;background:#F1F6FF;color:#123E9C}
 label.robsl{display:block;margin-top:6px;font:600 11.5px var(--body);color:var(--muted);white-space:normal}textarea.robs{display:block;margin-top:3px;width:100%;min-width:200px;max-width:340px;min-height:44px;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:500 14px var(--body);padding:6px 8px;resize:vertical}
 tr.off textarea.robs{opacity:.6}
 .hcard{padding:10px 16px 16px;display:grid;gap:12px}
@@ -1375,6 +1379,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .sr-t td{border:1px solid var(--nb);padding:3px 5px;text-align:right;white-space:nowrap}.sr-t .l{text-align:left}
 .sr-t td.o{background:var(--nk);color:#fff;font:700 14px var(--cond);text-align:center}.sr-t td.e{font:700 14px var(--cond)}
 .sr-t td.esp{text-align:center;font-weight:700;color:var(--nr)}.sr-t td.q{font:700 14px var(--cond)}.sr-t td.q small{font:500 11px var(--body);color:var(--ng)}
+.sr-t tr.sobs td{text-align:left;font:italic 500 11.5px var(--body);background:#FBECEC;color:#3A1A1A;padding:4px 8px}.sr-t tr.sobs.man td{background:#F1F6FF;color:#123E9C}
 .sr-t tr.b td{background:var(--nl);text-align:left;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-left:4px solid var(--nr)}.sr-t tr.b span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--ng)}
 .sr-t tr.inc td:not(.o):not(.esp){background:#FAFAFA}
 .sr-bot{margin-top:8px}.sr-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -1640,7 +1645,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 03/11/2026 09:17 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 05/11/2026 18:53 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1705,7 +1710,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div id="viewPt">
         <div class="pad">
           <div class="hdr"><span>Bloco de 20 m</span><b id="blockTxt"></b></div>
-          <div class="xs-lbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
+          <div class="xs-lbl" id="xsLbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
           <div class="xs" id="xs"></div>
           <div id="groups"></div>
         </div>
@@ -1770,7 +1775,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div id="b4_viewPt">
         <div class="pad">
           <div class="hdr"><span>Bloco de 20 m</span><b id="b4_blockTxt"></b></div>
-          <div class="xs-lbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
+          <div class="xs-lbl" id="b4_xsLbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
           <div class="xs" id="b4_xs"></div>
           <div id="b4_groups"></div>
         </div>
@@ -2105,9 +2110,27 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
-          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button><button class="secondary" type="button" id="cManAdd" data-acl="calculadora:edit">＋ Incluir pano fora do projeto</button></div>
         </div>
       </form>
+<div class="modal" id="manDlg" hidden role="dialog" aria-modal="true" aria-labelledby="manT">
+  <form class="mbox man-box" id="manForm" novalidate><h2 id="manT">Pano fora do projeto</h2>
+    <p class="msub">Pano de pavimentação que não está no projeto. Entra na lista de segmentos, nos totais e no relatório da programação; o projeto não muda.</p>
+    <div class="mgrid">
+      <div class="fld w2"><label for="manSol">Solução *</label><select id="manSol" required></select></div>
+      <div class="fld"><label for="manSent">Sentido *</label><select id="manSent" required><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
+      <div class="fld"><label for="manFx">Faixa *</label><select id="manFx" required></select></div>
+      <div class="fld"><label for="manIni">Estaca inicial *</label><input id="manIni" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+300" required></div>
+      <div class="fld"><label for="manFim">Estaca final *</label><input id="manFim" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+500" required></div>
+      <div class="fld"><label for="manLen">Comprimento (m) *</label><input id="manLen" type="number" inputmode="decimal" step="0.1" min="0" required></div>
+      <div class="fld"><label for="manW">Largura (m) *</label><input id="manW" type="number" inputmode="decimal" step="0.01" min="0" required></div>
+      <div class="fld"><label for="manE">Espessura (cm) *</label><input id="manE" type="number" inputmode="decimal" step="0.1" min="0" required></div>
+      <div class="fld w2"><label for="manObs">Observações</label><textarea id="manObs" rows="2" maxlength="400"></textarea></div>
+    </div>
+    <p class="note" id="manErr" role="alert"></p>
+    <div class="mfoot"><span style="flex:1"></span><button type="button" class="secondary" id="manCancel">Cancelar</button><button type="submit" class="primary" id="manSave">Incluir pano</button></div>
+  </form></div>
+
 
       <section class="card" id="cHor" aria-labelledby="cHorT" data-acl="calculadora:create">
         <h2 id="cHorT">Horários da programação</h2>
@@ -2184,10 +2207,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261103121733";</script>
-<script src="native.js?v=20261103121733"></script>
-<script src="firebase-config.js?v=20261103121733"></script>
-<script src="auth.js?v=20261103121733"></script>
+<script>window.APP_BUILD="20261105215308";</script>
+<script src="native.js?v=20261105215308"></script>
+<script src="firebase-config.js?v=20261105215308"></script>
+<script src="auth.js?v=20261105215308"></script>
 
 </body>
 </html>

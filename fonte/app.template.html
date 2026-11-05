@@ -192,6 +192,7 @@ button{font-family:inherit}
 .cell.likely{outline:3px solid var(--me);outline-offset:1px}
 .dcell{border-radius:5px;display:flex;align-items:center;justify-content:center;font:700 12px var(--cond);border:1px dashed var(--line);color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg)}
 .dcell.on{border-style:solid;color:#fff}
+.xs-lbl em{font-style:normal;margin-left:4px;padding:1px 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:700 10px var(--body);letter-spacing:.04em;text-transform:uppercase}
 .xs-lbl{display:flex;justify-content:space-between;font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .grp{margin-top:14px}
 .grp h4{margin:0 0 6px;font:700 13px var(--body);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
@@ -371,6 +372,9 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .mgrid .fld label b{color:var(--bad)}
 .mfoot{display:flex;gap:10px;justify-content:flex-end;padding:4px 16px 16px;flex-wrap:wrap}
 table.q tr.hasobs td{background:#FBECEC}table.q tr.hasobs td.sticky{background:#FBECEC}
+#manDlg .man-box{width:min(620px,100%);max-height:calc(100vh - 32px);overflow:auto}#manDlg textarea{width:100%;box-sizing:border-box}#manErr{color:var(--bad);font-weight:600;min-height:1.2em}
+table.q tr.man td{background:#F1F6FF}table.q tr.man td.sticky{box-shadow:inset 4px 0 0 #1A56DB}.badge.man{background:#DBE7FF;color:#123E9C;border:1px solid #9DB8F5}
+.segbar .manDel{color:var(--bad)}.nobs.man{border-color:#9DB8F5;background:#F1F6FF;color:#123E9C}
 label.robsl{display:block;margin-top:6px;font:600 11.5px var(--body);color:var(--muted);white-space:normal}textarea.robs{display:block;margin-top:3px;width:100%;min-width:200px;max-width:340px;min-height:44px;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:500 14px var(--body);padding:6px 8px;resize:vertical}
 tr.off textarea.robs{opacity:.6}
 .hcard{padding:10px 16px 16px;display:grid;gap:12px}
@@ -700,6 +704,7 @@ table.sr-t{border-collapse:collapse;width:100%;font-size:12px;font-variant-numer
 .sr-t td{border:1px solid var(--nb);padding:3px 5px;text-align:right;white-space:nowrap}.sr-t .l{text-align:left}
 .sr-t td.o{background:var(--nk);color:#fff;font:700 14px var(--cond);text-align:center}.sr-t td.e{font:700 14px var(--cond)}
 .sr-t td.esp{text-align:center;font-weight:700;color:var(--nr)}.sr-t td.q{font:700 14px var(--cond)}.sr-t td.q small{font:500 11px var(--body);color:var(--ng)}
+.sr-t tr.sobs td{text-align:left;font:italic 500 11.5px var(--body);background:#FBECEC;color:#3A1A1A;padding:4px 8px}.sr-t tr.sobs.man td{background:#F1F6FF;color:#123E9C}
 .sr-t tr.b td{background:var(--nl);text-align:left;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-left:4px solid var(--nr)}.sr-t tr.b span{font-weight:500;text-transform:none;letter-spacing:0;color:var(--ng)}
 .sr-t tr.inc td:not(.o):not(.esp){background:#FAFAFA}
 .sr-bot{margin-top:8px}.sr-sum{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
@@ -1030,7 +1035,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div id="viewPt">
         <div class="pad">
           <div class="hdr"><span>Bloco de 20 m</span><b id="blockTxt"></b></div>
-          <div class="xs-lbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
+          <div class="xs-lbl" id="xsLbl"><span>◂ Decrescente</span><span>Crescente ▸</span></div>
           <div class="xs" id="xs"></div>
           <div id="groups"></div>
         </div>
@@ -1363,9 +1368,27 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
-          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button><button class="secondary" type="button" id="cManAdd" data-acl="calculadora:edit">＋ Incluir pano fora do projeto</button></div>
         </div>
       </form>
+<div class="modal" id="manDlg" hidden role="dialog" aria-modal="true" aria-labelledby="manT">
+  <form class="mbox man-box" id="manForm" novalidate><h2 id="manT">Pano fora do projeto</h2>
+    <p class="msub">Pano de pavimentação que não está no projeto. Entra na lista de segmentos, nos totais e no relatório da programação; o projeto não muda.</p>
+    <div class="mgrid">
+      <div class="fld w2"><label for="manSol">Solução *</label><select id="manSol" required></select></div>
+      <div class="fld"><label for="manSent">Sentido *</label><select id="manSent" required><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
+      <div class="fld"><label for="manFx">Faixa *</label><select id="manFx" required></select></div>
+      <div class="fld"><label for="manIni">Estaca inicial *</label><input id="manIni" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+300" required></div>
+      <div class="fld"><label for="manFim">Estaca final *</label><input id="manFim" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+500" required></div>
+      <div class="fld"><label for="manLen">Comprimento (m) *</label><input id="manLen" type="number" inputmode="decimal" step="0.1" min="0" required></div>
+      <div class="fld"><label for="manW">Largura (m) *</label><input id="manW" type="number" inputmode="decimal" step="0.01" min="0" required></div>
+      <div class="fld"><label for="manE">Espessura (cm) *</label><input id="manE" type="number" inputmode="decimal" step="0.1" min="0" required></div>
+      <div class="fld w2"><label for="manObs">Observações</label><textarea id="manObs" rows="2" maxlength="400"></textarea></div>
+    </div>
+    <p class="note" id="manErr" role="alert"></p>
+    <div class="mfoot"><span style="flex:1"></span><button type="button" class="secondary" id="manCancel">Cancelar</button><button type="submit" class="primary" id="manSave">Incluir pano</button></div>
+  </form></div>
+
 
       <section class="card" id="cHor" aria-labelledby="cHorT" data-acl="calculadora:create">
         <h2 id="cHorT">Horários da programação</h2>
@@ -1880,9 +1903,12 @@ function renderPoint(st){const r=st.r;
   const cell=L=>{const c=Data.codeAt(L,bi),inf=c?Data.info(c):null,L0=LANES[L];
     return `<button type="button" class="cell${c?'':' empty'}${L===likely&&r.lane[likely]>0.35?' likely':''}" data-l="${L}" style="${inf?`background:${inf.color};color:${inf.ink};border-color:${inf.color}`:''}"><b>${c||'—'}</b><i>${L0.grp==='F1'?'F1':L0.grp==='F23'?'F2/3':'Acost.'}</i></button>`};
   const dcell=L=>{const c=Data.codeAt(L,bi);const inf=c?Data.info(c):null;return `<div class="dcell${c?' on':''}" style="${inf?`background:${inf.color};border-color:${inf.color}`:''}">${c||'—'}</div>`};
-  $('xs').innerHTML=[dcell(7),cell(5),cell(4),cell(3),'<div class="mid"></div>',cell(2),cell(1),cell(0),dcell(6)].join('');
+  // pista do seu sentido sempre à direita (vista de quem dirige); a do sentido contrário à esquerda
+  const vd=viewDir(st),right=vd<0?'D':'C',known=!!VKNOWN;
+  $('xs').innerHTML=(right==='C'?[dcell(7),cell(5),cell(4),cell(3),'<div class="mid"></div>',cell(2),cell(1),cell(0),dcell(6)]:[dcell(6),cell(0),cell(1),cell(2),'<div class="mid"></div>',cell(3),cell(4),cell(5),dcell(7)]).join('');
+  $('xsLbl').innerHTML=right==='C'?`<span>◂ Decrescente</span><span>Crescente ▸${known?' <em>seu sentido</em>':''}</span>`:`<span>◂ Crescente</span><span>Decrescente ▸${known?' <em>seu sentido</em>':''}</span>`;
   $('xs').querySelectorAll('.cell').forEach(el=>el.onclick=()=>{const L=+el.dataset.l,id=PANO_AT[L][bi];if(id>=0){const q=Geo.off(bi,LANES[L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(id)}});
-  const sides=st.dirSign<0?['D','C']:['C','D'];
+  const sides=right==='D'?['D','C']:['C','D'];
   $('groups').innerHTML=sides.map(sd=>{const order=sd==='C'?[2,1,0,6]:[3,4,5,7];
     const items=order.map(L=>{const id=PANO_AT[L][bi];const L0=LANES[L];if(id<0)return '';const p=PANOS[id],inf=p.info;const vis=Filters.visible(p);
       const a=ODO[p.i0],b=ODO[p.i1]+20,ext=b-a,fs=Math.max(0,s-a),te=Math.max(0,b-s);
@@ -1891,10 +1917,12 @@ function renderPoint(st){const r=st.r;
         <div class="d">Pano ${p.tag} · ${panoEnds(p).ini} → ${panoEnds(p).fim} · ${fmtM(ext)}${inf.param?' · parâmetro '+inf.param:''}<br>${rest}${vis?'':' · oculto pelos filtros'}</div>
         <div class="bar"><i style="left:calc(${(100*fs/ext).toFixed(1)}% - 1px)"></i></div></div></div>`}).join('');
     const sa=Data.saidaAt(sd,bi)?`<div class="none">● Saída de dreno nesta estaca</div>`:'';
-    const mine=(st.dirSign>0&&sd==='C')||(st.dirSign<0&&sd==='D');
+    const mine=known&&sd===right;
     return `<div class="grp"><h4>${SIDE[sd]}${mine?'<em>seu sentido</em>':''}</h4>${items||'<p class="none">Sem solução neste bloco.</p>'}${sa}</div>`}).join('');
   $('groups').querySelectorAll('.item').forEach(el=>el.onclick=()=>{const p=PANOS[+el.dataset.p];const q=Geo.off(bi,LANES[p.L].off);setFollow(false);map.setView(q,Math.max(map.getZoom(),18));openPano(p.id)});
   drawReti(s)}
+let VDIR=1,VKNOWN=false,VCNT=0,VT=0;
+function viewDir(st){if(st.t!==VT){VT=st.t;const d=st.dirSign;if(st.mode!=='gps'){VCNT=0}else if(d){if(!VKNOWN){VDIR=d;VKNOWN=true;VCNT=0}else if(d!==VDIR){if(++VCNT>=2){VDIR=d;VCNT=0}}else VCNT=0}}return VDIR}
 function drawReti(s){const cv=$('reti');const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;if(!W)return;cv.width=W*dpr;cv.height=H*dpr;
   const g=cv.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,W,H);if(s==null)return;
   const span=200,x=v=>W/2+(v-s)*(W/(2*span));const rowsL=[6,0,1,2,3,4,5,7];const top=8;
@@ -2014,7 +2042,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     w:{F1:filled(sw.F1)?sw.F1:DEF_W.F1,F23:filled(sw.F23)?sw.F23:DEF_W.F23,AC:filled(sw.AC)?sw.AC:DEF_W.AC},esp:Object.assign({},DEF_ESP,saved.esp||{}),excl:Object.assign({},saved.excl||{}),show:Object.assign({},saved.show||{}),rowW:Object.assign({},saved.rowW||{}),rowOff:Object.assign({},saved.rowOff||{}),rowSeg:Object.assign({},saved.rowSeg||{}),serial:Object.assign({},saved.serial||{}),equipe:saved.equipe||'',equipeMan:!!saved.equipeMan,done:saved.done??true,ordem:saved.ordem||'auto'};
   const save=()=>{S.km[SRCK]={a:S.kmA,b:S.kmB};S.src=SRCK;store.set('calc',S)};
   // estado por fonte: estacas editadas, larguras por pano, "programar" e seriais (as estacas das duas rodovias se repetem)
-  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={};if(!b.rowE)b.rowE={}});
+  S.bySrc=saved.bySrc||{};if(!S.bySrc['277'])S.bySrc['277']={rowW:S.rowW,rowOff:S.rowOff,rowSeg:S.rowSeg,serial:S.serial};Object.values(S.bySrc).forEach(b=>{if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};if(!b.manual)b.manual=[]});
   S.km=saved.km||{};if(!S.km[saved.src||'277'])S.km[saved.src||'277']={a:S.kmA,b:S.kmB};
   const KM0={'277':{a:'236+000',b:'237+000'},B4:{a:'230+000',b:'231+000'}};
   // nova revisão do unifilar da B4: dados digitados em segmentos cuja identificação mudou saem do segmento (ficam guardados à parte)
@@ -2027,9 +2055,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     return `<div class="alert info" id="revNote"><b>Unifilar da BR-373 B4 atualizado (${escH(B4REV.id)}, km ${B4REV.km?B4REV.km.join(' a '):''}).</b> ${o.length} dado${o.length>1?'s':''} digitado${o.length>1?'s':''} em segmentos que mudaram foi retirado para não ficar no segmento errado; confira e digite de novo onde couber: ${o.map(x=>`${escH(x.tag)} (${lab[x.campo]||x.campo}${val(x)})`).join(' · ')}. <button type="button" class="linkbtn" id="revAck">Entendi</button></div>`};
   function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
     ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
-    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowE:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};S.rowW=b.rowW;S.rowE=b.rowE;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowE:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};if(!b.manual)b.manual=[];S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
     const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
-  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowE=b.rowE;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
   const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
   let SRC_MISS=false;if(srcOfObra(INIT_OBRA)==='B4')SRC_MISS=!swapSrc('B4');
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
@@ -2183,7 +2211,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     return `<td${r.ed?' class="seged"':''}>${Data.nameAt(r.ini)}</td><td${r.ed?' class="seged"':''}>${Data.nameAt(r.fim)}</td><td${r.ed?' class="seged"':''}>${nf(r.len,dig)}</td>`}
   function serCell(r){const v=r.ser,tg=r.p.tag,lab={auto:'automático (planilha)',manual:'digitado',multi:`${v.cands.length} registros possíveis`,none:'sem correspondência'}[v.st];
     return `<td class="l scell"><input class="rser ${v.st}" list="dl-${tg}" value="${escH(v.val)}" placeholder="${v.st==='multi'?'escolha ou digite':'digite o serial'}" autocomplete="off" aria-label="Serial do pano ${tg}">${(v.cands.length?`<datalist id="dl-${tg}">${v.cands.map(c=>`<option value="${escH(c)}">`).join('')}</datalist>`:'')}<small>${lab}${v.st==='manual'&&v.cands.length?`<button type="button" class="rserReset" title="Voltar ao serial automático">↺ automático</button>`:''}</small></td>`}
-  function segBtns(r){if(r.off)return '';if(EDIT&&EDIT.tag===r.p.tag)return `<div class="segbar"><button type="button" class="segSave">Salvar</button><button type="button" class="segCancel">Cancelar</button>${r.ed?'<button type="button" class="segOrig">Original</button>':''}</div><div class="segErr" role="alert">${EDIT.err||''}</div>`;
+  function segBtns(r){if(r.manual)return `<div class="segbar"><button type="button" class="manEd" data-acl="calculadora:edit">✎ Editar</button><button type="button" class="manDel" data-acl="calculadora:edit">Excluir</button></div>`;if(r.off)return '';if(EDIT&&EDIT.tag===r.p.tag)return `<div class="segbar"><button type="button" class="segSave">Salvar</button><button type="button" class="segCancel">Cancelar</button>${r.ed?'<button type="button" class="segOrig">Original</button>':''}</div><div class="segErr" role="alert">${EDIT.err||''}</div>`;
     return `<button type="button" class="segEd" aria-label="Editar estacas do pano ${r.p.tag}">✎ Editar</button>`}
   // depois de salvar: atualiza a programação já emitida (relatório e registro em Relatórios)
   function segAfter(tag){let note='';if(SRCK==='B4')return note;
@@ -2194,6 +2222,45 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
             pr.items=pr.items.map(it=>{if(it.tag!==tag)return it;const o=Object.assign({},it,r?{a:r.a,b:r.b,serial:r.serial||''}:{});if(r){if(r.obs)o.obs=r.obs;else delete o.obs}return o}).filter(it=>it.tag!==tag||r);store.set('execProgs',ps);emit('exec',1);
             note=` Programação de ${lp.data.split('-').reverse().join('/')} (${lp.equipe}) atualizada em Relatórios.`}}}}}catch(e){}
     return note}
+
+  // ---------- pano fora do projeto (lançamento manual) ----------
+  let MANED=null;
+  const manFx=()=>[...new Set(LANES.filter(l=>l.grp!=='DRN').map(l=>l.grp))];
+  function manOpen(m){MANED=m||null;const sel=$('manSol');
+    sel.innerHTML=PAVE_CODES.map(c=>{const i=Data.info(c);return i?`<option value="${c}">${c} – ${escH(i.desc)}</option>`:''}).join('');
+    $('manFx').innerHTML=manFx().map(g=>`<option value="${g}">${escH(Data.GRP[g]||g)}</option>`).join('');
+    const L0=m?LANES[m.L]:null;
+    sel.value=m?m.code:(PAVE_CODES.includes('FF')?'FF':PAVE_CODES[0]);
+    $('manSent').value=m?L0.side:(S.sent==='D'?'D':'C');$('manFx').value=m?L0.grp:(manFx().includes(S.pista)?S.pista:'F1');
+    $('manIni').value=m?m.ini:'';$('manFim').value=m?m.fim:'';$('manLen').value=m?m.len:'';$('manW').value=m?m.w:'';$('manE').value=m?m.e:'';$('manObs').value=m?(S.obs[m.id]||m.obs||''):'';
+    $('manT').textContent=m?`Editar pano ${m.id} (fora do projeto)`:'Pano fora do projeto';$('manSave').textContent=m?'Salvar alterações':'Incluir pano';$('manErr').textContent='';
+    ['manIni','manFim','manLen','manW','manE'].forEach(i=>$(i).removeAttribute('aria-invalid'));$('manDlg').hidden=false;setTimeout(()=>$(m?'manLen':'manIni').focus(),30)}
+  // comprimento sugerido pelas estacas (pode ser alterado)
+  function manAutoLen(){const A=Data.parseKm($('manIni').value.trim()),B=Data.parseKm($('manFim').value.trim());if(!A.err&&!B.err&&$('manLen').dataset.touched!=='1')$('manLen').value=Math.round(Math.abs(B.s-A.s)*10)/10}
+  ['manIni','manFim'].forEach(i=>$(i).addEventListener('change',manAutoLen));$('manLen').addEventListener('input',()=>$('manLen').dataset.touched='1');
+  $('cManAdd').onclick=()=>{$('manLen').dataset.touched='';manOpen(null)};
+  $('manCancel').onclick=()=>{$('manDlg').hidden=true;MANED=null};
+  $('manDlg').addEventListener('click',e=>{if(e.target.id==='manDlg'){$('manDlg').hidden=true;MANED=null}});
+  $('manForm').onsubmit=e=>{e.preventDefault();const err=(id,t)=>{$('manErr').textContent=t;if(id){$(id).setAttribute('aria-invalid','true');$(id).focus()}return false};
+    ['manIni','manFim','manLen','manW','manE'].forEach(i=>$(i).removeAttribute('aria-invalid'));
+    const code=$('manSol').value,side=$('manSent').value,grp=$('manFx').value,L=LANES.findIndex(l=>l.grp===grp&&l.side===side);
+    if(!code)return err('manSol','Escolha a solução.');if(L<0)return err('manFx','Faixa não encontrada para este sentido.');
+    const A=Data.parseKm($('manIni').value.trim()),B=Data.parseKm($('manFim').value.trim());
+    if(A.err)return err('manIni','Estaca inicial: '+A.err);if(B.err)return err('manFim','Estaca final: '+B.err);
+    if(Math.abs(A.s-B.s)<1e-6)return err('manFim','A estaca final deve ser diferente da inicial.');
+    if(side==='C'&&A.s>B.s)return err('manIni','No sentido crescente a estaca inicial deve ser menor que a final.');
+    if(side==='D'&&A.s<B.s)return err('manIni','No sentido decrescente a estaca inicial deve ser maior que a final.');
+    const len=num($('manLen').value),w=num($('manW').value),e2=num($('manE').value);
+    if(!(len>0))return err('manLen','Informe o comprimento em metros.');if(!(w>0))return err('manW','Informe a largura em metros.');if(!(e2>0))return err('manE','Informe a espessura em centímetros.');
+    const a=Math.min(A.s,B.s),b=Math.max(A.s,B.s),obs=$('manObs').value.trim();
+    // não duplicar: mesmo trecho, faixa e solução já lançados
+    const dup=(S.manual||[]).find(x=>x!==MANED&&x.L===L&&x.code===code&&Math.abs(x.a-a)<0.5&&Math.abs(x.b-b)<0.5);if(dup)return err('manIni',`Já existe o pano ${dup.id} com esta solução, faixa e estacas.`);
+    if(!S.manual)S.manual=[];const B0=S.bySrc[SRCK];
+    let m=MANED;if(!m){B0.manSeq=(B0.manSeq||0)+1;m={id:'MAN-'+String(B0.manSeq).padStart(2,'0')};S.manual.push(m)}
+    Object.assign(m,{code,L,a,b,ini:A.name,fim:B.name,len:Math.round(len*100)/100,w,e:e2,obs,at:Date.now()});if(obs)S.obs[m.id]=obs;else delete S.obs[m.id];save();
+    $('manDlg').hidden=true;const ed=!!MANED;MANED=null;const inR=(()=>{const P=Data.parseKm(S.kmA),Q=Data.parseKm(S.kmB);if(P.err||Q.err)return false;const lo=Math.min(P.s,Q.s),hi=Math.max(P.s,Q.s);return Math.min(b,hi)-Math.max(a,lo)>1e-6})();
+    SEGMSG=`Pano ${m.id} (fora do projeto) ${ed?'atualizado':'incluído'}: ${code} · ${SIDE[side]} · ${Data.GRP[grp]||grp} · ${A.name} → ${B.name} · ${nf(m.len,1)} m.${inR?'':' Ele aparece na lista quando o intervalo da calculadora incluir essas estacas.'}`;
+    if(F.kmA.value&&F.kmB.value)calc(false)};
 
   function calc(scroll){
     const out=$('cOut');
@@ -2225,7 +2292,16 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:(eCustom?num(oe):eProj),off=S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
-      rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),eProj:eProj>0?eProj:null,eCustom:!excl&&eCustom,excl,miss,area,vol,t})}
+      rows.push({p,L0,a,b,a0,b0,ed:!!ed,len,partial:a>pa+1e-6||b<pb-1e-6,w:w>0?w:null,wBase,wCustom,off,e:excl?null:(e>0?e:null),eProj:eProj>0?eProj:null,eCustom:!excl&&eCustom,excl,miss,area,vol,t,obs:(S.obs[p.tag]||'').trim()})}
+    // panos incluídos à mão (fora do projeto): entram quando o trecho do pano cruza o intervalo e a faixa/sentido do filtro
+    for(const m of (S.manual||[])){const L0=LANES[m.L];if(!L0||L0.grp==='DRN'||/^DRN/.test(S.pista))continue;if(S.pista!=='ALL'&&L0.grp!==S.pista)continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+      if(!(Math.min(m.b,sB)-Math.max(m.a,sA)>1e-6))continue;if(S.show[m.code]===false){hidden.set(m.code,(hidden.get(m.code)||0)+1);continue}
+      const ix=v=>Math.max(0,Math.min(R.length-1,Math.floor((v-ODO[0])/20))),info=Data.info(m.code)||{code:m.code,desc:m.code,color:'#9AA39D',ink:'#111'};
+      const p={tag:m.id,code:m.code,info,L:m.L,i0:ix(m.a),i1:ix(m.b-0.01),manual:true,src:null};
+      const excl=!!S.excl[m.code],w=num(m.w),e=excl?null:num(m.e),len=num(m.len),off=S.rowOff[m.id]===true;
+      const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
+      const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
+      rows.push({p,L0,a:m.a,b:m.b,a0:m.a,b0:m.b,ed:false,len,partial:false,w:w>0?w:null,wBase:w,wCustom:false,off,e:e>0?e:null,eProj:e>0?e:null,eCustom:false,excl,miss,area,vol,t,obs:(S.obs[m.id]||m.obs||'').trim(),manual:true,m})}
     const drows=[];
     if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;if(S.show[p.code]===false){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
@@ -2234,7 +2310,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
     drows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini));
     // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
-    rows.forEach(r=>{const dec=r.L0.side==='D';r.ini=dec?r.b:r.a;r.fim=dec?r.a:r.b;r.pIni=dec?Data.endName(r.p.i1):R[r.p.i0][0];r.pFim=dec?R[r.p.i0][0]:Data.endName(r.p.i1)});
+    rows.forEach(r=>{const dec=r.L0.side==='D';r.ini=dec?r.b:r.a;r.fim=dec?r.a:r.b;r.pIni=r.manual?r.m.ini:dec?Data.endName(r.p.i1):R[r.p.i0][0];r.pFim=r.manual?r.m.fim:dec?R[r.p.i0][0]:Data.endName(r.p.i1)});
     const ordem=S.ordem==='auto'?(S.sent==='C'?'asc':S.sent==='D'?'desc':'exec'):S.ordem;
     const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
     const cmp={asc:(x,y)=>x.ini-y.ini||LORD[x.p.L]-LORD[y.p.L],desc:(x,y)=>y.ini-x.ini||LORD[x.p.L]-LORD[y.p.L],
@@ -2281,8 +2357,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ${(()=>{const E=rows.filter(r=>r.eCustom);return E.length?`<div class="alert ealert" style="margin:10px 16px 0"><b>Espessura alterada em ${E.length} pano${E.length>1?'s':''} (diferente do projeto).</b> ${E.slice(0,8).map(r=>`${r.p.tag}: ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join(' · ')}${E.length>8?' …':''}. A alteração vai sinalizada no relatório da programação. Toque em ↺ para voltar à espessura de projeto.</div>`:''})()}
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
         <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
-      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}" data-tag="${r.p.tag}">
-        <td class="l sticky pano">${r.p.tag}<small>${r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}</td>
+      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}${r.manual?' man':''}${r.obs?' hasobs':''}" data-tag="${r.p.tag}">
+        <td class="l sticky pano">${r.p.tag}<small>${r.manual?`<span class="badge man">fora do projeto</span>${r.off?' <span class="badge muted">não programado</span>':''}`:r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste pano (vai para o relatório)" aria-label="Observação do pano ${r.p.tag}">${escH(r.obs||'')}</textarea></label></td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
         <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>${serCell(r)}
@@ -2315,16 +2391,21 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     [...out.querySelectorAll('.tscroll')].forEach((e,i)=>{if(prevScroll[i])e.scrollLeft=prevScroll[i]});
     {const wa=$('cWAll'),go=$('cWAllGo'),rst=$('cWAllRst');
       if(go)go.onclick=()=>{const v=num(wa.value);if(!(v>0)){wa.setAttribute('aria-invalid','true');wa.focus();return}wa.removeAttribute('aria-invalid');let n=0;
-        for(const r of LAST.rows)if(!r.excl){S.rowW[r.p.tag]=String(v);n++}save();SEGMSG=`Largura média de ${nf(v,2)} m aplicada a ${n} pano${n>1?'s':''} da programação.`;calc(false)};
+        for(const r of LAST.rows)if(!r.excl){if(r.manual)r.m.w=v;else S.rowW[r.p.tag]=String(v);n++}save();SEGMSG=`Largura média de ${nf(v,2)} m aplicada a ${n} pano${n>1?'s':''} da programação.`;calc(false)};
       if(wa)wa.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go.click()}};
       if(rst)rst.onclick=()=>{let n=0;for(const r of LAST.rows.concat(LAST.valid||[]))if(S.rowW[r.p.tag]!=null){delete S.rowW[r.p.tag];n++}save();SEGMSG=`Larguras de projeto restauradas em ${n} pano${n>1?'s':''}.`;calc(false)}}
     out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag;const cb=tr.querySelector('.rprog'),wi=tr.querySelector('.rw:not(.re)'),rs=tr.querySelector('.rwreset:not(.rereset)'),ei=tr.querySelector('.re'),er=tr.querySelector('.rereset');
-      if(ei)ei.onchange=()=>{const v=ei.value.trim(),r=ROWS.get(tg);const pj=r?r.eProj:null;if(v===''||!(num(v)>0)||num(v)===pj)delete S.rowE[tg];else S.rowE[tg]=v;save();
+      const mr=(S.manual||[]).find(x=>x.id===tg);
+      if(mr){const sv=(k,el,lab,un)=>{const v=num(el.value);if(!(v>0)){el.setAttribute('aria-invalid','true');return}mr[k]=v;save();SEGMSG=`Pano ${tg} (fora do projeto): ${lab} ${nf(v,k==='w'?2:1)} ${un}.`;calc(false)};
+        if(ei)ei.onchange=()=>sv('e',ei,'espessura','cm');if(wi)wi.onchange=()=>sv('w',wi,'largura','m');
+        const me=tr.querySelector('.manEd'),md=tr.querySelector('.manDel');if(me)me.onclick=()=>manOpen(mr);
+        if(md)md.onclick=()=>{if(!confirm(`Excluir o pano ${tg} (fora do projeto) desta programação?`))return;S.manual.splice(S.manual.indexOf(mr),1);delete S.obs[tg];delete S.rowOff[tg];delete S.serial[tg];save();SEGMSG=`Pano ${tg} (fora do projeto) excluído.`;calc(false)}}
+      if(ei&&!mr)ei.onchange=()=>{const v=ei.value.trim(),r=ROWS.get(tg);const pj=r?r.eProj:null;if(v===''||!(num(v)>0)||num(v)===pj)delete S.rowE[tg];else S.rowE[tg]=v;save();
         SEGMSG=S.rowE[tg]!=null?`Pano ${tg}: espessura alterada para ${nf(num(v),1)} cm (projeto ${pj!=null?nf(pj,1)+' cm':'sem espessura'}).`:`Pano ${tg}: espessura de projeto.`;calc(false)};
-      if(er)er.onclick=()=>{delete S.rowE[tg];save();SEGMSG=`Pano ${tg}: espessura de projeto restaurada.`;calc(false)};
+      if(er&&!mr)er.onclick=()=>{delete S.rowE[tg];save();SEGMSG=`Pano ${tg}: espessura de projeto restaurada.`;calc(false)};
       cb.onchange=()=>{if(cb.checked)delete S.rowOff[tg];else S.rowOff[tg]=true;save();calc(false)};
-      const ob=tr.querySelector('.robs');if(ob){ob.oninput=()=>tr.classList.toggle('hasobs',!!ob.value.trim());ob.onchange=()=>{const v=ob.value.trim();if(v)S.obs[tg]=v;else delete S.obs[tg];save();const r=ROWS.get(tg);if(r)r.obs=v;tr.classList.toggle('hasobs',!!v);const nE=$('dObsN');if(nE){const k=LAST&&LAST.drn?LAST.drn.rows.filter(x=>x.obs).length:0;nE.textContent=k?`${k} com observação`:''}segAfter(tg)}};
-      if(wi)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
+      const ob=tr.querySelector('.robs');if(ob){ob.oninput=()=>tr.classList.toggle('hasobs',!!ob.value.trim());ob.onchange=()=>{const v=ob.value.trim();if(v)S.obs[tg]=v;else delete S.obs[tg];const mo=(S.manual||[]).find(x=>x.id===tg);if(mo)mo.obs=v;save();const r=ROWS.get(tg);if(r)r.obs=v;tr.classList.toggle('hasobs',!!v);const nE=$('dObsN');if(nE){const k=LAST&&LAST.drn?LAST.drn.rows.filter(x=>x.obs).length:0;nE.textContent=k?`${k} com observação`:''}segAfter(tg)}};
+      if(wi&&!mr)wi.onchange=()=>{const v=wi.value.trim();const base=num(S.w[LANES[PANOS.find(p=>p.tag===tg).L].grp]);if(v===''||num(v)===base)delete S.rowW[tg];else S.rowW[tg]=v;save();calc(false)};
       if(rs)rs.onclick=()=>{delete S.rowW[tg];save();calc(false)}});
     ROWS.clear();[...rows,...drows].forEach(r=>ROWS.set(r.p.tag,r));
     out.querySelectorAll('tr[data-tag]').forEach(tr=>{const tg=tr.dataset.tag,r=ROWS.get(tg);if(!r)return;
@@ -2464,8 +2545,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   // sequência de execução: crescente da menor para a maior estaca, depois decrescente da maior para a menor
   function buildProg(info){const L=LAST;const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
     // dentro de cada pista (crescente, depois decrescente) segue a mesma ordem escolhida em "Ordenar segmentos" na Calculadora
-    const ord=L.ordem||'exec',side=(x,y)=>x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1;
-    const seq=L.rows.slice().sort((x,y)=>side(x,y)||(ord==='asc'?x.ini-y.ini:ord==='desc'?y.ini-x.ini:(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini))||LORD[x.p.L]-LORD[y.p.L]);
+    // espelho da relação de segmentos da Calculadora: mesma ordem, mesmos panos programados (do projeto e fora do projeto), com as edições feitas
+    const seq=L.rows.slice();
     seq.forEach((r,k)=>r.ord=k+1);
     const by=new Map();for(const r of seq){const k=r.p.code;if(!by.has(k))by.set(k,{info:r.p.info,n:0,len:0,area:0,t:0,inc:0,excl:r.excl});const o=by.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.t+=r.t||0}
     const sol=[...by.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
@@ -2473,7 +2554,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     PROG={info,seq,dseq,sol,L,made:new Date()};
     // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
     if(SRCK==='277')try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,usiDr:info.usiDr||null,usiQt:info.usiQt==null?null:info.usiQt,created:Date.now(),concluded:false,
-      items:[...seq,...dseq].map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||'',...(r.obs?{obs:r.obs}:{})}))})}catch(e){}}
+      items:[...seq,...dseq].filter(r=>!r.manual).map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||'',...(r.obs?{obs:r.obs}:{})}))})}catch(e){}} // panos fora do projeto não entram no controle de execução por pano (Relatórios)
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const dateBR=d=>{const [y,m,dd]=d.split('-');const wd=new Date(+y,+m-1,+dd).toLocaleDateString('pt-BR',{weekday:'long'});return `${dd}/${m}/${y} (${wd})`};
   const ordTxt=n=>n+'º';
@@ -2524,7 +2605,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const ORD=L.ordem||'exec',subOf=sd=>ORD==='asc'?'estaca inicial da menor para a maior':ORD==='desc'?'estaca inicial da maior para a menor':sd==='C'?'da menor para a maior estaca':'da maior para a menor estaca';
     for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:subOf(r.L0.side),panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
-      cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
+      cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,manual:!!r.manual,tag:r.p.tag,obs:r.obs||'',
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}${r.eCustom?` (alterada; projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`:''}`,
         esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm'+(r.eCustom?` · alterada (projeto ${r.eProj!=null?nf(r.eProj,r.eProj%1?1:0)+' cm':'—'})`:''):'sem espessura',eAlt:!!r.eCustom,espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:r.eCustom?'#FDE68A':inf.color,espInk:r.eCustom?'#7C2D12':inf.ink,
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
@@ -2551,7 +2632,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
                 {title:equipeTitulo(I.equipe),items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
                 usinaBox(I,hasP)],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
-      warn:[L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
+      warn:[(n=>n?`${n} pano(s) incluído(s) fora do projeto: ${P.seq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)}`).join('; ')}.`:null)(P.seq.filter(r=>r.manual).length),L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
       sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} = ${nf(dTot,0)} m de dreno + ${nSaiTot} saída${nSaiTot!==1?'s':''} × ${SAIDA_M} m = ${nf(nSaiTot*SAIDA_M,0)} m · total ${nf(dTot+nSaiTot*SAIDA_M,0)} m`:null,saidas,nSai:nSaiTot,saiM:nSaiTot*SAIDA_M,
@@ -2591,7 +2672,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ${M.count?`<h3 class="nsec">Sequência de execução <em>${M.count} panos</em></h3>`:''}${M.warn?`<div class="nwarn">${esc(M.warn)}</div>`:''}`;
     const card=p=>`<div class="npc${p.inc?' inc':''}${p.drn?' drn':''}${p.obs?' hasobs':''}"><div class="o">${p.ord}</div><div class="m"><div class="e">${p.ini} <i>até</i> ${p.fim}</div>
         <div class="l"><b>${p.lane}</b> ${pill(p)} <span>${esc(p.desc)}</span></div>
-        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor};color:${p.espInk}"`:''}>${k} <b>${v}</b></span>`).join('')}</div>${p.obs?`<div class="nobs"><b>Observações:</b> ${esc(p.obs)}</div>`:''}</div>
+        <div class="ch">${p.chips.map(([k,v,cls,ok])=>`<span class="${cls}${ok?'':' no'}"${cls==='esp'&&ok?` style="background:${p.espColor};border-color:${p.espColor};color:${p.espInk}"`:''}>${k} <b>${v}</b></span>`).join('')}</div>${p.manual?`<div class="nobs man"><b>Fora do projeto:</b> pano ${esc(p.tag)} incluído na Calculadora.</div>`:''}${p.obs?`<div class="nobs"><b>Observações:</b> ${esc(p.obs)}</div>`:''}</div>
         <div class="q">${p.unit?`<b>${p.qty}</b><small>${p.unit}</small>`:`<small>${p.qty}</small>`}</div></div>`;
     for(const s of M.sides){for(const p of s.panos)h+=card(p)}
     if(M.total)h+=`<div class="ntot">${esc(M.total)}</div>`;
@@ -2610,7 +2691,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const ABRV={FF:'Fres. funcional',FE:'Fres. estrutural',FS:'Fres. superficial',REC:'Reciclagem',PA:'Preench. acost.',RP:'Reparo profundo',RF:'Sigla R08'};
   const abrv=code=>{const f=Data.info(code).fam;return ABRV[f]||Data.info(code).desc};
   const faixaAb=l=>l.replace('Acostamento','Acost.').replace('Faixa ','F');
-  function simpRows(M){const out=[];for(const s of M.sides)for(const p of s.panos)out.push(p);return out}
+  function simpRows(M){const out=[];for(const s of M.sides)for(const p of s.panos){out.push(p);const t=[p.manual?`Pano ${p.tag} fora do projeto`:'',p.obs?'Observações: '+p.obs:''].filter(Boolean).join(' · ');if(t)out.push({obsRow:true,text:t,manual:p.manual})}return out}
   function showReportSimple(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
     if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
@@ -2623,7 +2704,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <div class="sr-us${hr[2].items.length>2?' n4':''}"><span>Usina e qualidade</span>${hr[2].items.map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div></div>
       ${M.warn?`<div class="sr-warn">${esc(M.warn)}</div>`:''}
       ${M.count?'':'<!--'}<div class="sr-tw"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th>Faixa</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th class="l">Solução</th><th>Esp.</th><th>Larg.</th><th>Ext.</th><th>CBUQ (t)</th><th>CBUQ acumulado (t)</th></tr></thead><tbody>
-      ${simpRows(M).map(r=>r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
+      ${simpRows(M).map(r=>r.obsRow?`<tr class="sobs${r.manual?' man':''}"><td colspan="12">${esc(r.text)}</td></tr>`:r.band?`<tr class="b"><td colspan="12">${r.title} <span>· ${r.sub}</span></td></tr>`:`<tr class="${r.inc?'inc':''}"><td class="o">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td>${faixaAb(r.lane.split(' · ')[1])}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td>
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td><td class="q acc">${r.acc}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
       ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th><th class="l obs">Observações</th></tr></thead><tbody>
@@ -2673,7 +2754,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       // (quadro de início da execução removido do relatório)
       if(M.warn){const h=hP(M.warn,CW-4,7.5,false)+2.4*s;box(Mg,y,CW,h,{fill:LIGHT,r:1});para(M.warn,Mg+2,y+1.2*s,CW-4,7.5,{});y+=h+g*0.7}
       // tabela de panos
-      const body=rows.map(r=>r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
+      const body=rows.map(r=>r.obsRow?[{content:r.text,colSpan:12,styles:{fillColor:r.manual?[241,246,255]:[251,236,236],fontStyle:'italic',halign:'left',textColor:INK,fontSize:7.2*s}}]:r.band?[{content:`${r.title.toUpperCase()}  ·  ${r.sub}`,colSpan:12,styles:{fillColor:LIGHT,fontStyle:'bold',halign:'left',textColor:INK}}]:
         [{content:r.ord,styles:{fontStyle:'bold',halign:'center',fillColor:INK,textColor:WH}},(r.lane.startsWith('Cres')?'Cresc.':'Decr.'),faixaAb(r.lane.split(' · ')[1]),{content:r.serial||'-',styles:{fontSize:6.9*s,textColor:r.serial?INK:MUT}},{content:r.ini,styles:{fontStyle:'bold'}},{content:r.fim,styles:{fontStyle:'bold'}},
          {content:clean(abrv(r.code)),raw:r},{content:r.espOk?r.esp:'s/ esp.',styles:r.espOk?{fillColor:hex(r.espColor),textColor:hex(r.espInk),fontStyle:'bold',halign:'center'}:{textColor:RED,fontStyle:'bold',halign:'center'}},
          r.largOk?r.larg.replace(' m',''):'s/ larg.',r.ext.replace(' m',''),{content:r.unit?r.qty:r.qty.replace('sem ','s/ '),styles:{fontStyle:'bold',textColor:r.unit?INK:MUT}},{content:r.acc,styles:{fontStyle:'bold',fillColor:LIGHT}}]);
