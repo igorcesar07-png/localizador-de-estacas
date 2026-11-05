@@ -735,11 +735,12 @@ button{font-family:inherit}
 #scrim{position:fixed;inset:0;z-index:2000;background:rgba(8,10,9,.5);opacity:0;pointer-events:none;transition:opacity .2s}
 #scrim.open{opacity:1;pointer-events:auto}
 #drawer{position:fixed;z-index:2001;top:0;bottom:0;left:0;width:min(320px,86vw);background:var(--plate);color:var(--plate-ink);transform:translateX(-102%);transition:transform .22s ease;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top,0px) + 14px) 14px calc(env(safe-area-inset-bottom,0px) + 14px);box-shadow:8px 0 30px rgba(0,0,0,.35);box-sizing:border-box}
+#drawer{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 #drawer.open{transform:none}
 .dh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 14px;border-bottom:1px solid var(--plate-line)}
 .dh b{font:700 22px var(--cond);letter-spacing:.02em;display:block}
 .dh small{display:block;color:var(--plate-muted);font-size:12.5px;margin-top:1px}
-.nav{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:12px;flex:none}
 .nav a{display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 12px;border-radius:12px;color:var(--plate-ink);text-decoration:none;border:1px solid transparent}
 .nav a svg{width:24px;height:24px;flex:none;color:var(--plate-muted)}
 .nav a span{display:flex;flex-direction:column;font:600 16px var(--body)}
@@ -799,7 +800,7 @@ button{font-family:inherit}
 #pLoc .bigBtn.stop{background:var(--pn-btn2);color:var(--pn-btn2-ink);border-color:var(--pn-btn2-bd)}#pLoc .ghostBtn{border-color:var(--pn-btn2-bd);color:var(--pn-ink)}
 #pLoc .menuBtn{background:var(--pn-chip);border-color:var(--pn-line);color:var(--pn-ink)}
 /* seletor de tema no menu */
-.dtheme{margin:12px 0 0;display:grid;gap:6px}.dtheme>span{font:700 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--plate-muted)}
+.dtheme{margin:12px 0 0;flex:none;display:grid;gap:6px}.dtheme>span{font:700 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--plate-muted)}
 .dtheme .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--plate-2);border:1px solid var(--plate-line);border-radius:12px;padding:3px}
 .dtheme button{min-height:40px;border:0;border-radius:9px;background:transparent;color:var(--plate-ink);font:700 13px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 .dtheme button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}.dtheme small{color:var(--plate-muted);font-size:11.5px;line-height:1.35}
@@ -1673,6 +1674,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 <nav id="drawer" aria-label="Menu" aria-hidden="true">
   <div class="dh"><div><b>Localizador de Estacas</b><small>BR-277/PR · Lotes 02 e 03 · BR-373/PR · Lote 04</small></div>
     <button class="menuBtn" type="button" data-close aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="dtheme" role="group" aria-labelledby="dThemeL"><span id="dThemeL">Aparência</span><div class="seg"><button type="button" data-theme-set="auto" aria-pressed="true">Automático</button><button type="button" data-theme-set="light" aria-pressed="false">☀ Diurno</button><button type="button" data-theme-set="dark" aria-pressed="false">☾ Noturno</button></div><small id="dThemeHint"></small></div>
   <div class="nav">
     <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
@@ -1685,8 +1687,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dtheme" role="group" aria-labelledby="dThemeL"><span id="dThemeL">Aparência</span><div class="seg"><button type="button" data-theme-set="auto" aria-pressed="true">Automático</button><button type="button" data-theme-set="light" aria-pressed="false">☀ Diurno</button><button type="button" data-theme-set="dark" aria-pressed="false">☾ Noturno</button></div><small id="dThemeHint"></small></div>
-  <div class="dfoot">Versão 05/11/2026 19:23 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 05/11/2026 19:57 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2248,10 +2249,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261105222303";</script>
-<script src="native.js?v=20261105222303"></script>
-<script src="firebase-config.js?v=20261105222303"></script>
-<script src="auth.js?v=20261105222303"></script>
+<script>window.APP_BUILD="20261105225701";</script>
+<script src="native.js?v=20261105225701"></script>
+<script src="firebase-config.js?v=20261105225701"></script>
+<script src="auth.js?v=20261105225701"></script>
 
 </body>
 </html>
