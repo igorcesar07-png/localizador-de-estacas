@@ -1274,19 +1274,23 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   // ---------- pano fora do projeto (lançamento manual) ----------
   let MANED=null;
   const manFx=()=>[...new Set(LANES.filter(l=>l.grp!=='DRN').map(l=>l.grp))];
-  function manOpen(m){MANED=m||null;const sel=$('manSol');
-    sel.innerHTML=PAVE_CODES.map(c=>{const i=Data.info(c);return i?`<option value="${c}">${c} – ${escH(i.desc)}</option>`:''}).join('');
-    $('manFx').innerHTML=manFx().map(g=>`<option value="${g}">${escH(Data.GRP[g]||g)}</option>`).join('');
-    const L0=m?LANES[m.L]:null;
-    sel.value=m?m.code:(PAVE_CODES.includes('FF')?'FF':PAVE_CODES[0]);
-    $('manSent').value=m?L0.side:(S.sent==='D'?'D':'C');$('manFx').value=m?L0.grp:(manFx().includes(S.pista)?S.pista:'F1');
+  let MANK='pav'; // 'pav' = pano de pavimentação; 'drn' = dreno (medido em metros: sem largura e espessura)
+  function manOpen(m,kind){MANED=m||null;const sel=$('manSol');const L0=m?LANES[m.L]:null;MANK=m?(L0.grp==='DRN'?'drn':'pav'):(kind||'pav');const drn=MANK==='drn';
+    const codes=drn?DRN_CODES.filter(c=>Data.info(c)):PAVE_CODES;
+    sel.innerHTML=codes.map(c=>{const i=Data.info(c);return i?`<option value="${c}">${c} – ${escH(i.desc)}${drn&&DRN_PROF[c]?' (profundidade '+DRN_PROF[c]+' m)':''}</option>`:''}).join('');
+    $('manFx').innerHTML=drn?'<option value="DRN">Dreno</option>':manFx().map(g=>`<option value="${g}">${escH(Data.GRP[g]||g)}</option>`).join('');$('manFx').disabled=drn;
+    $('manWF').hidden=$('manEF').hidden=drn;$('manW').required=$('manE').required=!drn;
+    $('manSub').textContent=drn?'Dreno que não está no projeto. Entra na relação de drenagem, nos totais em metros e no relatório da programação; o projeto não muda.':'Pano de pavimentação que não está no projeto. Entra na lista de segmentos, nos totais e no relatório da programação; o projeto não muda.';
+    sel.value=m?m.code:drn?(S.pista==='DRN_DP'?'DP':'DR'):(PAVE_CODES.includes('FF')?'FF':PAVE_CODES[0]);
+    $('manSent').value=m?L0.side:(S.sent==='D'?'D':'C');$('manFx').value=m?L0.grp:drn?'DRN':(manFx().includes(S.pista)?S.pista:'F1');
     $('manIni').value=m?m.ini:'';$('manFim').value=m?m.fim:'';$('manLen').value=m?m.len:'';$('manW').value=m?m.w:'';$('manE').value=m?m.e:'';$('manObs').value=m?(S.obs[m.id]||m.obs||''):'';
-    $('manT').textContent=m?`Editar pano ${m.id} (fora do projeto)`:'Pano fora do projeto';$('manSave').textContent=m?'Salvar alterações':'Incluir pano';$('manErr').textContent='';
+    const nm=drn?'dreno':'pano';$('manT').textContent=m?`Editar ${nm} ${m.id} (fora do projeto)`:(drn?'Dreno fora do projeto':'Pano fora do projeto');$('manSave').textContent=m?'Salvar alterações':(drn?'Incluir dreno':'Incluir pano');$('manErr').textContent='';
     ['manIni','manFim','manLen','manW','manE'].forEach(i=>$(i).removeAttribute('aria-invalid'));$('manDlg').hidden=false;setTimeout(()=>$(m?'manLen':'manIni').focus(),30)}
   // comprimento sugerido pelas estacas (pode ser alterado)
   function manAutoLen(){const A=Data.parseKm($('manIni').value.trim()),B=Data.parseKm($('manFim').value.trim());if(!A.err&&!B.err&&$('manLen').dataset.touched!=='1')$('manLen').value=Math.round(Math.abs(B.s-A.s)*10)/10}
   ['manIni','manFim'].forEach(i=>$(i).addEventListener('change',manAutoLen));$('manLen').addEventListener('input',()=>$('manLen').dataset.touched='1');
-  $('cManAdd').onclick=()=>{$('manLen').dataset.touched='';manOpen(null)};
+  $('cManAdd').onclick=()=>{$('manLen').dataset.touched='';manOpen(null,'pav')};
+  $('cManDrn').onclick=()=>{$('manLen').dataset.touched='';manOpen(null,'drn')};
   $('manCancel').onclick=()=>{$('manDlg').hidden=true;MANED=null};
   $('manDlg').addEventListener('click',e=>{if(e.target.id==='manDlg'){$('manDlg').hidden=true;MANED=null}});
   $('manForm').onsubmit=e=>{e.preventDefault();const err=(id,t)=>{$('manErr').textContent=t;if(id){$(id).setAttribute('aria-invalid','true');$(id).focus()}return false};
@@ -1299,15 +1303,16 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(side==='C'&&A.s>B.s)return err('manIni','No sentido crescente a estaca inicial deve ser menor que a final.');
     if(side==='D'&&A.s<B.s)return err('manIni','No sentido decrescente a estaca inicial deve ser maior que a final.');
     const len=num($('manLen').value),w=num($('manW').value),e2=num($('manE').value);
-    if(!(len>0))return err('manLen','Informe o comprimento em metros.');if(!(w>0))return err('manW','Informe a largura em metros.');if(!(e2>0))return err('manE','Informe a espessura em centímetros.');
+    const drn=MANK==='drn';
+    if(!(len>0))return err('manLen','Informe o comprimento em metros.');if(!drn&&!(w>0))return err('manW','Informe a largura em metros.');if(!drn&&!(e2>0))return err('manE','Informe a espessura em centímetros.');
     const a=Math.min(A.s,B.s),b=Math.max(A.s,B.s),obs=$('manObs').value.trim();
     // não duplicar: mesmo trecho, faixa e solução já lançados
-    const dup=(S.manual||[]).find(x=>x!==MANED&&x.L===L&&x.code===code&&Math.abs(x.a-a)<0.5&&Math.abs(x.b-b)<0.5);if(dup)return err('manIni',`Já existe o pano ${dup.id} com esta solução, faixa e estacas.`);
+    const dup=(S.manual||[]).find(x=>x!==MANED&&x.L===L&&x.code===code&&Math.abs(x.a-a)<0.5&&Math.abs(x.b-b)<0.5);if(dup)return err('manIni',`Já existe o ${drn?'dreno':'pano'} ${dup.id} com esta solução, ${drn?'sentido':'faixa'} e estacas.`);
     if(!S.manual)S.manual=[];const B0=S.bySrc[SRCK];
     let m=MANED;if(!m){B0.manSeq=(B0.manSeq||0)+1;m={id:'MAN-'+String(B0.manSeq).padStart(2,'0')};S.manual.push(m)}
-    Object.assign(m,{code,L,a,b,ini:A.name,fim:B.name,len:Math.round(len*100)/100,w,e:e2,obs,at:Date.now()});if(obs)S.obs[m.id]=obs;else delete S.obs[m.id];save();
+    Object.assign(m,{code,L,a,b,ini:A.name,fim:B.name,len:Math.round(len*100)/100,w:drn?null:w,e:drn?null:e2,obs,at:Date.now()});if(obs)S.obs[m.id]=obs;else delete S.obs[m.id];save();
     $('manDlg').hidden=true;const ed=!!MANED;MANED=null;const inR=(()=>{const P=Data.parseKm(S.kmA),Q=Data.parseKm(S.kmB);if(P.err||Q.err)return false;const lo=Math.min(P.s,Q.s),hi=Math.max(P.s,Q.s);return Math.min(b,hi)-Math.max(a,lo)>1e-6})();
-    SEGMSG=`Pano ${m.id} (fora do projeto) ${ed?'atualizado':'incluído'}: ${code} · ${SIDE[side]} · ${Data.GRP[grp]||grp} · ${A.name} → ${B.name} · ${nf(m.len,1)} m.${inR?'':' Ele aparece na lista quando o intervalo da calculadora incluir essas estacas.'}`;
+    SEGMSG=`${drn?'Dreno':'Pano'} ${m.id} (fora do projeto) ${ed?'atualizado':'incluído'}: ${code} · ${SIDE[side]} · ${Data.GRP[grp]||grp} · ${A.name} → ${B.name} · ${nf(m.len,1)} m.${inR?'':' Ele aparece na lista quando o intervalo da calculadora incluir essas estacas.'}`;
     if(F.kmA.value&&F.kmB.value)calc(false)};
 
   function calc(scroll){
@@ -1356,6 +1361,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
       drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:S.rowOff[p.tag]===true,obs:(S.obs[p.tag]||'').trim(),ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),drn:true,
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
+    // drenos incluídos à mão (fora do projeto): mesmo critério do filtro de drenagem; medidos em metros, sem saídas
+    if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const m of (S.manual||[])){const L0=LANES[m.L];if(!L0||L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&m.code!=='DR'||S.pista==='DRN_DP'&&m.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
+      if(!(Math.min(m.b,sB)-Math.max(m.a,sA)>1e-6))continue;if(S.show[m.code]===false){hidden.set(m.code,(hidden.get(m.code)||0)+1);continue}
+      const ix=v=>Math.max(0,Math.min(R.length-1,Math.floor((v-ODO[0])/20))),info=Data.info(m.code)||{code:m.code,desc:m.code,color:'#9AA39D',ink:'#111'},dec=L0.side==='D';
+      const p={tag:m.id,code:m.code,info,L:m.L,i0:ix(m.a),i1:ix(m.b-0.01),manual:true,src:null};
+      drows.push({p,L0,a:m.a,b:m.b,a0:m.a,b0:m.b,ed:false,len:num(m.len),partial:false,off:S.rowOff[m.id]===true,obs:(S.obs[m.id]||m.obs||'').trim(),ini:dec?m.b:m.a,fim:dec?m.a:m.b,sai:[],drn:true,manual:true,m,pIni:m.ini,pFim:m.fim})}
     drows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini));
     // orientação de execução: crescente começa na menor estaca, decrescente na maior (início > fim)
     rows.forEach(r=>{const dec=r.L0.side==='D';r.ini=dec?r.b:r.a;r.fim=dec?r.a:r.b;r.pIni=r.manual?r.m.ini:dec?Data.endName(r.p.i1):R[r.p.i0][0];r.pFim=r.manual?r.m.fim:dec?R[r.p.i0][0]:Data.endName(r.p.i1)});
@@ -1426,7 +1437,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <div class="kpi"><span>Saídas de dreno</span><b>${nf(nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">${nSai} saída${nSai!==1?'s':''} × ${SAIDA_M} m</div></div>
         <div class="kpi main"><span>Drenagem programada</span><b>${nf(DRN.DR+DRN.DP+nSai*SAIDA_M,0)}<small>m</small></b><div class="sub">dreno ${nf(DRN.DR+DRN.DP,0)} m + saídas ${nf(nSai*SAIDA_M,0)} m · ${dact.length} segmento${dact.length!==1?'s':''}${dOff?` · ${dOff} não programado${dOff>1?'s':''}`:''}</div></div></div>
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr><th class="l sticky">Serviço</th><th style="text-align:center">Programar</th><th class="l">Sentido · lado</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Extensão<small>m</small></th><th class="l">Saídas de dreno (km)</th></tr></thead><tbody>
-      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}${r.obs?' hasobs':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste segmento (vai para o relatório)" aria-label="Observação de ${inf.code} ${r.p.tag}">${escH(r.obs)}</textarea></label></td>
+      ${drows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':''}${r.manual?' man':''}${r.obs?' hasobs':''}" data-tag="${r.p.tag}"><td class="l sticky pano">${tag(inf)} ${inf.code} – ${inf.desc}<small>${r.manual?`<span class="badge man">fora do projeto · ${r.p.tag}</span>${r.off?' <span class="badge muted">não programado</span>':''} ${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,r.len%1?1:0)} m`:r.off?'<span class="badge muted">não programado</span>':`${r.ed?'<span class="badge edt">editado</span> ':''}${inf.code} – ${inf.desc} | Est. ${Data.nameAt(r.ini)} a ${Data.nameAt(r.fim)} | ${nf(r.len,0)} m${r.ed?` · trecho do dreno ${r.pIni} a ${r.pFim}`:''}`}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste segmento (vai para o relatório)" aria-label="Observação de ${inf.code} ${r.p.tag}">${escH(r.obs)}</textarea></label></td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar ${inf.code} ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}</td>${serCell(r)}${segCells(r,0)}
         <td class="l">${r.sai.length?r.sai.map(n=>'● '+n).join('<br>'):'<span style="color:var(--muted)">—</span>'}</td></tr>`}).join('')}
@@ -1447,7 +1458,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       if(mr){const sv=(k,el,lab,un)=>{const v=num(el.value);if(!(v>0)){el.setAttribute('aria-invalid','true');return}mr[k]=v;save();SEGMSG=`Pano ${tg} (fora do projeto): ${lab} ${nf(v,k==='w'?2:1)} ${un}.`;calc(false)};
         if(ei)ei.onchange=()=>sv('e',ei,'espessura','cm');if(wi)wi.onchange=()=>sv('w',wi,'largura','m');
         const me=tr.querySelector('.manEd'),md=tr.querySelector('.manDel');if(me)me.onclick=()=>manOpen(mr);
-        if(md)md.onclick=()=>{if(!confirm(`Excluir o pano ${tg} (fora do projeto) desta programação?`))return;S.manual.splice(S.manual.indexOf(mr),1);delete S.obs[tg];delete S.rowOff[tg];delete S.serial[tg];save();SEGMSG=`Pano ${tg} (fora do projeto) excluído.`;calc(false)}}
+        const nmD=LANES[mr.L]&&LANES[mr.L].grp==='DRN'?'dreno':'pano';
+        if(md)md.onclick=()=>{if(!confirm(`Excluir o ${nmD} ${tg} (fora do projeto) desta programação?`))return;S.manual.splice(S.manual.indexOf(mr),1);delete S.obs[tg];delete S.rowOff[tg];delete S.serial[tg];save();SEGMSG=`${nmD==='dreno'?'Dreno':'Pano'} ${tg} (fora do projeto) excluído.`;calc(false)}}
       if(ei&&!mr)ei.onchange=()=>{const v=ei.value.trim(),r=ROWS.get(tg);const pj=r?r.eProj:null;if(v===''||!(num(v)>0)||num(v)===pj)delete S.rowE[tg];else S.rowE[tg]=v;save();
         SEGMSG=S.rowE[tg]!=null?`Pano ${tg}: espessura alterada para ${nf(num(v),1)} cm (projeto ${pj!=null?nf(pj,1)+' cm':'sem espessura'}).`:`Pano ${tg}: espessura de projeto.`;calc(false)};
       if(er&&!mr)er.onclick=()=>{delete S.rowE[tg];save();SEGMSG=`Pano ${tg}: espessura de projeto restaurada.`;calc(false)};
@@ -1664,8 +1676,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const inf=r.p.info,ini=Data.nameAt(r.ini),fim=Data.nameAt(r.fim),ext=nf(r.len,0)+' m';
       // saídas do próprio segmento, dentro do trecho, sem repetir estaca de divisa; ordem do sentido de execução
       const sai=r.sai.filter(k=>{const id=r.L0.side+'|'+k;if(SEEN.has(id))return false;SEEN.add(id);return true});nSaiTot+=sai.length;
-      saidas.push({ord:ordTxt(r.ord),serial:r.serial||'',code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,pista:SIDE[r.L0.side],ini,fim,n:sai.length,sai});
-      cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc,color:inf.color,ink:inf.ink,
+      saidas.push({ord:ordTxt(r.ord),serial:r.serial||'',code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,pista:SIDE[r.L0.side],ini,fim,n:sai.length,sai});
+      cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),manual:!!r.manual,tag:r.p.tag,color:inf.color,ink:inf.ink,
         line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),sai,nSai:sai.length,
         chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),'',true],['Qtd. de saídas',String(sai.length),'',true]],
         qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||'',obs:r.obs||''})}
@@ -1680,7 +1692,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
                 {title:equipeTitulo(I.equipe),items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
                 usinaBox(I,hasP)],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
-      warn:[(n=>n?`${n} pano(s) incluído(s) fora do projeto: ${P.seq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)}`).join('; ')}.`:null)(P.seq.filter(r=>r.manual).length),L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
+      warn:[(n=>n?`${n} pano(s) incluído(s) fora do projeto: ${P.seq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)}`).join('; ')}.`:null)(P.seq.filter(r=>r.manual).length),(n=>n?`${n} dreno(s) incluído(s) fora do projeto: ${P.dseq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)} (${nf(r.len,r.len%1?1:0)} m)`).join('; ')}.`:null)(P.dseq.filter(r=>r.manual).length),L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
       sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} = ${nf(dTot,0)} m de dreno + ${nSaiTot} saída${nSaiTot!==1?'s':''} × ${SAIDA_M} m = ${nf(nSaiTot*SAIDA_M,0)} m · total ${nf(dTot+nSaiTot*SAIDA_M,0)} m`:null,saidas,nSai:nSaiTot,saiM:nSaiTot*SAIDA_M,
@@ -1756,7 +1768,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         <td class="l">${pill(r)} ${esc(abrv(r.code))}</td><td class="esp"${r.espOk?` style="background:${r.espColor};color:${r.espInk}"`:''}>${r.espOk?r.esp:'s/ esp.'}</td><td>${r.largOk?r.larg.replace(' m',''):'s/ larg.'}</td><td>${r.ext.replace(' m','')}</td><td class="q">${r.unit?r.qty:'<small>'+r.qty+'</small>'}</td><td class="q acc">${r.acc}</td></tr>`).join('')}
       </tbody></table></div>${M.count?'':'-->'}
       ${M.dcount?`<div class="sr-tw" style="margin-top:6px"><table class="sr-t"><thead><tr><th>Ord.</th><th>Pista</th><th class="l">Serviço</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Est. inicial</th><th>Est. final</th><th>Ext. (m)</th><th>Qtd. de saídas</th><th class="l obs">Observações</th></tr></thead><tbody>
-        ${M.dsides.map(s=>s.panos.map(r=>`<tr class="${r.obs?'hasobs':''}"><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td><td class="l obs">${esc(r.obs)}</td></tr>`).join('')).join('')}
+        ${M.dsides.map(s=>s.panos.map(r=>`<tr class="${r.obs?'hasobs':''}${r.manual?' man':''}"><td class="o" style="background:#0B5E43">${r.ord}</td><td>${r.lane.startsWith('Cres')?'Cresc.':'Decr.'}</td><td class="l">${pill(r)} ${esc(r.desc)}</td><td class="l ser">${r.serial?esc(r.serial):'<small>—</small>'}</td><td class="e">${r.ini}</td><td class="e">${r.fim}</td><td class="q">${r.qty}</td><td class="q c">${r.nSai}</td><td class="l obs">${esc(r.obs)}</td></tr>`).join('')).join('')}
         </tbody></table></div><h3 class="sdt">Localização das saídas de dreno</h3>${saidasHtml(M,pill)}`:''}
       <div class="sr-bot"><div class="sr-sum">${M.tiles.map(([k,v,hl])=>`<div class="${hl?'hl':''}"><span>${k}</span><b>${v}</b></div>`).join('')}</div>
         <div class="sr-sol">${M.sol.map(o=>`<span>${pill(o)} ${o.line.replace(/ panos?/,'p')} · <b>${o.val}</b></span>`).join('')}</div></div>
@@ -3774,7 +3786,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/11/2026 15:29';
+  const CUR_VER='06/11/2026 18:00';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

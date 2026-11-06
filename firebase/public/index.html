@@ -1697,7 +1697,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 06/11/2026 15:29 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/11/2026 18:00 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2219,12 +2219,12 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div class="fld"><label for="cSent">Sentido</label><select id="cSent"><option value="ALL">Ambos</option><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
           <div class="fld s1"><label for="cDens">Densidade <em>(t/m³)</em></label><input id="cDens" type="number" inputmode="decimal" step="0.001" min="0" placeholder="2,528"><span class="hint" id="hDens">padrão 2,528 t/m³</span><span class="err" id="eDens"></span></div>
           <div class="fld s1"><label for="cPerda">Perdas <em>(%, opcional)</em></label><input id="cPerda" type="number" inputmode="decimal" step="0.1" min="0" placeholder="0"><span class="err" id="ePerda"></span></div>
-          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button><button class="secondary" type="button" id="cManAdd" data-acl="calculadora:edit">＋ Incluir pano fora do projeto</button></div>
+          <div class="actions"><button class="primary" type="submit">Calcular</button><button class="secondary" type="button" id="cHere">Usar estaca atual</button><button class="secondary" type="button" id="cManAdd" data-acl="calculadora:edit">＋ Incluir pano fora do projeto</button><button class="secondary" type="button" id="cManDrn" data-acl="calculadora:edit">＋ Incluir dreno fora do projeto</button></div>
         </div>
       </form>
 <div class="modal" id="manDlg" hidden role="dialog" aria-modal="true" aria-labelledby="manT">
   <form class="mbox man-box" id="manForm" novalidate><h2 id="manT">Pano fora do projeto</h2>
-    <p class="msub">Pano de pavimentação que não está no projeto. Entra na lista de segmentos, nos totais e no relatório da programação; o projeto não muda.</p>
+    <p class="msub" id="manSub">Pano de pavimentação que não está no projeto. Entra na lista de segmentos, nos totais e no relatório da programação; o projeto não muda.</p>
     <div class="mgrid">
       <div class="fld w2"><label for="manSol">Solução *</label><select id="manSol" required></select></div>
       <div class="fld"><label for="manSent">Sentido *</label><select id="manSent" required><option value="C">Crescente</option><option value="D">Decrescente</option></select></div>
@@ -2232,8 +2232,8 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="fld"><label for="manIni">Estaca inicial *</label><input id="manIni" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+300" required></div>
       <div class="fld"><label for="manFim">Estaca final *</label><input id="manFim" class="km" inputmode="text" autocomplete="off" placeholder="ex.: 236+500" required></div>
       <div class="fld"><label for="manLen">Comprimento (m) *</label><input id="manLen" type="number" inputmode="decimal" step="0.1" min="0" required></div>
-      <div class="fld"><label for="manW">Largura (m) *</label><input id="manW" type="number" inputmode="decimal" step="0.01" min="0" required></div>
-      <div class="fld"><label for="manE">Espessura (cm) *</label><input id="manE" type="number" inputmode="decimal" step="0.1" min="0" required></div>
+      <div class="fld" id="manWF"><label for="manW">Largura (m) *</label><input id="manW" type="number" inputmode="decimal" step="0.01" min="0" required></div>
+      <div class="fld" id="manEF"><label for="manE">Espessura (cm) *</label><input id="manE" type="number" inputmode="decimal" step="0.1" min="0" required></div>
       <div class="fld w2"><label for="manObs">Observações</label><textarea id="manObs" rows="2" maxlength="400"></textarea></div>
     </div>
     <p class="note" id="manErr" role="alert"></p>
@@ -2316,10 +2316,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261106182927";</script>
-<script src="native.js?v=20261106182927"></script>
-<script src="firebase-config.js?v=20261106182927"></script>
-<script src="auth.js?v=20261106182927"></script>
+<script>window.APP_BUILD="20261106210052";</script>
+<script src="native.js?v=20261106210052"></script>
+<script src="firebase-config.js?v=20261106210052"></script>
+<script src="auth.js?v=20261106210052"></script>
 
 </body>
 </html>
