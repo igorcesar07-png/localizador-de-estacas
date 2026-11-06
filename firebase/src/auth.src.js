@@ -17,6 +17,7 @@ export const PAGES=[
   {k:'analise',t:'Análise por km',acts:['view'],help:{view:'Ver o painel por km, simular a programação e exportar'}},
   {k:'marcos',t:'Marcos do trecho',acts:['view','create','edit','delete'],help:{view:'Ver o mapa com bota-esperas, rotatórias, perímetros urbanos, entradas, água outorgada e observações',create:'Adicionar e importar marcos',edit:'Editar e reposicionar marcos',delete:'Excluir marcos'}},
   {k:'levbe',t:'Levantamento de Bota-Espera',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de registros e exportar Excel/CSV',create:'Registrar bota-esperas (e complementar ou desfazer os próprios registros)',edit:'Corrigir e complementar registros de qualquer usuário',delete:'Excluir registros de qualquer usuário (exclusão lógica)'}},
+  {k:'levpat',t:'Levantamento de Patologias',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de ocorrências e exportar Excel/CSV',create:'Registrar panelas (e complementar ou desfazer as próprias ocorrências)',edit:'Corrigir e complementar ocorrências de qualquer usuário',delete:'Excluir ocorrências de qualquer usuário (exclusão lógica)'}},
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
 const ACTS={view:'Visualizar',create:'Criar',edit:'Editar',delete:'Excluir'};
@@ -212,7 +213,7 @@ async function ensureUserDoc(user){const ref=doc(db,'users',user.uid);let s;
 
 async function loadBase(id='r08'){const s=await fresh(doc(db,'base',id),'base:'+id,sigBase,id==='seriais'?3000:5000);if(!s.exists())return null;const d=s.data();return {data:JSON.parse(d.json),version:d.version||'',updatedAt:d.updatedAt}}
 // BR-373 B4: base separada, entregue só a quem tem a aba liberada (ver firestore.rules)
-async function loadB4(isAdm,perms){const v=k=>!!(perms[k]&&perms[k].view);if(!isAdm&&!(v('mapab4')||v('calculadora')||v('analise')||v('marcos')||v('localizacao')||v('foto')||v('levbe')))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
+async function loadB4(isAdm,perms){const v=k=>!!(perms[k]&&perms[k].view);if(!isAdm&&!(v('mapab4')||v('calculadora')||v('analise')||v('marcos')||v('localizacao')||v('foto')||v('levbe')||v('levpat')))return null;try{return await loadBase('b4')}catch(e){console.log('base B4: '+(e.code||e.message));return null}}
 function startApp(){if(window.__appStarted)return;window.__appStarted=true;const s=document.createElement('script');s.src='app.js?v='+(window.APP_BUILD||'');s.onload=()=>{closeGate();decorateDrawer()};
   s.onerror=()=>gate('<div class="gmsg bad">Não foi possível carregar o aplicativo. Verifique a conexão e tente de novo.</div>');document.body.appendChild(s)}
 function decorateDrawer(){const d=document.querySelector('#drawer .dfoot');if(!d||$('duser'))return;const a=window.ACL;const box=document.createElement('div');box.id='duser';box.className='duser';
@@ -272,6 +273,13 @@ onAuthStateChanged(auth,async user=>{
     const pl=window.ACL.perms.levbe||{};
     if(isAdm||pl.view){const C='levantamento_bota_espera',CM='levantamento_bota_espera_midia';
       window.LevDB={subscribe:cb=>onSnapshot(collection(db,C),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        save:r=>track(setDoc(doc(db,C,r.id),r)),
+        saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
+        getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
+    // levantamento de patologias: mesmo modelo do levantamento de bota-espera, coleções próprias
+    const pp=window.ACL.perms.levpat||{};
+    if(isAdm||pp.view){const C='levantamento_patologias',CM='levantamento_patologias_midia';
+      window.PatDB={subscribe:cb=>onSnapshot(collection(db,C),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
         save:r=>track(setDoc(doc(db,C,r.id),r)),
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}

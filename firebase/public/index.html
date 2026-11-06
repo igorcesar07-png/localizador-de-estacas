@@ -1242,6 +1242,15 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .lv-mk{display:flex;align-items:center;gap:8px;margin:2px 0;color:var(--me);font:800 12.5px var(--body);letter-spacing:.05em}
 .lv-mk::before,.lv-mk::after{content:"";flex:1;height:2px;background:var(--me);border-radius:2px}.lv-mk span{white-space:nowrap;padding:3px 10px;border:2px solid var(--me);border-radius:999px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 @media (orientation:landscape) and (max-height:520px){.lv-here{padding:4px 12px}.lv-hl small,.lv-hnt small{display:none}.lv-hl b{font-size:28px}.lv-hnear{margin-top:4px;padding:4px 8px}.lv-hb{min-height:40px}}
+#pPat{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pPat .topbar{background:var(--plate);color:var(--plate-ink);gap:10px}
+#pPat .topbar h1{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lp-fx{flex:1;display:flex;gap:8px;min-height:0}.lv-left .lp-fx{flex-direction:row-reverse}
+.lv-btn.lp-btn{flex:1 1 0;min-width:0;flex-direction:column;justify-content:center;text-align:center;gap:6px;padding:10px 6px}
+.lp-btn span{align-items:center}.lp-btn svg{width:44px;height:44px}.lv-btn.lp-btn b{font-size:clamp(20px,3.2vw,30px)}
+.lv-btn.lp-btn small{font:800 clamp(14px,2.1vw,19px)/1.1 var(--cond);letter-spacing:.06em;opacity:1;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.22);white-space:nowrap}
+.lp-pan{background:#A8480C}.lv-toast.lp-pan{background:#7E3508}
+@media (orientation:portrait),(max-width:700px){#pPat .topbar h1{font-size:15px}.lp-fx{gap:6px}.lp-btn svg{width:34px;height:34px}}
+@media (orientation:landscape) and (max-height:520px){#pPat .topbar{padding:3px 10px;gap:8px}#pPat .topbar .menuBtn{width:38px;height:38px}.lv-btn.lp-btn{gap:4px}.lp-btn svg{width:30px;height:30px}}
 .pend{margin:0 16px;border-radius:10px;padding:10px 12px;background:var(--bad-bg);border:1px solid var(--bad);font-size:14px;line-height:1.4}
 #repView{position:fixed;inset:0;z-index:3000;background:#5C645F;display:flex;flex-direction:column}
 .rtool{display:flex;gap:8px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px;background:var(--plate);color:var(--plate-ink);flex-wrap:wrap}
@@ -1683,11 +1692,12 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#foto" data-page="foto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Foto georreferenciada<small>Câmera com coordenadas e estaca</small></span></a>
     <a href="#marcos" data-page="marcos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-6-5.4-6-10a6 6 0 0 1 12 0c0 4.6-6 10-6 10z"/><path d="M3 21h18"/><circle cx="12" cy="11" r="2"/></svg><span>Marcos do trecho<small>Bota-esperas, rotatórias, entradas e observações</small></span></a>
     <a href="#levbe" data-page="levbe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 18h16l-3.6-7-2.5 2.8-2.6-5z"/><path d="M12 3v3M19 5l-2 2M5 5l2 2"/></svg><span>Levantamento de Bota-Espera</span></a>
+    <a href="#levpat" data-page="levpat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="14" rx="8.5" ry="5"/><path d="M7.5 13.5c1.4 1.5 7.6 1.5 9 0"/><path d="M6 6l2 2M12 4v3M18 6l-2 2"/></svg><span>Levantamento de Patologias<small>Panelas por pista e faixa</small></span></a>
     <a href="#analise" data-page="analise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 20h18"/><path d="M5 17V9M9 17V5M13 17v-6M17 17V7"/></svg><span>Análise por km<small>Estratégia de execução e simulação</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 05/11/2026 19:57 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 06/11/2026 15:29 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -1963,6 +1973,63 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </div>
 </div>
 <div class="modal" id="lvMv" hidden role="dialog" aria-modal="true" aria-labelledby="lvMvT"><div class="mbox lv-edb"><h2 id="lvMvT">Arquivo do levantamento</h2><div class="lv-media" id="lvMvBody"></div><div class="mfoot"><span class="lv-sp"></span><button type="button" class="primary" id="lvMvClose">Fechar</button></div></div></div>
+<section class="page" id="pPat" data-page="levpat" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Levantamento de Patologias</h1>
+    <div class="lv-tabs" role="tablist"><button type="button" class="lv-tab" role="tab" data-v="reg" aria-selected="true">Registrar</button><button type="button" class="lv-tab" role="tab" data-v="list" aria-selected="false">Registros <em id="lpTabN"></em></button></div></div>
+  <div id="lpReg" class="lv-reg">
+    <div class="lv-top">
+      <div class="lv-sent none" id="lpSent" aria-live="polite"><b>SENTIDO ?</b></div>
+      <div class="lv-ti"><b id="lpCtr">—</b><span><span id="lpLote">—</span> · GPS <b id="lpAcc" class="bad">sem GPS</b></span></div>
+      <div class="lv-mode" id="lpMode" role="group" aria-label="Sentido"><small id="lpSentHow">automático</small>
+        <button type="button" data-m="AUTO" aria-pressed="true">Auto</button><button type="button" data-m="C" aria-pressed="false">Travar ↑</button><button type="button" data-m="D" aria-pressed="false">Travar ↓</button></div>
+    </div>
+    <div class="lv-warn" id="lpWarn" hidden></div>
+    <div class="lv-grid" id="lpGrid">
+      <div class="lv-mid"><div class="lbl">Estaca</div><div class="lv-st" id="lpSt">—</div><div class="lrod lv-rod"><i aria-hidden="true"></i><span id="lpRod">Aguardando GPS</span></div><small id="lpAx"></small><div class="lv-toast" id="lpToast" hidden role="status" aria-live="assertive"></div></div>
+    </div>
+    <div class="lv-foot"><button type="button" class="lv-pend" id="lpGoList">Pendentes de complemento: 0</button><small>Foto, áudio e observação: complete depois, com o carro parado.</small></div>
+  </div>
+  <div id="lpList" class="cscroll" hidden>
+    <div class="lv-here" id="lpHere">
+      <div class="lv-hpos"><div class="lv-hl"><small>Você está em</small><b id="lpHSt">—</b></div><div class="lv-hr"><span id="lpHRod">Aguardando GPS</span><small id="lpHAcc"></small></div></div>
+      <div class="lv-hnear" id="lpHNear" hidden></div>
+    </div>
+    <div class="cwrap lv-lw">
+      <div class="card lv-fil">
+        <p class="note" id="lpMode0" hidden>Sem login: os registros ficam salvos só neste aparelho.</p>
+        <div class="lv-fg">
+          <div class="fld"><label for="lpFCtr">Contrato</label><select id="lpFCtr"></select></div>
+          <div class="fld"><label for="lpFLote">Lote</label><select id="lpFLote"></select></div>
+          <div class="fld"><label for="lpFPista">Pista</label><select id="lpFPista"></select></div>
+          <div class="fld"><label for="lpFFaixa">Faixa</label><select id="lpFFaixa"></select></div>
+          <div class="fld"><label for="lpFPat">Patologia</label><select id="lpFPat"></select></div>
+          <div class="fld"><label for="lpFData">Data</label><select id="lpFData"></select></div>
+        </div>
+        <div class="lv-fr"><label class="an-chk"><input type="checkbox" id="lpFPend"> Só pendentes de complemento</label><label class="an-chk"><input type="checkbox" id="lpFExc"> Mostrar excluídos</label>
+          <button type="button" class="secondary" id="lpPendBtn">Pendentes de complemento</button>
+          <span class="lv-sp"></span><button type="button" class="secondary" id="lpCsv">Exportar CSV</button><button type="button" class="primary" id="lpXlsx">Exportar Excel</button></div>
+      </div>
+      <div class="card"><h2>Ocorrências por estaca <em class="rcnt" id="lpCnt"></em></h2><div class="lv-items" id="lpItems"></div></div>
+    </div>
+  </div>
+</section>
+<div class="modal" id="lpEd" hidden role="dialog" aria-modal="true" aria-labelledby="lpEdT">
+  <div class="mbox lv-edb"><h2 id="lpEdT">Ocorrência</h2><p class="msub" id="lpEdInfo"></p>
+    <div class="mgrid">
+      <div class="fld"><label for="lpEdPat">Patologia</label><select id="lpEdPat"><option value="PANELA">Panela</option></select></div>
+      <div class="fld"><label for="lpEdPista">Pista</label><select id="lpEdPista"><option value="CRESCENTE">Pista Crescente</option><option value="DECRESCENTE">Pista Decrescente</option></select></div>
+      <div class="fld"><label for="lpEdFaixa">Faixa</label><select id="lpEdFaixa"><option value="F1">Faixa 1</option><option value="F2">Faixa 2</option></select></div>
+      <div class="fld w2"><label for="lpEdObs">Observação</label><textarea id="lpEdObs" rows="3" maxlength="2000"></textarea></div>
+    </div>
+    <div class="lv-edm"><label class="secondary lv-addf" id="lpEdAddF" tabindex="0"><input type="file" id="lpEdFile" accept="image/*" capture="environment" multiple hidden>📷 Adicionar foto</label>
+      <button type="button" class="secondary" id="lpEdRec">🎙 Gravar áudio (até 30 s)</button></div>
+    <div class="lv-media" id="lpEdMedia"></div>
+    <label class="an-chk"><input type="checkbox" id="lpEdOk"> Não precisa de complemento</label>
+    <p class="note" id="lpEdMsg" aria-live="polite"></p>
+    <div class="mfoot"><button type="button" class="secondary lv-del" id="lpEdDel">Excluir</button><span class="lv-sp"></span><button type="button" class="secondary" id="lpEdClose">Fechar</button><button type="button" class="primary" id="lpEdSave">Salvar</button></div>
+  </div>
+</div>
+<div class="modal" id="lpMv" hidden role="dialog" aria-modal="true" aria-labelledby="lpMvT"><div class="mbox lv-edb"><h2 id="lpMvT">Arquivo do levantamento</h2><div class="lv-media" id="lpMvBody"></div><div class="mfoot"><span class="lv-sp"></span><button type="button" class="primary" id="lpMvClose">Fechar</button></div></div></div>
 <section class="page" id="pAna" data-page="analise" hidden>
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Análise por km</h1></div>
   <div class="cscroll">
@@ -2249,10 +2316,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261105225701";</script>
-<script src="native.js?v=20261105225701"></script>
-<script src="firebase-config.js?v=20261105225701"></script>
-<script src="auth.js?v=20261105225701"></script>
+<script>window.APP_BUILD="20261106182927";</script>
+<script src="native.js?v=20261106182927"></script>
+<script src="firebase-config.js?v=20261106182927"></script>
+<script src="auth.js?v=20261106182927"></script>
 
 </body>
 </html>

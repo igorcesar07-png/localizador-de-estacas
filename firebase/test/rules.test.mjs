@@ -136,6 +136,35 @@ await t('Levantamento: o documento nunca é apagado',()=>assertFails(deleteDoc(d
 await t('Levantamento: foto comprimida do registro é gravada e lida',async()=>{await assertSucceeds(setDoc(doc(lv('lvreg'),'levantamento_bota_espera_midia','m1'),{id:'m1',reg:'r1',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'lvreg@x.com'}));
   await assertSucceeds(getDoc(doc(lv('lvver'),'levantamento_bota_espera_midia','m1')))});
 await t('Levantamento: só visualizar não grava foto',()=>assertFails(setDoc(doc(lv('lvver'),'levantamento_bota_espera_midia','m2'),{id:'m2',reg:'r1',tipo:'foto',mime:'image/jpeg',data:'x',bytes:1,criado_em:1,criado_por:'lvver@x.com'})));
+
+// Levantamento de Patologias (coleção nova)
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  const U=(id,email,perms)=>setDoc(doc(d,'users',id),{email,name:id,profile:null,custom:true,perms,active:true,invited:true});
+  await U('lpreg','lpreg@x.com',{levpat:{view:true,create:true}});await U('lpreg2','lpreg2@x.com',{levpat:{view:true,create:true}});
+  await U('lped','lped@x.com',{levpat:{view:true,edit:true}});await U('lpdel','lpdel@x.com',{levpat:{view:true,delete:true}});await U('lpver','lpver@x.com',{levpat:{view:true}});
+});
+const PREC=(id,by,o={})=>({id,v:1,criado_em:1760000000000,criado_por:by,usuario:'U',lat:-25.1,lon:-50.1,precisao_m:4,rodovia:'BR-277/PR',contrato:'VIAR-GDA-430/2026',lote:2,
+  estaca:'200+000',offset_m:3,estaca_txt:'200+003',odometro_m:35303,dist_eixo_m:1.2,fora_trecho:false,sentido_desloc:'CRESCENTE',sentido_modo:'AUTO',pista:'CRESCENTE',faixa:'F1',patologia:'PANELA',
+  obs:'',fotos:[],audios:[],complemento_ok:false,excluido:false,excluido_em:null,excluido_por:null,excluido_motivo:null,atualizado_em:1760000000000,atualizado_por:by,...o});
+const lp=(u)=>ctx(u,u+'@x.com');
+await t('Patologias: quem registra cria a própria ocorrência',()=>assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com'))));
+await t('Patologias: não cria em nome de outro usuário',()=>assertFails(setDoc(doc(lp('lpreg'),'levantamento_patologias','p2'),PREC('p2','lpreg2@x.com'))));
+await t('Patologias: só visualizar não cria',()=>assertFails(setDoc(doc(lp('lpver'),'levantamento_patologias','p3'),PREC('p3','lpver@x.com'))));
+await t('Patologias: faixa inválida não grava',()=>assertFails(setDoc(doc(lp('lpreg'),'levantamento_patologias','p4'),PREC('p4','lpreg@x.com',{faixa:'F3'}))));
+await t('Patologias: patologia desconhecida não grava',()=>assertFails(setDoc(doc(lp('lpreg'),'levantamento_patologias','p5'),PREC('p5','lpreg@x.com',{patologia:'TRINCA'}))));
+await t('Patologias: quem tem a página lê',()=>assertSucceeds(getDoc(doc(lp('lpver'),'levantamento_patologias','p1'))));
+await t('Patologias: só com a bota-espera não lê',()=>assertFails(getDoc(doc(lv('lvver'),'levantamento_patologias','p1'))));
+await t('Patologias: o autor complementa e desfaz',async()=>{await assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{obs:'panela grande'})));
+  await assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{obs:'panela grande',excluido:true,excluido_motivo:'DESFEITO'})));
+  await assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{obs:'panela grande'})))});
+await t('Patologias: outro usuário só com "registrar" não altera a alheia',()=>assertFails(setDoc(doc(lp('lpreg2'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{faixa:'F2'}))));
+await t('Patologias: "editar" corrige a faixa de ocorrência alheia',()=>assertSucceeds(setDoc(doc(lp('lped'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{faixa:'F2'}))));
+await t('Patologias: "excluir" só marca a exclusão',async()=>{await assertFails(setDoc(doc(lp('lpdel'),'levantamento_patologias','p1'),PREC('p1','lpreg@x.com',{faixa:'F1',excluido:true})));
+  await assertSucceeds(updateDoc(doc(lp('lpdel'),'levantamento_patologias','p1'),{excluido:true,excluido_em:1760000001000,excluido_por:'lpdel@x.com',excluido_motivo:'EXCLUIDO',atualizado_em:1760000001000,atualizado_por:'lpdel@x.com'}))});
+await t('Patologias: o documento nunca é apagado',()=>assertFails(deleteDoc(doc(admin,'levantamento_patologias','p1'))));
+await t('Patologias: foto da ocorrência é gravada e lida',async()=>{await assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias_midia','pm1'),{id:'pm1',reg:'p1',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'lpreg@x.com'}));
+  await assertSucceeds(getDoc(doc(lp('lpver'),'levantamento_patologias_midia','pm1')))});
+await t('Patologias: só com a página lê as estacas do Lote 04',()=>assertSucceeds(getDoc(doc(lp('lpver'),'base','b4'))));
 await t('Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)',()=>assertSucceeds(getDoc(doc(lv('lvver'),'base','b4'))));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
