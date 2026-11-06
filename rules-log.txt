@@ -1,0 +1,173 @@
+[36m[1mi  emulators:[22m[39m Starting emulators: auth, firestore
+[36m[1mi  emulators:[22m[39m Detected demo project ID "demo-estacas", emulated services will use a demo configuration and attempts to access non-emulated services for this project will fail.
+[33m[1m⚠ [22m[39m It appears you are running in a CI environment. You can avoid downloading the Firestore Emulator repeatedly by caching the /home/runner/.cache/firebase/emulators directory.
+[36m[1mi  firestore:[22m[39m downloading cloud-firestore-emulator-v1.22.0.jar...
+
+[36m[1mi  firestore:[22m[39m Firestore Emulator logging to [1mfirestore-debug.log[22m
+[32m[1m✔  firestore:[22m[39m Firestore Emulator was started in standard edition.
+[32m[1m✔  firestore:[22m[39m Firestore Emulator UI websocket is running on 9150.
+[36m[1mi [22m[39m Running script: [1mREPORT=ci-report/rules-report.txt node test/rules.test.mjs[22m
+[2026-11-06T21:16:12.526Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8197518f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L56, false for 'create' @ L166, false for 'update' @ L56, false for 'update' @ L166
+[2026-11-06T21:16:12.884Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x81975196 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L56, false for 'create' @ L166, false for 'update' @ L56, false for 'update' @ L166
+[2026-11-06T21:16:13.270Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8197519f error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L72:24 for 'create' @ L72, false for 'create' @ L166, evaluation error at L73:24 for 'update' @ L73, false for 'update' @ L166, false for 'create' @ L72, false for 'create' @ L166
+[2026-11-06T21:16:13.364Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751a1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L72, false for 'create' @ L166, false for 'update' @ L73, false for 'update' @ L166
+[2026-11-06T21:16:13.392Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751a2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L74:24 for 'delete' @ L74, false for 'delete' @ L166, false for 'delete' @ L74, false for 'delete' @ L166
+[2026-11-06T21:16:13.526Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751a6 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L66:23 for 'create' @ L66, false for 'create' @ L166, evaluation error at L66:23 for 'update' @ L66, false for 'update' @ L166, false for 'update' @ L66, false for 'update' @ L166
+[2026-11-06T21:16:13.651Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751aa error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L123, false for 'create' @ L166, false for 'update' @ L123, false for 'update' @ L166
+[2026-11-06T21:16:13.771Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751ae error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L61, false for 'create' @ L166, false for 'update' @ L61, false for 'update' @ L166
+[2026-11-06T21:16:13.838Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L133, false for 'create' @ L166, false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:13.854Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L133, false for 'create' @ L166, false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:13.870Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L133, false for 'create' @ L166, false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:13.882Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b3 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L133, false for 'create' @ L166, false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:13.994Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b5 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L133:24 for 'create' @ L133, false for 'create' @ L166, false for 'update' @ L129, false for 'update' @ L166, false for 'create' @ L133, false for 'create' @ L166
+[2026-11-06T21:16:14.033Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b6 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:14.058Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751b7 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'update' @ L129, false for 'update' @ L166
+[2026-11-06T21:16:14.165Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751bb error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L157, false for 'create' @ L166, false for 'update' @ L157, false for 'update' @ L166
+[2026-11-06T21:16:14.186Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751bc error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L163, false for 'create' @ L166, false for 'update' @ L163, false for 'update' @ L166
+[2026-11-06T21:16:14.291Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x8197518e error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L166, false for 'update' @ L166
+[2026-11-06T21:16:14.411Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751c0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'create' @ L80, false for 'create' @ L166
+[2026-11-06T21:16:14.454Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751c1 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L80:24 for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'create' @ L80, false for 'create' @ L166
+[2026-11-06T21:16:14.491Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751c2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.529Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751c3 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.757Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751c9 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.840Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751cb error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.878Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751cc error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L80:24 for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.931Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751cd error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L80, false for 'create' @ L166, evaluation error at L82:24 for 'update' @ L82, false for 'update' @ L166, false for 'update' @ L82, false for 'update' @ L166
+[2026-11-06T21:16:14.975Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751cf error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L88, false for 'delete' @ L166
+[2026-11-06T21:16:15.085Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751d2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L93:24 for 'create' @ L93, false for 'create' @ L166, false for 'update' @ L96, false for 'update' @ L166, false for 'create' @ L93, false for 'create' @ L166
+[2026-11-06T21:16:15.187Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751d5 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L102, false for 'create' @ L166, evaluation error at L104:24 for 'update' @ L104, false for 'update' @ L166, false for 'create' @ L102, false for 'create' @ L166
+[2026-11-06T21:16:15.219Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751d6 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+evaluation error at L102:24 for 'create' @ L102, false for 'create' @ L166, evaluation error at L104:24 for 'update' @ L104, false for 'update' @ L166, false for 'create' @ L102, false for 'create' @ L166
+[2026-11-06T21:16:15.257Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751d7 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L102, false for 'create' @ L166, false for 'update' @ L104, false for 'update' @ L166
+[2026-11-06T21:16:15.294Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751d8 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L102, false for 'create' @ L166, false for 'update' @ L104, false for 'update' @ L166
+[2026-11-06T21:16:15.490Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751de error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L102, false for 'create' @ L166, evaluation error at L104:24 for 'update' @ L104, false for 'update' @ L166, false for 'update' @ L104, false for 'update' @ L166
+[2026-11-06T21:16:15.556Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751e0 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'create' @ L102, false for 'create' @ L166, evaluation error at L104:24 for 'update' @ L104, false for 'update' @ L166, false for 'update' @ L104, false for 'update' @ L166
+[2026-11-06T21:16:15.587Z]  @firebase/firestore: Firestore (12.19.0): GrpcConnection RPC 'Write' stream 0x819751e2 error. Code: 7 Message: 7 PERMISSION_DENIED: 
+false for 'delete' @ L110, false for 'delete' @ L166
+Regras do Firestore: 85/85 testes OK
+
+OK  sem login não lê a base
+OK  administrador lê e grava a base
+OK  e-mail do admin sem verificação não grava a base
+OK  usuário ativo com página liberada lê a base
+OK  usuário com perfil liberado lê a base
+OK  usuário com perfil sem páginas não lê a base
+OK  usuário inativo não lê a base
+OK  usuário sem permissões não lê a base
+OK  usuário sem cadastro não lê a base
+OK  usuário comum não grava a base
+OK  B4: usuário com a aba BR-373 B4 lê a base B4
+OK  B4: usuário com a aba B4 lê a base BR-277 (o app precisa dela para abrir)
+OK  B4: usuário só com a aba BR-277 não lê a base B4
+OK  Análise por km: usuário só com o painel lê a base B4
+OK  Análise por km: usuário só com o painel lê a base BR-277
+OK  Marcos: quem tem a página lê os marcos
+OK  Marcos: quem não tem a página não lê
+OK  Marcos: só visualizar não grava
+OK  Marcos: com permissão de criar, grava
+OK  Marcos: tipo desconhecido é recusado
+OK  Marcos: sem permissão de excluir não exclui
+OK  Marcos: quem tem a página lê a base B4
+OK  Horário da equipe: quem emite programação grava
+OK  Horário da equipe: sem a Calculadora não lê
+OK  Horário da equipe: só visualizar a Calculadora não grava
+OK  Lote 04: quem tem Localização estaca lê a base B4
+OK  Lote 04: quem tem Foto georreferenciada lê a base B4
+OK  B4: usuário inativo não lê a base B4
+OK  B4: sem login não lê a base B4
+OK  B4: usuário comum não grava a base B4
+OK  B4: administrador grava a base B4
+OK  outros documentos da coleção base ficam bloqueados
+OK  seriais: usuário ativo lê
+OK  seriais: sem login não lê
+OK  seriais: usuário comum não grava
+OK  seriais: administrador grava
+OK  novo usuário cria o próprio cadastro sem acesso
+OK  novo usuário não se cria ativo
+OK  novo usuário não se dá permissões
+OK  novo usuário não escolhe perfil
+OK  não cria cadastro de outra pessoa
+OK  convidado cria cadastro com o perfil do convite
+OK  convidado não altera o perfil do convite
+OK  usuário não altera o próprio cadastro
+OK  usuário não se reativa
+OK  usuário lê o próprio cadastro
+OK  usuário não lê cadastro de outro
+OK  usuário não lista usuários
+OK  usuário não cria perfis
+OK  usuário não cria convites
+OK  administrador lista e altera usuários
+OK  administrador cria perfis e convites
+OK  e-mail do admin sem verificação não gerencia
+OK  coleções desconhecidas bloqueadas
+OK  Levantamento: quem registra cria o próprio registro
+OK  Levantamento: não cria em nome de outro usuário
+OK  Levantamento: só visualizar não cria
+OK  Levantamento: local possível não aceita ocupação
+OK  Levantamento: existente exige ocupação válida
+OK  Levantamento: quem tem a página lê
+OK  Levantamento: sem a página não lê
+OK  Levantamento: o autor complementa e desfaz o próprio registro
+OK  Levantamento: outro usuário só com "registrar" não altera o registro alheio
+OK  Levantamento: "editar" corrige registro alheio
+OK  Levantamento: "editar" não exclui
+OK  Levantamento: ninguém troca o autor do registro
+OK  Levantamento: "excluir" só marca a exclusão
+OK  Levantamento: o documento nunca é apagado
+OK  Levantamento: foto comprimida do registro é gravada e lida
+OK  Levantamento: só visualizar não grava foto
+OK  Patologias: quem registra cria a própria ocorrência
+OK  Patologias: não cria em nome de outro usuário
+OK  Patologias: só visualizar não cria
+OK  Patologias: faixa inválida não grava
+OK  Patologias: patologia desconhecida não grava
+OK  Patologias: quem tem a página lê
+OK  Patologias: só com a bota-espera não lê
+OK  Patologias: o autor complementa e desfaz
+OK  Patologias: outro usuário só com "registrar" não altera a alheia
+OK  Patologias: "editar" corrige a faixa de ocorrência alheia
+OK  Patologias: "excluir" só marca a exclusão
+OK  Patologias: o documento nunca é apagado
+OK  Patologias: foto da ocorrência é gravada e lida
+OK  Patologias: só com a página lê as estacas do Lote 04
+OK  Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)
+
+[32m[1m✔ [22m[39m Script exited successfully (code 0)
+[36m[1mi  emulators:[22m[39m Shutting down emulators.
+[36m[1mi  firestore:[22m[39m Stopping Firestore Emulator
+[36m[1mi  auth:[22m[39m Stopping Authentication Emulator
+[36m[1mi  hub:[22m[39m Stopping emulator hub
+[36m[1mi  logging:[22m[39m Stopping Logging Emulator
