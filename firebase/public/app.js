@@ -1611,7 +1611,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const by=new Map();for(const r of seq){const k=r.p.code;if(!by.has(k))by.set(k,{info:r.p.info,n:0,len:0,area:0,t:0,inc:0,excl:r.excl});const o=by.get(k);o.n++;o.len+=r.len;if(r.excl)continue;if(r.miss.length){o.inc++;continue}o.area+=r.area;o.t+=r.t||0}
     const sol=[...by.values()].sort((a,b)=>PAVE_CODES.indexOf(a.info.code)-PAVE_CODES.indexOf(b.info.code));
     const dseq=L.drn.rows.slice();dseq.forEach((r,k)=>r.ord=seq.length+k+1);
-    PROG={info,seq,dseq,sol,L,made:new Date()};
+    PROG={info,seq,dseq,sol,L,made:new Date(),srck:SRCK};
     // registra a programação (status "programado" na página Relatórios); a mesma data + equipe substitui a anterior
     if(SRCK==='277')try{window.ExecStore&&window.ExecStore.saveProg({id:info.data+'|'+info.equipe,data:info.data,equipe:info.equipe,obra:info.obra,usiDr:info.usiDr||null,usiQt:info.usiQt==null?null:info.usiQt,created:Date.now(),concluded:false,
       items:[...seq,...dseq].filter(r=>!r.manual).map(r=>({L:r.p.L,a:r.a,b:r.b,tag:r.p.tag,code:r.p.code,serial:r.serial||'',...(r.obs?{obs:r.obs}:{})}))})}catch(e){}} // panos fora do projeto não entram no controle de execução por pano (Relatórios)
@@ -1996,6 +1996,44 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     y+=para(M.close[0],M0,y,CW,10,{a:'center'})+1.5;para(M.close[1],M0,y,CW,9.5,{b:true,c:RED,a:'center'});
     const n=doc.getNumberOfPages();for(let k=1;k<=n;k++){doc.setPage(k);para(`${k}/${n}`,M0,H-6.5,CW,7,{c:MUT,a:'right'});para('Neovia Engenharia · Localizador de Estacas',M0,H-6.5,CW,7,{c:MUT})}
     return doc.output('blob')}
+  /* ---------- exportação JSON para o app Controle de Massa (formato "apontamento-massa", version 3) ----------
+     Estrutura igual ao arquivo de referência e ao que o normalize() do Controle de Massa aceita:
+     fres[] = panos de pavimentação programados, na ordem da programação (espessura em metros, largura e comprimento em metros);
+     rdo[id] = {over:{},obs} com a observação do pano; applied/extras/leituras vazios; campos de caminhão nos padrões do arquivo de referência.
+     Lá a estaca final é recalculada (inicial ± comprimento) e "sequential" encosta o pano no final do anterior. */
+  const CM_LANE={F1:1,F23:2,AC:3};
+  function cmStationEnd(start,length,direction){const m=String(start).trim().match(/^(\d+)\+(\d{1,3}(?:[.,]\d+)?)$/);if(!m||!Number.isFinite(length)||length<=0)return '';
+    const o=Number(m[2].replace(',','.'));if(o>=1000)return '';const t=Number(m[1])*1000+o+(direction==='Decrescente'?-length:length);if(!Number.isFinite(t)||t<0)return '';
+    const r=Math.round(t*1e6)/1e6,km=Math.floor(r/1000);const parts=(r-km*1000).toFixed(6).replace(/\.?0+$/,'').split('.');return km+'+'+parts[0].padStart(3,'0')+(parts[1]?','+parts[1]:'')}
+  function cmId(key,used){let h1=0x811c9dc5,h2=0x01000193;for(let i=0;i<key.length;i++){const c=key.charCodeAt(i);h1=Math.imul(h1^c,16777619)>>>0;h2=Math.imul(h2^c,2246822519)>>>0}
+    let id=(h1.toString(36)+h2.toString(36)).padEnd(11,'0').slice(0,11),k=0;while(used.has(id))id=id.slice(0,9)+(++k).toString(36).padStart(2,'0');used.add(id);return id}
+  const r2=v=>Math.round(v*100)/100,r3=v=>Math.round(v*1000)/1000;
+  function buildMassJson(){const P=PROG,I=P.info,D=(P.srck==='B4'?window.__SRC_B4:__SRC277).Data;const used=new Set(),fres=[],rdo={},skip=[],warn=[];let prev=null;
+    for(const r of P.seq){const lane=CM_LANE[r.L0.grp],dir=r.L0.side==='D'?'Decrescente':'Crescente',len=r2(r.len),w=r.w>0?Math.round(r.w*1e4)/1e4:null,e=r.e>0?Math.round(r.e*1e4)/1e6:null; // valores da programação, sem arredondar (só ruído de ponto flutuante)
+      const lbl=`${ordTxt(r.ord)} ${r.p.tag}`;
+      if(r.excl||!(e>0)||!(w>0)||!(len>0)||!lane){skip.push(`${lbl} (${r.excl?'solução sem CBUQ':!(e>0)?'sem espessura':!(w>0)?'sem largura':!(len>0)?'sem comprimento':'faixa'})`);continue}
+      const start=D.nameAt(dir==='Decrescente'?r.b:r.a),fimApp=D.nameAt(dir==='Decrescente'?r.a:r.b);
+      const id=cmId(`${I.data}|${I.equipe}|${r.p.tag}`,used);
+      const seqOk=!!prev&&prev.direction===dir&&prev.lane===lane&&cmStationEnd(prev.start,prev.length,prev.direction)===start;
+      const end=cmStationEnd(start,len,dir);if(end!==fimApp)warn.push(`${lbl}: estaca final ${fimApp} no app; o Controle de Massa calcula ${end} (inicial ${dir==='Decrescente'?'−':'+'} ${String(len).replace('.',',')} m)`);
+      const f={id,start,end,direction:dir,lane,length:len,width:w,thickness:e,sequential:seqOk};fres.push(f);rdo[id]={over:{},obs:(r.obs||'').slice(0,1000)};prev=f}
+    const area=fres.reduce((a,f)=>a+f.length*f.width,0),lenT=fres.reduce((a,f)=>a+f.length,0);
+    const wAll=num(($('cWAll')||{}).value);
+    const out={version:3,job:P.srck==='B4'?'BR373':'BR277',date:I.data,resp:(window.ACL&&ACL.user&&(ACL.user.name||ACL.user.email))||'',density:num(P.L.dens)>0?num(P.L.dens):2.528,usinado:0,plate:'',accum:0,trucksTotal:null,truckNo:1,truckFull:true,truckLeft:0,tolerance:0,
+      planWidth:wAll>0?r2(wAll):(lenT>0?r2(area/lenT):3.5),planThickness:area>0?r3(fres.reduce((a,f)=>a+f.length*f.width*f.thickness,0)/area):0.05,fres,rdo,applied:{},extras:[],leituras:[]};
+    return {out,skip,warn,ndrn:P.dseq.length}}
+  window.__buildMassJson=()=>PROG?buildMassJson():null;
+  $('rvJson').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;if(!PROG){msg.textContent='Gere a programação primeiro.';return}
+    let R0;try{R0=buildMassJson()}catch(e){msg.textContent='Não foi possível montar o arquivo JSON ('+(e&&e.message||e)+').';return}
+    const {out,skip,warn,ndrn}=R0;if(!out.fres.length){msg.textContent='Nenhum pano de pavimentação com largura, espessura e comprimento para exportar.';return}
+    const name=`apontamento-massa-${out.job}-${out.date}-${PROG.info.equipe.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\w-]+/g,'_')}.json`;
+    const txt=JSON.stringify(out,null,2),blob=new Blob([txt],{type:'application/json'});
+    const extra=[skip.length?` Fora do arquivo (o Controle de Massa recusa pano sem largura/espessura): ${skip.join('; ')}.`:'',ndrn?` Drenagem (${ndrn} segmento${ndrn>1?'s':''}) não vai: o formato é só de pavimentação.`:'',warn.length?` Atenção: ${warn.join('; ')}.`:''].join('');
+    const ok=`JSON gerado (${name}): ${out.fres.length} pano${out.fres.length>1?'s':''}, ${out.fres.filter(f=>f.sequential).length} sequencia${out.fres.filter(f=>f.sequential).length===1?'l':'is'}. No Controle de Massa: menu › Abrir arquivo (.json).`+extra;
+    const file=new File([blob],name,{type:'application/json'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Programação para o Controle de Massa'});msg.textContent=ok;return}
+      catch(e){if(e&&e.name==='AbortError'){msg.textContent='JSON pronto; compartilhamento cancelado. Toque em Exportar JSON de novo para enviar ou salvar em Arquivos.';return}}}
+    try{const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),60000);msg.textContent=ok}catch(e){msg.textContent='JSON gerado, mas o navegador bloqueou o download.'}};
   $('rvPdf').onclick=async()=>{const msg=$('rvMsg');msg.hidden=false;msg.textContent='Gerando PDF…';
     let blob;try{blob=await getPdf()}catch(e){msg.textContent='Não foi possível gerar o PDF ('+(e.message||e)+'). Use Imprimir e escolha salvar como PDF.';return}
     const name=pdfName();const file=new File([blob],name,{type:'application/pdf'});
@@ -3786,7 +3824,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='06/11/2026 18:00';
+  const CUR_VER='08/11/2026 12:21';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
