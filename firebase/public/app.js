@@ -1650,17 +1650,20 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const H=window.HistStore;if(!H){msg.textContent='Histórico indisponível neste aparelho.';return false}
     if(HSAVING)return false;HSAVING=true;$('rvHist').disabled=true;msg.textContent='Salvando no histórico…';
     try{await H.ready();
-      const list=H.all().filter(r=>!r.excluido),key=HKEY(PROG.info);let prev=null,id;
-      if(HM){id=HM.id;prev=list.find(r=>r.id===id)||(HM.rec&&HM.rec.sum)||null;const other=list.find(r=>r.id!==id&&HKEY(r)===key);
-        if(other){msg.textContent=`Já existe outra programação salva para ${brD(PROG.info.data)} – ${PROG.info.equipe}. Abra aquela pelo histórico ou exclua-a antes de salvar esta com a mesma data e equipe.`;return false}}
-      else{const ex=list.find(r=>HKEY(r)===key);
+      const list=H.all().filter(r=>!r.excluido),key=HKEY(PROG.info);let prev=null,id,novo=false;
+      // com uma programação do histórico aberta, só atualiza ela se obra, data e equipe forem as mesmas;
+      // outra equipe ou outra data = outra programação (a aberta continua no histórico)
+      const origSum=HM?((HM.rec&&HM.rec.sum)||HM.info||{}):null,hk=HM?HKEY(origSum):null;
+      if(HM&&key===hk){id=HM.id;prev=list.find(r=>r.id===id)||(HM.rec&&HM.rec.sum)||null}
+      else{if(HM)novo=true;const ex=list.find(r=>HKEY(r)===key);
         if(ex){if(PROG.histId!==ex.id&&!confirm(`Já existe programação salva para ${brD(ex.data)} – ${ex.equipe} (por ${ex.atualizado_por_nome||ex.criado_por_nome||'—'} em ${new Date(ex.atualizado_em).toLocaleString('pt-BR')}).\n\nSubstituir pela programação atual? O registro é atualizado (não cria outro).`)){msg.textContent='Nada foi salvo.';return false}prev=ex;id=ex.id}
-        else id=PROG.histId||(PROG.histId=huid())}
+        else id=(!HM&&PROG.histId)||(PROG.histId=huid())}
       if(prev&&prev.criado_por!==hMe().email&&!can('histprog','edit')){msg.textContent='Esta programação foi salva por outro usuário: para alterá-la é preciso a permissão "editar" do Histórico de programações.';return false}
       const rec=histRec(id,prev);
       const r=await Promise.race([H.save(rec.sum,rec.data).then(()=>'ok'),new Promise(res=>setTimeout(()=>res('fila'),4000))]);
       PROG.histId=id;if(HM){HM={...HM,id,rec:{sum:rec.sum,data:rec.data},info:rec.data.info,diff:''};store.set('histMode',HM);renderHistBar()}
-      msg.textContent=(prev?`Programação atualizada no histórico (revisão ${rec.sum.revisao}).`:'Programação salva no Histórico de programações.')+(r==='fila'?' Sem confirmação do servidor ainda: ficou gravada no aparelho e é enviada assim que houver internet.':'');
+      const orig=novo&&origSum;
+      msg.textContent=(prev?`Programação de ${brD(PROG.info.data)} – ${PROG.info.equipe} atualizada no histórico (revisão ${rec.sum.revisao}).`:`Programação de ${brD(PROG.info.data)} – ${PROG.info.equipe} salva no Histórico de programações.`)+(orig&&orig.equipe?` A de ${brD(orig.data)} – ${orig.equipe} continua no histórico, sem alteração.`:'')+(r==='fila'?' Sem confirmação do servidor ainda: ficou gravada no aparelho e é enviada assim que houver internet.':'');
       return true}
     catch(e){msg.textContent='Não foi possível salvar no histórico: '+(e&&e.code==='permission-denied'?'sem permissão.':(e&&e.message||e));return false}
     finally{HSAVING=false;$('rvHist').disabled=false}}
@@ -3998,7 +4001,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='10/11/2026 19:21';
+  const CUR_VER='10/11/2026 19:46';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
