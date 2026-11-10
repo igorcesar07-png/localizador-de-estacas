@@ -14,6 +14,7 @@ export const PAGES=[
   {k:'mapa',t:'Estacas BR-277 B2+B3 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros'}},
   {k:'mapab4',t:'Estacas BR-373 B4 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros da BR-373 B4'}},
   {k:'calculadora',t:'Calculadora de programação',acts:['view','create','edit'],help:{view:'Calcular trechos',create:'Emitir o relatório da programação',edit:'Alterar larguras, espessuras e densidade'}},
+  {k:'histprog',t:'Histórico de programações',acts:['view','create','edit','delete'],help:{view:'Consultar, abrir e emitir de novo o relatório das programações salvas (precisa também da Calculadora)',create:'Salvar programações validadas no histórico (e alterar as próprias)',edit:'Alterar programações salvas por qualquer usuário',delete:'Excluir programações do histórico (exclusão lógica)'}},
   {k:'analise',t:'Análise por km',acts:['view'],help:{view:'Ver o painel por km, simular a programação e exportar'}},
   {k:'marcos',t:'Marcos do trecho',acts:['view','create','edit','delete'],help:{view:'Ver o mapa com bota-esperas, rotatórias, perímetros urbanos, entradas, água outorgada e observações',create:'Adicionar e importar marcos',edit:'Editar e reposicionar marcos',delete:'Excluir marcos'}},
   {k:'levbe',t:'Levantamento de Bota-Espera',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de registros e exportar Excel/CSV',create:'Registrar bota-esperas (e complementar ou desfazer os próprios registros)',edit:'Corrigir e complementar registros de qualquer usuário',delete:'Excluir registros de qualquer usuário (exclusão lógica)'}},
@@ -276,6 +277,13 @@ onAuthStateChanged(auth,async user=>{
         save:r=>track(setDoc(doc(db,C,r.id),r)),
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
+    // histórico de programações: resumo (lista) + dados completos (lidos ao abrir), gravados juntos
+    const hpp=window.ACL.perms.histprog||{};
+    if(isAdm||hpp.view){const C='programacoes',CD='programacoes_dados';
+      window.HistDB={subscribe:cb=>onSnapshot(collection(db,C),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        save:(sum,data)=>{const b=writeBatch(db);b.set(doc(db,C,sum.id),sum);b.set(doc(db,CD,sum.id),data);return track(b.commit())},
+        get:async id=>{const s=await getDoc(doc(db,CD,id));return s.exists()?s.data():null},
+        remove:(id,patch)=>track(updateDoc(doc(db,C,id),patch))}}
     // levantamento de patologias: mesmo modelo do levantamento de bota-espera, coleções próprias
     const pp=window.ACL.perms.levpat||{};
     if(isAdm||pp.view){const C='levantamento_patologias',CM='levantamento_patologias_midia';

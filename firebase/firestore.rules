@@ -32,6 +32,13 @@ service cloud.firestore {
           && d.criado_em is int && d.criado_por is string && d.excluido is bool && d.obs is string && d.obs.size() <= 2000
           && d.fotos is list && d.fotos.size() <= 30 && d.audios is list && d.audios.size() <= 30;
     }
+    // Histórico de programações
+    function hpRead() { return isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'histprog')); }
+    function hpOk(d, id) {
+      return d.id == id && d.data is string && d.data.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && d.equipe is string && d.equipe.size() > 0 && d.equipe.size() <= 120
+          && d.obra is string && d.srck in ['277', 'B4'] && d.criado_em is int && d.criado_por is string && d.atualizado_em is int && d.atualizado_por == request.auth.token.email
+          && d.excluido is bool && d.revisao is int;
+    }
     // Levantamento de Patologias: formato mínimo de cada ocorrência
     function patOk(d) {
       return d.id is string && d.id.size() <= 60 && d.patologia in ['PANELA'] && d.pista in ['CRESCENTE', 'DECRESCENTE'] && d.faixa in ['F1', 'F2']
@@ -115,6 +122,26 @@ service cloud.firestore {
                     && request.resource.data.tipo in ['foto', 'audio'] && request.resource.data.data is string && request.resource.data.data.size() < 1000000
                     && request.resource.data.reg is string && request.resource.data.criado_por == request.auth.token.email;
       allow update, delete: if false;
+    }
+    // Histórico de programações: resumo (lista) e dados completos. Cria em nome próprio; o autor altera a própria;
+    // "editar" altera a de qualquer usuário; "excluir" só marca a exclusão. Nada é apagado do servidor.
+    match /programacoes/{id} {
+      allow read: if hpRead();
+      allow create: if canDo('histprog', 'create') && hpOk(request.resource.data, id)
+                    && request.resource.data.criado_por == request.auth.token.email && request.resource.data.excluido == false;
+      allow update: if (hpOk(request.resource.data, id) && request.resource.data.criado_por == resource.data.criado_por && request.resource.data.criado_em == resource.data.criado_em
+                        && resource.data.excluido == false && request.resource.data.excluido == false
+                        && ((canDo('histprog', 'create') && resource.data.criado_por == request.auth.token.email) || canDo('histprog', 'edit')))
+                    || (canDo('histprog', 'delete') && request.resource.data.excluido == true
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['excluido', 'excluido_em', 'excluido_por', 'excluido_por_nome']));
+      allow delete: if false;
+    }
+    match /programacoes_dados/{id} {
+      allow read: if hpRead();
+      allow create: if canDo('histprog', 'create') && request.resource.data.id == id && request.resource.data.calc is map && request.resource.data.info is map && request.resource.data.rows is list;
+      allow update: if request.resource.data.id == id && request.resource.data.calc is map && request.resource.data.info is map && request.resource.data.rows is list
+                    && (canDo('histprog', 'edit') || (canDo('histprog', 'create') && get(/databases/$(database)/documents/programacoes/$(id)).data.criado_por == request.auth.token.email));
+      allow delete: if false;
     }
     // Base da BR-373 B4 (Lote 04): usuários ativos com "Estacas BR-373 B4", Calculadora, Análise por km, Marcos, Localização estaca ou Foto georreferenciada
     match /base/b4 {

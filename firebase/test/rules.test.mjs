@@ -1,6 +1,6 @@
 // Testes das regras do Firestore (rodam no emulador, no GitHub Actions)
 import {initializeTestEnvironment,assertFails,assertSucceeds} from '@firebase/rules-unit-testing';
-import {doc,getDoc,setDoc,updateDoc,getDocs,collection,deleteDoc} from 'firebase/firestore';
+import {writeBatch,doc,getDoc,setDoc,updateDoc,getDocs,collection,deleteDoc} from 'firebase/firestore';
 import {readFileSync,writeFileSync} from 'node:fs';
 
 const ADMIN='igordalmolin.eng@gmail.com';
@@ -165,6 +165,32 @@ await t('Patologias: o documento nunca é apagado',()=>assertFails(deleteDoc(doc
 await t('Patologias: foto da ocorrência é gravada e lida',async()=>{await assertSucceeds(setDoc(doc(lp('lpreg'),'levantamento_patologias_midia','pm1'),{id:'pm1',reg:'p1',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'lpreg@x.com'}));
   await assertSucceeds(getDoc(doc(lp('lpver'),'levantamento_patologias_midia','pm1')))});
 await t('Patologias: só com a página lê as estacas do Lote 04',()=>assertSucceeds(getDoc(doc(lp('lpver'),'base','b4'))));
+
+// Histórico de programações
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  const U=(id,email,perms)=>setDoc(doc(d,'users',id),{email,name:id,profile:null,custom:true,perms,active:true,invited:true});
+  await U('hpreg','hpreg@x.com',{histprog:{view:true,create:true},calculadora:{view:true,create:true}});await U('hpreg2','hpreg2@x.com',{histprog:{view:true,create:true}});
+  await U('hped','hped@x.com',{histprog:{view:true,edit:true}});await U('hpdel','hpdel@x.com',{histprog:{view:true,delete:true}});await U('hpver','hpver@x.com',{histprog:{view:true}});
+});
+const HS=(id,by,upd,o={})=>({id,v:1,obra:'Restauração BR-277 – Blocos 02 e 03',srck:'277',data:'2026-11-10',equipe:'Pavimentação Johonatan',encarregado:'Johonatan',kmA:'236+000',kmB:'237+000',pista:'ALL',sent:'ALL',
+  nSeg:3,nDrn:0,servicos:[{code:'FF',desc:'Fresagem',tipo:'pav',n:3,len:120,area:432,t:65.5}],totais:{t:65.5,len:120,area:432,vol:25.9,perdaT:0,drnLen:0},busca:'x',status:'VALIDADA',revisao:1,
+  criado_em:1760000000000,criado_por:by,criado_por_nome:by,atualizado_em:1760000000000,atualizado_por:upd||by,atualizado_por_nome:upd||by,excluido:false,excluido_em:null,excluido_por:null,excluido_por_nome:null,...o});
+const HD=(id)=>({id,v:1,info:{data:'2026-11-10',equipe:'Pavimentação Johonatan'},repType:'full',calc:{params:{kmA:'236+000'},src:{rowW:{},manual:[]}},rows:[{k:'pav',tag:'236-F1-C-01',len:40}],atualizado_em:1760000000000});
+const hp=u=>ctx(u,u+'@x.com');
+await t('Histórico: quem tem "salvar" grava resumo e dados juntos',async()=>{const db=hp('hpreg');const b=writeBatch(db);b.set(doc(db,'programacoes','h1'),HS('h1','hpreg@x.com'));b.set(doc(db,'programacoes_dados','h1'),HD('h1'));await assertSucceeds(b.commit())});
+await t('Histórico: não grava em nome de outro usuário',()=>assertFails(setDoc(doc(hp('hpreg'),'programacoes','h2'),HS('h2','hpreg2@x.com'))));
+await t('Histórico: só visualizar não grava',()=>assertFails(setDoc(doc(hp('hpver'),'programacoes','h3'),HS('h3','hpver@x.com'))));
+await t('Histórico: data em formato errado não grava',()=>assertFails(setDoc(doc(hp('hpreg'),'programacoes','h4'),HS('h4','hpreg@x.com',null,{data:'10/11/2026'}))));
+await t('Histórico: quem tem a página lê a lista e os dados',async()=>{await assertSucceeds(getDoc(doc(hp('hpver'),'programacoes','h1')));await assertSucceeds(getDoc(doc(hp('hpver'),'programacoes_dados','h1')))});
+await t('Histórico: sem a página não lê',()=>assertFails(getDoc(doc(lp('lpver'),'programacoes_dados','h1'))));
+await t('Histórico: o autor atualiza a própria (mesmo registro)',async()=>{const db=hp('hpreg');const b=writeBatch(db);b.set(doc(db,'programacoes','h1'),HS('h1','hpreg@x.com',null,{revisao:2,status:'ATUALIZADA',atualizado_em:1760000100000}));b.set(doc(db,'programacoes_dados','h1'),HD('h1'));await assertSucceeds(b.commit())});
+await t('Histórico: outro usuário só com "salvar" não altera a alheia',async()=>{await assertFails(setDoc(doc(hp('hpreg2'),'programacoes','h1'),HS('h1','hpreg@x.com','hpreg2@x.com',{revisao:3})));await assertFails(setDoc(doc(hp('hpreg2'),'programacoes_dados','h1'),HD('h1')))});
+await t('Histórico: "editar" altera a de qualquer usuário, sem trocar o autor',async()=>{await assertSucceeds(setDoc(doc(hp('hped'),'programacoes','h1'),HS('h1','hpreg@x.com','hped@x.com',{revisao:3})));await assertSucceeds(setDoc(doc(hp('hped'),'programacoes_dados','h1'),HD('h1')));
+  await assertFails(setDoc(doc(hp('hped'),'programacoes','h1'),HS('h1','hped@x.com','hped@x.com',{revisao:4})))});
+await t('Histórico: "excluir" só marca a exclusão',async()=>{await assertFails(updateDoc(doc(hp('hpdel'),'programacoes','h1'),{excluido:true,equipe:'Outra'}));
+  await assertSucceeds(updateDoc(doc(hp('hpdel'),'programacoes','h1'),{excluido:true,excluido_em:1760000200000,excluido_por:'hpdel@x.com',excluido_por_nome:'hpdel'}))});
+await t('Histórico: sem a permissão de excluir não exclui',()=>assertFails(updateDoc(doc(hp('hped'),'programacoes','h1'),{excluido:true,excluido_em:1,excluido_por:'hped@x.com',excluido_por_nome:'x'})));
+await t('Histórico: nada é apagado do servidor',async()=>{await assertFails(deleteDoc(doc(admin,'programacoes','h1')));await assertFails(deleteDoc(doc(admin,'programacoes_dados','h1')))});
 await t('Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)',()=>assertSucceeds(getDoc(doc(lv('lvver'),'base','b4'))));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
