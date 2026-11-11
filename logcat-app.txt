@@ -1,0 +1,406 @@
+11-11 08:50:44.791  2333  2694 I DialerSystemCallLogUpdater: com.android.dialer.calllog.refresh.impl.SystemCallLogUpdater.lambda$update$0:105 not updating system call log for initial build
+11-11 08:50:48.644  2883  2883 D Capacitor: Starting BridgeActivity
+11-11 08:50:48.736  2883  2883 D Capacitor: Registering plugin instance: CapacitorCookies
+11-11 08:50:48.748  2883  2883 D Capacitor: Registering plugin instance: WebView
+11-11 08:50:48.755  2883  2883 D Capacitor: Registering plugin instance: CapacitorHttp
+11-11 08:50:48.761  2883  2883 D Capacitor: Registering plugin instance: SystemBars
+11-11 08:50:48.770  2883  2883 D Capacitor: Registering plugin instance: Media
+11-11 08:50:48.775  2883  2883 D Capacitor: Registering plugin instance: FirebaseAuthentication
+11-11 08:50:48.896  2883  2883 D Capacitor: Registering plugin instance: Filesystem
+11-11 08:50:48.903  2883  2883 D Capacitor: Registering plugin instance: Share
+11-11 08:50:48.907  2883  2883 D Capacitor: Registering plugin instance: CapacitorUpdater
+11-11 08:50:48.934  2883  2883 I CapgoUpdater: 🟢 WebView set successfully for logging
+11-11 08:50:49.036  2883  2883 I CapgoUpdater: 🟢 appId: br.com.neovia.localizadorestacas
+11-11 08:50:49.087  2883  2883 I CapgoUpdater: 🟢 init for device 69df60ae-32ec-4363-bde3-a4a147220a7b
+11-11 08:50:49.089  2883  2883 I CapgoUpdater: 🟢 version native 1.0.45
+11-11 08:50:49.124  2883  3430 I CapgoUpdater: 🟢 Cleanup complete
+11-11 08:50:49.133  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:49.134  2883  2883 I CapgoUpdater: 🟢 AppLifecycleObserver registered with ProcessLifecycleOwner
+11-11 08:50:49.135  2883  2883 I CapgoUpdater: 🟢 Using ProcessLifecycleOwner for foreground/background detection (Android 14+)
+11-11 08:50:49.135  2883  2883 I CapgoUpdater: 🟢 semaphoreUp
+11-11 08:50:49.306  2883  2883 W Capacitor: Unable to read file at path public/plugins
+11-11 08:50:49.319  2883  2883 D Capacitor: Loading app at https://localhost
+11-11 08:50:49.438  2883  2883 I CapgoUpdater: 🟢 handleOnStart: onActivityStarted br.com.neovia.localizadorestacas.MainActivity
+11-11 08:50:49.451  2883  2883 D Capacitor: App started
+11-11 08:50:49.455  2883  2883 I CapgoUpdater: 🟢 ProcessLifecycleOwner: App moved to foreground
+11-11 08:50:49.456  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:49.459  2883  2883 I CapgoUpdater: 🟢 Background timestamp unset
+11-11 08:50:49.479  2883  2883 I CapgoUpdater: 🟢 Auto update is disabled
+11-11 08:50:49.480  2883  2883 I CapgoUpdater: 🟢 sendReadyToJs: disabled
+11-11 08:50:49.487  2883  2883 D Capacitor: App resumed
+11-11 08:50:49.528  2883  3465 I CapgoUpdater: 🟢 Wait for 20000ms, then check for notifyAppReady
+11-11 08:50:49.626  2883  3206 D Capacitor: Handling local request: https://localhost/
+11-11 08:50:50.182  2883  2883 D Capacitor: App paused
+11-11 08:50:50.185  2883  2883 I CapgoUpdater: 🟢 handleOnStop: onActivityStopped
+11-11 08:50:50.188  2883  2883 D Capacitor: App stopped
+11-11 08:50:50.189  2883  2883 D Capacitor: Saving instance state!
+11-11 08:50:50.193  2883  2883 I CapgoUpdater: 🟢 onActivityDestroyed br.com.neovia.localizadorestacas.MainActivity
+11-11 08:50:50.198  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:50.204  2883  2883 I CapgoUpdater: 🟢 Background timestamp set
+11-11 08:50:50.204  2883  2883 I CapgoUpdater: 🟢 AppLifecycleObserver unregistered from ProcessLifecycleOwner
+11-11 08:50:50.205  2883  2883 I CapgoUpdater: 🟢 AppLifecycleObserver cleaned up
+11-11 08:50:50.218  2883  2883 D Capacitor: App destroyed
+11-11 08:50:50.338  2883  2883 D Capacitor: Starting BridgeActivity
+11-11 08:50:50.428  2883  2883 D Capacitor: Registering plugin instance: CapacitorCookies
+11-11 08:50:50.430  2883  2883 D Capacitor: Registering plugin instance: WebView
+11-11 08:50:50.431  2883  2883 D Capacitor: Registering plugin instance: CapacitorHttp
+11-11 08:50:50.432  2883  2883 D Capacitor: Registering plugin instance: SystemBars
+11-11 08:50:50.449  2883  2883 D Capacitor: Registering plugin instance: Media
+11-11 08:50:50.450  2883  2883 D Capacitor: Registering plugin instance: FirebaseAuthentication
+11-11 08:50:50.465  2883  2883 D Capacitor: Registering plugin instance: Filesystem
+11-11 08:50:50.469  2883  2883 D Capacitor: Registering plugin instance: Share
+11-11 08:50:50.475  2883  2883 D Capacitor: Registering plugin instance: CapacitorUpdater
+11-11 08:50:50.497  2883  2883 I CapgoUpdater: 🟢 WebView set successfully for logging
+11-11 08:50:50.500  2883  2883 I CapgoUpdater: 🟢 appId: br.com.neovia.localizadorestacas
+11-11 08:50:50.512  2883  2883 I CapgoUpdater: 🟢 init for device 69df60ae-32ec-4363-bde3-a4a147220a7b
+11-11 08:50:50.513  2883  2883 I CapgoUpdater: 🟢 version native 1.0.45
+11-11 08:50:50.522  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:50.523  2883  2883 I CapgoUpdater: 🟢 ProcessLifecycleOwner: App moved to foreground
+11-11 08:50:50.525  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:50.534  2883  2883 I CapgoUpdater: 🟢 Background timestamp unset
+11-11 08:50:50.536  2883  3557 I CapgoUpdater: 🟢 Cleanup complete
+11-11 08:50:50.541  2883  2883 I CapgoUpdater: 🟢 Auto update is disabled
+11-11 08:50:50.545  2883  2883 I CapgoUpdater: 🟢 sendReadyToJs: disabled
+11-11 08:50:50.546  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event appReady
+11-11 08:50:50.546  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event appReady
+11-11 08:50:50.547  2883  2883 I CapgoUpdater: 🟢 AppLifecycleObserver registered with ProcessLifecycleOwner
+11-11 08:50:50.548  2883  2883 I CapgoUpdater: 🟢 Using ProcessLifecycleOwner for foreground/background detection (Android 14+)
+11-11 08:50:50.550  2883  2883 I CapgoUpdater: 🟢 semaphoreUp
+11-11 08:50:50.613  2883  3559 I CapgoUpdater: 🟢 Wait for 20000ms, then check for notifyAppReady
+11-11 08:50:50.687  2883  2883 W Capacitor: Unable to read file at path public/plugins
+11-11 08:50:50.708  2883  2883 D Capacitor: Loading app at https://localhost
+11-11 08:50:50.734  2883  3206 D Capacitor: Handling local request: https://localhost/
+11-11 08:50:50.750  2883  2883 I CapgoUpdater: 🟢 handleOnStart: onActivityStarted br.com.neovia.localizadorestacas.MainActivity
+11-11 08:50:50.751  2883  2883 D Capacitor: App started
+11-11 08:50:50.754  2883  2883 D Capacitor: App resumed
+11-11 08:50:50.990  2883  2883 V Capacitor/FirebaseAuthenticationPlugin: Notifying listeners for event authStateChange
+11-11 08:50:50.991  2883  2883 D Capacitor/FirebaseAuthenticationPlugin: No listeners found for event authStateChange
+11-11 08:50:51.005  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin.lambda$evaluateWebViewStatsReporterScript$13(CapacitorUpdaterPlugin.java:1745)
+11-11 08:50:51.005  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin.$r8$lambda$qurQQ4znJsNLKOfSAQ7YsCQdAvk(Unknown Source:0)
+11-11 08:50:51.005  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin$$ExternalSyntheticLambda38.run(D8$$SyntheticClass:0)
+11-11 08:50:51.050  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin.lambda$syncKeepUrlPathFlag$25(CapacitorUpdaterPlugin.java:2953)
+11-11 08:50:51.050  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin.$r8$lambda$NlndgIJteR-k2M7xMTmXpEIR5OY(Unknown Source:0)
+11-11 08:50:51.050  2883  2883 W cr_AwContents: 	at ee.forgr.capacitor_updater.CapacitorUpdaterPlugin$$ExternalSyntheticLambda30.run(D8$$SyntheticClass:0)
+11-11 08:50:51.184  2883  2883 V Capacitor/FirebaseAuthenticationPlugin: Notifying listeners for event authStateChange
+11-11 08:50:51.184  2883  2883 D Capacitor/FirebaseAuthenticationPlugin: No listeners found for event authStateChange
+11-11 08:50:51.323  2883  3206 D Capacitor: Handling local request: https://localhost/lib/fonts.css
+11-11 08:50:51.386  2883  3233 D Capacitor: Handling local request: https://localhost/lib/leaflet.js
+11-11 08:50:51.410  2883  3232 D Capacitor: Handling local request: https://localhost/lib/leaflet-rotate-src.js
+11-11 08:50:51.417  2883  3476 D Capacitor: Handling local request: https://localhost/native.js?v=20261111084248
+11-11 08:50:51.445  2883  3646 D Capacitor: Handling local request: https://localhost/firebase-config.js?v=20261111084248
+11-11 08:50:51.711  2333  2676 I DialerSystemCallLogUpdater: com.android.dialer.calllog.refresh.impl.SystemCallLogUpdater.getCallTypeUpdates:182 There are no system call log mutations
+11-11 08:50:51.712  2333  2676 I DialerSystemCallLogUpdater: com.android.dialer.calllog.refresh.impl.SystemCallLogUpdater.updateSystemCallLog:209 updated 0 rows
+11-11 08:50:51.959  2883  3206 D Capacitor: Handling local request: https://localhost/auth.js?v=20261111084248
+11-11 08:50:52.833  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 WebView set successfully for logging
+11-11 08:50:52.833  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 appId: br.com.neovia.localizadorestacas
+11-11 08:50:52.833  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 init for device 69df60ae-32ec-4363-bde3-a4a147220a7b
+11-11 08:50:52.833  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 version native 1.0.45
+11-11 08:50:52.834  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:52.834  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 ProcessLifecycleOwner: App moved to foreground
+11-11 08:50:52.836  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 All delays canceled from checkCancelDelay
+11-11 08:50:52.836  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Background timestamp unset
+11-11 08:50:52.836  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Cleanup complete
+11-11 08:50:52.837  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Auto update is disabled
+11-11 08:50:52.837  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 sendReadyToJs: disabled
+11-11 08:50:52.837  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 AppLifecycleObserver registered with ProcessLifecycleOwner
+11-11 08:50:52.838  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Using ProcessLifecycleOwner for foreground/background detection (Android 14+)
+11-11 08:50:52.838  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreUp
+11-11 08:50:52.838  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Wait for 20000ms, then check for notifyAppReady
+11-11 08:50:52.838  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 handleOnStart: onActivityStarted br.com.neovia.localizadorestacas.MainActivity
+11-11 08:50:52.838  2883  2883 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-11 08:50:52.839  2883  2883 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-11 08:50:52.839  2883  2883 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-11 08:50:52.839  2883  2883 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-11 08:50:52.839  2883  2883 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-11 08:50:52.958  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:50:52.965  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861373, pluginId: CapacitorUpdater, methodName: reportWebViewError
+11-11 08:50:52.971  2883  2883 V Capacitor: callback: 120861373, pluginId: CapacitorUpdater, methodName: reportWebViewError, methodData: {"type":"webview_unclean_restart","message":"WebView restarted without a clean page unload","previous_session_id":"1794387051498-la67amb1tb","previous_href":"https:\/\/localhost\/","previous_started_at":"1794387051503","previous_updated_at":"1794387051961","href":"https:\/\/localhost\/","user_agent":"Mozilla\/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build\/UE1A.230829.050; wv) AppleWebKit\/537.36 (KHTML, like Gecko) Version\/4.0 Chrome\/113.0.5672.136 Mobile Safari\/537.36","session_id":"1794387052653-zv7hj14q8od"}
+11-11 08:50:53.091  2883  3206 D Capacitor: Handling local request: https://localhost/lib/barlow-condensed-latin-700-normal.woff2
+11-11 08:50:53.101  2883  3233 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-400-normal.woff2
+11-11 08:50:53.191  2883  3206 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-700-normal.woff2
+11-11 08:50:53.193  2883  3206 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-600-normal.woff2
+11-11 08:50:53.204  2883  3206 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-500-normal.woff2
+11-11 08:50:53.280  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: undefined
+11-11 08:50:53.994  2883  3232 D Capacitor: Handling local request: https://localhost/logo_via.png
+11-11 08:50:54.011  2883  3233 D Capacitor: Handling local request: https://localhost/logo_neovia.png
+11-11 08:50:54.177  2883  2883 I Capacitor/Console: File: https://localhost/native.js?v=20261111084248 - Line 1 - Msg: NATIVE pronto: android build teste-antigo
+11-11 08:50:54.178  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:50:54.180  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861374, pluginId: CapacitorUpdater, methodName: reportWebViewError
+11-11 08:50:54.181  2883  2883 V Capacitor: callback: 120861374, pluginId: CapacitorUpdater, methodName: reportWebViewError, methodData: {"type":"webview_dom_content_loaded","message":"WebView DOM content loaded","duration_ms":"1317","page_started_at":"1794387052653","href":"https:\/\/localhost\/","user_agent":"Mozilla\/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build\/UE1A.230829.050; wv) AppleWebKit\/537.36 (KHTML, like Gecko) Version\/4.0 Chrome\/113.0.5672.136 Mobile Safari\/537.36","session_id":"1794387052653-zv7hj14q8od"}
+11-11 08:50:54.297  2883  3232 D Capacitor: Handling local request: https://localhost/favicon.ico
+11-11 08:50:54.300  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:50:54.302  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861375, pluginId: CapacitorUpdater, methodName: notifyAppReady
+11-11 08:50:54.303  2883  2883 V Capacitor: callback: 120861375, pluginId: CapacitorUpdater, methodName: notifyAppReady, methodData: {}
+11-11 08:50:54.307  2883  3529 I CapgoUpdater: 🟢 Version successfully loaded: 1.0.45
+11-11 08:50:54.317  2883  3529 I CapgoUpdater: 🟢 Current bundle loaded successfully. ['notifyAppReady()' was called] {"id":"builtin","version":"1.0.45","downloaded":"1970-01-01T00:00:00.000Z","checksum":"","status":"success"}
+11-11 08:50:54.383  2883  3529 I CapgoUpdater: 🟢 semaphoreReady countDown
+11-11 08:50:54.390  2883  3529 I CapgoUpdater: 🟢 semaphoreDown
+11-11 08:50:54.390  2883  3529 I CapgoUpdater: 🟢 semaphoreDown count 0
+11-11 08:50:54.390  2883  3529 I CapgoUpdater: 🟢 semaphoreReady countDown done
+11-11 08:50:54.481  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: undefined
+11-11 08:50:54.526  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Version successfully loaded: 1.0.45
+11-11 08:50:54.530  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: {"bundle":{"checksum":"","id":"builtin","version":"1.0.45","downloaded":"1970-01-01T00:00:00.000Z","status":"success"}}
+11-11 08:50:54.533  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Current bundle loaded successfully. ['notifyAppReady()' was called] {"id":"builtin","version":"1.0.45","downloaded":"1970-01-01T00:00:00.000Z","checksum":"","status":"success"}
+11-11 08:50:54.535  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreReady countDown
+11-11 08:50:54.539  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreDown
+11-11 08:50:54.540  1411  2008 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction android.location.PROVIDERS_CHANGED
+11-11 08:50:54.540  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreDown count 0
+11-11 08:50:54.550  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreReady countDown done
+11-11 08:50:55.019  1411  2008 I GCoreUlr: WorldUpdater:android.location.PROVIDERS_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:50:55.538  1411  2470 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.android.gsf.settings.GoogleLocationSettings.UPDATE_LOCATION_SETTINGS
+11-11 08:50:55.652  1411  2470 I GCoreUlr: WorldUpdater:com.google.android.gsf.settings.GoogleLocationSettings.UPDATE_LOCATION_SETTINGS: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:50:56.361  3919  3919 D nativeloader: Configuring product-clns-6 for unbundled product apk /product/priv-app/ConfigUpdater/ConfigUpdater.apk. target_sdk_version=33, uses_libraries=, library_path=/product/priv-app/ConfigUpdater/lib/x86_64:/product/lib64:/system/product/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.configupdater:/product/lib64:/system/product/lib64
+11-11 08:50:56.478  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.485  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.506  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.515  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.551  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.560  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.562  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.675  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.860  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.888  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.890  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:50:56.891  3919  3919 E ConfigUpdater: ignoring update request
+11-11 08:51:00.215  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:51:00.217  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861376, pluginId: CapacitorUpdater, methodName: list
+11-11 08:51:00.218  2883  2883 V Capacitor: callback: 120861376, pluginId: CapacitorUpdater, methodName: list, methodData: {}
+11-11 08:51:00.218  2883  3529 I CapgoUpdater: 🟢 No versions available to list/data/user/0/br.com.neovia.localizadorestacas/files/versions
+11-11 08:51:00.220  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 No versions available to list/data/user/0/br.com.neovia.localizadorestacas/files/versions
+11-11 08:51:00.223  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: {"bundles":[]}
+11-11 08:51:00.224  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:51:00.225  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861377, pluginId: CapacitorUpdater, methodName: download
+11-11 08:51:00.226  2883  2883 V Capacitor: callback: 120861377, pluginId: CapacitorUpdater, methodName: download, methodData: {"url":"https:\/\/localizador-estacas.web.app\/app-bundle\/app-20261111084248.zip","version":"20261111084248","checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd"}
+11-11 08:51:00.227  2883  3529 I CapgoUpdater: 🟢 Downloading https://localizador-estacas.web.app/app-bundle/app-20261111084248.zip
+11-11 08:51:00.228  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Downloading https://localizador-estacas.web.app/app-bundle/app-20261111084248.zip
+11-11 08:51:00.240  2883  4200 I CapgoUpdater: 🟢 No versions available to list/data/user/0/br.com.neovia.localizadorestacas/files/versions
+11-11 08:51:00.242  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 No versions available to list/data/user/0/br.com.neovia.localizadorestacas/files/versions
+11-11 08:51:00.262  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:00.263  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:00.263  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:00.263  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:00.286  2883  4200 I CapgoUpdater: 🟢 Emulator detected - using lenient network constraints
+11-11 08:51:00.289  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Emulator detected - using lenient network constraints
+11-11 08:51:00.516  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:00.516  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.124  2883  2883 I CapgoUpdater: 🟢 Download succeeded: SUCCEEDED
+11-11 08:51:02.127  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Download succeeded: SUCCEEDED
+11-11 08:51:02.132  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.132  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.154  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.154  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.286  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.286  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.354  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.355  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.357  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.357  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.377  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.377  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.405  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.405  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.408  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.410  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.415  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.419  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.420  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.421  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.425  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.425  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.425  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.432  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.434  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.439  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.444  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.444  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.444  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.444  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.472  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.472  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.475  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.475  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.483  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.483  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.497  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.497  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.551  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.551  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.586  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.586  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.587  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.587  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.604  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event download
+11-11 08:51:02.604  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event download
+11-11 08:51:02.604  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event downloadComplete
+11-11 08:51:02.604  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event downloadComplete
+11-11 08:51:02.605  2883  4314 I CapgoUpdater: 🟢 updateAvailable: {bundle={"checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","status":"pending"}}
+11-11 08:51:02.606  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event updateAvailable
+11-11 08:51:02.606  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event updateAvailable
+11-11 08:51:02.606  2883  4314 I CapgoUpdater: 🟢 setNext: false
+11-11 08:51:02.606  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 updateAvailable: {bundle={"checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","status":"pending"}}
+11-11 08:51:02.607  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 setNext: false
+11-11 08:51:02.617  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: {"checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","status":"pending"}
+11-11 08:51:02.617  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:51:02.618  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 120861378, pluginId: CapacitorUpdater, methodName: next
+11-11 08:51:02.618  2883  2883 V Capacitor: callback: 120861378, pluginId: CapacitorUpdater, methodName: next, methodData: {"id":"EixUypy5gS"}
+11-11 08:51:02.619  2883  3529 I CapgoUpdater: 🟢 Setting next active id EixUypy5gS
+11-11 08:51:02.640  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Setting next active id EixUypy5gS
+11-11 08:51:02.643  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event setNext
+11-11 08:51:02.643  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event setNext
+11-11 08:51:02.645  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: {"checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","status":"pending"}
+11-11 08:51:05.572  1411  2008 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.android.location.internal.server.ACTION_RESTARTED
+11-11 08:51:05.582  1411  2008 I GCoreUlr: WorldUpdater:com.google.android.location.internal.server.ACTION_RESTARTED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:09.244  1411  2447 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.gservices.intent.action.GSERVICES_CHANGED
+11-11 08:51:09.450  1411  2447 I GCoreUlr: WorldUpdater:com.google.gservices.intent.action.GSERVICES_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:09.452  1411  2447 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.gservices.intent.action.GSERVICES_CHANGED
+11-11 08:51:09.453  1411  2447 I GCoreUlr: WorldUpdater:com.google.gservices.intent.action.GSERVICES_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:09.529  2883  3465 I CapgoUpdater: 🟢 Built-in bundle is active. We skip the check for notifyAppReady.
+11-11 08:51:09.534  2883  3464 E CapgoUpdater: 🔴 Semaphore timeout: null
+11-11 08:51:09.537  2883  3464 I CapgoUpdater: 🟢 Cleaning up stale app ready wait for phase 0
+11-11 08:51:09.540  2883  3464 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event appReady
+11-11 08:51:09.541  2883  3464 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event appReady
+11-11 08:51:10.617  2883  3559 I CapgoUpdater: 🟢 Built-in bundle is active. We skip the check for notifyAppReady.
+11-11 08:51:10.619  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Built-in bundle is active. We skip the check for notifyAppReady.
+11-11 08:51:11.445  1411  4602 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction init
+11-11 08:51:11.518  1411  4602 I GCoreUlr: WorldUpdater:init: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:13.631  1411  1479 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.gservices.intent.action.GSERVICES_CHANGED
+11-11 08:51:13.660  1411  1479 I GCoreUlr: WorldUpdater:com.google.gservices.intent.action.GSERVICES_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:21.060  4423  4527 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateAvailabilityAsync: scheduling updateRcsAvailability call, hint: NO_HINT, enableWelcomePopupWithoutGoogleTos: false, reshowSuccessPopup: false
+11-11 08:51:21.086  4423  4536 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateAvailabilityAsync: scheduling updateRcsAvailability call, hint: NO_HINT, enableWelcomePopupWithoutGoogleTos: false, reshowSuccessPopup: false
+11-11 08:51:21.091  4423  4540 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:21.093  4423  4541 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:21.095  4423  4540 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 1, newAvailability: 2, hint: NO_HINT
+11-11 08:51:21.096  4423  4541 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 1, newAvailability: 2, hint: NO_HINT
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.max-count.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: output.subscribed-indices.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: input.buffers.allocator-ids.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: output.buffers.allocator-ids.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.allocator-ids.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: output.buffers.pool-ids.values
+11-11 08:51:27.331   475  4935 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.pool-ids.values
+11-11 08:51:27.405  4423  4510 I Bugle   : RcsAvailabilityUtilForProvisioningEngineV2: swapAvailabilityUpdater, provisioningTaskInBugle: true, activeRcsAvailabilityUpdater: awuh
+11-11 08:51:27.405  4423  4510 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateAvailabilityAsync: scheduling updateRcsAvailability call, hint: CSLIB_PHENOTYPE_UPDATE, enableWelcomePopupWithoutGoogleTos: false, reshowSuccessPopup: false
+11-11 08:51:27.414  4423  4880 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:27.414  4423  4880 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 2, newAvailability: 2, hint: CSLIB_PHENOTYPE_UPDATE
+11-11 08:51:29.488  2883  2883 D Capacitor: App paused
+11-11 08:51:30.799  2883  2883 I CapgoUpdater: 🟢 ProcessLifecycleOwner: App moved to background
+11-11 08:51:30.802  2883  2883 I CapgoUpdater: 🟢 Checking for pending update
+11-11 08:51:30.863  2883  2883 I CapgoUpdater: 🟢 Background timestamp set
+11-11 08:51:30.864  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:51:30.867  2883  2883 I CapgoUpdater: 🟢 handleOnStop: onActivityStopped
+11-11 08:51:30.868  2883  2883 D Capacitor: App stopped
+11-11 08:51:30.869  2883  2883 D Capacitor: Saving instance state!
+11-11 08:51:30.926  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 ProcessLifecycleOwner: App moved to background
+11-11 08:51:30.927  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Checking for pending update
+11-11 08:51:30.928  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Background timestamp set
+11-11 08:51:30.929  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 All delays canceled from checkCancelDelay
+11-11 08:51:30.944  2883  5052 I CapgoUpdater: 🟢 Setting next active bundle: EixUypy5gS
+11-11 08:51:30.947  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 handleOnStop: onActivityStopped
+11-11 08:51:30.953  2883  5052 I CapgoUpdater: 🟢 Current bundle set to: /data/data/br.com.neovia.localizadorestacas/files/versions/EixUypy5gS
+11-11 08:51:30.985  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Setting next active bundle: EixUypy5gS
+11-11 08:51:30.988  2883  5052 I CapgoUpdater: 🟢 semaphoreUp
+11-11 08:51:30.989  2883  5052 I CapgoUpdater: 🟢 Reloading: /data/data/br.com.neovia.localizadorestacas/files/versions/EixUypy5gS
+11-11 08:51:30.993  2883  5052 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event appReloaded
+11-11 08:51:30.993  2883  5052 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event appReloaded
+11-11 08:51:31.026  2883  5054 I CapgoUpdater: 🟢 Wait for 30000ms, then check for notifyAppReady
+11-11 08:51:31.026  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Current bundle set to: /data/data/br.com.neovia.localizadorestacas/files/versions/EixUypy5gS
+11-11 08:51:31.026  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreUp
+11-11 08:51:31.027  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Reloading: /data/data/br.com.neovia.localizadorestacas/files/versions/EixUypy5gS
+11-11 08:51:31.053  2883  3205 D Capacitor: Handling local request: https://localhost/
+11-11 08:51:31.072  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Wait for 30000ms, then check for notifyAppReady
+11-11 08:51:31.140  2883  3205 D Capacitor: Handling local request: https://localhost/lib/fonts.css
+11-11 08:51:31.153  2883  3206 D Capacitor: Handling local request: https://localhost/lib/leaflet.js
+11-11 08:51:31.154  2883  3233 D Capacitor: Handling local request: https://localhost/lib/leaflet-rotate-src.js
+11-11 08:51:31.185  2883  3232 D Capacitor: Handling local request: https://localhost/native.js?v=20261111084248
+11-11 08:51:31.204  2883  3206 D Capacitor: Handling local request: https://localhost/firebase-config.js?v=20261111084248
+11-11 08:51:31.205  2883  3206 D Capacitor: Handling local request: https://localhost/auth.js?v=20261111084248
+11-11 08:51:31.234  2883  2883 I Capacitor/Console: File: https://localhost/native.js?v=20261111084248 - Line 1 - Msg: NATIVE pronto: android build 20261111084248
+11-11 08:51:31.423  2883  3205 D Capacitor: Handling local request: https://localhost/logo_neovia.png
+11-11 08:51:31.425  2883  3233 D Capacitor: Handling local request: https://localhost/logo_via.png
+11-11 08:51:31.427  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:51:31.445  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 104343604, pluginId: CapacitorUpdater, methodName: reportWebViewError
+11-11 08:51:31.446  2883  2883 V Capacitor: callback: 104343604, pluginId: CapacitorUpdater, methodName: reportWebViewError, methodData: {"type":"webview_dom_content_loaded","message":"WebView DOM content loaded","duration_ms":"279","page_started_at":"1794387091144","href":"https:\/\/localhost\/","user_agent":"Mozilla\/5.0 (Linux; Android 14; sdk_gphone64_x86_64 Build\/UE1A.230829.050; wv) AppleWebKit\/537.36 (KHTML, like Gecko) Version\/4.0 Chrome\/113.0.5672.136 Mobile Safari\/537.36","session_id":"1794387091144-tuke0u61tc9"}
+11-11 08:51:31.472  2883  3205 D Capacitor: Handling local request: https://localhost/lib/barlow-condensed-latin-700-normal.woff2
+11-11 08:51:31.497  2883  3205 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-400-normal.woff2
+11-11 08:51:31.498  2883  3206 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-700-normal.woff2
+11-11 08:51:31.503  2883  3205 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-600-normal.woff2
+11-11 08:51:31.543  2883  3205 D Capacitor: Handling local request: https://localhost/lib/barlow-latin-500-normal.woff2
+11-11 08:51:32.069  2883  2883 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-11 08:51:32.070  2883  2883 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 104343605, pluginId: CapacitorUpdater, methodName: notifyAppReady
+11-11 08:51:32.070  2883  2883 V Capacitor: callback: 104343605, pluginId: CapacitorUpdater, methodName: notifyAppReady, methodData: {"loadGeneration":1}
+11-11 08:51:32.075  2883  3529 I CapgoUpdater: 🟢 Version successfully loaded: 20261111084248
+11-11 08:51:32.080  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Version successfully loaded: 20261111084248
+11-11 08:51:32.080  2883  3529 I CapgoUpdater: 🟢 Current bundle loaded successfully. ['notifyAppReady()' was called] {"id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","status":"pending"}
+11-11 08:51:32.081  2883  3529 I CapgoUpdater: 🟢 semaphoreReady countDown
+11-11 08:51:32.082  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Current bundle loaded successfully. ['notifyAppReady()' was called] {"id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","status":"pending"}
+11-11 08:51:32.082  2883  3529 I CapgoUpdater: 🟢 semaphoreDown
+11-11 08:51:32.083  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreReady countDown
+11-11 08:51:32.087  2883  3529 I CapgoUpdater: 🟢 semaphoreDown count 1
+11-11 08:51:32.088  2883  3529 I CapgoUpdater: 🟢 semaphoreReady countDown done
+11-11 08:51:32.090  2883  5052 I CapgoUpdater: 🟢 semaphoreReady count 2
+11-11 08:51:32.091  2883  5052 I CapgoUpdater: 🟢 Updated to bundle: 20261111084248
+11-11 08:51:32.091  2883  5052 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event set
+11-11 08:51:32.091  2883  5052 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event set
+11-11 08:51:32.096  2883  2883 I Capacitor/Console: File:  - Line 333 - Msg: {"bundle":{"checksum":"d32d8b09b0edc49d8a82b8c26aa636c99604c9750a7e9b1b6c4d275f1515c8fd","id":"EixUypy5gS","version":"20261111084248","downloaded":"2026-11-11T08:51:02.599+0000","status":"pending"}}
+11-11 08:51:32.096  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreDown
+11-11 08:51:32.096  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreDown count 1
+11-11 08:51:32.096  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreReady countDown done
+11-11 08:51:32.097  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 semaphoreReady count 2
+11-11 08:51:32.097  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Updated to bundle: 20261111084248
+11-11 08:51:33.717  3919  4826 I ConfigUpdater: Update started
+11-11 08:51:33.842  3919  4826 I ConfigUpdater: Update started
+11-11 08:51:34.251  4423  4551 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateAvailabilityAsync: scheduling updateRcsAvailability call, hint: SIM_SWAP, enableWelcomePopupWithoutGoogleTos: false, reshowSuccessPopup: false
+11-11 08:51:34.254  4423  4536 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:34.254  4423  4536 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 2, newAvailability: 2, hint: SIM_SWAP
+11-11 08:51:37.595  2883  2883 D Capacitor: App restarted
+11-11 08:51:37.596  2883  2883 I CapgoUpdater: 🟢 handleOnStart: onActivityStarted br.com.neovia.localizadorestacas.MainActivity
+11-11 08:51:37.597  2883  2883 D Capacitor: App started
+11-11 08:51:37.598  2883  2883 I CapgoUpdater: 🟢 ProcessLifecycleOwner: App moved to foreground
+11-11 08:51:37.599  2883  2883 I CapgoUpdater: 🟢 All delays canceled from checkCancelDelay
+11-11 08:51:37.606  2883  2883 I CapgoUpdater: 🟢 Background timestamp unset
+11-11 08:51:37.619  2883  2883 I CapgoUpdater: 🟢 Auto update is disabled
+11-11 08:51:37.620  2883  2883 I CapgoUpdater: 🟢 sendReadyToJs: disabled
+11-11 08:51:37.620  2883  2883 V Capacitor/CapacitorUpdaterPlugin: Notifying listeners for event appReady
+11-11 08:51:37.620  2883  2883 D Capacitor/CapacitorUpdaterPlugin: No listeners found for event appReady
+11-11 08:51:37.622  2883  5054 I CapgoUpdater: 🟢 ee.forgr.capacitor_updater.CapacitorUpdaterPlugin$DeferredNotifyAppReadyCheck was interrupted.
+11-11 08:51:37.638  2883  2883 D Capacitor: App resumed
+11-11 08:51:37.656  2883  5200 I CapgoUpdater: 🟢 Wait for 20000ms, then check for notifyAppReady
+11-11 08:51:37.758  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 handleOnStart: onActivityStarted br.com.neovia.localizadorestacas.MainActivity
+11-11 08:51:37.759  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 ProcessLifecycleOwner: App moved to foreground
+11-11 08:51:37.760  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 All delays canceled from checkCancelDelay
+11-11 08:51:37.761  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Background timestamp unset
+11-11 08:51:37.765  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Auto update is disabled
+11-11 08:51:37.765  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 sendReadyToJs: disabled
+11-11 08:51:37.769  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 ee.forgr.capacitor_updater.CapacitorUpdaterPlugin$DeferredNotifyAppReadyCheck was interrupted.
+11-11 08:51:37.770  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 Wait for 20000ms, then check for notifyAppReady
+11-11 08:51:40.567  3919  4826 I ConfigUpdater: Update started
+11-11 08:51:40.643  3919  4826 I ConfigUpdater: Update started
+11-11 08:51:40.678  3919  4826 I ConfigUpdater: Update started
+11-11 08:51:41.519  3919  4826 I ConfigUpdater: Update downloaded, starting installation
+11-11 08:51:41.579  3919  4826 I ConfigUpdater: doneInstall
+11-11 08:51:41.673  4423  4510 I Bugle   : RcsAvailabilityUtilForProvisioningEngineV2: swapAvailabilityUpdater, provisioningTaskInBugle: true, activeRcsAvailabilityUpdater: awuh
+11-11 08:51:41.673  4423  4510 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateAvailabilityAsync: scheduling updateRcsAvailability call, hint: CSLIB_PHENOTYPE_UPDATE, enableWelcomePopupWithoutGoogleTos: false, reshowSuccessPopup: false
+11-11 08:51:41.703  4423  4553 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:41.703  4423  4553 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability subscription{id:1}, simId: redacted-pii:sim_id[chars:20,last3:897], sipConnectionType: DUAL_REG, isRcsAvailable: false
+11-11 08:51:41.703  4423  4553 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 2, newAvailability: 10, hint: CSLIB_PHENOTYPE_UPDATE
+11-11 08:51:41.826  3919  4826 I ConfigUpdater: Update downloaded, starting installation
+11-11 08:51:41.829  4423  4423 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability configuration availability and enabled status: simId: redacted-pii:sim_id[chars:20,last3:897], SipConnectionType: DUAL_REG, isConfigurationAvailableAndEnabled: false
+11-11 08:51:41.829  4423  4423 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: RcsAvailability subscription{id:1}, simId: redacted-pii:sim_id[chars:20,last3:897], sipConnectionType: DUAL_REG, isRcsAvailable: false
+11-11 08:51:41.829  4423  4423 I BugleRcsProvisioning: RcsAvailabilityUpdaterLocal: updateRcsAvailability, currentAvailability: 10, newAvailability: 10, hint: NO_HINT
+11-11 08:51:41.896  3919  4826 I ConfigUpdater: doneInstall
+11-11 08:51:42.932  3919  4826 I ConfigUpdater: Update downloaded, starting installation
+11-11 08:51:43.005  3919  4826 I ConfigUpdater: doneInstall
+11-11 08:51:43.406  3919  4826 I ConfigUpdater: Update downloaded, starting installation
+11-11 08:51:43.418  3919  4826 I ConfigUpdater: doneInstall
+11-11 08:51:43.479  3919  4826 I ConfigUpdater: Update downloaded, starting installation
+11-11 08:51:43.499  3919  4826 I ConfigUpdater: doneInstall
+11-11 08:51:45.547  5312  5462 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction com.google.android.location.internal.server.ACTION_RESTARTED
+11-11 08:51:45.567  5312  5462 I GCoreUlr: WorldUpdater:com.google.android.location.internal.server.ACTION_RESTARTED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:45.607  5312  5462 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction android.location.PROVIDERS_CHANGED
+11-11 08:51:45.608  5312  5462 I GCoreUlr: WorldUpdater:android.location.PROVIDERS_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:45.615  5312  5462 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction android.location.PROVIDERS_CHANGED
+11-11 08:51:45.616  5312  5462 I GCoreUlr: WorldUpdater:android.location.PROVIDERS_CHANGED: Ensuring that reporting is stopped because of reasons: (no Google accounts)
+11-11 08:51:57.657  2883  5200 I CapgoUpdater: 🟢 notifyAppReady was called. This is fine: EixUypy5gS
+11-11 08:51:57.659  2883  2883 I Capacitor/Console: File:  - Line 1 - Msg: [CapgoUpdater] 🟢 notifyAppReady was called. This is fine: EixUypy5gS
+11-11 08:51:57.803  5312  5404 I GCoreUlr: WorldUpdater received intent Intent { act=com.google.android.location.reporting.ACTION_UPDATE_WORLD cmp=com.google.android.gms/com.google.android.location.reporting.service.DispatchingService (has extras) } with receiverAction init
+11-11 08:51:57.820  5312  5404 I GCoreUlr: WorldUpdater:init: Ensuring that reporting is stopped because of reasons: (no Google accounts)
