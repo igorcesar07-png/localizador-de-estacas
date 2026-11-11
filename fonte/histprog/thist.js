@@ -31,14 +31,16 @@ await prog({obra:'Restauração BR-373 – Bloco 04',eq:'Pavimentação Raimundo
 const WIP=await rowsOf();const WIPf={obra:await p.inputValue('#rfObra'),eq:await p.inputValue('#rfEquipe'),data:await p.inputValue('#rfData'),a:await p.inputValue('#cKmA')};
 // 4) histórico
 await p.evaluate(()=>location.hash='#histprog');await W(800);
-ok(await p.isVisible('#pHist')&&(await p.$$('#hpList tr[data-id]')).length===2,'Histórico lista as 2 programações');
-const day=await p.textContent('#hpList .hpday h2');ok(/10\/11\/2026/.test(day)&&/2 programações/.test(day),'agrupadas pela data: '+day.trim());
-const cols=await p.$$eval('#hpList thead th',a=>a.map(t=>t.textContent));console.log(cols.join(' | '));
-const row=await p.$eval('#hpList tr[data-id]',tr=>tr.innerText.replace(/\s+/g,' '));console.log(row);
-await p.selectOption('#hpEq','Dreno Sandro');ok((await p.$$('#hpList tr[data-id]')).length===1,'filtro por equipe');await p.selectOption('#hpEq','ALL');
-await p.selectOption('#hpResp','Johonatan');ok((await p.$$('#hpList tr[data-id]')).length===1,'filtro por responsável');await p.selectOption('#hpResp','ALL');
-await p.fill('#hpQ','bueiro');await W(200);ok((await p.$$('#hpList tr[data-id]')).length===1,'pesquisa por palavra-chave (observação do pano)');await p.fill('#hpQ','');await p.dispatchEvent('#hpQ','input');
-await p.fill('#hpDe','2026-11-11');await p.dispatchEvent('#hpDe','change');ok((await p.$$('#hpList tr[data-id]')).length===0,'filtro por período');await p.click('#hpClr');await W(200);
+ok(await p.isVisible('#pHist')&&(await p.$$('.hpcard[data-id]')).length===2,'Histórico lista as 2 programações');
+const day=await p.textContent('#hpList .hpdh');ok(/10\/11\/2026/.test(day)&&/2 programações/.test(day),'agrupadas pela data: '+day.trim());
+
+const row=await p.$eval('.hpcard[data-id]:has-text("Johonatan")',tr=>tr.innerText.replace(/\s+/g,' '));console.log(row);
+ok(/PAVIMENTAÇÃO JOHONATAN/i.test(row)&&/BR-277 \| B2\/B3/.test(row)&&/Km 238\+000 ao Km 236\+600/.test(row)&&/toneladas de CBUQ/.test(row)&&!/Programado|Respons|Atualizad|Validada|crescente|rev\./i.test(row),'card só com equipe, trecho e serviços (t de CBUQ)');
+ok(await p.$('#hpResp')===null,'filtro "Responsável" removido');
+await p.selectOption('#hpEq','Dreno Sandro');ok((await p.$$('.hpcard[data-id]')).length===1,'filtro por equipe');await p.selectOption('#hpEq','ALL');
+
+await p.fill('#hpQ','bueiro');await W(200);ok((await p.$$('.hpcard[data-id]')).length===1,'pesquisa por palavra-chave (observação do pano)');await p.fill('#hpQ','');await p.dispatchEvent('#hpQ','input');
+await p.fill('#hpDe','2026-11-11');await p.dispatchEvent('#hpDe','change');ok((await p.$$('.hpcard[data-id]')).length===0,'filtro por período');await p.click('#hpClr');await W(200);
 await p.screenshot({path:'/tmp/claude-0/off/hist_lista.png'});
 // 5) abrir
 const idJ=H[0].sum.id;await p.click(`#hpList button[data-open="${idJ}"]`);await p.waitForLoadState();await W(3000);
@@ -71,7 +73,7 @@ H=await p.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('br277.hist
 await p.click('#rvClose');
 // 10) excluir
 await p.evaluate(()=>location.hash='#histprog');await W(800);dlg=[];const idD=hd.sum.id;await p.click(`#hpList button[data-del="${idD}"]`);await W(600);
-ok(dlg.some(m=>/Excluir do histórico/.test(m))&&(await p.$$('#hpList tr[data-id]')).length===1,'excluir pede confirmação e tira da lista');
+ok(dlg.some(m=>/Excluir do histórico/.test(m))&&(await p.$$('.hpcard[data-id]')).length===1,'excluir pede confirmação e tira da lista');
 await p.check('#hpExc');await W(200);ok(/Excluída/.test(await p.textContent('#hpList')),'"Mostrar excluídas" mostra a excluída');
 await p.setViewportSize({width:393,height:852});await p.uncheck('#hpExc');await W(300);await p.screenshot({path:'/tmp/claude-0/off/hist_celular.png',fullPage:true});
 ok(errs.length===0,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(x=>x).length}/${res.length}`);await b.close()})();

@@ -18,7 +18,7 @@ await p.click('#cRep');await W(1200);await p.click('#rvHist');await W(500);await
 await prog({eq:'Pavimentação Raimundo',h:H6});await p.click('#cRep');await W(1200);await p.click('#rvHist');await W(500);await p.click('#rvClose');
 console.log(await HL());ok((await HL()).length===2,'sem histórico aberto: A e B ficam separadas');
 // abre A pelo histórico (aviso azul) e troca para a equipe de dreno, mesma data
-await p.evaluate(()=>location.hash='#histprog');await W(800);const idA=await p.$eval('#hpList tr[data-id]:has-text("Johonatan")',tr=>tr.dataset.id);
+await p.evaluate(()=>location.hash='#histprog');await W(800);const idA=await p.$eval('.hpcard[data-id]:has-text("Johonatan")',tr=>tr.dataset.id);
 await p.click(`#hpList button[data-open="${idA}"]`);await p.waitForLoadState();await W(3000);ok(await p.isVisible('#histBar'),'programação A aberta pelo histórico');
 await prog({eq:'Dreno Sandro',h:{rfSCafe:'06:00',rfSDds:'06:15',rfSSai:'06:30',rfECafe:'06:00',rfEDds:'06:15',rfESai:'06:30'},usi:'N',a:'200+000',b:'215+000'});
 await p.click('#hbSave');await W(1500);console.log('msg:',await p.textContent('#rvMsg'));await p.click('#rvClose').catch(()=>{});
