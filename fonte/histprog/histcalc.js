@@ -23,7 +23,7 @@
       atualizado_em:now,atualizado_por:u.email,atualizado_por_nome:u.name,excluido:false,excluido_em:null,excluido_por:null,excluido_por_nome:null};
     const data={id,v:1,info:I,repType:P.type||store.get('repType','full'),
       calc:{params:{kmA:S.kmA,kmB:S.kmB,pista:S.pista,sent:S.sent,dens:S.dens,perda:S.perda,w:S.w,esp:S.esp,excl:S.excl,show:S.show,equipe:S.equipe,equipeMan:!!S.equipeMan,ordem:S.ordem},
-        src:{rowW:b.rowW||{},rowE:b.rowE||{},rowOff:b.rowOff||{},rowSeg:b.rowSeg||{},serial:b.serial||{},obs:b.obs||{},manual:b.manual||[]}},
+        src:{rowW:b.rowW||{},rowE:b.rowE||{},rowOff:b.rowOff||{},rowSeg:b.rowSeg||{},serial:b.serial||{},obs:b.obs||{},manual:b.manual||[],ordMan:b.ordMan||[]}},
       rows,atualizado_em:now};
     return {sum:JSON.parse(JSON.stringify(sum)),data:JSON.parse(JSON.stringify(data))}}
   let HSAVING=false;

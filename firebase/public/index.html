@@ -1011,6 +1011,11 @@ table.q td.scell small{display:block;color:var(--muted);font-size:11px;margin-to
 table.q td.pano .segEd{display:inline-block;margin-top:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 10px;font:700 12.5px var(--sans,system-ui);cursor:pointer}
 table.q td.pano .segEd:hover{border-color:var(--ink)}
 table.q td.pano .segbar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+table.q td.pano .ordmv{display:flex;align-items:center;gap:6px;margin:0 0 6px}
+table.q td.pano .ordmv b{min-width:34px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:var(--ink);color:var(--surface);font:800 15px var(--cond)}
+table.q td.pano .ordmv button{width:44px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:800 15px var(--sans,system-ui);cursor:pointer;padding:0}
+table.q td.pano .ordmv button:disabled{opacity:.35;cursor:default}
+table.q tr.ordhl td{animation:ordhl 1.2s ease-out}@keyframes ordhl{from{background:var(--hl-sel,#FDE68A)}}
 table.q td.pano .segbar button{border-radius:8px;padding:6px 11px;font:700 12.5px var(--sans,system-ui);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 table.q td.pano .segbar .segSave{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 table.q td.pano .segErr{color:var(--bad,#C8101A);font-size:12px;font-weight:600;white-space:normal;max-width:220px;margin-top:4px}
@@ -1736,7 +1741,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 15/11/2026 15:34 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 15/11/2026 20:56 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2373,10 +2378,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261115183441";</script>
-<script src="native.js?v=20261115183441"></script>
-<script src="firebase-config.js?v=20261115183441"></script>
-<script src="auth.js?v=20261115183441"></script>
+<script>window.APP_BUILD="20261115235613";</script>
+<script src="native.js?v=20261115235613"></script>
+<script src="firebase-config.js?v=20261115235613"></script>
+<script src="auth.js?v=20261115235613"></script>
 
 </body>
 </html>

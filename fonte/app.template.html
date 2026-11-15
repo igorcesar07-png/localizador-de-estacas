@@ -336,6 +336,11 @@ table.q td.scell small{display:block;color:var(--muted);font-size:11px;margin-to
 table.q td.pano .segEd{display:inline-block;margin-top:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:5px 10px;font:700 12.5px var(--sans,system-ui);cursor:pointer}
 table.q td.pano .segEd:hover{border-color:var(--ink)}
 table.q td.pano .segbar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+table.q td.pano .ordmv{display:flex;align-items:center;gap:6px;margin:0 0 6px}
+table.q td.pano .ordmv b{min-width:34px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:var(--ink);color:var(--surface);font:800 15px var(--cond)}
+table.q td.pano .ordmv button{width:44px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:800 15px var(--sans,system-ui);cursor:pointer;padding:0}
+table.q td.pano .ordmv button:disabled{opacity:.35;cursor:default}
+table.q tr.ordhl td{animation:ordhl 1.2s ease-out}@keyframes ordhl{from{background:var(--hl-sel,#FDE68A)}}
 table.q td.pano .segbar button{border-radius:8px;padding:6px 11px;font:700 12.5px var(--sans,system-ui);cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 table.q td.pano .segbar .segSave{background:var(--ink);color:var(--surface);border-color:var(--ink)}
 table.q td.pano .segErr{color:var(--bad,#C8101A);font-size:12px;font-weight:600;white-space:normal;max-width:220px;margin-top:4px}
@@ -2242,9 +2247,10 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     return `<div class="alert info" id="revNote"><b>Unifilar da BR-373 B4 atualizado (${escH(B4REV.id)}, km ${B4REV.km?B4REV.km.join(' a '):''}).</b> ${o.length} dado${o.length>1?'s':''} digitado${o.length>1?'s':''} em segmentos que mudaram foi retirado para não ficar no segmento errado; confira e digite de novo onde couber: ${o.map(x=>`${escH(x.tag)} (${lab[x.campo]||x.campo}${val(x)})`).join(' · ')}. <button type="button" class="linkbtn" id="revAck">Entendi</button></div>`};
   function swapSrc(k){if(k==='B4'&&!window.__SRC_B4)return false;
     ({Data,R,LANES,SIDE,PANOS,ODO,Loc}=k==='B4'?window.__SRC_B4:__SRC277);SRCK=k;
-    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowE:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};if(!b.manual)b.manual=[];S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
+    const b=S.bySrc[k]||(S.bySrc[k]={rowW:{},rowE:{},rowOff:{},rowSeg:{},serial:{},obs:{},revs:k==='B4'&&B4REV?[B4REV.id]:[]});if(!b.obs)b.obs={};if(!b.rowE)b.rowE={};if(!b.manual)b.manual=[];if(!Array.isArray(b.ordMan))b.ordMan=[];S.ordMan=b.ordMan;S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;
     const km=S.km[k]||KM0[k];S.kmA=km.a;S.kmB=km.b;PAVE_CODES=paveCodes();return true}
-  {const b=S.bySrc['277'];S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  {const b=S.bySrc['277'];if(!Array.isArray(b.ordMan))b.ordMan=[];S.ordMan=b.ordMan;S.rowW=b.rowW;S.rowE=b.rowE;S.manual=b.manual;S.rowOff=b.rowOff;S.rowSeg=b.rowSeg;S.serial=b.serial;S.obs=b.obs;S.kmA=(S.km['277']||KM0['277']).a;S.kmB=(S.km['277']||KM0['277']).b}
+  const setOrdMan=a=>{S.bySrc[SRCK].ordMan=a;S.ordMan=a};let ROWORD=[],ORDHL=null; // ordem manual: lista de panos (tags) na sequência escolhida
   const INIT_OBRA=(store.get('progMain',{})||{}).obra||(store.get('progLast',{})||{}).obra||'';
   let SRC_MISS=false;if(srcOfObra(INIT_OBRA)==='B4')SRC_MISS=!swapSrc('B4');
   const num=v=>{if(v===''||v==null)return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(',','.'));return isFinite(n)?n:NaN};
@@ -2513,8 +2519,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const LORD={2:0,1:1,0:2,3:0,4:1,5:2};
     const cmp={asc:(x,y)=>x.ini-y.ini||LORD[x.p.L]-LORD[y.p.L],desc:(x,y)=>y.ini-x.ini||LORD[x.p.L]-LORD[y.p.L],
       exec:(x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.ini-y.ini:y.ini-x.ini)||LORD[x.p.L]-LORD[y.p.L]};
-    rows.sort(cmp[ordem]);
-    const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor'}[ordem];
+    if(ordem==='man'){rows.sort(cmp.exec);const pos=new Map((S.ordMan||[]).map((t,i)=>[t,i]));const ex=new Map(rows.map((r,i)=>[r.p.tag,i]));
+      // panos já posicionados seguem a ordem escolhida; panos novos no trecho entram no fim, no sentido de execução
+      rows.sort((x,y)=>{const px=pos.has(x.p.tag)?pos.get(x.p.tag):1e9+ex.get(x.p.tag),py=pos.has(y.p.tag)?pos.get(y.p.tag):1e9+ex.get(y.p.tag);return px-py})}
+    else rows.sort(cmp[ordem]);
+    ROWORD=rows.map(r=>r.p.tag);
+    const ordTxt={asc:'estaca inicial crescente (menor → maior)',desc:'estaca inicial decrescente (maior → menor)',exec:'sentido de execução: crescente da menor para a maior, depois decrescente da maior para a menor',man:'ordem manual: use ▲ e ▼ em cada pano para mudar a posição. A mesma sequência vai para o relatório.'}[ordem];
     const scope=`${S.pista==='ALL'?'todas as faixas':S.pista==='DRN'?'somente drenagem':S.pista==='DRN_DR'?'somente DR – Dreno Raso':S.pista==='DRN_DP'?'somente DP – Dreno Profundo':Data.GRP[S.pista]} · ${S.sent==='ALL'?'ambos os sentidos':'sentido '+SIDE[S.sent].toLowerCase()}`;
     const hidTxt=hidden.size?`<div class="alert info"><b>${(n=>n===1?'1 pano oculto':n+' panos ocultos')([...hidden.values()].reduce((a,b)=>a+b,0))} no resumo, na relação e nos totais.</b>${S.equipe&&EQ_SOL(S.equipe)&&!S.equipeMan?`Padrão da equipe ${escH(S.equipe)}: só ${EQ_SOL(S.equipe).join(', ')}.`:`Soluções desmarcadas em "exibir": ${[...hidden.keys()].join(', ')}.`} Para mudar, use Equipe ou Cadastro de larguras e espessuras.</div>`:'';
     if(!rows.length&&!drows.length){LAST=null;out.innerHTML=hidTxt+`<div class="card"><div class="empty"><b>Nenhum pano encontrado.</b>Entre ${nA} e ${nB} (${scope}) não há solução de pavimento nem drenagem cadastrada no R08. Amplie o intervalo ou troque a pista e o sentido.</div></div>`;return}
@@ -2548,15 +2558,16 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       <div class="ordbar"><label for="cOrdem">Ordenar segmentos</label><select id="cOrdem">
         <option value="auto"${S.ordem==='auto'?' selected':''}>Pelo sentido selecionado</option>
         <option value="asc"${S.ordem==='asc'?' selected':''}>Estaca inicial: menor → maior</option>
-        <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option></select>
+        <option value="desc"${S.ordem==='desc'?' selected':''}>Estaca inicial: maior → menor</option>
+        <option value="man"${S.ordem==='man'?' selected':''}>Manual (definir a ordem)</option></select>
         <span>${ordTxt}</span></div>
       ${(()=>{const W=act.filter(r=>!r.excl),ws=[...new Set(W.map(r=>r.w))],same=W.length&&ws.length===1&&W.every(r=>r.wCustom)?ws[0]:null,nW=rows.filter(r=>r.wCustom).length;
         return W.length?`<div class="wall"><label for="cWAll">Largura média da programação</label><input id="cWAll" type="number" inputmode="decimal" step="0.01" min="0" placeholder="m" value="${same!=null?same:''}"><button type="button" class="primary" id="cWAllGo">Aplicar a todos os panos</button>${nW?`<button type="button" class="secondary" id="cWAllRst">Voltar às larguras de projeto (${nW})</button>`:''}<small>Copia a largura para os ${W.length} pano${W.length>1?'s':''} programado${W.length>1?'s':''} desta lista (com CBUQ). Cada pano continua editável na coluna Largura.</small></div>`:''})()}
       ${(()=>{const E=rows.filter(r=>r.eCustom);return E.length?`<div class="alert ealert" style="margin:10px 16px 0"><b>Espessura alterada em ${E.length} pano${E.length>1?'s':''} (diferente do projeto).</b> ${E.slice(0,8).map(r=>`${r.p.tag}: ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join(' · ')}${E.length>8?' …':''}. A alteração vai sinalizada no relatório da programação. Toque em ↺ para voltar à espessura de projeto.</div>`:''})()}
       <div class="tscroll" style="margin-top:12px"><table class="q"><thead><tr>
         <th class="l sticky">Pano</th><th style="text-align:center">Programar</th><th class="l">Sentido · pista</th><th class="l">Solução</th><th class="l">${SRCK==='B4'?'Serial Kartado':'Serial'}</th><th>Km inicial</th><th>Km final</th><th>Comprimento<small>m</small></th><th>Largura<small>m</small></th><th>Espessura<small>cm</small></th><th>Área<small>m²</small></th><th>Volume<small>m³</small></th><th>CBUQ<small>t</small></th></tr></thead><tbody>
-      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}${r.manual?' man':''}${r.obs?' hasobs':''}" data-tag="${r.p.tag}">
-        <td class="l sticky pano">${r.p.tag}<small>${r.manual?`<span class="badge man">fora do projeto</span>${r.off?' <span class="badge muted">não programado</span>':''}`:r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste pano (vai para o relatório)" aria-label="Observação do pano ${r.p.tag}">${escH(r.obs||'')}</textarea></label></td>
+      ${rows.map(r=>{const inf=r.p.info;return `<tr class="${r.off?'off':r.excl?'exc':r.miss.length?'inc':''}${r.manual?' man':''}${r.obs?' hasobs':''}${ORDHL===r.p.tag?' ordhl':''}" data-tag="${r.p.tag}">
+        <td class="l sticky pano">${ordem==='man'?(k=>`<div class="ordmv"><b>${k+1}º</b><button type="button" class="ordUp" aria-label="Subir o pano ${r.p.tag} para a posição ${k}"${k?'':' disabled'}>▲</button><button type="button" class="ordDn" aria-label="Descer o pano ${r.p.tag} para a posição ${k+2}"${k<rows.length-1?'':' disabled'}>▼</button></div>`)(rows.indexOf(r)):''}${r.p.tag}<small>${r.manual?`<span class="badge man">fora do projeto</span>${r.off?' <span class="badge muted">não programado</span>':''}`:r.off?'<span class="badge muted">não programado</span>':r.ed?`<span class="badge edt">editado</span> · pano ${r.pIni} a ${r.pFim}`:r.partial?`parcial · pano ${r.pIni} a ${r.pFim}`:'pano inteiro'}</small>${segBtns(r)}<label class="robsl">Observações<textarea class="robs" rows="2" maxlength="400" placeholder="Observação deste pano (vai para o relatório)" aria-label="Observação do pano ${r.p.tag}">${escH(r.obs||'')}</textarea></label></td>
         <td style="text-align:center"><input type="checkbox" class="rprog" aria-label="Programar o pano ${r.p.tag}" ${r.off?'':'checked'}></td>
         <td class="l">${SIDE[r.L0.side]} · ${r.L0.name}</td>
         <td class="l">${tag(inf)} <span style="color:var(--muted);font-size:12.5px">${inf.desc}</span></td>${serCell(r)}
@@ -2623,7 +2634,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       tr.querySelector('.segCancel').onclick=()=>{EDIT=null;calc(false)};
       const ob=tr.querySelector('.segOrig');if(ob)ob.onclick=()=>{delete S.rowSeg[tg];save();EDIT=null;SEGMSG=`Pano ${tg}: estacas originais restauradas.`;calc(false);const n=segAfter(tg);if(n){SEGMSG+=n;calc(false)}}});
     const sa=$('segAll');if(sa)sa.onclick=()=>{const tags=[...rows,...drows].filter(r=>r.ed).map(r=>r.p.tag);tags.forEach(t=>delete S.rowSeg[t]);save();EDIT=null;SEGMSG=`${tags.length} pano${tags.length>1?'s':''} com as estacas originais restauradas.`;calc(false);let n='';tags.forEach(t=>n=segAfter(t)||n);if(n){SEGMSG+=n;calc(false)}};
-    const so=$('cOrdem');if(so)so.onchange=()=>{S.ordem=so.value;save();calc(false)};
+    const so=$('cOrdem');if(so)so.onchange=()=>{if(so.value==='man')setOrdMan(ROWORD.slice()); // começa pela sequência que está na tela
+      S.ordem=so.value;save();calc(false)};
+    ORDHL=null;
+    out.querySelectorAll('.ordUp,.ordDn').forEach(bt=>bt.onclick=()=>{const tg=bt.closest('tr').dataset.tag,a=ROWORD.slice(),i=a.indexOf(tg),j=i+(bt.classList.contains('ordUp')?-1:1);
+      if(i<0||j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];setOrdMan(a);save();ORDHL=tg;calc(false);
+      const nb=out.querySelector(`tr[data-tag="${CSS.escape(tg)}"] .${bt.classList.contains('ordUp')?'ordUp':'ordDn'}`);if(nb&&!nb.disabled)nb.focus();else{const r=out.querySelector(`tr[data-tag="${CSS.escape(tg)}"]`);if(r)r.scrollIntoView({block:'nearest'})}});
     if(scroll)out.scrollIntoView({behavior:'smooth',block:'start'})}
 
   /* ---------- Relatório da programação ---------- */
@@ -2779,7 +2795,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       atualizado_em:now,atualizado_por:u.email,atualizado_por_nome:u.name,excluido:false,excluido_em:null,excluido_por:null,excluido_por_nome:null};
     const data={id,v:1,info:I,repType:P.type||store.get('repType','full'),
       calc:{params:{kmA:S.kmA,kmB:S.kmB,pista:S.pista,sent:S.sent,dens:S.dens,perda:S.perda,w:S.w,esp:S.esp,excl:S.excl,show:S.show,equipe:S.equipe,equipeMan:!!S.equipeMan,ordem:S.ordem},
-        src:{rowW:b.rowW||{},rowE:b.rowE||{},rowOff:b.rowOff||{},rowSeg:b.rowSeg||{},serial:b.serial||{},obs:b.obs||{},manual:b.manual||[]}},
+        src:{rowW:b.rowW||{},rowE:b.rowE||{},rowOff:b.rowOff||{},rowSeg:b.rowSeg||{},serial:b.serial||{},obs:b.obs||{},manual:b.manual||[],ordMan:b.ordMan||[]}},
       rows,atualizado_em:now};
     return {sum:JSON.parse(JSON.stringify(sum)),data:JSON.parse(JSON.stringify(data))}}
   let HSAVING=false;
@@ -2892,7 +2908,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   // Modelo único do relatório: a pré-visualização e o PDF são desenhados a partir dele
   function reportModel(){const P=PROG,L=P.L,I=P.info;const first=P.seq[0];
     const sides=[];let cur=null;let acc=0;
-    const ORD=L.ordem||'exec',subOf=sd=>ORD==='asc'?'estaca inicial da menor para a maior':ORD==='desc'?'estaca inicial da maior para a menor':sd==='C'?'da menor para a maior estaca':'da maior para a menor estaca';
+    const ORD=L.ordem||'exec',subOf=sd=>ORD==='man'?'na ordem definida na Calculadora':ORD==='asc'?'estaca inicial da menor para a maior':ORD==='desc'?'estaca inicial da maior para a menor':sd==='C'?'da menor para a maior estaca':'da maior para a menor estaca';
     for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:subOf(r.L0.side),panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
       cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,manual:!!r.manual,tag:r.p.tag,obs:r.obs||'',
@@ -2931,7 +2947,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       perda:L.perdaT!=null?`Com perdas de ${nf(L.perda,1)}%: + ${nf(L.perdaT,2)} t = ${nf(L.totT+L.perdaT,2)} t`:null,
       sol:P.sol.map(o=>({code:o.info.code,color:o.info.color,ink:o.info.ink,desc:o.info.desc,line:`${o.n} pano${o.n>1?'s':''} · ${nf(o.len,1)} m${o.excl||o.inc===o.n?'':' · '+nf(o.area,1)+' m²'+(o.inc?' (parcial)':'')}`,
         val:o.excl?'sem CBUQ':o.inc===o.n?'sem dados':o.inc?`${nf(o.t,2)} t*`:nf(o.t,2)+' t'})),
-      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); cada saída de dreno conta '+SAIDA_M+' m de extensão; a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} ${ORD==='asc'?'Segmentos em cada pista pela estaca inicial, da menor para a maior (ordem escolhida na Calculadora).':ORD==='desc'?'Segmentos em cada pista pela estaca inicial, da maior para a menor (ordem escolhida na Calculadora).':'Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego.'} Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
+      note:`${hasP?`Quantidade (t) = extensão × largura × espessura (cm) ÷ 100 × densidade ${L.dens?nf(L.dens,3)+' t/m³':'(não informada)'}.`:''}${nD?' Drenagem em metros (DR 0,60 m e DP 1,50 m de profundidade); cada saída de dreno conta '+SAIDA_M+' m de extensão; a quantidade de saídas de cada segmento conta só as saídas dentro do trecho programado, e as estacas estão em Localização das saídas de dreno, na ordem de execução.':''} ${ORD==='man'?'Segmentos na ordem definida manualmente na Calculadora.':ORD==='asc'?'Segmentos em cada pista pela estaca inicial, da menor para a maior (ordem escolhida na Calculadora).':ORD==='desc'?'Segmentos em cada pista pela estaca inicial, da maior para a menor (ordem escolhida na Calculadora).':'Pista crescente: da menor para a maior estaca; pista decrescente: da maior para a menor, no sentido do tráfego.'} Panos parciais entram só com a parte dentro do trecho.${P.sol.some(o=>o.inc&&o.inc<o.n)?' * solução com panos sem dados.':''}${L.hiddenN&&!L.byTeam?` ${L.hiddenN} pano(s) de soluções ocultas (${L.hiddenCodes.join(', ')}) não fazem parte desta programação.`:''} ${SRCK==='B4'?'Fonte: unifilar de soluções da BR-373 B4 e KMZ de estacas.':'Fonte: R08 Unifilar de Soluções B2+B3 BR-277.'} Emitido em ${P.made.toLocaleString('pt-BR')} pelo Localizador de Estacas.`,
       close:['Ótimo dia de trabalho a todos!','Neovia - por pessoas, com pessoas, para pessoas!']};
     return M}
   // rótulo da equipe de serviço conforme a equipe escolhida
