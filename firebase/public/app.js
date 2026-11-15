@@ -238,7 +238,10 @@ const Road=(function(){
   return {DEF,src,keys,pick,range,ranges,loteTxt,loteOfName,of:rod=>/373/.test(rod||'')?'B4':'277'};
 })();
 // espelho do GPS entre as duas rodovias (cada aba de mapa tem o seu Loc); sem repetição infinita
-(function(){let busy=false;window.__locMirror=(st,a)=>{if(busy)return;const B=window.__SRC_B4;if(!B||!B.Loc)return;busy=true;try{(st===Loc.st?B.Loc:Loc).set(...a)}finally{busy=false}}})();
+// consulta (busca de estaca) ou simulação (toque no mapa) feitas na outra aba têm prioridade: o espelho não as desfaz;
+// o GPS volta a valer naquela aba quando ela mesma liga o GPS
+(function(){let busy=false;window.__locMirror=(st,a)=>{if(busy)return;const B=window.__SRC_B4;if(!B||!B.Loc)return;const T=st===Loc.st?B.Loc:Loc;
+  if(T.gps.on||T.st.mode==='consulta'||T.st.mode==='sim')return;busy=true;try{T.set(...a)}finally{busy=false}}})();
 
 (function LocPage(){
   const setStatus=(cls,txt)=>{$('lStatus').className='status '+cls;$('lStatusTxt').textContent=txt};
@@ -3998,7 +4001,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='11/11/2026 05:42';
+  const CUR_VER='15/11/2026 15:34';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

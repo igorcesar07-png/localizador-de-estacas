@@ -1872,7 +1872,10 @@ const Road=(function(){
   return {DEF,src,keys,pick,range,ranges,loteTxt,loteOfName,of:rod=>/373/.test(rod||'')?'B4':'277'};
 })();
 // espelho do GPS entre as duas rodovias (cada aba de mapa tem o seu Loc); sem repetição infinita
-(function(){let busy=false;window.__locMirror=(st,a)=>{if(busy)return;const B=window.__SRC_B4;if(!B||!B.Loc)return;busy=true;try{(st===Loc.st?B.Loc:Loc).set(...a)}finally{busy=false}}})();
+// consulta (busca de estaca) ou simulação (toque no mapa) feitas na outra aba têm prioridade: o espelho não as desfaz;
+// o GPS volta a valer naquela aba quando ela mesma liga o GPS
+(function(){let busy=false;window.__locMirror=(st,a)=>{if(busy)return;const B=window.__SRC_B4;if(!B||!B.Loc)return;const T=st===Loc.st?B.Loc:Loc;
+  if(T.gps.on||T.st.mode==='consulta'||T.st.mode==='sim')return;busy=true;try{T.set(...a)}finally{busy=false}}})();
 
 (function LocPage(){
   const setStatus=(cls,txt)=>{$('lStatus').className='status '+cls;$('lStatusTxt').textContent=txt};
