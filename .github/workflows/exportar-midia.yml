@@ -35,5 +35,7 @@ jobs:
           openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -in m.tgz -out m.enc -pass file:k.txt
           openssl pkeyutl -encrypt -pubin -inkey pub.pem -pkeyopt rsa_padding_mode:oaep -in k.txt -out k.enc
           mkdir up && mv m.enc k.enc up/ && rm -rf out m.tgz k.txt "$RUNNER_TEMP/sa.json"
-      - uses: actions/upload-artifact@v4
-        with: { name: midia-enc, path: '${{ runner.temp }}/w/up', retention-days: 1 }
+      - name: Saída criptografada (só abre com a chave privada de quem pediu)
+        run: |
+          cd "$RUNNER_TEMP/w/up"
+          echo "=====K=====";base64 -w 0 k.enc;echo;echo "=====M=====";base64 -w 4000 m.enc;echo "=====FIM====="
