@@ -1094,6 +1094,7 @@ table.q tfoot td.big2{font:700 18px var(--cond)}
 .mgrid .fld label b{color:var(--bad)}
 .mfoot{display:flex;gap:10px;justify-content:flex-end;padding:4px 16px 16px;flex-wrap:wrap}
 table.q tr.hasobs td{background:var(--hl-obs)}table.q tr.hasobs td.sticky{background:var(--hl-obs)}
+#manDlg .msai{border:1px solid var(--line);border-radius:10px;padding:8px 12px 10px;margin:0}#manDlg .msai legend{font-weight:700;padding:0 4px}.msai-on{display:flex!important;gap:10px;align-items:center;justify-content:flex-start;font-weight:600;font-size:15px;margin:2px 0}.msai-on input{width:22px!important;height:22px!important;min-height:0!important;flex:0 0 auto;margin:0;accent-color:var(--accent)}.msai-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}.msai-h{margin:6px 0}.msai-l{display:flex;flex-direction:column;gap:4px;max-height:220px;overflow:auto}.msai-r{display:grid;grid-template-columns:28px 1fr 96px 74px;gap:8px;align-items:center}.msai-r input{min-height:40px!important}.msai-r b{min-width:4.5em}.msai-r input{width:100%;box-sizing:border-box}.msai-r.ov input{border-color:#C27A00;background:#FFF7E6}.msai-r.zero{opacity:.55}.msai-r small{color:var(--muted)}.msai-t{font-weight:700;margin-top:4px}
 #manDlg .man-box{width:min(620px,100%);max-height:calc(100vh - 32px);overflow:auto}#manDlg textarea{width:100%;box-sizing:border-box}#manErr{color:var(--bad);font-weight:600;min-height:1.2em}
 table.q tr.man td,table.q tr.man td.sticky{background:var(--hl-man)}table.q tr.man td.sticky{box-shadow:inset 4px 0 0 var(--hl-man-line)}table.q tr.man.hasobs td,table.q tr.man.hasobs td.sticky{background:var(--hl-obs)}.badge.man{background:var(--hl-man-badge);color:var(--hl-man-ink);border:1px solid var(--hl-man-bd)}
 .segbar .manDel{color:var(--bad)}.nobs.man{border-color:#9DB8F5;background:#F1F6FF;color:#123E9C}
@@ -1742,7 +1743,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 16/11/2026 18:56 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 19/11/2026 08:27 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2298,6 +2299,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
       <div class="fld" id="manWF"><label for="manW">Largura (m) *</label><input id="manW" type="number" inputmode="decimal" step="0.01" min="0" required></div>
       <div class="fld" id="manEF"><label for="manE">Espessura (cm) *</label><input id="manE" type="number" inputmode="decimal" step="0.1" min="0" required></div>
       <div class="fld w2"><label for="manObs">Observações</label><textarea id="manObs" rows="2" maxlength="400"></textarea></div>
+      <fieldset class="fld w2 msai" id="manSaiF" hidden><legend>Saídas de dreno</legend>
+        <label class="no msai-on"><input type="checkbox" id="manSaiOn"> Incluir saídas de dreno neste segmento</label>
+        <div class="msai-g"><div class="fld"><label for="manSaiEsp">Espaçamento entre saídas (m)</label><input id="manSaiEsp" type="number" inputmode="decimal" step="1" min="5" value="40"></div>
+        <div class="fld"><label for="manSaiComp">Comprimento de cada saída (m)</label><input id="manSaiComp" type="number" inputmode="decimal" step="0.1" min="0" value="8"></div></div>
+        <p class="note msai-h">A primeira saída fica a um espaçamento da estaca inicial, no sentido de execução. O comprimento vale para todas as saídas; altere uma saída na lista para usar outro comprimento só nela (0 retira a saída).</p>
+        <div id="manSaiList" class="msai-l" aria-live="polite"></div>
+      </fieldset>
     </div>
     <p class="note" id="manErr" role="alert"></p>
     <div class="mfoot"><span style="flex:1"></span><button type="button" class="secondary" id="manCancel">Cancelar</button><button type="submit" class="primary" id="manSave">Incluir pano</button></div>
@@ -2379,10 +2387,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261116215625";</script>
-<script src="native.js?v=20261116215625"></script>
-<script src="firebase-config.js?v=20261116215625"></script>
-<script src="auth.js?v=20261116215625"></script>
+<script>window.APP_BUILD="20261119112705";</script>
+<script src="native.js?v=20261119112705"></script>
+<script src="firebase-config.js?v=20261119112705"></script>
+<script src="auth.js?v=20261119112705"></script>
 
 </body>
 </html>
