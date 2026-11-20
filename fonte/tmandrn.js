@@ -43,7 +43,7 @@ const tab=await p.$$eval('#cDrn tbody tr[data-tag]',a=>a.filter(tr=>!tr.classLis
 await p.click('#cRep');await p.waitForTimeout(1200);await p.click('.rtype button[data-rt="simp"]');await p.waitForTimeout(500);
 const rep=await p.$$eval('#repDoc .sr-tw table',ts=>{const t=ts[ts.length-1];return [...t.querySelectorAll('tbody tr')].map(tr=>tr.cells[4].textContent.trim()+'→'+tr.cells[5].textContent.trim())});
 console.log('tela ',tab.join(' '),'\nrelat',rep.join(' '));ok(JSON.stringify(tab)===JSON.stringify(rep),'relatório de drenagem = mesma relação e ordem da Calculadora (com o dreno manual)');
-const txt=await p.textContent('#repDoc');ok(new RegExp('fora do projeto \\('+mt+'\\)').test(txt)&&/surgência na saia do aterro/.test(txt)&&(!pt||/Saída obstruída/.test(txt))&&/dreno\(s\) incluído\(s\) fora do projeto/.test(txt),'relatório mostra o dreno fora do projeto, as observações e o aviso');
+const txt=await p.textContent('#repDoc');ok(new RegExp('manual \\('+mt+'\\)').test(txt)&&/surgência na saia do aterro/.test(txt)&&(!pt||/Saída obstruída/.test(txt))&&/dreno\(s\) manual\(is\)/.test(txt),'relatório mostra o dreno fora do projeto, as observações e o aviso');
 await p.screenshot({path:'/tmp/claude-0/off/mandrn_simp.png',fullPage:true});
 const dl=await Promise.all([p.waitForEvent('download',{timeout:20000}).catch(()=>null),p.click('#rvPdf')]);ok(dl[0]&&/\.pdf$/.test(dl[0].suggestedFilename()),'PDF gerado');
 await p.click('.rtype button[data-rt="full"]');await p.waitForTimeout(500);ok(new RegExp(mt).test(await p.textContent('#repDoc')),'relatório completo também');

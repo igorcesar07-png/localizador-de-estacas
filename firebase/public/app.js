@@ -1809,7 +1809,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const ORD=L.ordem||'exec',subOf=sd=>ORD==='man'?'na ordem definida na Calculadora':ORD==='asc'?'estaca inicial da menor para a maior':ORD==='desc'?'estaca inicial da maior para a menor':sd==='C'?'da menor para a maior estaca':'da maior para a menor estaca';
     for(const r of P.seq){if(!cur||cur.side!==r.L0.side){cur={side:r.L0.side,title:'Pista '+SIDE[r.L0.side].toLowerCase(),sub:subOf(r.L0.side),panos:[]};sides.push(cur)}
       const inf=r.p.info,inc=!r.excl&&r.miss.length>0,v=cellVals(r);
-      cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,manual:!!r.manual,tag:r.p.tag,obs:r.obs||'',
+      cur.panos.push({ord:ordTxt(r.ord),ini:Data.nameAt(r.ini),fim:Data.nameAt(r.fim),lane:`${SIDE[r.L0.side]} · ${r.L0.name}`,code:inf.code,desc:inf.desc+(r.manual?' · manual ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,manual:!!r.manual,tag:r.p.tag,obs:r.obs||'',
         meta:`${v.ext} m · larg. ${r.w!=null?nf(r.w,2)+' m':'sem largura'} · área ${r.area!=null?nf(r.area,1)+' m²':'-'} · esp. ${r.excl?'-':r.e!=null?nf(r.e,1)+' cm':'sem espessura'}${r.eCustom?` (alterada; projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`:''}`,
         esp:r.excl?'não leva CBUQ':r.e!=null?nf(r.e,r.e%1?1:0)+' cm'+(r.eCustom?` · alterada (projeto ${r.eProj!=null?nf(r.eProj,r.eProj%1?1:0)+' cm':'—'})`:''):'sem espessura',eAlt:!!r.eCustom,espOk:!r.excl&&r.e!=null,espColor:r.excl||r.e==null?null:r.eCustom?'#FDE68A':inf.color,espInk:r.eCustom?'#7C2D12':inf.ink,
         larg:r.w!=null?nf(r.w,2)+' m':'sem largura',largOk:r.w!=null,ext:nf(r.len,r.len%1?1:0)+' m',area:r.area!=null?nf(r.area,1)+' m²':'-',
@@ -1821,8 +1821,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       // saídas do próprio segmento, dentro do trecho, sem repetir estaca de divisa; ordem do sentido de execução
       const sai=[],saiL=[];(r.sai||[]).forEach((k,j)=>{if(!r.manual){const id=r.L0.side+'|'+k;if(SEEN.has(id))return;SEEN.add(id)}sai.push(k);saiL.push((r.saiL||[])[j]??SAIDA_M)});
       const sm=saiL.reduce((x,y)=>x+y,0);nSaiTot+=sai.length;saiMTot+=sm;
-      saidas.push({ord:ordTxt(r.ord),serial:r.serial||'',code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,pista:SIDE[r.L0.side],ini,fim,n:sai.length,sai,m:sm});
-      cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc+(r.manual?' · fora do projeto ('+r.p.tag+')':''),manual:!!r.manual,tag:r.p.tag,color:inf.color,ink:inf.ink,
+      saidas.push({ord:ordTxt(r.ord),serial:r.serial||'',code:inf.code,desc:inf.desc+(r.manual?' · manual ('+r.p.tag+')':''),color:inf.color,ink:inf.ink,pista:SIDE[r.L0.side],ini,fim,n:sai.length,sai,m:sm});
+      cur.panos.push({drn:true,ord:ordTxt(r.ord),ini,fim,lane:`${SIDE[r.L0.side]} · lado ${r.L0.side==='C'?'direito':'esquerdo'}`,code:inf.code,desc:inf.desc+(r.manual?' · manual ('+r.p.tag+')':''),manual:!!r.manual,tag:r.p.tag,color:inf.color,ink:inf.ink,
         line:`${inf.code} – ${inf.desc} | Est. ${ini} a ${fim} | ${ext}`,ext,prof:inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),sai,nSai:sai.length,
         chips:[['Serial',r.serial||'—','ser',!!r.serial],['Extensão',ext,'',true],['Profundidade',inf.esp||(DRN_PROF[inf.code]?DRN_PROF[inf.code]+' m':'-'),'',true],['Qtd. de saídas',String(sai.length),'',true]],
         qty:nf(r.len,0),unit:'m',inc:false,serial:r.serial||'',obs:r.obs||''})}
@@ -1837,7 +1837,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
                 {title:equipeTitulo(I.equipe),items:[['Café da manhã',I.eCafe],['DDS',I.eDds],['Saída para o trecho',I.eSai]]},
                 usinaBox(I,hasP)],
       start:hasP?`Começar pela pista ${SIDE[first.L0.side].toLowerCase()}, ${first.L0.name}, estaca ${Data.nameAt(first.ini)}, seguindo até ${Data.nameAt(first.fim)} (${first.p.info.code}: ${first.p.info.desc}). Depois siga a ordem numerada.`:`Começar pelo ${fd.p.info.code} – ${fd.p.info.desc}, pista ${SIDE[fd.L0.side].toLowerCase()}, estaca ${Data.nameAt(fd.ini)}, seguindo até ${Data.nameAt(fd.fim)}. Depois siga a ordem numerada.`,
-      warn:[(n=>n?`${n} pano(s) incluído(s) fora do projeto: ${P.seq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)}`).join('; ')}.`:null)(P.seq.filter(r=>r.manual).length),(n=>n?`${n} dreno(s) incluído(s) fora do projeto: ${P.dseq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)} (${nf(r.len,r.len%1?1:0)} m)`).join('; ')}.`:null)(P.dseq.filter(r=>r.manual).length),L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
+      warn:[(n=>n?`${n} pano(s) manual(is): ${P.seq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)}`).join('; ')}.`:null)(P.seq.filter(r=>r.manual).length),(n=>n?`${n} dreno(s) manual(is): ${P.dseq.filter(r=>r.manual).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${r.p.code} ${Data.nameAt(r.ini)} → ${Data.nameAt(r.fim)} (${nf(r.len,r.len%1?1:0)} m)`).join('; ')}.`:null)(P.dseq.filter(r=>r.manual).length),L.partial?`${L.inc.length} pano(s) sem largura ou espessura cadastrada: aparecem como "sem dados" e ficam fora dos totais.`:null,(n=>n?`Espessura alterada em relação ao projeto em ${n} pano(s): ${P.seq.filter(r=>r.eCustom).map(r=>`${ordTxt(r.ord)} ${r.p.tag} ${nf(r.e,1)} cm (projeto ${r.eProj!=null?nf(r.eProj,1)+' cm':'—'})`).join('; ')}.`:null)(P.seq.filter(r=>r.eCustom).length)].filter(Boolean).join(' ')||null,
       sides,count:P.seq.length,accTot:acc,dsides,dcount:nD,
       total:hasP?`Total${L.partial?' parcial':''}: ${P.seq.length} panos · ${nf(L.totLen,1)} m · ${L.totT==null?'-':nf(L.totT,2)+' t CBUQ'}`:null,
       dtotal:nD?`Total drenagem: ${nD} segmento${nD>1?'s':''} · ${drnTxt} = ${nf(dTot,0)} m de dreno + ${nSaiTot} saída${nSaiTot!==1?'s':''}${saiStd?` × ${SAIDA_M} m`:''} = ${saiMx} m · total ${nf(dTot+saiMTot,0)} m`:null,saidas,nSai:nSaiTot,saiM:saiMTot,
@@ -1896,7 +1896,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const ABRV={FF:'Fres. funcional',FE:'Fres. estrutural',FS:'Fres. superficial',REC:'Reciclagem',PA:'Preench. acost.',RP:'Reparo profundo',RF:'Sigla R08'};
   const abrv=code=>{const f=Data.info(code).fam;return ABRV[f]||Data.info(code).desc};
   const faixaAb=l=>l.replace('Acostamento','Acost.').replace('Faixa ','F');
-  function simpRows(M){const out=[];for(const s of M.sides)for(const p of s.panos){out.push(p);const t=[p.manual?`Pano ${p.tag} fora do projeto`:'',p.obs?'Observações: '+p.obs:''].filter(Boolean).join(' · ');if(t)out.push({obsRow:true,text:t,manual:p.manual})}return out}
+  function simpRows(M){const out=[];for(const s of M.sides)for(const p of s.panos){out.push(p);const t=[p.manual?`${p.drn?'Dreno':'Pano'} ${p.tag}`:'',p.obs?'Observações: '+p.obs:''].filter(Boolean).join(' · ');if(t)out.push({obsRow:true,text:t,manual:p.manual})}return out}
   function showReportSimple(){const M=reportModel();PROG.M=M;const miss=validateModel(M);
     if(miss.length){$('rvMsg').hidden=false;$('rvMsg').textContent='Dados incompletos no relatório: '+miss.join(', ')+'.'}else $('rvMsg').hidden=true;
     const pill=o=>`<span class="tag sm" style="background:${o.color};color:${o.ink}">${esc(o.code)}</span>`;
@@ -4052,7 +4052,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='19/11/2026 08:27';
+  const CUR_VER='20/11/2026 07:51';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

@@ -45,7 +45,7 @@ const rr=rep.filter(c=>c.length>=10&&/\d+\+\d{3}/.test(c[4]||'')).map(c=>({ini:c
 console.log('tabela',tab.map(x=>x.ini+'→'+x.fim).join(' '),'\nrelat.',rr.map(x=>x.ini+'→'+x.fim).join(' '));
 ok(JSON.stringify(tab.map(x=>x.ini+x.fim))===JSON.stringify(rr.map(x=>x.ini+x.fim)),'relatório = mesma relação e ordem da Calculadora (com o pano manual)');
 const txt=await p.textContent('#repDoc');
-ok(/fora do projeto/.test(txt)&&/Pano extra: remendo profundo/.test(txt)&&/Trinca transversal/.test(txt),'relatório mostra pano fora do projeto e as observações');
+ok(/MAN-\d+/.test(txt)&&!/fora do projeto/.test(txt)&&/Pano extra: remendo profundo/.test(txt)&&/Trinca transversal/.test(txt),'relatório mostra pano fora do projeto e as observações');
 await p.screenshot({path:'/tmp/claude-0/off/man_simp.png',fullPage:true});
 const ctxDl=await Promise.all([p.waitForEvent('download',{timeout:20000}).catch(()=>null),p.click('#rvPdf')]);ok(ctxDl[0]&&/\.pdf$/.test(ctxDl[0].suggestedFilename()),'PDF simplificado gerado com pano manual e observações');
   await p.click('.rtype button[data-rt="full"]');await p.waitForTimeout(500);const full=await p.textContent('#repDoc');ok(/Fora do projeto/.test(full)&&/Trinca transversal/.test(full),'relatório completo também');
