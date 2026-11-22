@@ -5443,7 +5443,8 @@ const PROD=(function(){
         const add=(sev,cod,msg)=>r.iss.push({sev,cod,msg});
         // classificação: extra-projeto (TRO, ramos/alças, marginais) e retrabalho
         const txt=norm([r.serial,r.obs,r.faixa,r.local].join(' '));
-        r.extra=/\btro\b/.test(txt)?'TRO':/\bramo\b|\balca\b|\bmarginal\b/.test(txt)?(/marginal/.test(txt)?'Marginal':'Ramo/alça'):null;
+        // monitoramento: "MON"/"MON-nn"/"monitoramento" no Serial ou na OBS (a planilha ainda não marca nenhum lançamento assim)
+        r.extra=/\bmon\b|monitora/.test(txt)?'Monitoramento':/\btro\b/.test(txt)?'TRO':/\bramo\b|\balca\b|\bmarginal\b/.test(txt)?(/marginal/.test(txt)?'Marginal':'Ramo/alça'):null;
         r.retrab=/retrabalho/i.test(r.tipo||'');
         r.cls=r.extra?'extra':r.retrab?'retrabalho':'projeto';
         if(r.extra)add('info','extra',`Execução extra-projeto (${r.extra}): fora do quantitativo e do status do projeto.`);
@@ -5621,14 +5622,15 @@ const PROD=(function(){
   // tabela de segmentos no mesmo formato da "Relação dos panos" (Relatórios): data primeiro, colunas separadas, filtro e ordenação por coluna
   const CF=Object.assign({sort:{k:'data',d:1},f:{}},store.get('pdCols',{}));const saveCF=()=>store.set('pdCols',{sort:CF.sort,f:CF.f});
   const FXN=r=>r.fam==='DR'||r.fam==='DP'||r.fam==='SAIDA'?'Dreno':/^(fx|faixa) ?1$/.test(norm(r.faixa))?'Faixa 1':/^(fx|faixa) ?(2|3)$/.test(norm(r.faixa))?'Faixa 2/3':/acost/.test(norm(r.faixa))?'Acostamento':(r.faixa||'—');
-  const stOf=r=>r.extra?'Extra-projeto':r.ap?'Executado':hasSev(r,'erro')?'Pendente':'Fora do status';
-  const ST_C={'Executado':'#1E7A4C','Extra-projeto':'#5B3FB0','Pendente':'#C62828','Fora do status':'#8A939C'};
+  // status: tudo na planilha foi executado; a coluna diz a que se refere a execução
+  const stOf=r=>r.extra==='TRO'?'TRO':r.extra==='Monitoramento'?'Monitoramento':r.extra?r.extra:'Projeto';
+  const ST_C={'Projeto':'#1E7A4C','TRO':'#5B3FB0','Monitoramento':'#0E7C86','Ramo/alça':'#7A5AC8','Marginal':'#7A5AC8'};
   const extOf=r=>r.pontual?(r.comp||0):r.kmIni!=null&&r.kmFim!=null?Math.abs(r.kmFim-r.kmIni):0;
   const solProj=r=>r.proj?`${r.proj.code}${r.proj.esp!=null?' · '+fmt(r.proj.esp,r.proj.esp%1?1:0)+' cm':''}`:'—';
   const solExec=r=>`${r.fam||'?'}${r.esp?' · '+fmt(r.esp*100,r.esp*1000%10?1:0)+' cm':''}`;
   const rmpTxt=r=>r.rmp.map(x=>RMPN[x]).join('; ');
   const TCOL=[['data','Data','d'],['blk','Bloco','c'],['st','Status','c'],['rmp','RMP','c'],['pista','Pista','c'],['faixa','Faixa','c'],['sp','Solução de projeto','c'],['se','Solução executada','c'],['ini','Est. inicial','t'],['fim','Est. final','t'],['ext','Extensão (m)','n'],['larg','Largura (m)','n'],['t','CBUQ (t)','n'],['cls','Classificação','c'],['pend','Pendências','t']];
-  const val=(r,k)=>k==='data'?r.data||'':k==='blk'?(r.k==='B4'?'B4':r.blk||'B2/B3'):k==='st'?stOf(r):k==='rmp'?(r.rmp.length?'Sim':'Não'):k==='pista'?(r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'—'):k==='faixa'?FXN(r):k==='sp'?solProj(r):k==='se'?solExec(r):
+  const val=(r,k)=>k==='data'?r.data||'':k==='blk'?(r.k==='B4'?'B4':r.blk||'B2/B3'):k==='st'?stOf(r):k==='rmp'?(r.extra?'Não se aplica':r.rmp.length?'Sim':'Não'):k==='pista'?(r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'—'):k==='faixa'?FXN(r):k==='sp'?solProj(r):k==='se'?solExec(r):
     k==='ini'?(r.kmIni!=null?est(r.kmIni):''):k==='fim'?(r.kmFim!=null?est(r.kmFim):''):k==='ext'?extOf(r):k==='larg'?(r.larg||0):k==='t'?(r.q&&r.q.t||0):k==='cls'?CLS[r.cls]+(r.extra?' ('+r.extra+')':''):k==='pend'?r.iss.filter(x=>x.sev!=='info').map(x=>x.msg).join(' '):'';
   function colFilter(list){const fs=Object.entries(CF.f).filter(([,v])=>v!==''&&v!=null);if(!fs.length)return list;
     return list.filter(r=>fs.every(([k,v])=>{const c=TCOL.find(x=>x[0]===k);if(!c)return true;const x=val(r,k);return c[2]==='c'?String(x)===v:c[2]==='d'?brD(x).includes(v)||x.includes(v):norm(String(x)).includes(norm(v))}))}
@@ -5638,7 +5640,7 @@ const PROD=(function(){
     const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
     const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=hasSev(r,'alerta');const pend=r.iss.filter(x=>x.sev!=='info');
       return `<tr class="${hasSev(r,'erro')?'erro':forte?'alerta':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td><span class="pd-st2" style="background:${ST_C[st]}">${st}</span></td>
-        <td>${r.rmp.length?`<span class="pd-rmp${forte?' forte':''}">Sim</span><small class="pd-mod${forte?' forte':''}">${esc(rmpTxt(r))}</small>`:'<span class="pd-rmp nao">Não</span>'}</td>
+        <td>${r.extra?'<span class="pd-mod">não se aplica</span>':r.rmp.length?`<span class="pd-rmp${forte?' forte':''}">Sim</span><small class="pd-mod${forte?' forte':''}">${esc(rmpTxt(r))}</small>`:'<span class="pd-rmp nao">Não</span>'}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
         <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),extOf(r)%1?1:0)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${r.q&&r.q.t?fmt(r.q.t,1):'—'}</td>
         <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${(r.notas||[]).map(n=>`<span class="pd-nota">✎ ${esc(dt(n.at))}: ${esc((n.motivo?n.motivo+' — ':'')+(n.txt||''))}</span>`).join('')}
@@ -5648,8 +5650,8 @@ const PROD=(function(){
   async function exportPend(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const R0=resolve().all;
       const list=R0.filter(r=>r.iss.some(x=>x.sev!=='info')||r.rmp.length||(r.notas||[]).length);
       const sev=(r,s)=>r.iss.filter(x=>x.sev===s).map(x=>x.msg).join(' | ');
-      const H=['ID do segmento','Aba da planilha','Linhas da planilha','Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Posição no projeto','Extensão (m)','Comp na planilha (m)','Largura (m)','Espessura executada (cm)','Solução executada','Solução de projeto','CBUQ (t)','Fresagem (m³)','Pintura (m²)','Classificação','Status no app','RMP','Tipo de alteração','Erros','Alertas especiais','Atenção','Motivos registrados no app','Equipe','Serial','OBS da planilha','Correção proposta','Responsável','Status da análise'];
-      const rows=list.sort((a,b)=>a.k.localeCompare(b.k)||(a.lin[0]-b.lin[0])).map(r=>[r.id,r.k==='B4'?'Lançamento Lote B4':'Lançamento lotes B2 - B3',r.lin.join(', '),brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),posTxt(r),Math.round(extOf(r)*100)/100,r.comp??'',r.larg??'',r.esp?Math.round(r.esp*1000)/10:'',r.fam||'',solProj(r),r.q&&r.q.t||0,r.q&&r.q.m3||0,r.q&&r.q.m2||0,val(r,'cls'),stOf(r),r.rmp.length?'Sim':'Não',rmpTxt(r),sev(r,'erro'),sev(r,'alerta'),sev(r,'atencao'),notaTxt(r),r.equipe,r.serial,r.obs||'','','','Pendente']);
+      const H=['ID do segmento','Aba da planilha','Linhas da planilha','Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Posição no projeto','Extensão (m)','Comp na planilha (m)','Largura (m)','Espessura executada (cm)','Solução executada','Solução de projeto','CBUQ (t)','Fresagem (m³)','Pintura (m²)','Classificação','Status (projeto, TRO ou monitoramento)','RMP','Tipo de alteração','Erros','Alertas especiais','Atenção','Motivos registrados no app','Equipe','Serial','OBS da planilha','Correção proposta','Responsável','Status da análise'];
+      const rows=list.sort((a,b)=>a.k.localeCompare(b.k)||(a.lin[0]-b.lin[0])).map(r=>[r.id,r.k==='B4'?'Lançamento Lote B4':'Lançamento lotes B2 - B3',r.lin.join(', '),brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),posTxt(r),Math.round(extOf(r)*100)/100,r.comp??'',r.larg??'',r.esp?Math.round(r.esp*1000)/10:'',r.fam||'',solProj(r),r.q&&r.q.t||0,r.q&&r.q.m3||0,r.q&&r.q.m2||0,val(r,'cls'),stOf(r),r.extra?'Não se aplica':r.rmp.length?'Sim':'Não',rmpTxt(r),sev(r,'erro'),sev(r,'alerta'),sev(r,'atencao'),notaTxt(r),r.equipe,r.serial,r.obs||'','','','Pendente']);
       const m=META||{};const ws=X.utils.aoa_to_sheet([['Segmentos com pendências e motivos — planilha de produção'],['Fonte',m.arq?`${m.arq} (salvo em ${dt(m.mod)})`:''],['Emitido em',dt(Date.now())],['Como usar','Uma linha por segmento (lançamento da planilha). Preencha "Correção proposta", "Responsável" e "Status da análise" (Pendente, Corrigido ou Validado) e corrija a planilha base pelas linhas indicadas.'],[],H,...rows]);
       ws['!cols']=H.map(h=>({wch:/Erros|Alertas|Atenção|Motivos|OBS|Correção|Posição|Tipo de/.test(h)?48:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+rows.length,c:H.length-1}})};
       const sh=[];for(const k of ['B23','B4']){const S=SEG[k];if(S&&S.sheetIssues)for(const x of S.sheetIssues)sh.push([k==='B4'?'Lançamento Lote B4':'Lançamento lotes B2 - B3',(x.linhas||[]).join(', '),x.msg,'','Pendente'])}
