@@ -51,7 +51,7 @@ s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);con
 await p.evaluate(()=>{window.__FS.lock=false;window.__FS.buf=window.__FS.buf.slice(0,200000);window.__FS.mod=Date.now()});await W(6000);
 s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('incompleto',s1);ok(s1[0]==='erro'&&/ler a planilha/.test(s1[1])&&s1[2]===1653,'arquivo incompleto: não importa e avisa');
 await p.selectOption('#pdSev','rmp');await W(300);await p.click('#pdList [data-nota] >> nth=0');await p.selectOption('#pdNM','Segregação');await p.fill('#pdNX','teste de motivo');await p.click('#pdNS');await W(500);
-ok((await p.textContent('#pdList')).includes('teste de motivo'),'motivo registrado no segmento (histórico)');
+ok(await p.evaluate(()=>Object.values(PROD.resolve().all).some(r=>r.notas.length===1&&r.notas[0].txt==='teste de motivo'))&&!(await p.textContent('#pdList tbody')).includes('teste de motivo'),'motivo salvo (um registro, fora da coluna pendências)');
 await p.selectOption('#pdSev','all');await W(300);const hd=await p.$$eval('#pdList thead tr:first-child th',a=>a.map(x=>x.innerText.replace(/[▲▼]/g,'').trim()));console.log(hd.join(' | '));
 ok(hd[0]==='Data'&&hd.includes('Pista')&&hd.includes('Faixa')&&hd.includes('Solução de projeto')&&hd.includes('Solução executada')&&hd.includes('Est. inicial')&&hd.includes('Est. final')&&!hd.some(h=>/Linha/.test(h)),'tabela: data primeiro, pista e faixa separadas, soluções e estacas separadas, sem linhas');
 await p.selectOption('#pdList select[data-cf="rmp"]','Sim');await W(500);const rm=await p.$$eval('#pdList tbody tr td:nth-child(4)',a=>a.map(x=>x.innerText.split('\n')[0]));ok(rm.length>0&&rm.every(x=>x==='Sim'),'filtro por coluna (RMP = Sim)');
@@ -60,6 +60,10 @@ const ext=await p.$$eval('#pdList tbody tr',a=>a.map(r=>r.children[2].innerText)
 const sid=await p.getAttribute('#pdList [data-st] >> nth=0','data-st');await p.click('#pdList [data-st] >> nth=0');await W(300);await p.selectOption('#pdNSt','TRO');await p.click('#pdNS');await W(600);
 const so=await p.evaluate(id=>{const r=PROD.resolve().all.find(x=>x.id===id);return r&&[r.stMan,r.cls,r.rmp.length]},sid);await p.selectOption('#pdList select[data-cf="rmp"]','');await p.selectOption('#pdList select[data-cf="st"]','TRO');await W(500);
 const naTxt=await p.textContent('#pdList tbody');console.log('status manual',so);ok(so&&so[0]==='TRO'&&so[1]==='extra'&&so[2]===0&&/não se aplica/.test(naTxt)&&/TRO ✎/.test(naTxt),'status alterado para TRO: RMP passa a "não se aplica"');
+ok(/Corrigir na planilha base/.test(naTxt),'aviso de divergência com a planilha base');
+await p.click(`#pdList [data-st="${sid}"]`);await W(300);await p.selectOption('#pdNSt','Projeto');await p.click('#pdNS');await W(600);
+const so2=await p.evaluate(id=>{const r=PROD.resolve().all.find(x=>x.id===id);return [r.stMan||'',r.cls,r.iss.some(x=>x.cod==='st_divergente')]},sid);console.log('volta',so2);ok(so2[1]==='projeto'&&!so2[2],'igual à planilha: aviso some');
+await p.selectOption('#pdList select[data-cf="st"]','');await W(400);await p.click(`#pdList [data-st="${sid}"]`);await W(300);await p.selectOption('#pdNSt','TRO');await p.click('#pdNS');await W(600);
 await p.selectOption('#pdList select[data-cf="st"]','');await W(300);
 await p.click('#pdList [data-sort="t"]');await W(300);await p.click('#pdList [data-sort="t"]');await W(300);const ts=await p.$$eval('#pdList tbody tr td:nth-child(13)',a=>a.slice(0,5).map(x=>parseFloat(x.innerText.replace(/\./g,'').replace(',','.'))||0));ok(ts.every((v,i)=>!i||v<=ts[i-1]),'ordenação por coluna (CBUQ decrescente)');
 await p.click('#pdCClr');await W(300);

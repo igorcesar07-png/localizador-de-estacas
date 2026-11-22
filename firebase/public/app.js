@@ -4232,9 +4232,12 @@ const PROD=(function(){
     if(/vai até/.test(r.err)){const n=src.Data.parseKm(String(km+1));if(!n.err)return {s:n.s,over:true,km}}
     return {err:r.err}}
   const ST_MAN=['Projeto','TRO','Monitoramento','Retrabalho'];
+  // um único registro por segmento (vale o último salvo). Registros antigos em lista são reduzidos ao estado final.
+  function notaUm(v){if(!v)return [];if(!Array.isArray(v))return [v];if(!v.length)return [];const o=Object.assign({},v[v.length-1]);
+    const st=v.slice().reverse().find(n=>n.st),mt=v.slice().reverse().find(n=>n.motivo||n.txt);o.st=st?st.st:'';o.motivo=mt?mt.motivo||'':'';o.txt=mt?mt.txt||'':'';return [o]}
   function resolve(){if(RES)return RES;const out={B23:[],B4:[],all:[]};
     for(const k of ['B23','B4']){const S=SEG[k];if(!S)continue;const src=srcOf(k);
-      for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:'',rmp:[],kmRef:null,proj:null,notas:NOTAS[s.id]||[]});
+      for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:'',rmp:[],kmRef:null,proj:null,notas:notaUm(NOTAS[s.id])});
         const add=(sev,cod,msg)=>r.iss.push({sev,cod,msg});
         // classificação: extra-projeto (TRO, ramos/alças, marginais) e retrabalho
         const txt=norm([r.serial,r.obs,r.faixa,r.local].join(' '));
@@ -4243,9 +4246,12 @@ const PROD=(function(){
         r.retrab=/retrabalho/i.test(r.tipo||'');
         r.cls=r.extra?'extra':r.retrab?'retrabalho':'projeto';
         // status alterado manualmente na página (o último registro com status vale; o histórico fica nos motivos)
-        {const ms=r.notas.slice().reverse().find(n=>n.st);if(ms&&ST_MAN.includes(ms.st)){r.stMan=ms.st;r.stAuto=r.extra||(r.retrab?'Retrabalho':'Projeto');
+        r.stAuto=r.extra||(r.retrab?'Retrabalho':'Projeto');
+        {const ms=r.notas[0];if(ms&&ST_MAN.includes(ms.st)){r.stMan=ms.st;
           if(ms.st==='Projeto'){r.extra=null;r.retrab=false}else if(ms.st==='Retrabalho'){r.extra=null;r.retrab=true}else{r.extra=ms.st;r.retrab=false}
-          r.cls=r.extra?'extra':r.retrab?'retrabalho':'projeto';add('info','st_manual',`Status alterado manualmente para ${ms.st} (${dt(ms.at)}${ms.por?' · '+ms.por:''}); pela planilha seria ${r.stAuto}.`)}}
+          r.cls=r.extra?'extra':r.retrab?'retrabalho':'projeto';
+          // aviso só enquanto o app e a planilha base divergem; some quando a planilha for corrigida
+          if(ms.st!==r.stAuto){r.stDiv=true;add('atencao','st_divergente',`Status alterado no app para ${ms.st}; na planilha base está como ${r.stAuto}. Corrigir na planilha base.`)}}}
         if(r.extra)add('info','extra',`Execução extra-projeto (${r.extra}): fora do quantitativo e do status do projeto.`);
         const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.extra?'extra-projeto ('+r.extra+')':r.pontual?'item pontual de drenagem':r.fam==='SAIDA'?'saída de dreno':'';
         if(!src){add('erro','base','Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.')}
@@ -4420,7 +4426,7 @@ const PROD=(function(){
   const blkOf=r=>r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':r.blk==='B3'?'Bloco 03':'B2/B3 (sem estaca)';
   const kmOf=r=>r.kmRef!=null?r.kmRef:r.kmIni!=null?kmo(r.kmIni).km:null;
   const posTxt=r=>{const S=srcOf(r.k);return r.a!=null&&S?S.Data.nameAt(r.a)+' → '+S.Data.nameAt(r.b):''};
-  const notaTxt=r=>(r.notas||[]).map(n=>`${brD(new Date(n.at).toISOString().slice(0,10))} ${(n.st?'Status → '+n.st+'. ':'')+(n.motivo?n.motivo+': ':'')}${n.txt||''}`).join(' | ');
+  const notaTxt=r=>(r.notas||[]).filter(n=>n.motivo||n.txt).map(n=>(n.motivo?n.motivo+(n.txt?': ':''):'')+(n.txt||'')).join(' | ');
   const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
   // tabela de segmentos no mesmo formato da "Relação dos panos" (Relatórios): data primeiro, colunas separadas, filtro e ordenação por coluna
   const CF=Object.assign({sort:{k:'data',d:1},f:{}},store.get('pdCols',{}));const saveCF=()=>store.set('pdCols',{sort:CF.sort,f:CF.f});
@@ -4428,7 +4434,6 @@ const PROD=(function(){
   // status: tudo na planilha foi executado; a coluna diz a que se refere a execução
   const stOf=r=>r.extra?r.extra:r.retrab?'Retrabalho':'Projeto';
   const ST_C={'Projeto':'#1E7A4C','TRO':'#5B3FB0','Monitoramento':'#0E7C86','Retrabalho':'#9A4A00','Ramo/alça':'#7A5AC8','Marginal':'#7A5AC8'};
-  const notaLin=n=>(n.st?'Status → '+n.st+(n.motivo||n.txt?' · ':''):'')+(n.motivo?n.motivo+(n.txt?' — ':''):'')+(n.txt||'');
   const extOf=r=>r.pontual?(r.comp||0):r.kmIni!=null&&r.kmFim!=null?Math.abs(r.kmFim-r.kmIni):0;
   const solProj=r=>r.proj?`${r.proj.code}${r.proj.esp!=null?' · '+fmt(r.proj.esp,r.proj.esp%1?1:0)+' cm':''}`:'—';
   const solExec=r=>`${r.fam||'?'}${r.esp?' · '+fmt(r.esp*100,r.esp*1000%10?1:0)+' cm':''}`;
@@ -4443,16 +4448,15 @@ const PROD=(function(){
     const head=TCOL.map(([k,t,ty])=>`<th class="${ty==='n'?'n':''}"><button type="button" class="pd-sort" data-sort="${k}">${esc(t)}${CF.sort.k===k?(CF.sort.d>0?' ▲':' ▼'):''}</button></th>`).join('');
     const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
     const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=r.iss.some(x=>x.sev==='alerta'&&RMPCOD.has(x.cod));const pend=pendOf(r);
-      return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<button type="button" class="pd-st2 pd-stb" data-st="${esc(r.id)}" style="background:${ST_C[st]}" title="Alterar status (Projeto, TRO, Monitoramento, Retrabalho)">${st}${r.stMan?' ✎':''} ▾</button>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stMan?' ✎':''}</span>`}</td>
+      return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<button type="button" class="pd-st2 pd-stb" data-st="${esc(r.id)}" style="background:${ST_C[st]}" title="Alterar status (Projeto, TRO, Monitoramento, Retrabalho)">${st}${r.stDiv?' ✎':''} ▾</button>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
         <td>${r.cls!=='projeto'?'<span class="pd-mod">não se aplica</span>':r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog" title="Ver o que mudou">Sim</button>`:'<span class="pd-rmp nao">Não</span>'}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
         <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),extOf(r)%1?1:0)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${r.q&&r.q.t?fmt(r.q.t,1):'—'}</td>
-        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${(r.notas||[]).map(n=>`<span class="pd-nota">✎ ${esc(dt(n.at))}: ${esc(notaLin(n))}</span>`).join('')}
-        ${canNote()?`<button type="button" class="pd-mini" data-nota="${esc(r.id)}">Motivo</button>`:''}</td></tr>`}).join('');
+        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${canNote()?`<button type="button" class="pd-mini${notaTxt(r)?' tem':''}" data-nota="${esc(r.id)}"${notaTxt(r)?` title="${esc(notaTxt(r))}"`:''}>Motivo${notaTxt(r)?' ✓':''}</button>`:''}</td></tr>`}).join('');
     return `<table class="pd-t pd-tab"><thead><tr>${head}</tr><tr class="pd-fr">${fil}</tr></thead><tbody>${rows}</tbody></table>`}
   // Excel com os segmentos que têm pendências ou motivos, para análise caso a caso e correção na planilha base
   async function exportPend(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const R0=resolve().all;
-      const list=R0.filter(r=>pendOf(r).length||(r.notas||[]).length);
+      const list=R0.filter(r=>pendOf(r).length||notaTxt(r));
       const sev=(r,s)=>pendOf(r).filter(x=>x.sev===s).map(x=>x.msg).join(' | ');
       const H=['ID do segmento','Aba da planilha','Linhas da planilha','Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Posição no projeto','Extensão (m)','Comp na planilha (m)','Largura (m)','Espessura executada (cm)','Solução executada','Solução de projeto','CBUQ (t)','Fresagem (m³)','Pintura (m²)','Classificação','Status (projeto, TRO ou monitoramento)','Erros','Atenção','Motivos registrados no app','Equipe','Serial','OBS da planilha','Correção proposta','Responsável','Status da análise'];
       const rows=list.sort((a,b)=>a.k.localeCompare(b.k)||(a.lin[0]-b.lin[0])).map(r=>[r.id,r.k==='B4'?'Lançamento Lote B4':'Lançamento lotes B2 - B3',r.lin.join(', '),brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),posTxt(r),Math.round(extOf(r)*100)/100,r.comp??'',r.larg??'',r.esp?Math.round(r.esp*1000)/10:'',r.fam||'',solProj(r),r.q&&r.q.t||0,r.q&&r.q.m3||0,r.q&&r.q.m2||0,val(r,'cls'),stOf(r),sev(r,'erro'),sev(r,'atencao'),notaTxt(r),r.equipe,r.serial,r.obs||'','','','Pendente']);
@@ -4460,7 +4464,7 @@ const PROD=(function(){
       ws['!cols']=H.map(h=>({wch:/Erros|Atenção|Motivos|OBS|Correção|Posição/.test(h)?48:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+rows.length,c:H.length-1}})};
       const sh=[];for(const k of ['B23','B4']){const S=SEG[k];if(S&&S.sheetIssues)for(const x of S.sheetIssues)sh.push([k==='B4'?'Lançamento Lote B4':'Lançamento lotes B2 - B3',(x.linhas||[]).join(', '),x.msg,'','Pendente'])}
       const ws2=X.utils.aoa_to_sheet([['Aba','Linha(s)','Problema','Correção proposta','Status da análise'],...sh]);ws2['!cols']=[{wch:26},{wch:10},{wch:90},{wch:40},{wch:16}];
-      const cnt={};for(const r of list){const b=blkOf(r);cnt[b]=cnt[b]||{n:0,e:0,at:0,m:0};cnt[b].n++;const pd=pendOf(r);if(pd.some(x=>x.sev==='erro'))cnt[b].e++;if(pd.some(x=>x.sev==='atencao'))cnt[b].at++;if((r.notas||[]).length)cnt[b].m++}
+      const cnt={};for(const r of list){const b=blkOf(r);cnt[b]=cnt[b]||{n:0,e:0,at:0,m:0};cnt[b].n++;const pd=pendOf(r);if(pd.some(x=>x.sev==='erro'))cnt[b].e++;if(pd.some(x=>x.sev==='atencao'))cnt[b].at++;if(notaTxt(r))cnt[b].m++}
       const ws3=X.utils.aoa_to_sheet([['Bloco','Segmentos','Com erro','Com atenção','Com motivo registrado'],...Object.entries(cnt).map(([b,c])=>[b,c.n,c.e,c.at,c.m])]);
       const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Pendências');X.utils.book_append_sheet(wb,ws2,'Linhas fora do padrão');X.utils.book_append_sheet(wb,ws3,'Resumo');
       X.writeFile(wb,`Pendencias_producao_${new Date().toISOString().slice(0,10)}.xlsx`);const el=$('pdPMsg');if(el)el.textContent=`${rows.length} segmento(s) exportado(s).`}
@@ -4507,15 +4511,17 @@ const PROD=(function(){
   const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Outra necessidade técnica'];
   function notaDlg(id,foco){const r=resolve().all.find(x=>x.id===id);if(!r)return;let d=$('pdNotaDlg');if(!d){d=document.createElement('div');d.id='pdNotaDlg';d.className='pd-dlg';document.body.appendChild(d)}
     d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">${foco==='st'?'Status da execução':'Motivo / observação'}</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
-      ${(r.notas||[]).length?`<ul class="pd-nl">${r.notas.map(n=>`<li><b>${esc(dt(n.at))}</b> · ${esc(n.por||'')}: ${esc(notaLin(n))}</li>`).join('')}</ul>`:''}
-      <div class="fld"><label for="pdNSt">Status</label><select id="pdNSt">${ST_MAN.map(o=>`<option${stOf(r)===o?' selected':''}>${o}</option>`).join('')}${ST_MAN.includes(stOf(r))?'':`<option selected value="">${esc(stOf(r))} (pela planilha)</option>`}</select><small class="pd-note">Fora de Projeto, a coluna RMP fica "não se aplica".${r.stMan?` Pela planilha: ${esc(r.stAuto)}.`:''}</small></div>
-      <div class="fld"><label for="pdNM">Motivo</label><select id="pdNM"><option value="">—</option>${MOTIVOS.map(m=>`<option>${m}</option>`).join('')}</select></div>
-      <div class="fld"><label for="pdNX">Observação</label><textarea id="pdNX" rows="3" maxlength="600"></textarea></div><p class="pd-note" id="pdNE"></p>
-      <div class="pd-acts"><button type="button" class="pd-b" id="pdNC">Cancelar</button><button type="button" class="pd-b pri" id="pdNS">Registrar</button></div></div>`;
+      ${r.notas[0]?`<p class="pd-note">Último registro: ${esc(dt(r.notas[0].at))}${r.notas[0].por?' · '+esc(r.notas[0].por):''}</p>`:''}
+      <div class="fld"><label for="pdNSt">Status</label><select id="pdNSt">${ST_MAN.map(o=>`<option${stOf(r)===o?' selected':''}>${o}</option>`).join('')}${ST_MAN.includes(stOf(r))?'':`<option selected value="">${esc(stOf(r))} (pela planilha)</option>`}</select><small class="pd-note">Fora de Projeto, a coluna RMP fica "não se aplica". Na planilha base: ${esc(r.stAuto)}.</small></div>
+      <div class="fld"><label for="pdNM">Motivo</label><select id="pdNM"><option value="">—</option>${[...MOTIVOS,...(r.notas[0]&&r.notas[0].motivo&&!MOTIVOS.includes(r.notas[0].motivo)?[r.notas[0].motivo]:[])].map(m=>`<option${r.notas[0]&&r.notas[0].motivo===m?' selected':''}>${esc(m)}</option>`).join('')}</select></div>
+      <div class="fld"><label for="pdNX">Observação</label><textarea id="pdNX" rows="3" maxlength="600">${esc(r.notas[0]&&r.notas[0].txt||'')}</textarea></div><p class="pd-note" id="pdNE"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="pdNC">Cancelar</button><button type="button" class="pd-b pri" id="pdNS">Salvar</button></div></div>`;
     d.hidden=false;$('pdNC').onclick=()=>d.hidden=true;d.onclick=e=>{if(e.target===d)d.hidden=true};
     if(foco==='st')setTimeout(()=>$('pdNSt').focus(),0);
-    $('pdNS').onclick=async()=>{const m=$('pdNM').value,t=$('pdNX').value.trim(),sv=$('pdNSt').value,stCh=sv&&sv!==stOf(r);if(!m&&!t&&!stCh){$('pdNE').textContent='Altere o status, escolha um motivo ou escreva a observação.';return}
-      const n={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',motivo:m,txt:t};if(stCh)n.st=sv;const all=Object.assign({},NOTAS);all[id]=(all[id]||[]).concat(n);
+    $('pdNS').onclick=async()=>{const m=$('pdNM').value,t=$('pdNX').value.trim(),sv=$('pdNSt').value,st=sv&&sv!==r.stAuto?sv:'';
+      // salva só o estado atual (sem histórico): status diferente da planilha, motivo e observação
+      const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u)all[k]=u}
+      if(st||m||t)all[id]={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',st,motivo:m,txt:t};else delete all[id];
       try{if(!window.ProdDB||!window.ProdDB.saveNotas)throw new Error('sem conexão com o servidor do app');await window.ProdDB.saveNotas(all);NOTAS=all;RES=null;d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível registrar: '+(e.message||e)}}}
 
   /* ---------- relatórios: CBUQ por km, histórico de execuções e RMP (filtros, campos, Excel e PDF) ---------- */
@@ -4590,7 +4596,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 20:20';
+  const CUR_VER='22/11/2026 20:33';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
