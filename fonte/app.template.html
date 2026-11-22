@@ -5418,7 +5418,7 @@ const PROD=(function(){
   // · Bloco 04: lançamentos até 21/11/2026 e km até 250 usam o estaqueamento anterior (R03 REV1); os demais, o estaqueamento da base carregada;
   // · extra-projeto (TRO, ramos/alças, marginais) não entra no status do projeto; retrabalho entra no projeto e é contado à parte;
   // · espessura de projeto por solução: FS 3 cm, FF 6 cm, FE 10 cm (diferença = RMP; redução e troca por solução de menor intervenção = alerta especial).
-  const ESP_PAD={FS:3,FF:6,FE:10};
+  const ESP_PAD={FS:3,FF:6,FE:10},TOL_LEN=5;
   const PESO={FS:1,FF:2,G:2,FE:3,REC:4,RP:4};  // intensidade da intervenção (para "substituição por solução de menor intervenção")
   const B4_CORTE='2026-11-22',B4_KM_NOVO=250;
   function posOf(k,m,data,src){const km=Math.floor(m/1000+1e-9),o=Math.round((m-km*1000)*100)/100;
@@ -5471,7 +5471,14 @@ const PROD=(function(){
                   else if(['FF','FE','FS','GAP'].includes(r.fam)){const pc=famPav(dom[0]),ex=r.fam==='GAP'?'G':r.fam;
                     if(pc&&pc!==ex){const less=(PESO[ex]||0)<(PESO[pc]||0);r.rmp.push(less?'troca_menor':'troca');
                       add(less?'alerta':'atencao','troca',less?`ALERTA – substituição por solução de menor intervenção: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}.`:`Alteração da solução de projeto: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}. Necessita RMP.`)}}
-                  else if((r.fam==='DR'||r.fam==='DP')&&!ov.has(r.fam))add('atencao','solucao_dif',`Executado ${r.fam}; o projeto prevê ${[...ov.keys()].join(', ')} nesta posição.`)}}}}}
+                  else if((r.fam==='DR'||r.fam==='DP')&&!ov.has(r.fam))add('atencao','solucao_dif',`Executado ${r.fam}; o projeto prevê ${[...ov.keys()].join(', ')} nesta posição.`);
+                  // comprimento: trecho executado além do pano da mesma solução no projeto (acréscimo). Acréscimo numa solução e supressão
+                  // na seguinte geram um só RMP, no acréscimo (regra informada em 22/11/2026). Tolerância de 5 m, a mesma da página Relatórios.
+                  if(['FF','FE','FS','GAP'].includes(r.fam)&&!r.rmp.some(x=>x==='troca'||x==='troca_menor')){const ex=r.fam==='GAP'?'G':r.fam;let same=0;const fora=[];for(const [c,v] of ov){if(famPav(c)===ex)same+=v;else fora.push([c,v])}
+                    const exc=len-same;
+                    if(exc>TOL_LEN&&(tot<0.5||famPav(dom[0])===ex)){const pior=fora.some(([c])=>(PESO[famPav(c)]||0)>(PESO[ex]||0));r.rmp.push('comprimento');
+                      const sup=fora.filter(([,v])=>v>0.5).map(([c,v])=>`${c} ${fmt(v,0)} m`).join(', ');
+                      add(pior?'alerta':'atencao','comprimento',`${pior?'ALERTA – ':''}Comprimento diferente do projeto: ${fmt(exc,0)} m de ${r.fam} executados além do pano de ${r.fam} do projeto${sup?` (sobre ${sup}, que fica suprimido)`:' (trecho sem essa solução no projeto)'}. Necessita RMP — um só, no acréscimo.`)}}}}}}}
         // espessura executada × espessura de projeto da solução executada
         // não se faz RMP em extra-projeto (TRO, alças/ramos, marginais)
         if(r.extra)r.rmp=[];
@@ -5578,7 +5585,7 @@ const PROD=(function(){
   /* ---------- página ---------- */
   const F={blk:'ALL',sev:'pend',q:'',lim:150};
   const CLS={projeto:'Projeto',retrabalho:'Retrabalho',extra:'Extra-projeto'};
-  const RMPN={aumento:'Aumento de espessura',reducao:'Redução de espessura',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
+  const RMPN={comprimento:'Comprimento diferente do projeto (acréscimo)',aumento:'Aumento de espessura',reducao:'Redução de espessura',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
   const tOf=r=>r.q&&r.q.t?r.q.t:0;
   const hasSev=(r,s)=>r.iss.some(x=>x.sev===s);
   function blockSum(list){const o={n:list.length,ap:0,len:{},t:{projeto:0,retrabalho:0,extra:0},un:0,err:0,att:0,al:0,rmp:0,d0:null,d1:null};
@@ -5618,7 +5625,7 @@ const PROD=(function(){
   function tableHtml(base,list){const opts=k=>[...new Set(base.map(r=>String(val(r,k))))].sort((a,b)=>a.localeCompare(b,'pt',{numeric:true}));
     const head=TCOL.map(([k,t,ty])=>`<th class="${ty==='n'?'n':''}"><button type="button" class="pd-sort" data-sort="${k}">${esc(t)}${CF.sort.k===k?(CF.sort.d>0?' ▲':' ▼'):''}</button></th>`).join('');
     const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
-    const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=r.rmp.some(x=>x==='reducao'||x==='troca_menor');const pend=r.iss.filter(x=>x.sev!=='info');
+    const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=hasSev(r,'alerta');const pend=r.iss.filter(x=>x.sev!=='info');
       return `<tr class="${hasSev(r,'erro')?'erro':forte?'alerta':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td><span class="pd-st2" style="background:${ST_C[st]}">${st}</span></td>
         <td>${r.rmp.length?`<span class="pd-rmp${forte?' forte':''}">Sim</span><small class="pd-mod${forte?' forte':''}">${esc(rmpTxt(r))}</small>`:'<span class="pd-rmp nao">Não</span>'}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
