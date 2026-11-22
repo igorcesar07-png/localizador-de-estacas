@@ -293,11 +293,13 @@ onAuthStateChanged(auth,async user=>{
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
     // produção executada (planilha "Acompanhamento de produção"): 3 documentos de dados + 1 de status; lê quem usa o app, grava quem pode importar
-    {const PIDS=['producao_meta','producao_b23','producao_b4','producao_status'],pcan=isAdm||!!(window.ACL.perms.producao&&window.ACL.perms.producao.create);
+    {const PIDS=['producao_meta','producao_b23','producao_b4','producao_status','producao_notas'],pcan=isAdm||!!(window.ACL.perms.producao&&window.ACL.perms.producao.create);
       window.ProdDB={subscribe:cb=>{const us=PIDS.map(id=>onSnapshot(doc(db,'base',id),s=>cb(id,s.exists()?s.data():null),e=>cb(id,null,e)));return ()=>us.forEach(u=>u())},
         save:async parts=>{if(!pcan)throw new Error('sem permissão para importar a planilha de produção');const b=writeBatch(db);
           for(const [k,obj] of Object.entries(parts)){const txt=JSON.stringify(obj),sz=new Blob([txt]).size;if(sz>1000000)throw new Error(`dados "${k}" grandes demais para o servidor (${Math.round(sz/1024)} KB; limite de 1 MB). Nada foi gravado.`);
             b.set(doc(db,'base','producao_'+k),{json:txt,updatedAt:serverTimestamp(),by:user.email})}return track(b.commit())},
+        // motivos/observações por segmento (lista acumulada: nada é apagado)
+        saveNotas:async all=>{if(!pcan)throw new Error('sem permissão');const txt=JSON.stringify(all);if(new Blob([txt]).size>1000000)throw new Error('observações grandes demais para o servidor');return track(setDoc(doc(db,'base','producao_notas'),{json:txt,updatedAt:serverTimestamp(),by:user.email}))},
         status:st=>pcan?soft(setDoc(doc(db,'base','producao_status'),{...st,by:user.email,updatedAt:serverTimestamp()})):Promise.resolve()}}
     // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
     const pc=window.ACL.perms.calculadora||{};

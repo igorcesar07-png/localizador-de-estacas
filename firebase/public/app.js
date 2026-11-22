@@ -2470,13 +2470,18 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
 /* =====================================================================
    PÁGINA 5 — Relatórios (filtros → panos → indicadores → resumo → detalhe → PDF/Excel)
    ===================================================================== */
+const __S277={Data,R,LANES,SIDE,PANOS,ODO};
 (function RelPage(){
   const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const loadScript=src=>new Promise((res,rej)=>{if(document.querySelector(`script[src="${src}"]`)&&(src.includes('xlsx')?window.XLSX:src.includes('autotable')?(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API.autoTable):window.jspdf)){res();return}
     const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar a biblioteca (sem internet?)'));document.head.appendChild(s)});
   const XLSX_URL='lib/xlsx.full.min.js';
   const JSPDF_URL='lib/jspdf.umd.min.js',AT_URL='lib/jspdf.plugin.autotable.min.js';
-  const OBRA='Restauração BR-277 – Blocos 02 e 03',RODOVIA='BR-277/PR';
+  // obra do relatório: BR-277 (Blocos 02 e 03) ou BR-373 (Bloco 04); os dados de projeto e a execução trocam juntos
+  let {Data,R,LANES,SIDE,PANOS,ODO}=__S277;let RK='277',OBRA='Restauração BR-277 – Blocos 02 e 03',RODOVIA='BR-277/PR';
+  function useObra(k){if(k==='B4'&&!window.__SRC_B4)k='277';if(k===RK)return false;const S=k==='B4'?window.__SRC_B4:__S277;({Data,R,LANES,SIDE,PANOS,ODO}=S);RK=k;
+    OBRA=k==='B4'?'Restauração BR-373 – Bloco 04':'Restauração BR-277 – Blocos 02 e 03';RODOVIA=k==='B4'?'BR-373/PR':'BR-277/PR';
+    TAGIDX=new Map(PANOS.map(p=>[p.tag,p]));FAM_ALL=Data.FAM_ORDER.filter(f=>PANOS.some(p=>p.info.fam===f));return true}
   const STATUS={nao:'Não executado',prog:'Programado',and:'Em execução',exec:'Executado'};
   const ST_COLOR={nao:'#9AA19D',prog:'#1A73E8',and:'#E08A00',exec:'#1E7A4C'};
   const FAIXAS=[['F1','Faixa 1'],['F23','Faixa 2/3'],['AC','Acostamento'],['DRN','Dreno']];
@@ -2488,7 +2493,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function cadastro(){const c=store.get('calc',null)||{};const num=v=>{if(v===''||v==null)return null;const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:null};
     const w={F1:num((c.w||{}).F1)??3.6,F23:num((c.w||{}).F23)??3.6,AC:num((c.w||{}).AC)??2.5};
     const esp=Object.assign({FF:6,FE:10,FS:3},c.esp||{});const dens=num(c.dens)??2.528;
-    return {w,esp:k=>num(esp[k]),excl:k=>!!(c.excl||{})[k],rowW:t=>num((((c.bySrc&&c.bySrc['277'])||c).rowW||{})[t]),dens}}
+    return {w,esp:k=>num(esp[k]),excl:k=>!!(c.excl||{})[k],rowW:t=>num((((c.bySrc&&c.bySrc[RK])||(RK==='277'?c:{})).rowW||{})[t]),dens}}
 
   /* ---------- registros de execução (programações emitidas + planilha importada) ---------- */
   const Rec={progs:()=>store.get('execProgs',[]),execs:()=>store.get('execRecs',[]),
@@ -2498,8 +2503,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const out=[];for(const x of iv){const l=out[out.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else out.push([x[0],x[1]])}return out}
   const clipLen=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
   function indexRecords(){const byL=Array.from({length:8},()=>({ex:[],pr:[],an:[]}));
-    for(const r of Rec.execs().concat(window.PROD?window.PROD.execRecs('277'):[])){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
-    for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
+    for(const r of Rec.execs().filter(r=>(r.rk||'277')===RK).concat(window.PROD?window.PROD.execRecs(RK):[])){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
+    if(RK==='277')for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
     return byL}
   window.ExecIdx=()=>{const idx=indexRecords();return (L,a,b)=>{const o=idx[L];if(!o)return {st:'nao',exLen:0,prLen:0,anLen:0};const hit=r=>Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
     const exU=unite(o.ex.filter(hit).map(r=>[r.a,r.b])),exLen=clipLen(exU,a,b),anLen=clipLen(unite(o.an.filter(hit).map(r=>[r.a,r.b])),a,b);let prLen=0;
@@ -2507,7 +2512,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const len=b-a;return {st:exLen>=len-0.5?'exec':exLen>0.5||anLen>0.5?'and':prLen>0.5?'prog':'nao',exLen,prLen,anLen}}};
 
   /* ---------- estado dos filtros ---------- */
-  const FAM_ALL=Data.FAM_ORDER.filter(f=>PANOS.some(p=>p.info.fam===f));
+  let FAM_ALL=Data.FAM_ORDER.filter(f=>PANOS.some(p=>p.info.fam===f));
   const RMPT={sim:'Sim',nao:'Não',sd:'Sem dados',na:'Sem execução'},RMPC={sim:'#C8101A',nao:'#1E7A4C',sd:'#56605A',na:'#9AA19D'};
   const DEF={rmp:['sim','nao','sd','na'],bloco:'ALL',kmA:'',kmB:'',sent:'ALL',faixa:FAIXAS.map(f=>f[0]),tipo:['PAV','DRN'],sol:FAM_ALL.slice(),esp:null,status:Object.keys(STATUS),dA:'',dB:'',dBase:'any',fonte:'rec'};
   let F=Object.assign({},DEF,store.get('relF',{}));
@@ -2530,7 +2535,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const pa=ODO[p.i0],pb=ODO[p.i1]+20,a=Math.max(pa,s0),b=Math.min(pb,s1);if(b-a<=1e-6)continue;
       const len=b-a,dec=L0.side==='D';const serial=window.SeriaisIdx?window.SeriaisIdx.of(p.L,p.code,a,b).map(r=>r[0]).join(' / '):'';
       let w=null,e=null,excl=false;
-      if(!drn){excl=C.excl(p.code);w=C.rowW(p.tag)??C.w[L0.grp];e=excl?null:C.esp(p.code)}
+      if(!drn){excl=C.excl(p.code);const us=RK==='B4'&&p.src?p.src:null;w=C.rowW(p.tag)??(us&&us.largura_media_m>0?us.largura_media_m:C.w[L0.grp]);e=excl?null:(us&&window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):null)??C.esp(p.code)}
       const espKey=drn?(p.info.esp||'-'):excl?'sem CBUQ':e>0?nf(e,e%1?1:0)+' cm':'sem espessura';
       if(F.esp&&!F.esp.includes(espKey))continue;
       const area=!drn&&w>0?len*w:null,vol=area!=null&&e>0?area*e/100:null,t=vol!=null&&C.dens>0?vol*C.dens:null;
@@ -2629,6 +2634,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   document.querySelectorAll('[data-rall]').forEach(b=>b.onclick=()=>{const k=b.dataset.rall;const v=b.dataset.v;
     if(k==='faixa')F.faixa=v==='none'?[]:FAIXAS.map(f=>f[0]);if(k==='sol')F.sol=v==='none'?[]:FAM_ALL.slice();if(k==='esp')F.esp=v==='none'?[]:null;if(k==='status')F.status=v==='none'?[]:Object.keys(STATUS);if(k==='rmp')F.rmp=DEF.rmp.slice();if(k==='tipo')F.tipo=['PAV','DRN'];saveF();refresh()});
   [['rBloco','bloco'],['rDBase','dBase']].forEach(([id,k])=>$(id).onchange=()=>{F[k]=$(id).value;saveF();refresh()});
+  $('rObra').onchange=()=>{F.obra=$('rObra').value;saveF();refresh()};
   [['rKmA','kmA'],['rKmB','kmB'],['rDA','dA'],['rDB','dB']].forEach(([id,k])=>{let t=0;const h=()=>{F[k]=$(id).value;saveF();clearTimeout(t);t=setTimeout(refresh,350)};$(id).addEventListener('input',h);$(id).addEventListener('change',h)});
   $('rClear').onclick=()=>{const fonte=F.fonte;F=Object.assign({},DEF,{fonte});saveF();refresh()};
 
@@ -2672,10 +2678,19 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       <div class="tnote">Quantidades calculadas com o cadastro da Calculadora de programação (larguras, espessuras e densidade). Panos parcialmente dentro do trecho entram só com a parte interna. Status pelos registros: executado (toda a extensão executada), em execução (parte executada), programado (em programação emitida e não concluída), não executado. No decrescente a estaca inicial é a maior.</div></div>`;
     out.innerHTML=h;
     $('rQuick').innerHTML=`<b>${s.n}</b> panos · <b>${nf(s.len/1000,2)} km</b> · <b>${nf(s.t,0)} t</b>${noRec?'':` · <b>${nf(s.pct,0)}%</b> exec.`}`}
-  function refresh(){renderFilters();query();render();renderExec()}
+  function refresh(){const k=F.obra==='B4'?'B4':'277';if(useObra(k)){F.sol=FAM_ALL.slice();F.esp=null;if(RK==='B4')F.bloco='B4';else if(F.bloco==='B4')F.bloco='ALL'}
+    if(RK==='277'&&F.bloco==='B4')F.bloco='ALL';
+    const bl=$('rBloco');bl.innerHTML=RK==='B4'?'<option value="B4">Bloco 4</option>':'<option value="ALL">Blocos 2 e 3</option><option value="B2">Bloco 2</option><option value="B3">Bloco 3</option>';
+    $('rObra').value=RK;$('rRod').innerHTML=`<option>${RODOVIA}</option>`;renderFilters();query();render();renderExec();prodSum()}
+  // planilha de produção: projeto, retrabalho e extra-projeto separados (mesmo filtro de período e bloco)
+  function prodSum(){const el=$('rProdSum');if(!el)return;const P=window.PROD;if(!P||!P.has(RK)){el.hidden=true;return}
+    const all=P.resolve()[RK==='B4'?'B4':'B23'].filter(r=>(F.bloco==='ALL'||RK==='B4'||r.blk===F.bloco)&&(!F.dA||!r.data||r.data>=F.dA)&&(!F.dB||!r.data||r.data<=F.dB));
+    const t={projeto:0,retrabalho:0,extra:0},n={rmp:0,al:0};for(const r of all){t[r.cls]+=r.q&&r.q.t||0;if(r.rmp.length)n.rmp++;if(r.iss.some(x=>x.sev==='alerta'))n.al++}
+    const f=v=>v.toLocaleString('pt-BR',{maximumFractionDigits:1});el.hidden=false;
+    el.innerHTML=`<b>Planilha de produção</b><span>Projeto <b>${f(t.projeto+t.retrabalho)} t</b>${t.retrabalho?` (retrabalho ${f(t.retrabalho)} t)`:''}</span><span>Extra-projeto <b>${f(t.extra)} t</b></span><span>Total <b>${f(t.projeto+t.retrabalho+t.extra)} t</b></span><span>${n.rmp} segmento(s) com RMP${n.al?` · <b class="bad">${n.al} alerta(s)</b>`:''}</span><a href="#producao">detalhes →</a>`}
 
   /* ---------- programações registradas: concluir ou não ---------- */
-  function renderExec(){const ps=Rec.progs(),ex=Rec.execs(),imp=ex.filter(r=>r.src==='planilha'),fromProg=ex.filter(r=>r.src==='prog');
+  function renderExec(){const ps=Rec.progs(),ex=Rec.execs(),imp=ex.filter(r=>r.src==='planilha'&&(r.rk||'277')===RK),fromProg=ex.filter(r=>r.src==='prog');
     $('rImpInfo').textContent=imp.length?`${imp.length} registro${imp.length>1?'s':''} importado${imp.length>1?'s':''} da planilha${store.get('execImpAt','')?' em '+store.get('execImpAt',''):''}.`:'Nenhuma planilha importada.';
     $('rImpDel').hidden=!imp.length;
     $('rProgs').innerHTML=ps.length?ps.map(p=>`<div class="rpg${p.concluded?' done':''}"><div><b>${br(p.data)} · ${esc(p.equipe)}</b><small>${p.items.length} segmento${p.items.length>1?'s':''} · ${fmtM(p.items.reduce((s,i)=>s+(i.b-i.a),0))} · ${p.concluded?`concluída em ${br(p.execDate)} (${p.nExec} executado${p.nExec!==1?'s':''})`:'aberta (programado)'}</small></div>
@@ -2703,7 +2718,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   /* ---------- planilha padrão e importação ---------- */
   const HEAD=['Pano','Sentido','Faixa','Solução','Estaca inicial','Estaca final','Extensão (m)','Espessura de projeto (cm)','Status','Espessura executada (cm)','Data de programação','Data de execução','Toneladas executadas','Observações'];
   const R08ESP=p=>{const e=p.info.esp;if(!e||!/cm$/.test(e))return null;const n=parseFloat(e.replace(',','.'));return isFinite(n)?n:null};
-  const espProjOf=p=>{const r=R08ESP(p);if(r!=null)return r;const u=store.get('espProj',{})[p.tag];return u!=null?u:null};
+  const espProjOf=p=>{if(RK==='B4'&&p.src&&window.__B4_CBUQ_CM){const v=window.__B4_CBUQ_CM(p.src);if(v!=null)return v}const r=R08ESP(p);if(r!=null)return r;const u=store.get('espProj',{})[p.tag];return u!=null?u:null};
   const TOL_M=5;
   async function saveBlob(blob,name,mime){const file=new File([blob],name,{type:mime});
     if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:name});return 'shared'}catch(e){if(e&&e.name==='AbortError')return 'cancel'}}
@@ -2731,7 +2746,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function parseDate(v){if(v==null||v==='')return null;if(v instanceof Date&&!isNaN(v))return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
     const s=String(v).trim();let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);if(m){const y=m[3].length===2?'20'+m[3]:m[3];return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`}
     m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return m[0];return 'ERR'}
-  const TAGIDX=new Map(PANOS.map(p=>[p.tag,p]));
+  let TAGIDX=new Map(PANOS.map(p=>[p.tag,p]));
   function laneOf(sent,faixa){const s=normTxt(sent).startsWith('d')?'D':normTxt(sent).startsWith('c')?'C':null;const f=normTxt(faixa);
     const g=f.includes('dren')?'DRN':f.includes('acost')||f==='ac'?'AC':f.includes('2')||f.includes('3')?'F23':f.includes('1')?'F1':null;if(!s||!g)return -1;return LANES.findIndex(L=>L.side===s&&L.grp===g)}
   let PEND=null,PEND_ESP={};
@@ -2758,7 +2773,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
         const num=v=>v===''||v==null?null:parseFloat(String(v).replace(',','.'));const ee=num(get(ci.ee)),ep=num(get(ci.ep));
         if(ee!=null&&!(isFinite(ee)&&ee>0)){errs.push(`linha ${ln}: espessura executada inválida`);return}
         if(tag&&ep!=null&&isFinite(ep)&&ep>0&&R08ESP(TAGIDX.get(tag))==null)espUp[tag]=ep;
-        recs.push({L,a,b,tag:tag||null,st,dateProg:dp,dateExec:st==='exec'?(de||dp):de,tons:st==='exec'?tons:null,esp:ee,exc,obs:String(get(ci.obs)).trim(),src:'planilha'})});
+        recs.push({rk:RK,L,a,b,tag:tag||null,st,dateProg:dp,dateExec:st==='exec'?(de||dp):de,tons:st==='exec'?tons:null,esp:ee,exc,obs:String(get(ci.obs)).trim(),src:'planilha'})});
       PEND_ESP=espUp;
       PEND=recs;const nE=recs.filter(r=>r.st==='exec').length,nA=recs.filter(r=>r.st==='and').length,nP=recs.filter(r=>r.st==='prog').length;
       $('riT').textContent=`Importar ${f.name}`;
@@ -2769,9 +2784,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     catch(err){msgR('Não foi possível ler a planilha: '+esc(err.message||err),'warn')}};
   $('riCancel').onclick=()=>{$('rImp').hidden=true;PEND=null};
   $('rImp').addEventListener('click',e=>{if(e.target.id==='rImp'){$('rImp').hidden=true;PEND=null}});
-  $('riOk').onclick=()=>{if(!PEND)return;if(Object.keys(PEND_ESP).length)store.set('espProj',Object.assign(store.get('espProj',{}),PEND_ESP));const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha');ex=ex.concat(PEND);Rec.saveExecs(ex);
+  $('riOk').onclick=()=>{if(!PEND)return;if(Object.keys(PEND_ESP).length)store.set('espProj',Object.assign(store.get('espProj',{}),PEND_ESP));const rep=$('riRep').checked;let ex=Rec.execs();if(rep)ex=ex.filter(r=>r.src!=='planilha'||(r.rk||'277')!==RK);ex=ex.concat(PEND);Rec.saveExecs(ex);
     const d=new Date();store.set('execImpAt',d.toLocaleString('pt-BR'));$('rImp').hidden=true;msgR(`${PEND.length} registro(s) importado(s).`);PEND=null;refresh()};
-  $('rImpDel').onclick=()=>{if(!can('relatorios','delete'))return;if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'));refresh()};
+  $('rImpDel').onclick=()=>{if(!can('relatorios','delete'))return;if(!confirm('Remover todos os registros importados de planilha?'))return;Rec.saveExecs(Rec.execs().filter(r=>r.src!=='planilha'||(r.rk||'277')!==RK));refresh()};
 
   /* ---------- Excel ---------- */
   function detailAoa(){const noRec=RES.fonte==='proj';const H=['Pano','Serial','Rodovia','Bloco','Sentido','Faixa','Tipo de serviço','Solução','Descrição','Estaca inicial','Estaca final','Extensão (m)','Parcial no recorte','Largura (m)','Espessura (cm)','Área (m²)','Volume (m³)','Previsto (t)','Status','Espessura de projeto (cm)','Espessura executada (cm)','RMP','Motivo do RMP','Extensão executada (m)','Extensão programada (m)','Saldo (m)','Executado (t)','Programado (t)','Saldo (t)','Data de programação','Data de execução','Origem do registro','Observações','Marco km','Página do PDF'];
@@ -4141,54 +4156,96 @@ const PROD=(function(){
   const dt=ms=>ms?new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
   const brD=d=>d?d.split('-').reverse().join('/'):'—';
   const norm=ProdParse.norm;
-  const SEV={erro:'Erro',atencao:'Atenção',info:'Informação'};
+  const SEV={erro:'Erro',alerta:'Alerta especial',atencao:'Atenção',info:'Informação'};
   const FAMN={FF:'Fresagem funcional',FE:'Fresagem estrutural',FS:'Fresagem superficial',GAP:'MF + GAP',DR:'Dreno raso',DP:'Dreno profundo',SAIDA:'Saída de dreno',SH:'Sinalização horizontal'};
-  let META=null,SEG={B23:null,B4:null},STAT=null,RES=null,ver=0;
+  let META=null,SEG={B23:null,B4:null},STAT=null,RES=null,ver=0,NOTAS={};
   /* ---------- dados compartilhados (Firestore, via auth.js) ---------- */
   function onDoc(id,d){try{const v=d&&d.json?JSON.parse(d.json):null;
-      if(id==='producao_meta')META=v;else if(id==='producao_b23')SEG.B23=v;else if(id==='producao_b4')SEG.B4=v;else if(id==='producao_status')STAT=d||null}catch(e){console.error(e)}
+      if(id==='producao_meta')META=v;else if(id==='producao_b23')SEG.B23=v;else if(id==='producao_b4')SEG.B4=v;else if(id==='producao_status')STAT=d||null;else if(id==='producao_notas')NOTAS=v||{}}catch(e){console.error(e)}
     ver++;RES=null;emit('prod',ver)}
   if(window.ProdDB)window.ProdDB.subscribe((id,d)=>onDoc(id,d));
   /* ---------- ligação com o projeto: pista, estacas, bloco e solução ---------- */
   function srcOf(k){if(k==='B23')return {Data,R,LANES,PANOS,ODO};const B=window.__SRC_B4;return B?{Data:B.Data,R:B.R,LANES:B.LANES,PANOS:B.PANOS,ODO:B.ODO}:null}
   const est=m=>{const km=Math.floor(m/1000+1e-9);const o=Math.round((m-km*1000)*100)/100,ip=Math.floor(o+1e-9),fp=o-ip;return km+'+'+String(ip).padStart(3,'0')+(fp>1e-6?fp.toFixed(2).slice(1).replace(/0+$/,''):'')};
   const grpOf=(fx,fam)=>{if(fam==='DR'||fam==='DP')return 'DRN';const f=norm(fx);if(/^(fx|faixa) ?1$/.test(f))return 'F1';if(/^(fx|faixa) ?(2|3)$/.test(f))return 'F23';if(/acost/.test(f))return 'AC';return null};
-  const projFam=p=>p.info.fam;
+  // código de projeto do pano (sigla do unifilar no Bloco 04; família no R08) e família de pavimento para comparar
+  const projCode=(p,k)=>k==='B4'&&p.src&&p.src.sigla?p.src.sigla:p.code;
+  const famPav=c=>/^FF/.test(c)?'FF':/^FE/.test(c)?'FE':/^FS/.test(c)?'FS':c==='G'?'G':/^REC/.test(c)?'REC':/^RP/.test(c)?'RP':null;
+  // Regras de 22/11/2026:
+  // · estaca com "+" além do fim do km no projeto: o fim do km de campo é o mesmo ponto que o 000 do km seguinte (equivalência); o comprimento e as quantidades da planilha não mudam;
+  // · Bloco 04: lançamentos até 21/11/2026 e km até 250 usam o estaqueamento anterior (R03 REV1); os demais, o estaqueamento da base carregada;
+  // · extra-projeto (TRO, ramos/alças, marginais) não entra no status do projeto; retrabalho entra no projeto e é contado à parte;
+  // · espessura de projeto por solução: FS 3 cm, FF 6 cm, FE 10 cm (diferença = RMP; redução e troca por solução de menor intervenção = alerta especial).
+  const ESP_PAD={FS:3,FF:6,FE:10};
+  const PESO={FS:1,FF:2,G:2,FE:3,REC:4,RP:4};  // intensidade da intervenção (para "substituição por solução de menor intervenção")
+  const B4_CORTE='2026-11-22',B4_KM_NOVO=250;
+  function posOf(k,m,data,src){const km=Math.floor(m/1000+1e-9),o=Math.round((m-km*1000)*100)/100;
+    const P=window.PROJECT_DATA_B4&&window.PROJECT_DATA_B4.src,rv=P&&P.revisao&&P.revisao.id||'';
+    if(k==='B4'&&data&&data<B4_CORTE&&km<=B4_KM_NOVO&&!/R03/.test(rv)){const T=P&&P.estaq_anterior;
+      if(!T)return {err:'a base B4 carregada não traz a tabela do estaqueamento anterior (R03 REV1), necessária para lançamentos até 21/11/2026: envie a base B4 atualizada.'};
+      const e=T.km[String(km)];if(!e)return {err:`km ${km} não existe no estaqueamento anterior (R03 REV1).`};const [f0,h0,l0]=e,end=l0+20;
+      if(o<f0)return {err:`no estaqueamento anterior o km ${km} começava em ${km}+${String(f0).padStart(3,'0')}.`};
+      const s=h0+(Math.min(o,end)-f0);if(s<src.ODO[0]||s>src.ODO[src.ODO.length-1]+20)return {err:'fora do trecho da base.'};
+      return {s,ant:true,over:o>end?end:null,km}}
+    const r=src.Data.parseKm(est(m));if(!r.err)return {s:r.s,km};
+    if(/vai até/.test(r.err)){const n=src.Data.parseKm(String(km+1));if(!n.err)return {s:n.s,over:true,km}}
+    return {err:r.err}}
   function resolve(){if(RES)return RES;const out={B23:[],B4:[],all:[]};
     for(const k of ['B23','B4']){const S=SEG[k];if(!S)continue;const src=srcOf(k);
-      for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:''});
-        const err=r.iss.some(x=>x.sev==='erro');
-        const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.pontual?'item pontual de drenagem':r.iss.some(x=>x.cod==='sem_pista')?'ramo (fora do unifilar)':r.fam==='SAIDA'?'saída de dreno':'';
-        if(!src){r.iss.push({sev:'erro',cod:'base',msg:'Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.'})}
+      for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:'',rmp:[],kmRef:null,proj:null,notas:NOTAS[s.id]||[]});
+        const add=(sev,cod,msg)=>r.iss.push({sev,cod,msg});
+        // classificação: extra-projeto (TRO, ramos/alças, marginais) e retrabalho
+        const txt=norm([r.serial,r.obs,r.faixa,r.local].join(' '));
+        r.extra=/\btro\b/.test(txt)?'TRO':/\bramo\b|\balca\b|\bmarginal\b/.test(txt)?(/marginal/.test(txt)?'Marginal':'Ramo/alça'):null;
+        r.retrab=/retrabalho/i.test(r.tipo||'');
+        r.cls=r.extra?'extra':r.retrab?'retrabalho':'projeto';
+        if(r.extra)add('info','extra',`Execução extra-projeto (${r.extra}): fora do quantitativo e do status do projeto.`);
+        const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.extra?'extra-projeto ('+r.extra+')':r.pontual?'item pontual de drenagem':r.fam==='SAIDA'?'saída de dreno':'';
+        if(!src){add('erro','base','Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.')}
         else if(r.kmIni!=null&&r.kmFim!=null&&r.fam!=='SH'){
-          const A=src.Data.parseKm(est(r.kmIni)),B=src.Data.parseKm(est(r.kmFim));
-          if(A.err||B.err)r.iss.push({sev:'erro',cod:'estaca',msg:`Sem estaca correspondente na base ${k==='B4'?'da BR-373 B4':'da BR-277'}: ${est(A.err?r.kmIni:r.kmFim)} (${A.err||B.err})`});
-          else{r.a=Math.min(A.s,B.s);r.b=Math.max(A.s,B.s);const i=Math.max(0,Math.min(src.R.length-1,Math.floor((r.a-src.ODO[0])/20)));const bl=src.R[i][4];
-            if(k==='B23'){r.blk='B'+bl;if(r.bloco!=null&&String(r.bloco)!==String(bl))r.iss.push({sev:'atencao',cod:'bloco',msg:`Coluna Bloco = "${r.bloco}", mas a estaca ${est(r.kmIni)} fica no Bloco ${bl}.`})}
-            else if(bl!==4)r.iss.push({sev:'atencao',cod:'bloco',msg:`Estaca fora do Bloco 04 na base (bloco ${bl}).`});
-            if(r.bloco!=null&&k==='B4'&&String(r.bloco)!=='4')r.iss.push({sev:'atencao',cod:'bloco',msg:`Coluna Bloco = "${r.bloco}" na aba do Bloco 04.`});
+          const A=posOf(k,r.kmIni,r.data,src),B=posOf(k,r.kmFim,r.data,src);
+          if(A.err||B.err)add('erro','estaca',`Sem estaca correspondente${k==='B4'?(A.ant||B.ant?' no estaqueamento anterior (R03 REV1)':' na base da BR-373 B4'):' na base da BR-277'}: ${est(A.err?r.kmIni:r.kmFim)} (${A.err||B.err})`);
+          else{let a=Math.min(A.s,B.s),b=Math.max(A.s,B.s);const L=Math.abs(r.kmFim-r.kmIni);
+            if(A.ant||B.ant)add('info','estaq_ant','Localizado pelo estaqueamento anterior (R03 REV1): lançamento até 21/11/2026 e km até 250.');
+            if(A.over||B.over){const iniOver=r.kmIni<r.kmFim?A.over:B.over,fimOver=r.kmIni<r.kmFim?B.over:A.over;
+              if((iniOver&&fimOver)||b-a<0.5){a=b-L} // os dois pontos no fim do km de projeto ou depois dele: os últimos L metros antes do marco
+              const o=A.over?r.kmIni:r.kmFim,P2=A.over?A.s:B.s;
+              add('info','equivalencia',`Equivalência de fim de km: ${est(o)} = ${src.Data.nameAt(P2)} (fim do km ${Math.floor(o/1000)} = início do km ${Math.floor(o/1000)+1}). Comprimento e quantidades da planilha mantidos.`)}
+            r.a=a;r.b=b;const i=Math.max(0,Math.min(src.R.length-1,Math.floor((a-src.ODO[0])/20)));const bl=src.R[i][4];r.kmRef=src.R[i][5];
+            if(k==='B23'){r.blk='B'+bl;if(r.bloco!=null&&String(r.bloco)!==String(bl))add('atencao','bloco',`Coluna Bloco = "${r.bloco}", mas a estaca ${est(r.kmIni)} fica no Bloco ${bl}.`)}
+            else if(bl!==4)add('atencao','bloco',`Estaca fora do Bloco 04 na base (bloco ${bl}).`);
+            if(r.bloco!=null&&k==='B4'&&String(r.bloco)!=='4')add('atencao','bloco',`Coluna Bloco = "${r.bloco}" na aba do Bloco 04.`);
             const grp=grpOf(r.faixa,r.fam);
-            if(!semStatus&&!grp)r.iss.push({sev:'erro',cod:'faixa',msg:`Faixa "${r.faixa}" sem pista correspondente no projeto.`});
-            if(grp&&!semStatus&&!r.iss.some(x=>x.sev==='erro')){
+            if(!semStatus&&!grp)add('erro','faixa',`Faixa "${r.faixa}" sem pista correspondente no projeto.`);
+            if(grp&&!r.iss.some(x=>x.sev==='erro')){
               r.L=grp==='DRN'?(r.side==='C'?6:7):src.LANES.findIndex(l=>l.grp===grp&&l.side===r.side);
-              if(r.L<0)r.iss.push({sev:'erro',cod:'faixa',msg:'Sentido/faixa sem pista correspondente.'});
-              else if(r.b-r.a<0.5)r.iss.push({sev:'erro',cod:'km_igual',msg:'Trecho sem extensão nas estacas da base.'});
-              else{r.ap=true;let same=0,other=0;const fams=new Set();
-                for(const p of src.PANOS){if(p.L!==r.L)continue;const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,ov=Math.min(r.b,pb)-Math.max(r.a,pa);if(ov<=0)continue;const f=projFam(p);if(f===r.fam)same+=ov;else{other+=ov;fams.add(p.code)}}
-                const len=r.b-r.a;
-                if(same+other<0.5)r.iss.push({sev:'atencao',cod:'sem_projeto',msg:'O projeto não tem solução nesta faixa no trecho executado.'});
-                else if(same<len*0.5)r.iss.push({sev:'atencao',cod:'solucao_dif',msg:`Executado ${r.fam}; o projeto prevê ${[...fams].join(', ')} em ${fmt(other/len*100,0)}% do trecho.`})}}}}
+              if(r.L<0)add('erro','faixa','Sentido/faixa sem pista correspondente.');
+              else if(b-a<0.5&&!semStatus)add('erro','km_igual','Trecho sem extensão nas estacas da base.');
+              else{const ov=new Map();for(const p of src.PANOS){if(p.L!==r.L)continue;const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,x=Math.min(b,pb)-Math.max(a,pa);if(x<=0)continue;const c=projCode(p,k);ov.set(c,(ov.get(c)||0)+x)}
+                const len=Math.max(b-a,1e-6),tot=[...ov.values()].reduce((x,y)=>x+y,0);const dom=[...ov].sort((x,y)=>y[1]-x[1])[0];
+                r.proj=dom?{code:dom[0],pct:dom[1]/len,list:[...ov.keys()]}:null;
+                if(!semStatus){r.ap=true;
+                  if(tot<0.5)add('atencao','sem_projeto','O projeto não tem solução nesta faixa no trecho executado (verificar se é extra-projeto).');
+                  else if(['FF','FE','FS','GAP'].includes(r.fam)){const pc=famPav(dom[0]),ex=r.fam==='GAP'?'G':r.fam;
+                    if(pc&&pc!==ex){const less=(PESO[ex]||0)<(PESO[pc]||0);r.rmp.push(less?'troca_menor':'troca');
+                      add(less?'alerta':'atencao','troca',less?`ALERTA – substituição por solução de menor intervenção: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}.`:`Alteração da solução de projeto: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}. Necessita RMP.`)}}
+                  else if((r.fam==='DR'||r.fam==='DP')&&!ov.has(r.fam))add('atencao','solucao_dif',`Executado ${r.fam}; o projeto prevê ${[...ov.keys()].join(', ')} nesta posição.`)}}}}}
+        // espessura executada × espessura de projeto da solução executada
+        if(ESP_PAD[r.fam]&&r.esp!=null&&r.esp>0){const e=Math.round(r.esp*1000)/10,pd=ESP_PAD[r.fam];
+          if(e>pd+0.05){r.rmp.push('aumento');add('atencao','esp_aumento',`Espessura ${fmt(e,1)} cm maior que a de projeto de ${r.fam} (${pd} cm): aumento de espessura, necessita RMP.`)}
+          else if(e<pd-0.05){r.rmp.push('reducao');add('alerta','esp_reducao',`ALERTA – redução de espessura: ${fmt(e,1)} cm, abaixo dos ${pd} cm de projeto de ${r.fam}. Necessita RMP.`)}}
         if(!r.ap)r.motivo=semStatus||(r.iss.some(x=>x.sev==='erro')?'pendência de erro':'');
         out[k].push(r);out.all.push(r)}}
     // mesma pista com trechos sobrepostos em datas diferentes (possível reexecução ou lançamento duplicado)
     const byL=new Map();for(const r of out.all){if(!r.ap)continue;const key=r.k+'|'+r.L;(byL.get(key)||byL.set(key,[]).get(key)).push(r)}
     for(const arr of byL.values()){arr.sort((x,y)=>x.a-y.a);for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length&&arr[j].a<arr[i].b-1;j++){const x=arr[i],y=arr[j];if(Math.min(x.b,y.b)-y.a<=1)continue;
       if(x.fam===y.fam&&x.data===y.data&&x.equipe===y.equipe)continue;
-      x.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${y.lin.join(', ')} (${brD(y.data)}, ${y.fam}).`});
-      y.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${x.lin.join(', ')} (${brD(x.data)}, ${x.fam}).`})}}
+      const rt=x.retrab||y.retrab?' (retrabalho)':'';
+      x.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${y.lin.join(', ')} (${brD(y.data)}, ${y.fam})${rt}.`});
+      y.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${x.lin.join(', ')} (${brD(x.data)}, ${x.fam})${rt}.`})}}
     RES=out;return out}
   // registros de execução no formato da página Relatórios (só os segmentos aplicados)
-  function execRecs(rod){const R0=resolve()[rod==='B4'?'B4':'B23'];return R0.filter(r=>r.ap).map(r=>({L:r.L,a:r.a,b:r.b,st:'exec',dateExec:r.data,dateProg:null,
+  function execRecs(rod){const R0=resolve()[rod==='B4'?'B4':'B23'];return R0.filter(r=>r.ap&&r.cls!=='extra').map(r=>({L:r.L,a:r.a,b:r.b,st:'exec',dateExec:r.data,dateProg:null,
     tons:r.q&&r.q.t!=null?r.q.t:null,esp:['FF','FE','FS','GAP'].includes(r.fam)&&r.esp>0?Math.round(r.esp*1000)/10:null,exc:0,obs:'',src:'producao',tag:null}))}
   function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const o=[];for(const x of iv){const l=o[o.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else o.push([x[0],x[1]])}return o}
   const clip=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
@@ -4276,9 +4333,14 @@ const PROD=(function(){
 
   /* ---------- página ---------- */
   const F={blk:'ALL',sev:'pend',q:'',lim:150};
-  function blockSum(list){const o={n:list.length,ap:0,len:{},t:0,un:0,err:0,att:0,d0:null,d1:null};
-    for(const r of list){if(r.ap){o.ap++;o.len[r.fam]=(o.len[r.fam]||0)+(r.b-r.a);if(r.q&&r.q.t)o.t+=r.q.t}if(r.fam==='SAIDA'&&r.q&&r.q.un)o.un+=r.q.un;
-      if(r.iss.some(x=>x.sev==='erro'))o.err++;else if(r.iss.some(x=>x.sev==='atencao'))o.att++;if(r.data){if(!o.d0||r.data<o.d0)o.d0=r.data;if(!o.d1||r.data>o.d1)o.d1=r.data}}return o}
+  const CLS={projeto:'Projeto',retrabalho:'Retrabalho',extra:'Extra-projeto'};
+  const RMPN={aumento:'Aumento de espessura',reducao:'Redução de espessura',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
+  const tOf=r=>r.q&&r.q.t?r.q.t:0;
+  const hasSev=(r,s)=>r.iss.some(x=>x.sev===s);
+  function blockSum(list){const o={n:list.length,ap:0,len:{},t:{projeto:0,retrabalho:0,extra:0},un:0,err:0,att:0,al:0,rmp:0,d0:null,d1:null};
+    for(const r of list){if(r.ap)o.ap++;if(r.ap&&r.a!=null){o.len[r.fam]=(o.len[r.fam]||0)+(r.b-r.a)}o.t[r.cls]+=tOf(r);if(r.fam==='SAIDA'&&r.q&&r.q.un)o.un+=r.q.un;
+      if(hasSev(r,'erro'))o.err++;else if(hasSev(r,'alerta'))o.al++;else if(hasSev(r,'atencao'))o.att++;if(r.rmp.length)o.rmp++;
+      if(r.data){if(!o.d0||r.data<o.d0)o.d0=r.data;if(!o.d1||r.data>o.d1)o.d1=r.data}}return o}
   function statusBox(){const st=W.dir||W.state!=='off'?W:null;const sh=STAT||{};
     const chk=Math.max(W.checkedAt||0,sh.at||0);const state=st?W.state:(sh.state||'off');const msg=st?W.msg:(sh.msg||'');
     const lab={off:'Monitoramento automático desligado neste aparelho',ok:W.dir||!st?'Monitorando':'Importação concluída',wait:'Aguardando gravação',import:'Importando',erro:'Atenção',perm:'Monitoramento pausado'}[state]||state;
@@ -4288,43 +4350,116 @@ const PROD=(function(){
       <div class="pd-kv"><div><span>Última verificação da planilha</span><b>${dt(chk)}</b><small>${esc(src)}${sh.arq&&!st?' · '+esc(sh.arq):''}</small></div>
       <div><span>Última atualização dos dados</span><b>${dt(META&&META.dadosAt)}</b><small>${META?`importação ${esc(META.origem||'')} em ${dt(META.at)}`:'nenhuma importação'}</small></div>
       <div><span>Arquivo importado</span><b>${META?esc(META.arq):'—'}</b><small>${META&&META.mod?'salvo em '+dt(META.mod):''}</small></div></div>`}
+  const rodOf=r=>r.k==='B4'?'BR-373/PR':'BR-277/PR';
+  const blkOf=r=>r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':r.blk==='B3'?'Bloco 03':'B2/B3 (sem estaca)';
+  const kmOf=r=>r.kmRef!=null?r.kmRef:r.kmIni!=null?Math.floor(r.kmIni/1000):null;
+  const posTxt=r=>{const S=srcOf(r.k);return r.a!=null&&S?S.Data.nameAt(r.a)+' → '+S.Data.nameAt(r.b):''};
+  const notaTxt=r=>(r.notas||[]).map(n=>`${brD(new Date(n.at).toISOString().slice(0,10))} ${n.motivo?n.motivo+': ':''}${n.txt||''}`).join(' | ');
+  const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
+  function rowsHtml(list){const SRC=k=>srcOf(k);return list.slice(0,F.lim).map(r=>{const sv=hasSev(r,'erro')?'erro':hasSev(r,'alerta')?'alerta':hasSev(r,'atencao')?'atencao':'';
+      const tags=[r.cls!=='projeto'?`<span class="pd-tag ${r.cls}">${CLS[r.cls]}</span>`:'',...r.rmp.map(x=>`<span class="pd-tag rmp${/menor|reducao/.test(x)?' al':''}">RMP · ${esc(RMPN[x])}</span>`)].join('');
+      return `<tr class="${sv}"><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td class="n">${r.lin.join(', ')}</td><td>${brD(r.data)}</td><td>${r.side==='C'?'Cresc.':r.side==='D'?'Decr.':'—'} · ${esc(r.faixa||'—')}</td>
+        <td>${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):'—'}${r.a!=null&&r.iss.some(x=>x.cod==='equivalencia'||x.cod==='estaq_ant')?`<small class="pd-pos">projeto: ${esc(posTxt(r))}</small>`:''}</td><td>${esc(r.fam||'?')}${r.esp?` · ${fmt(r.esp*100,1)} cm`:''}</td><td class="n">${r.q?Object.entries(r.q).map(([u,v])=>fmt(v,u==='un'?0:1)+' '+u.replace('m3','m³').replace('m2','m²')).join(' · '):''}</td>
+        <td>${r.ap?'<span class="pd-ok">aplicado</span>':`<span class="pd-no">${esc(r.motivo||'não aplicado')}</span>`}${tags}</td><td class="pd-is">${r.iss.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}${(r.notas||[]).map(n=>`<span class="pd-nota">✎ ${esc(dt(n.at))} · ${esc(n.por||'')}: ${esc((n.motivo?n.motivo+' — ':'')+(n.txt||''))}</span>`).join('')}
+        ${canNote()?`<button type="button" class="pd-mini" data-nota="${esc(r.id)}">Motivo / observação</button>`:''}</td></tr>`}).join('')}
+  const canNote=()=>can('producao','create');
   function render(){const root=$('pdRoot');if(!root||Router.cur()!=='producao')return;const R0=resolve();
     const blks=[['B2','Bloco 02 (BR-277)',R0.B23.filter(r=>r.blk==='B2')],['B3','Bloco 03 (BR-277)',R0.B23.filter(r=>r.blk==='B3')],['B4','Bloco 04 (BR-373)',R0.B4]];
     const semBl=R0.B23.filter(r=>!r.blk);
     $('pdStatus').innerHTML=statusBox();
-    const fsBtns=canImport()?(fsOk()?(W.dir?(W.state==='perm'?`<button type="button" class="pd-b pri" id="pdResume">Retomar monitoramento</button>`:`<button type="button" class="pd-b" id="pdCheck"${W.busy?' disabled':''}>Verificar agora</button>`)+`<button type="button" class="pd-b" id="pdUnlink">Parar monitoramento</button>`
+    $('pdActs').innerHTML=canImport()?(fsOk()?(W.dir?(W.state==='perm'?`<button type="button" class="pd-b pri" id="pdResume">Retomar monitoramento</button>`:`<button type="button" class="pd-b" id="pdCheck"${W.busy?' disabled':''}>Verificar agora</button>`)+`<button type="button" class="pd-b" id="pdUnlink">Parar monitoramento</button>`
         :`<button type="button" class="pd-b pri" id="pdLink">Vincular pasta da planilha (monitorar)</button>`):`<span class="pd-note">Este navegador não permite monitorar a pasta. Use o Chrome ou o Edge no computador com a pasta sincronizada, ou importe o arquivo manualmente.</span>`)
         +`<label class="pd-b"><input type="file" id="pdFile" accept=".xlsb,.xlsx" hidden>Importar arquivo manualmente</label>`:'';
-    $('pdActs').innerHTML=fsBtns;
-    $('pdBlocks').innerHTML=blks.map(([b,t,l])=>{const s=blockSum(l);const lens=Object.entries(s.len).map(([f,v])=>`<span>${esc(FAMN[f]||f)}: <b>${fmt(v/1000,3)} km</b></span>`).join('');
-      return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${s.n}</b><span>segmentos</span></div><div><b>${s.ap}</b><span>no status de execução</span></div><div><b class="${s.err?'bad':''}">${s.err}</b><span>com erro</span></div><div><b class="${s.att?'warn':''}">${s.att}</b><span>com atenção</span></div></div>
-        <div class="pd-l">${lens||'<span>sem trechos aplicados</span>'}${s.t?`<span>CBUQ/GAP: <b>${fmt(s.t,1)} t</b></span>`:''}${s.un?`<span>Saídas de dreno: <b>${fmt(s.un)} un</b></span>`:''}</div>
+    $('pdBlocks').innerHTML=blks.map(([b,t,l])=>{const s=blockSum(l);const lens=Object.entries(s.len).map(([f,v])=>`<span>${esc(FAMN[f]||f)}: <b>${fmt(v/1000,3)} km</b></span>`).join('');const tt=s.t.projeto+s.t.retrabalho+s.t.extra;
+      return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${s.n}</b><span>segmentos</span></div><div><b>${s.ap}</b><span>no status do projeto</span></div><div><b class="${s.err?'bad':''}">${s.err}</b><span>com erro</span></div><div><b class="${s.al?'bad':''}">${s.al}</b><span>alertas especiais</span></div><div><b class="${s.rmp?'warn':''}">${s.rmp}</b><span>precisam de RMP</span></div><div><b class="${s.att?'warn':''}">${s.att}</b><span>com atenção</span></div></div>
+        ${tt?`<div class="pd-tt"><span>CBUQ/GAP do projeto <b>${fmt(s.t.projeto+s.t.retrabalho,1)} t</b>${s.t.retrabalho?` (retrabalho ${fmt(s.t.retrabalho,1)} t)`:''}</span><span>Extra-projeto <b>${fmt(s.t.extra,1)} t</b></span><span>Total <b>${fmt(tt,1)} t</b></span></div>`:''}
+        <div class="pd-l">${lens||'<span>sem trechos aplicados</span>'}${s.un?`<span>Saídas de dreno: <b>${fmt(s.un)} un</b></span>`:''}</div>
         <small>${s.d0?`Lançamentos de ${brD(s.d0)} a ${brD(s.d1)}`:'Sem lançamentos'}</small></div>`}).join('')+(semBl.length?`<div class="pd-blk"><h3>BR-277 sem bloco identificado</h3><div class="pd-n"><div><b>${semBl.length}</b><span>segmentos</span></div></div><small>Estacas sem correspondência na base: veja as pendências.</small></div>`:'');
-    // pendências e segmentos
     const sheetIss=[];for(const k of ['B23','B4']){const S=SEG[k];if(S&&S.sheetIssues)for(const x of S.sheetIssues)sheetIss.push({k,...x})}
     const all=R0.all.filter(r=>F.blk==='ALL'||(F.blk==='B4'?r.k==='B4':r.blk===F.blk));
     const qs=norm(F.q).split(' ').filter(Boolean);
-    const list=all.filter(r=>(F.sev==='all'||(F.sev==='pend'?r.iss.some(x=>x.sev!=='info'):F.sev==='erro'?r.iss.some(x=>x.sev==='erro'):F.sev==='ap'?r.ap:!r.ap))&&
-      (!qs.length||qs.every(w=>norm([r.lin.join(' '),r.data,brD(r.data),r.faixa,r.fam,r.equipe,r.serial,est(r.kmIni||0),r.iss.map(x=>x.msg).join(' ')].join(' ')).includes(w))));
+    const pass=r=>F.sev==='all'||(F.sev==='pend'?r.iss.some(x=>x.sev==='erro'||x.sev==='alerta'||x.sev==='atencao'):F.sev==='erro'?hasSev(r,'erro'):F.sev==='alerta'?hasSev(r,'alerta'):F.sev==='rmp'?r.rmp.length>0:F.sev==='extra'?r.cls==='extra':F.sev==='retrabalho'?r.cls==='retrabalho':F.sev==='ap'?r.ap:!r.ap);
+    const list=all.filter(r=>pass(r)&&(!qs.length||qs.every(w=>norm([r.lin.join(' '),r.data,brD(r.data),r.faixa,r.fam,r.equipe,r.serial,r.kmIni!=null?est(r.kmIni):'',r.iss.map(x=>x.msg).join(' '),CLS[r.cls]].join(' ')).includes(w))));
     $('pdCount').textContent=`${list.length} de ${all.length} segmentos`;
     $('pdSheet').innerHTML=sheetIss.length?`<details class="pd-sh"><summary>${sheetIss.length} linha(s) da planilha fora do padrão de lançamento (não importadas)</summary><ul>${sheetIss.map(x=>`<li>${x.k==='B4'?'Bloco 04':'B2/B3'} · linha ${(x.linhas||[]).join(', ')}: ${esc(x.msg)}</li>`).join('')}</ul></details>`:'';
-    const rows=list.slice(0,F.lim).map(r=>{const sv=r.iss.some(x=>x.sev==='erro')?'erro':r.iss.some(x=>x.sev==='atencao')?'atencao':'';const SRC=srcOf(r.k);
-      const e0=r.a!=null&&SRC?SRC.Data.nameAt?SRC.Data.nameAt(r.a):est(r.kmIni):r.kmIni!=null?est(r.kmIni):'—';
-      return `<tr class="${sv}"><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td class="n">${r.lin.join(', ')}</td><td>${brD(r.data)}</td><td>${r.side==='C'?'Cresc.':r.side==='D'?'Decr.':'—'} · ${esc(r.faixa||'—')}</td>
-        <td>${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):'—'}</td><td>${esc(r.fam||'?')}</td><td class="n">${r.q?Object.entries(r.q).map(([u,v])=>fmt(v,u==='un'?0:1)+' '+u.replace('m3','m³').replace('m2','m²')).join(' · '):''}</td>
-        <td>${r.ap?'<span class="pd-ok">aplicado</span>':`<span class="pd-no">${esc(r.motivo||'não aplicado')}</span>`}</td><td class="pd-is">${r.iss.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</td></tr>`}).join('');
-    $('pdList').innerHTML=list.length?`<table class="pd-t"><thead><tr><th>Bloco</th><th>Linha(s)</th><th>Data</th><th>Sentido · faixa</th><th>KM (planilha)</th><th>Solução</th><th>Quantidades</th><th>Status</th><th>Pendências</th></tr></thead><tbody>${rows}</tbody></table>${list.length>F.lim?`<button type="button" class="pd-b" id="pdMore">Mostrar mais (${list.length-F.lim} restantes)</button>`:''}`:'<p class="pd-note">Nenhum segmento neste filtro.</p>';
-    // histórico de importações e removidos
+    $('pdList').innerHTML=list.length?`<table class="pd-t"><thead><tr><th>Bloco</th><th>Linha(s)</th><th>Data</th><th>Sentido · faixa</th><th>Estacas (planilha)</th><th>Solução · esp.</th><th>Quantidades</th><th>Status · classificação</th><th>Pendências e motivos</th></tr></thead><tbody>${rowsHtml(list)}</tbody></table>${list.length>F.lim?`<button type="button" class="pd-b" id="pdMore">Mostrar mais (${list.length-F.lim} restantes)</button>`:''}`:'<p class="pd-note">Nenhum segmento neste filtro.</p>';
     const H=(META&&META.hist)||[];
     $('pdHist').innerHTML=H.length?`<table class="pd-t sm"><thead><tr><th>Importado em</th><th>Arquivo (salvo em)</th><th>Origem</th><th>B2/B3</th><th>B4</th><th>Observação</th></tr></thead><tbody>${H.map(h=>{const c=x=>!x?'—':x.mantido?'mantido (aba não lida)':`${x.total} seg. · +${x.novos} novos · ${x.alt} alterados · ${x.rem} removidos`;
       return `<tr><td>${dt(h.at)}</td><td>${esc(h.arq)} (${dt(h.mod)})</td><td>${esc(h.origem)}${h.por?' · '+esc(h.por):''}</td><td>${c(h.n.B23)}</td><td>${c(h.n.B4)}</td><td>${h.erros&&h.erros.length?`<span class="pd-erro">${esc(h.erros.join(' · '))}</span>`:''}</td></tr>`}).join('')}</tbody></table>`:'<p class="pd-note">Nenhuma importação ainda.</p>';
     const RM=(META&&META.removidos)||[];
     $('pdRem').innerHTML=RM.length?`<details class="pd-sh"><summary>${RM.length} segmento(s) que saíram da planilha em importações anteriores (guardados para consulta)</summary><table class="pd-t sm"><thead><tr><th>Removido em</th><th>Aba</th><th>Linha(s)</th><th>Data</th><th>Sentido · faixa</th><th>KM</th><th>Solução</th></tr></thead><tbody>${RM.slice(0,200).map(r=>`<tr><td>${dt(r.rem)}</td><td>${r.aba==='B4'?'B4':'B2/B3'}</td><td>${(r.lin||[]).join(', ')}</td><td>${brD(r.data)}</td><td>${r.side||''} · ${esc(r.faixa||'')}</td><td>${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):'—'}</td><td>${esc(r.fam||'')}</td></tr>`).join('')}</tbody></table></details>`:'';
+    renderRep();
     const b=id=>$(id);if(b('pdLink'))b('pdLink').onclick=linkDir;if(b('pdResume'))b('pdResume').onclick=resumeDir;if(b('pdCheck'))b('pdCheck').onclick=()=>check(true);if(b('pdUnlink'))b('pdUnlink').onclick=unlink;
     if(b('pdFile'))b('pdFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';importManual(f)};if(b('pdMore'))b('pdMore').onclick=()=>{F.lim+=300;render()}}
+
+  /* ---------- motivo / observação de um segmento (histórico: nada é apagado) ---------- */
+  const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Outra necessidade técnica'];
+  function notaDlg(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;let d=$('pdNotaDlg');if(!d){d=document.createElement('div');d.id='pdNotaDlg';d.className='pd-dlg';document.body.appendChild(d)}
+    d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">Motivo / observação</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
+      ${(r.notas||[]).length?`<ul class="pd-nl">${r.notas.map(n=>`<li><b>${esc(dt(n.at))}</b> · ${esc(n.por||'')}: ${esc((n.motivo?n.motivo+' — ':'')+(n.txt||''))}</li>`).join('')}</ul>`:''}
+      <div class="fld"><label for="pdNM">Motivo</label><select id="pdNM"><option value="">—</option>${MOTIVOS.map(m=>`<option>${m}</option>`).join('')}</select></div>
+      <div class="fld"><label for="pdNX">Observação</label><textarea id="pdNX" rows="3" maxlength="600"></textarea></div><p class="pd-note" id="pdNE"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="pdNC">Cancelar</button><button type="button" class="pd-b pri" id="pdNS">Registrar</button></div></div>`;
+    d.hidden=false;$('pdNC').onclick=()=>d.hidden=true;d.onclick=e=>{if(e.target===d)d.hidden=true};
+    $('pdNS').onclick=async()=>{const m=$('pdNM').value,t=$('pdNX').value.trim();if(!m&&!t){$('pdNE').textContent='Escolha um motivo ou escreva a observação.';return}
+      const n={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',motivo:m,txt:t};const all=Object.assign({},NOTAS);all[id]=(all[id]||[]).concat(n);
+      try{if(!window.ProdDB||!window.ProdDB.saveNotas)throw new Error('sem conexão com o servidor do app');await window.ProdDB.saveNotas(all);NOTAS=all;RES=null;d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível registrar: '+(e.message||e)}}}
+
+  /* ---------- relatórios: CBUQ por km, histórico de execuções e RMP (filtros, campos, Excel e PDF) ---------- */
+  const RF=Object.assign({tipo:'km',de:'',ate:'',blk:'ALL',eq:'ALL',fam:'ALL',cls:'ALL',cols:{}},store.get('pdRep',{}));
+  const COLS={km:[['rod','Rodovia'],['blk','Bloco'],['km','KM'],['ext','Extensão executada (m)'],['sol','Soluções'],['esp','Espessuras (cm)'],['tProj','CBUQ projeto (t)'],['tRet','CBUQ retrabalho (t)'],['tExt','CBUQ extra-projeto (t)'],['tTot','CBUQ total (t)'],['m3','Fresagem (m³)'],['m2','Pintura (m²)'],['dr','Dreno (m)'],['un','Saídas (un)'],['nRmp','Segmentos com RMP']],
+    hist:[['data','Data'],['rod','Rodovia'],['blk','Bloco'],['km','KM'],['ini','Estaca inicial'],['fim','Estaca final'],['pos','Posição no projeto'],['ext','Extensão (m)'],['sent','Sentido'],['fx','Faixa'],['sol','Solução executada'],['proj','Solução de projeto'],['esp','Espessura (cm)'],['larg','Largura (m)'],['t','CBUQ (t)'],['m3','Fresagem (m³)'],['m2','Pintura (m²)'],['cls','Classificação'],['prev','Previsto no projeto'],['rmp','RMP'],['motivo','Motivo / observação'],['eq','Equipe'],['lin','Linhas da planilha'],['pend','Pendências']]};
+  COLS.rmp=COLS.hist;
+  const TIPOS={km:'CBUQ executado por KM',hist:'Histórico de execuções',rmp:'Segmentos que necessitam de RMP'};
+  function repRows(){const R0=resolve().all.filter(r=>r.fam!=='SH'&&(!RF.de||r.data>=RF.de)&&(!RF.ate||r.data<=RF.ate)&&(RF.blk==='ALL'||(RF.blk==='B4'?r.k==='B4':r.blk===RF.blk))&&(RF.eq==='ALL'||r.equipe===RF.eq)&&(RF.fam==='ALL'||r.fam===RF.fam)&&(RF.cls==='ALL'||r.cls===RF.cls)&&(RF.tipo!=='rmp'||r.rmp.length));
+    const ext=r=>r.kmIni!=null&&r.kmFim!=null&&!r.pontual?Math.abs(r.kmFim-r.kmIni):0;
+    if(RF.tipo==='km'){const g=new Map();for(const r of R0){const key=rodOf(r)+'|'+blkOf(r)+'|'+kmOf(r);let o=g.get(key);if(!o){o={rod:rodOf(r),blk:blkOf(r),km:kmOf(r),ext:0,sol:{},esp:new Set(),tProj:0,tRet:0,tExt:0,tTot:0,m3:0,m2:0,dr:0,un:0,nRmp:0};g.set(key,o)}
+        const q=r.q||{};if(['FF','FE','FS','GAP'].includes(r.fam)){o.ext+=ext(r);o.sol[r.fam]=(o.sol[r.fam]||0)+ext(r);if(r.esp)o.esp.add(fmt(r.esp*100,1))}
+        const t=q.t||0;if(r.cls==='extra')o.tExt+=t;else if(r.cls==='retrabalho')o.tRet+=t;else o.tProj+=t;o.tTot+=t;o.m3+=q.m3||0;o.m2+=q.m2||0;if(r.fam==='DR'||r.fam==='DP')o.dr+=q.m||0;o.un+=q.un||0;if(r.rmp.length)o.nRmp++}
+      return [...g.values()].sort((a,b)=>a.rod.localeCompare(b.rod)||a.blk.localeCompare(b.blk)||(a.km??0)-(b.km??0)).map(o=>({...o,sol:Object.entries(o.sol).map(([f,v])=>`${f} ${fmt(v,0)} m`).join(', '),esp:[...o.esp].join(' / ')}))}
+    return R0.sort((a,b)=>(a.data||'').localeCompare(b.data||'')||a.k.localeCompare(b.k)||(a.kmIni||0)-(b.kmIni||0)).map(r=>({data:brD(r.data),rod:rodOf(r),blk:blkOf(r),km:kmOf(r),ini:r.kmIni!=null?est(r.kmIni):'',fim:r.kmFim!=null?est(r.kmFim):'',pos:posTxt(r),ext:ext(r),
+      sent:r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'',fx:r.faixa,sol:r.fam||'',proj:r.proj?r.proj.list.join(', '):'',esp:r.esp?Math.round(r.esp*1000)/10:'',larg:r.larg||'',t:r.q&&r.q.t||0,m3:r.q&&r.q.m3||0,m2:r.q&&r.q.m2||0,
+      cls:CLS[r.cls]+(r.extra?' ('+r.extra+')':''),prev:prevTxt(r),rmp:r.rmp.map(x=>RMPN[x]).join('; '),motivo:notaTxt(r),eq:r.equipe,lin:r.lin.join(', '),pend:r.iss.filter(x=>x.sev!=='info').map(x=>x.msg).join(' | ')}))}
+  const NUMC=new Set(['ext','tProj','tRet','tExt','tTot','m3','m2','dr','un','nRmp','t']);
+  const colsOn=()=>{const all=COLS[RF.tipo];const sel=RF.cols[RF.tipo];return sel&&sel.length?all.filter(c=>sel.includes(c[0])):all};
+  function totals(rows,cols){const t={};for(const [k] of cols)if(NUMC.has(k))t[k]=rows.reduce((s,r)=>s+(+r[k]||0),0);return t}
+  const cell=(k,v)=>NUMC.has(k)?fmt(v,k==='un'||k==='nRmp'?0:k==='ext'||k==='dr'?1:2):esc(v==null?'':v);
+  function renderRep(){const box=$('pdRep');if(!box)return;const R0=resolve().all;const eqs=[...new Set(R0.map(r=>r.equipe).filter(Boolean))].sort();
+    $('pdRT').value=RF.tipo;$('pdRDe').value=RF.de;$('pdRAte').value=RF.ate;$('pdRB').value=RF.blk;$('pdRC').value=RF.cls;
+    $('pdREq').innerHTML='<option value="ALL">Todas</option>'+eqs.map(e=>`<option${e===RF.eq?' selected':''}>${esc(e)}</option>`).join('');
+    const fams=[...new Set(R0.map(r=>r.fam).filter(f=>f&&f!=='SH'))];$('pdRF').innerHTML='<option value="ALL">Todos</option>'+fams.map(f=>`<option value="${f}"${f===RF.fam?' selected':''}>${esc(FAMN[f]||f)}</option>`).join('');
+    const all=COLS[RF.tipo],on=colsOn().map(c=>c[0]);
+    $('pdRCols').innerHTML=all.map(([k,t])=>`<label class="pd-ck"><input type="checkbox" data-col="${k}"${on.includes(k)?' checked':''}> ${esc(t)}</label>`).join('');
+    const rows=repRows(),cols=colsOn(),tot=totals(rows,cols);
+    $('pdRSum').textContent=`${TIPOS[RF.tipo]} · ${rows.length} linha(s)${RF.de||RF.ate?` · período ${RF.de?brD(RF.de):'início'} a ${RF.ate?brD(RF.ate):'hoje'}`:''}`;
+    $('pdRTab').innerHTML=rows.length?`<table class="pd-t sm"><thead><tr>${cols.map(c=>`<th>${esc(c[1])}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,300).map(r=>`<tr>${cols.map(([k])=>`<td${NUMC.has(k)?' class="n"':''}>${cell(k,r[k])}</td>`).join('')}</tr>`).join('')}</tbody>
+      <tfoot><tr>${cols.map(([k],i)=>`<td${NUMC.has(k)?' class="n"':''}><b>${i===0?'Total':k in tot?cell(k,tot[k]):''}</b></td>`).join('')}</tr></tfoot></table>${rows.length>300?`<p class="pd-note">Mostrando 300 de ${rows.length} linhas; a exportação leva todas.</p>`:''}`:'<p class="pd-note">Nenhum dado neste filtro.</p>'}
+  const saveRF=()=>store.set('pdRep',RF);
+  const loadS=(src,ok)=>new Promise((res,rej)=>{if(ok())return res();const el=document.createElement('script');el.src=src;el.onload=()=>res();el.onerror=()=>rej(new Error('não foi possível carregar a biblioteca (sem internet?)'));document.head.appendChild(el)});
+  function repMeta(){const rods=[...new Set(repRows().map(r=>r.rod))].join(' e ')||'—';return {rods,per:RF.de||RF.ate?`${RF.de?brD(RF.de):'início'} a ${RF.ate?brD(RF.ate):dt(Date.now()).slice(0,10)}`:'todo o período',
+    filt:[RF.blk!=='ALL'?'Bloco '+RF.blk.slice(1).padStart(2,'0'):'',RF.eq!=='ALL'?'Equipe '+RF.eq:'',RF.fam!=='ALL'?FAMN[RF.fam]||RF.fam:'',RF.cls!=='ALL'?CLS[RF.cls]:''].filter(Boolean).join(' · ')||'sem filtros',fonte:META?`${META.arq} (salvo em ${dt(META.mod)})`:''}}
+  async function exportXlsx(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX,rows=repRows(),cols=colsOn(),tot=totals(rows,cols),m=repMeta();
+      const aoa=[[TIPOS[RF.tipo]],['Rodovia',m.rods],['Período',m.per],['Filtros',m.filt],['Fonte',m.fonte],['Emitido em',dt(Date.now())],[],cols.map(c=>c[1]),...rows.map(r=>cols.map(([k])=>NUMC.has(k)?Math.round((+r[k]||0)*1000)/1000:(r[k]==null?'':r[k]))),cols.map(([k],i)=>i===0?'Total':k in tot?Math.round(tot[k]*1000)/1000:'')];
+      const ws=X.utils.aoa_to_sheet(aoa);ws['!cols']=cols.map(([k])=>({wch:NUMC.has(k)?14:k==='pend'||k==='motivo'||k==='pos'?50:18}));const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Relatório');
+      X.writeFile(wb,`${TIPOS[RF.tipo].replace(/[^\wÀ-ú ]+/g,'').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`)}catch(e){alertMsg('Excel: '+(e.message||e))}}
+  async function exportPdf(){try{await loadS('lib/jspdf.umd.min.js',()=>!!(window.jspdf&&window.jspdf.jsPDF));await loadS('lib/jspdf.plugin.autotable.min.js',()=>!!window.jspdf.jsPDF.API.autoTable);
+      const rows=repRows(),cols=colsOn(),tot=totals(rows,cols),m=repMeta();const doc=new window.jspdf.jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+      doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(TIPOS[RF.tipo],12,14);doc.setFont('helvetica','normal');doc.setFontSize(9);
+      doc.text(`Rodovia: ${m.rods}   ·   Período: ${m.per}   ·   ${m.filt}`,12,20);doc.text(`Fonte: ${m.fonte}   ·   Emitido em ${dt(Date.now())}`,12,25);
+      doc.autoTable({startY:29,head:[cols.map(c=>c[1])],body:rows.map(r=>cols.map(([k])=>NUMC.has(k)?fmt(r[k],k==='un'||k==='nRmp'?0:k==='ext'||k==='dr'?1:2):String(r[k]==null?'':r[k]))),
+        foot:[cols.map(([k],i)=>i===0?'Total':k in tot?fmt(tot[k],k==='un'||k==='nRmp'?0:k==='ext'||k==='dr'?1:2):'')],styles:{fontSize:cols.length>14?6.5:7.5,cellPadding:1.2,overflow:'linebreak',minCellWidth:14},columnStyles:Object.fromEntries(cols.map(([k],i)=>[i,{minCellWidth:k==='pend'||k==='motivo'?70:k==='pos'||k==='cls'||k==='rmp'||k==='sol'||k==='prev'?28:14}])),horizontalPageBreak:true,horizontalPageBreakRepeat:0,headStyles:{fillColor:[22,26,24]},footStyles:{fillColor:[230,233,231],textColor:20,fontStyle:'bold'},
+        margin:{left:8,right:8},didDrawPage:d=>{doc.setFontSize(8);doc.text(`Página ${doc.internal.getNumberOfPages()}`,289,205,{align:'right'})}});
+      doc.save(`${TIPOS[RF.tipo].replace(/[^\wÀ-ú ]+/g,'').replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`)}catch(e){alertMsg('PDF: '+(e.message||e))}}
+  const alertMsg=t=>{const el=$('pdRMsg');if(el)el.textContent=t};
   function init(){const root=$('pdRoot');if(!root)return;
-    $('pdBlk').onchange=e=>{F.blk=e.target.value;F.lim=150;render()};$('pdSev').onchange=e=>{F.sev=e.target.value;F.lim=150;render()};$('pdQ').oninput=e=>{F.q=e.target.value;F.lim=150;render()};render()}
-  Router.onInit('producao',init);on('page',p=>{if(p==='producao')render()});on('prod',()=>render());
+    $('pdBlk').onchange=e=>{F.blk=e.target.value;F.lim=150;render()};$('pdSev').onchange=e=>{F.sev=e.target.value;F.lim=150;render()};$('pdQ').oninput=e=>{F.q=e.target.value;F.lim=150;render()};
+    $('pdList').addEventListener('click',e=>{const b=e.target.closest('[data-nota]');if(b)notaDlg(b.dataset.nota)});
+    [['pdRT','tipo'],['pdRDe','de'],['pdRAte','ate'],['pdRB','blk'],['pdREq','eq'],['pdRF','fam'],['pdRC','cls']].forEach(([id,k])=>$(id).addEventListener('change',()=>{RF[k]=$(id).value;saveRF();renderRep()}));
+    $('pdRCols').addEventListener('change',e=>{const c=e.target.closest('[data-col]');if(!c)return;RF.cols[RF.tipo]=[...$('pdRCols').querySelectorAll('input:checked')].map(i=>i.dataset.col);saveRF();renderRep()});
+    $('pdRX').onclick=exportXlsx;$('pdRP').onclick=exportPdf;
+    if(/rep=km/.test(location.hash)||sessionStorage.getItem('pdRepKm')){sessionStorage.removeItem('pdRepKm');RF.tipo='km';saveRF()}
+    render()}
+  Router.onInit('producao',init);on('page',p=>{if(p!=='producao')return;try{if(sessionStorage.getItem('pdRepKm')){sessionStorage.removeItem('pdRepKm');RF.tipo='km';saveRF();setTimeout(()=>{const el=$('pdRep');el&&el.scrollIntoView({behavior:'smooth'})},200)}}catch(e){}render()});on('prod',()=>render());
   setTimeout(initWatch,1200);
   return {execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
 })();
@@ -4339,7 +4474,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 16:31';
+  const CUR_VER='22/11/2026 17:23';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

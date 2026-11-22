@@ -147,8 +147,8 @@ service cloud.firestore {
     // Produção executada (planilha "Acompanhamento de produção"): dados importados e status do monitoramento.
     // Lê quem usa o app; grava o administrador ou quem tem "Produção executada: criar".
     match /base/{id} {
-      allow read: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status'] && (isAdmin() || activeWithAccess());
-      allow write: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status'] && canDo('producao', 'create');
+      allow read: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status', 'producao_notas'] && (isAdmin() || activeWithAccess());
+      allow write: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status', 'producao_notas'] && canDo('producao', 'create');
     }
     match /base/b4 {
       allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')

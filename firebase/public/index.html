@@ -1261,6 +1261,7 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .histbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin:0 0 14px;padding:12px 14px;border-radius:12px;background:var(--hl-man);border:1.5px solid var(--hl-man-bd);color:var(--ink)}
 .histbar .hbtx{flex:1 1 320px;min-width:0}.histbar .hbtx b{display:block;font:800 16px/1.25 var(--cond)}.histbar small{display:block;margin-top:4px;color:var(--muted);line-height:1.35}
 .histbar .hbwarn{color:var(--hl-chip-warn-ink,#8A4B00);font-weight:700}.histbar .hbbtn{display:flex;flex-wrap:wrap;gap:8px}.histbar .hbbtn button{min-height:42px}
+#pRel .rprodsum{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;padding:8px 16px;font-size:13px;background:var(--surface);border-bottom:1px solid var(--line)}#pRel .rprodsum .bad{color:#B42318}
 #pProd{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pProd .topbar{background:var(--plate);color:var(--plate-ink)}#pProd .cwrap{max-width:1280px}
 .pd-c{padding:14px 16px}.pd-c h2{margin:0 0 10px;font:800 13px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .pd-st{display:flex;gap:10px;align-items:flex-start}.pd-st i{flex:none;width:12px;height:12px;border-radius:50%;margin-top:4px}.pd-st b{font:700 16px var(--body)}.pd-st p{margin:2px 0 0;font-size:14px;color:var(--muted)}
@@ -1269,13 +1270,21 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .pd-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}.pd-b{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--body);padding:0 14px;cursor:pointer;display:inline-flex;align-items:center}
 .pd-b.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}.pd-b:disabled{opacity:.55}.pd-note{font-size:13px;color:var(--muted);margin:6px 0 0}
 .pd-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}.pd-blk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
-.pd-blk h3{margin:0 0 8px;font:700 15px var(--body)}.pd-n{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.pd-n div{display:flex;flex-direction:column}.pd-n b{font:800 20px var(--cond)}.pd-n b.bad{color:#C62828}.pd-n b.warn{color:#B26A00}.pd-n span{font-size:11.5px;color:var(--muted)}
+.pd-blk h3{margin:0 0 8px;font:700 15px var(--body)}.pd-n{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pd-n div{display:flex;flex-direction:column}.pd-n b{font:800 20px var(--cond)}.pd-n b.bad{color:#C62828}.pd-n b.warn{color:#B26A00}.pd-n span{font-size:11.5px;color:var(--muted)}
 .pd-l{display:flex;flex-wrap:wrap;gap:4px 12px;margin:8px 0 4px;font-size:13px}.pd-blk small{font-size:12px;color:var(--muted)}
 .pd-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}#pdCount{font:700 13px var(--body);color:var(--muted)}
 .pd-f{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}.pd-f>.fld{flex:1 1 200px;min-width:0;width:auto;max-width:none}.pd-f>.pd-q{flex:2 1 280px}
 .pd-scroll{overflow:auto;max-width:100%}.pd-t{width:100%;border-collapse:collapse;font-size:13px}.pd-t th{text-align:left;font:700 12px var(--body);color:var(--muted);border-bottom:1px solid var(--line);padding:6px;white-space:nowrap;position:sticky;top:0;background:var(--surface)}
 .pd-t td{border-bottom:1px solid var(--line);padding:6px;vertical-align:top}.pd-t td.n{white-space:nowrap}.pd-t tr.erro td:first-child{box-shadow:inset 3px 0 #C62828}.pd-t tr.atencao td:first-child{box-shadow:inset 3px 0 #E3A008}.pd-t.sm{font-size:12.5px}
-.pd-is span{display:block;margin:1px 0}.pd-erro{color:#B42318}.pd-atencao{color:#8A5300}.pd-info{color:var(--muted)}.pd-ok{color:#1E7A4C;font-weight:700}.pd-no{color:var(--muted)}
+.pd-is span{display:block;margin:1px 0}.pd-alerta{color:#B42318;font-weight:700}.pd-t tr.alerta td:first-child{box-shadow:inset 3px 0 #B42318}.pd-nota{color:#1A4F8B}
+.pd-tag{display:inline-block;margin:3px 4px 0 0;padding:1px 6px;border-radius:6px;font:700 11px var(--body);background:#EEF1EF;color:#3A434D}.pd-tag.extra{background:#E9E3FA;color:#4B2E9A}.pd-tag.retrabalho{background:#FFF0D6;color:#7A4A00}
+.pd-tag.rmp{background:#FFF7E0;color:#7A5400;border:1px solid #E7C66B}.pd-tag.rmp.al{background:#FDE8E7;color:#9B1C1C;border-color:#F0A8A3}.pd-pos{display:block;color:var(--muted);font-size:11.5px}
+.pd-mini{margin-top:4px;min-height:32px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 12px var(--body);padding:0 10px;cursor:pointer}
+.pd-tt{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0;font-size:13px;padding:6px 8px;background:var(--ground);border-radius:8px}
+.pd-cols{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0}.pd-ck{display:flex;gap:6px;align-items:center;font-size:13px}.pd-rsum{font:700 13px var(--body);margin-right:auto}
+.pd-t tfoot td{border-top:2px solid var(--line);background:var(--ground)}
+.pd-dlg{position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}.pd-dlg[hidden]{display:none}
+.pd-dbox{background:var(--surface);color:var(--ink);border-radius:14px;padding:16px;width:min(520px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:10px}.pd-dbox h3{margin:0}.pd-dbox textarea{width:100%;box-sizing:border-box}.pd-nl{margin:0;padding-left:18px;font-size:13px}.pd-erro{color:#B42318}.pd-atencao{color:#8A5300}.pd-info{color:var(--muted)}.pd-ok{color:#1E7A4C;font-weight:700}.pd-no{color:var(--muted)}
 .pd-sh{margin:6px 0 10px;font-size:13px}.pd-sh summary{cursor:pointer;font-weight:700}#pdMore{margin-top:10px}
 @media (max-width:760px){.pd-kv{grid-template-columns:1fr}.pd-f{grid-template-columns:1fr}}
 #pHist{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pHist .topbar{background:var(--plate);color:var(--plate-ink)}
@@ -1761,7 +1770,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#producao" data-page="producao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>Produção executada<small>Importação da planilha de produção</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 22/11/2026 16:31 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 22/11/2026 17:23 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2103,9 +2112,18 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <div class="pd-blocks" id="pdBlocks"></div>
     <div class="card pd-c"><div class="pd-h"><h2>Segmentos importados</h2><span id="pdCount"></span></div>
       <div class="pd-f"><div class="fld"><label for="pdBlk">Bloco</label><select id="pdBlk"><option value="ALL">Todos</option><option value="B2">Bloco 02</option><option value="B3">Bloco 03</option><option value="B4">Bloco 04</option></select></div>
-        <div class="fld"><label for="pdSev">Mostrar</label><select id="pdSev"><option value="pend">Com pendência (erro ou atenção)</option><option value="erro">Só com erro</option><option value="na">Não aplicados ao status</option><option value="ap">Aplicados ao status</option><option value="all">Todos</option></select></div>
+        <div class="fld"><label for="pdSev">Mostrar</label><select id="pdSev"><option value="pend">Com pendência (erro, alerta ou atenção)</option><option value="erro">Só com erro</option><option value="alerta">Alertas especiais (redução / menor intervenção)</option><option value="rmp">Necessitam de RMP</option><option value="retrabalho">Retrabalho</option><option value="extra">Extra-projeto</option><option value="na">Não aplicados ao status</option><option value="ap">Aplicados ao status</option><option value="all">Todos</option></select></div>
         <div class="fld pd-q"><label for="pdQ">Buscar</label><input id="pdQ" type="search" placeholder="linha, data, km, faixa, equipe…" autocomplete="off"></div></div>
       <div id="pdSheet"></div><div class="pd-scroll" id="pdList"></div></div>
+    <div class="card pd-c" id="pdRep"><h2>Relatórios de produção</h2>
+      <div class="pd-f"><div class="fld"><label for="pdRT">Relatório</label><select id="pdRT"><option value="km">CBUQ executado por KM</option><option value="hist">Histórico de execuções</option><option value="rmp">Segmentos que necessitam de RMP</option></select></div>
+        <div class="fld"><label for="pdRDe">De</label><input type="date" id="pdRDe"></div><div class="fld"><label for="pdRAte">Até</label><input type="date" id="pdRAte"></div>
+        <div class="fld"><label for="pdRB">Bloco</label><select id="pdRB"><option value="ALL">Todos</option><option value="B2">Bloco 02</option><option value="B3">Bloco 03</option><option value="B4">Bloco 04</option></select></div>
+        <div class="fld"><label for="pdREq">Equipe</label><select id="pdREq"></select></div><div class="fld"><label for="pdRF">Tipo de serviço</label><select id="pdRF"></select></div>
+        <div class="fld"><label for="pdRC">Classificação</label><select id="pdRC"><option value="ALL">Todas</option><option value="projeto">Projeto</option><option value="retrabalho">Retrabalho</option><option value="extra">Extra-projeto</option></select></div></div>
+      <details class="pd-sh"><summary>Campos do relatório</summary><div class="pd-cols" id="pdRCols"></div></details>
+      <div class="pd-acts"><b id="pdRSum" class="pd-rsum"></b><button type="button" class="pd-b" id="pdRX">Exportar Excel</button><button type="button" class="pd-b" id="pdRP">Exportar PDF</button><span class="pd-note" id="pdRMsg" role="status"></span></div>
+      <div class="pd-scroll" id="pdRTab"></div></div>
     <div class="card pd-c"><h2>Histórico de importações</h2><div class="pd-scroll" id="pdHist"></div><div id="pdRem"></div></div>
   </div></div>
 </section>
@@ -2142,6 +2160,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="an-pg"><h3>Pista</h3><div class="an-pills" id="aLanes"></div></div>
         <div class="an-pg"><h3>Solução <button type="button" class="linkbtn" id="aSolPav">só pavimento</button> · <button type="button" class="linkbtn" id="aSolAll">todas</button></h3><div class="an-pills" id="aSol"></div></div>
         <div class="an-pg" id="aStBox"><h3>Status de execução</h3><div class="an-pills" id="aSt"></div></div>
+        <p class="note an-pad"><a href="#producao" onclick="try{sessionStorage.setItem('pdRepKm','1')}catch(e){}">Relatório de CBUQ executado por KM (planilha de produção) →</a></p>
         <p class="note an-pad" id="aStNone" hidden>Status de execução: sem dados para esta obra (no Bloco 04 o status vem da planilha de produção, página Produção executada).</p>
         <p class="note an-pad" id="aSrcNote"></p>
         <div class="an-act"><button type="button" class="secondary" id="aReset">Limpar filtros</button><button type="button" class="primary" id="aExp">Exportar análise e programação (Excel)</button></div>
@@ -2170,12 +2189,13 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 </section>
 <section class="page" id="pRel" data-page="relatorios" hidden>
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Relatórios</h1><span class="rquick" id="rQuick"></span></div>
+  <div class="rprodsum" id="rProdSum" hidden></div>
   <div class="cscroll">
     <div class="cwrap">
       <div class="card"><h2>Filtros <em class="rcnt" id="rFCount"></em></h2>
         <div class="rfil">
-          <div class="rf2"><div class="fld"><label for="rObra">Obra</label><select id="rObra"><option>Restauração BR-277 – Blocos 02 e 03</option></select></div>
-            <div class="fld"><label for="rRod">Rodovia</label><select id="rRod"><option>BR-277/PR</option></select></div>
+          <div class="rf2"><div class="fld"><label for="rObra">Obra</label><select id="rObra"><option value="277">Restauração BR-277 – Blocos 02 e 03</option><option value="B4">Restauração BR-373 – Bloco 04</option></select></div>
+            <div class="fld"><label for="rRod">Rodovia</label><select id="rRod" disabled><option>BR-277/PR</option></select></div>
             <div class="fld"><label for="rBloco">Bloco do contrato</label><select id="rBloco"><option value="ALL">Blocos 2 e 3</option><option value="B2">Bloco 2</option><option value="B3">Bloco 3</option></select></div></div>
           <div class="rf2"><div class="fld"><label for="rKmA">Km / estaca inicial</label><input class="km" id="rKmA" inputmode="text" autocomplete="off" placeholder="164+700"></div>
             <div class="fld"><label for="rKmB">Km / estaca final</label><input class="km" id="rKmB" inputmode="text" autocomplete="off" placeholder="303+800"></div></div>
@@ -2420,10 +2440,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261122193129";</script>
-<script src="native.js?v=20261122193129"></script>
-<script src="firebase-config.js?v=20261122193129"></script>
-<script src="auth.js?v=20261122193129"></script>
+<script>window.APP_BUILD="20261122202347";</script>
+<script src="native.js?v=20261122202347"></script>
+<script src="firebase-config.js?v=20261122202347"></script>
+<script src="auth.js?v=20261122202347"></script>
 
 </body>
 </html>

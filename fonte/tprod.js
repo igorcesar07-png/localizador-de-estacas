@@ -4,11 +4,11 @@ const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modu
 const PORT=process.argv[2]||8772,XF=process.argv[3]||'prod_test.xlsb';
 const res=[];const ok=(c,n)=>{res.push(c);console.log((c?'OK  ':'FALHOU ')+n)};
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1366,height:900}});
-await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs={},subs=[];window.__DOCS=docs;window.__SAVES=0;
+await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs=JSON.parse(localStorage.getItem('__pdocs')||'{}'),subs=[];window.__DOCS=docs;window.__SAVES=0;const keep=()=>{try{localStorage.setItem('__pdocs',JSON.stringify(docs))}catch(e){}};
   const fire=id=>subs.forEach(cb=>cb(id,docs[id]||null));
   window.ProdDB={subscribe:cb=>{subs.push(cb);setTimeout(()=>['producao_meta','producao_b23','producao_b4','producao_status'].forEach(id=>cb(id,docs[id]||null)),50);return ()=>{}},
-    save:async parts=>{for(const [k,o] of Object.entries(parts)){const txt=JSON.stringify(o);if(txt.length>1000000)throw new Error('grande demais '+k+' '+txt.length);docs['producao_'+k]={json:txt}}window.__SAVES++;setTimeout(()=>Object.keys(parts).forEach(k=>fire('producao_'+k)),30)},
-    status:async st=>{docs.producao_status=Object.assign({},st,{by:'teste@x'});fire('producao_status')}};
+    save:async parts=>{for(const [k,o] of Object.entries(parts)){const txt=JSON.stringify(o);if(txt.length>1000000)throw new Error('grande demais '+k+' '+txt.length);docs['producao_'+k]={json:txt}}keep();window.__SAVES++;setTimeout(()=>Object.keys(parts).forEach(k=>fire('producao_'+k)),30)},
+    status:async st=>{docs.producao_status=Object.assign({},st,{by:'teste@x'});keep();fire('producao_status')},saveNotas:async all=>{docs.producao_notas={json:JSON.stringify(all)};keep();fire('producao_notas')}};
   // pasta simulada: o arquivo pode "mudar" (lastModified) e ficar "bloqueado"
   window.__FS={mod:Date.now()-3600e3,lock:false,buf:null,name:'Acompanhamento de produção REV 12.xlsb'};
   const fh={kind:'file',get name(){return __FS.name},getFile:async()=>{if(__FS.lock){const e=new Error('locked');e.name='NotReadableError';throw e}return new File([__FS.buf],__FS.name,{lastModified:__FS.mod})}};
@@ -50,11 +50,17 @@ s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);con
 // 5) arquivo incompleto (corrompido)
 await p.evaluate(()=>{window.__FS.lock=false;window.__FS.buf=window.__FS.buf.slice(0,200000);window.__FS.mod=Date.now()});await W(6000);
 s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('incompleto',s1);ok(s1[0]==='erro'&&/ler a planilha/.test(s1[1])&&s1[2]===1658,'arquivo incompleto: não importa e avisa');
+await p.selectOption('#pdSev','rmp');await W(300);const nb=await p.$('#pdList [data-nota]');await nb.click();await p.selectOption('#pdNM','Segregação');await p.fill('#pdNX','teste de motivo');await p.click('#pdNS');await W(500);
+ok((await p.textContent('#pdList')).includes('teste de motivo'),'motivo registrado no segmento (histórico)');
 const stTxt=await p.textContent('#pdStatus');ok(/Última verificação/.test(stTxt)&&/Última atualização dos dados/.test(stTxt),'mostra última verificação e última atualização');
 await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados
 await p.goto(`http://localhost:${PORT}/#relatorios`);await W(2500);
-const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');
+await W(1000);const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');
+await p.selectOption('#rObra','B4');await W(1500);const rq4=await p.textContent('#rQuick');const ps4=await p.textContent('#rProdSum');console.log('relatórios B4:',rq4,'|',ps4.replace(/\s+/g,' '));
+ok(/exec/.test(rq4)&&!/ 0% exec/.test(rq4)&&/Extra-projeto/.test(ps4),'Relatórios do Bloco 04 com execução e separação projeto / extra-projeto');
+const [dx]=await Promise.all([p.waitForEvent('download',{timeout:40000}).catch(()=>null),p.click('#rXls').catch(()=>{})]);ok(!!dx,'Excel do relatório do Bloco 04 gerado');
+await p.selectOption('#rObra','277');await W(800);
 await p.goto(`http://localhost:${PORT}/#analise`);await W(2500);
 await p.selectOption('#aObra','B4').catch(()=>{});await W(1500);
 ok(await p.isVisible('#aStBox'),'Painel do Bloco 04 com filtro de status de execução');
