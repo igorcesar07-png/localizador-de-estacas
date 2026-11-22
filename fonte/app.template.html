@@ -5412,7 +5412,8 @@ const PROD=(function(){
   const projCode=(p,k)=>k==='B4'&&p.src&&p.src.sigla?p.src.sigla:p.code;
   // espessura de projeto (cm) do pano: unifilar no Bloco 04 (REC/RP pela capa de CBUQ), padrão da solução no R08
   const espProj=(p,k)=>{if(k==='B4'&&p.src&&window.__B4_CBUQ_CM){const v=window.__B4_CBUQ_CM(p.src);if(v!=null)return v}const m=String(p.info&&p.info.esp||'').match(/^([\d.,]+) cm$/);return m?parseFloat(m[1].replace(',','.')):null};
-  const famPav=c=>/^FF/.test(c)?'FF':/^FE/.test(c)?'FE':/^FS/.test(c)?'FS':c==='G'?'G':/^REC/.test(c)?'REC':/^RP/.test(c)?'RP':null;
+  const grpPav=f=>f==='FF'||f==='FS'||f==='G'?'SUP':f;
+  const famPav=c=>/^FF/.test(c)?'FF':/^FE/.test(c)?'FE':/^FS/.test(c)?'FS':c==='G'?'FS':/^REC/.test(c)?'REC':/^RP/.test(c)?'RP':null;
   // Regras de 22/11/2026:
   // · estaca com "+" além do fim do km no projeto: o fim do km de campo é o mesmo ponto que o 000 do km seguinte (equivalência); o comprimento e as quantidades da planilha não mudam;
   // · Bloco 04: lançamentos até 21/11/2026 e km até 250 usam o estaqueamento anterior (R03 REV1); os demais, o estaqueamento da base carregada;
@@ -5468,23 +5469,27 @@ const PROD=(function(){
                 r.proj=dom?{code:dom[0],pct:dom[1]/len,list:[...ov.keys()],esp:pe.get(dom[0])}:null;
                 if(!semStatus){r.ap=true;
                   if(tot<0.5)add('atencao','sem_projeto','O projeto não tem solução nesta faixa no trecho executado (verificar se é extra-projeto).');
-                  else if(['FF','FE','FS','GAP'].includes(r.fam)){const pc=famPav(dom[0]),ex=r.fam==='GAP'?'G':r.fam;
-                    if(pc&&pc!==ex){const less=(PESO[ex]||0)<(PESO[pc]||0);r.rmp.push(less?'troca_menor':'troca');
+                  else if(['FF','FE','FS','GAP'].includes(r.fam)){const pc=famPav(dom[0]),ex=r.fam==='GAP'?'FS':r.fam;
+                    if(pc&&grpPav(pc)!==grpPav(ex)){const less=(PESO[ex]||0)<(PESO[pc]||0);r.rmp.push(less?'troca_menor':'troca');
                       add(less?'alerta':'atencao','troca',less?`ALERTA – substituição por solução de menor intervenção: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}.`:`Alteração da solução de projeto: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}. Necessita RMP.`)}}
                   else if((r.fam==='DR'||r.fam==='DP')&&!ov.has(r.fam))add('atencao','solucao_dif',`Executado ${r.fam}; o projeto prevê ${[...ov.keys()].join(', ')} nesta posição.`);
                   // comprimento: trecho executado além do pano da mesma solução no projeto (acréscimo). Acréscimo numa solução e supressão
                   // na seguinte geram um só RMP, no acréscimo (regra informada em 22/11/2026). Tolerância de 5 m, a mesma da página Relatórios.
-                  if(['FF','FE','FS','GAP'].includes(r.fam)&&!r.rmp.some(x=>x==='troca'||x==='troca_menor')){const ex=r.fam==='GAP'?'G':r.fam;let same=0;const fora=[];for(const [c,v] of ov){if(famPav(c)===ex)same+=v;else fora.push([c,v])}
+                  if(['FF','FE','FS','GAP'].includes(r.fam)&&!r.rmp.some(x=>x==='troca'||x==='troca_menor')){const ex=r.fam==='GAP'?'FS':r.fam;let same=0;const fora=[];for(const [c,v] of ov){if(grpPav(famPav(c))===grpPav(ex))same+=v;else fora.push([c,v])}
                     const exc=len-same;
-                    if(exc>TOL_LEN&&(tot<0.5||famPav(dom[0])===ex)){const pior=fora.some(([c])=>(PESO[famPav(c)]||0)>(PESO[ex]||0));r.rmp.push('comprimento');
+                    if(exc>TOL_LEN&&(tot<0.5||grpPav(famPav(dom[0]))===grpPav(ex))){const pior=fora.some(([c])=>(PESO[famPav(c)]||0)>(PESO[ex]||0)&&grpPav(famPav(c))!==grpPav(ex));r.rmp.push('comprimento');
                       const sup=fora.filter(([,v])=>v>0.5).map(([c,v])=>`${c} ${fmt(v,0)} m`).join(', ');
                       add(pior?'alerta':'atencao','comprimento',`${pior?'ALERTA – ':''}Comprimento diferente do projeto: ${fmt(exc,0)} m de ${r.fam} executados além do pano de ${r.fam} do projeto${sup?` (sobre ${sup}, que fica suprimido)`:' (trecho sem essa solução no projeto)'}. Necessita RMP — um só, no acréscimo.`)}}}}}}}
         // espessura executada × espessura de projeto da solução executada
         // não se faz RMP em extra-projeto (TRO, alças/ramos, marginais)
         if(r.extra)r.rmp=[];
-        if(!r.extra&&ESP_PAD[r.fam]&&r.esp!=null&&r.esp>0){const e=Math.round(r.esp*1000)/10,pd=ESP_PAD[r.fam];
-          if(e>pd+0.05){r.rmp.push('aumento');add('atencao','esp_aumento',`Espessura ${fmt(e,1)} cm maior que a de projeto de ${r.fam} (${pd} cm): aumento de espessura, necessita RMP.`)}
-          else if(e<pd-0.05){r.rmp.push('reducao');add('alerta','esp_reducao',`ALERTA – redução de espessura: ${fmt(e,1)} cm, abaixo dos ${pd} cm de projeto de ${r.fam}. Necessita RMP.`)}}
+        // espessura de referência: a do projeto no trecho (G = 3 cm, FF = 6 cm…) quando a solução é a mesma intervenção (FF/FS/G entre si, FE com FE);
+        // havendo troca de solução, compara com o padrão da solução executada (a troca já é o RMP principal)
+        {const ex=r.fam==='GAP'?'FS':r.fam,pc=r.proj&&famPav(r.proj.code),troca=r.rmp.some(x=>x==='troca'||x==='troca_menor');
+          const ref=!troca&&pc&&grpPav(pc)===grpPav(ex)&&r.proj.esp!=null?{v:r.proj.esp,t:r.proj.code}:ESP_PAD[ex]?{v:ESP_PAD[ex],t:ex}:null;
+          if(!r.extra&&ref&&['FF','FE','FS','GAP'].includes(r.fam)&&r.esp!=null&&r.esp>0){const e=Math.round(r.esp*1000)/10,pd=ref.v;
+            if(e>pd+0.05){r.rmp.push('aumento');add('atencao','esp_aumento',`Espessura ${fmt(e,1)} cm maior que a de projeto (${ref.t} ${fmt(pd,pd%1?1:0)} cm): aumento de espessura, necessita RMP.`)}
+            else if(e<pd-0.05){r.rmp.push('reducao');add('alerta','esp_reducao',`ALERTA – redução de espessura: ${fmt(e,1)} cm, abaixo dos ${fmt(pd,pd%1?1:0)} cm de projeto (${ref.t}). Necessita RMP.`)}}}
         if(!r.ap)r.motivo=semStatus||(r.iss.some(x=>x.sev==='erro')?'pendência de erro':'');
         out[k].push(r);out.all.push(r)}}
     // mesma pista com trechos sobrepostos em datas diferentes (possível reexecução ou lançamento duplicado)
