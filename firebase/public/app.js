@@ -3,7 +3,7 @@ const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -191,7 +191,7 @@ window.Theme=Theme;
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -2498,7 +2498,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const out=[];for(const x of iv){const l=out[out.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else out.push([x[0],x[1]])}return out}
   const clipLen=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
   function indexRecords(){const byL=Array.from({length:8},()=>({ex:[],pr:[],an:[]}));
-    for(const r of Rec.execs()){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
+    for(const r of Rec.execs().concat(window.PROD?window.PROD.execRecs('277'):[])){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
     for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
     return byL}
   window.ExecIdx=()=>{const idx=indexRecords();return (L,a,b)=>{const o=idx[L];if(!o)return {st:'nao',exLen:0,prLen:0,anLen:0};const hit=r=>Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
@@ -2561,7 +2561,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const tExec=drn||t==null?null:(tExecHas?tExecRec:exLen*tUnit),tProg=drn||t==null?null:prLen*tUnit;
       const minmax=a=>{if(!a.length)return '';const s=[...new Set(a.map(iso))].sort();return s.length>1?br(s[0])+' a '+br(s[s.length-1]):br(s[0])};
       rows.push({p,L0,drn,a,b,len,serial,partial:a>pa+1e-6||b<pb-1e-6,ini:Data.nameAt(dec?b:a),fim:Data.nameAt(dec?a:b),w,e,excl,espKey,area,vol,t,eP,espEx:[...new Set(espEx)],rmp,rmpMot:mot.join('; '),
-        exLen,prLen,saldo:Math.max(0,len-exLen),tExec,tProg,tSaldo:t!=null?Math.max(0,t-(tExec||0)):null,st,dProg:minmax(dProg),dExec:minmax(dExec),obs:[...new Set(obs)].join(' · '),src:[...srcs].map(s=>s==='prog'?'programação':'planilha').join(', ')})}
+        exLen,prLen,saldo:Math.max(0,len-exLen),tExec,tProg,tSaldo:t!=null?Math.max(0,t-(tExec||0)):null,st,dProg:minmax(dProg),dExec:minmax(dExec),obs:[...new Set(obs)].join(' · '),src:[...srcs].map(s=>s==='prog'?'programação':s==='producao'?'planilha de produção':'planilha').join(', ')})}
     // ordem: sentido crescente (menor → maior), depois decrescente (maior → menor), faixa 1 → acostamento → dreno
     const LO={2:0,1:1,0:2,6:3,3:0,4:1,5:2,7:3};
     rows.sort((x,y)=>(x.L0.side===y.L0.side?0:x.L0.side==='C'?-1:1)||(x.L0.side==='C'?x.a-y.a:y.b-x.b)||LO[x.p.L]-LO[y.p.L]);
@@ -2855,7 +2855,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     return doc.output('blob')}
 
   on('exec',()=>{if(Router.cur()==='relatorios')refresh()});
-  Router.onInit('relatorios',refresh);
+  Router.onInit('relatorios',refresh);on('prod',()=>{if(Router.cur()==='relatorios')refresh()});
   on('page',p=>{if(p==='relatorios')refresh()});
 })();
 
@@ -2896,7 +2896,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function build(){const k=F.obra,SRC=srcOf(k);if(!SRC)return {err:true,k};
     const {Data:D,R:RR,LANES:LN,SIDE:SD,PANOS:PN,ODO:OD}=SRC;const C=cad(k);
     const fams=famsOf(SRC),sol=F.sol?F.sol.filter(f=>fams.includes(f)):fams.filter(f=>f!=='DR'&&f!=='DP');
-    const stIdx=k==='277'&&window.ExecIdx?window.ExecIdx():null;const stSel=stIdx&&F.st?F.st:null;
+    const stIdx=k==='277'&&window.ExecIdx?window.ExecIdx():k==='B4'&&window.PROD&&window.PROD.has('B4')?window.PROD.idx('B4'):null;const stSel=stIdx&&F.st?F.st:null;
     const kmA=num(F.kA),kmB=num(F.kB),lo=kmA!=null&&kmB!=null?Math.min(kmA,kmB):kmA,hi=kmA!=null&&kmB!=null?Math.max(kmA,kmB):kmB;
     const kmIn=km=>(lo==null||km>=lo)&&(hi==null||km<=hi);
     const kms=new Map();for(let i=0;i<RR.length;i++){const km=RR[i][5];if(!kmIn(km))continue;let o=kms.get(km);if(!o){o={k:km,i0:i,i1:i,parts:[]};kms.set(km,o)}o.i1=i}
@@ -2950,7 +2950,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     pills('aLanes',GRPS.map(([g])=>[g,grpName(k,g)]),F.lanes,g=>{F.lanes=F.lanes.includes(g)?F.lanes.filter(x=>x!==g):F.lanes.concat(g);saveF();refresh()});
     const fams=famsOf(SRC),sol=F.sol?F.sol.filter(f=>fams.includes(f)):fams.filter(f=>f!=='DR'&&f!=='DP');
     pills('aSol',fams.map(f=>{const inf=SRC.Data.info(f==='PA'?(SRC.Data.CODES.find(c=>/^PA/.test(c))||'PA'):f==='REC'&&k==='277'?'RECe25':f==='RP'&&k==='277'?'RPe25':f);return [f,`${f} – ${f==='FS'&&k==='B4'&&window.__B4_GAP?'Fresagem Superficial 3 cm':inf.desc}`,inf.color]}),sol,f=>{const cur=F.sol?F.sol.filter(x=>fams.includes(x)):sol.slice();F.sol=cur.includes(f)?cur.filter(x=>x!==f):cur.concat(f);saveF();refresh()});
-    const stOn=k==='277'&&!!window.ExecIdx;$('aStBox').hidden=!stOn;$('aStNone').hidden=stOn;
+    const stOn=k==='277'?!!window.ExecIdx:!!(window.PROD&&window.PROD.has('B4'));$('aStBox').hidden=!stOn;$('aStNone').hidden=stOn;
     if(stOn){const st=F.st||Object.keys(STATUS);pills('aSt',Object.entries(STATUS).map(([s,t])=>[s,t,ST_COLOR[s]]),st,s=>{const cur=F.st||Object.keys(STATUS);F.st=cur.includes(s)?cur.filter(x=>x!==s):cur.concat(s);saveF();refresh()})}}
   function scale(vals){const v=vals.filter(x=>x!=null&&x>0).sort((a,b)=>a-b);if(!v.length)return {col:()=>'#E4E7E5',br:[]};const q=f=>v[Math.min(v.length-1,Math.floor(f*(v.length-1)))];const br=[q(.2),q(.4),q(.6),q(.8)];
     return {col:x=>x==null?'#E4E7E5':x<=0?'#E4E7E5':PAL[br.filter(b=>x>b).length],br,min:v[0],max:v[v.length-1]}}
@@ -3119,7 +3119,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     $('aSimU').onchange=()=>{SIM.capU=$('aSimU').value;saveSim();renderSim()};
     $('aExp').onclick=()=>exportX();
     refresh()}
-  Router.onInit('analise',init);
+  Router.onInit('analise',init);on('prod',()=>{if(Router.cur()==='analise'&&typeof refresh==='function')try{refresh()}catch(e){}});
   on('page',p=>{if(p==='analise'&&map)setTimeout(()=>map.invalidateSize(),60)});
   window.__ana=()=>({RES,SEL,F,sim:simulate(),scope:scopeA()});
 })();
@@ -4047,6 +4047,289 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
   window.__HISTPROG={all:()=>ALL,F};
 })();
 
+/* =====================================================================
+   PÁGINA — Produção executada: importação automática da planilha "Acompanhamento de produção"
+   (abas "Lançamento lotes B2 - B3" e "Lançamento Lote B4"). A planilha só é lida, nunca alterada.
+   ===================================================================== */
+/*__PROD_PARSE_BEGIN__*/
+// Leitura da planilha "Acompanhamento de produção" (abas de lançamento) → segmentos executados.
+// Não depende do app: recebe o workbook do SheetJS. Não altera a planilha.
+const ProdParse=(function(){
+  const norm=v=>String(v==null?'':v).normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+  const isNum=v=>typeof v==='number'&&isFinite(v);
+  const empty=v=>v==null||v===''||(typeof v==='string'&&!v.trim())||v===0;
+  // abas: B2/B3 e B4 (nome sem acento/maiúsculas; aceita "lote" ou "lotes")
+  const SHEETS=[{k:'B23',test:n=>/lancamento/.test(n)&&/b2/.test(n)&&/b3/.test(n),nome:'Lançamento lotes B2 - B3'},
+                {k:'B4',test:n=>/lancamento/.test(n)&&/\bb4\b/.test(n),nome:'Lançamento lote B4'}];
+  // colunas usadas (cabeçalho da linha de títulos); obrigatórias marcadas com *
+  const COLS={data:['data'],nmed:['nº med.','no med.','n med.'],serial:['serial'],solAdot:['solucao adotada'],equipe:['equipe'],solApl:['solucao aplicada'],
+    desc:['descricao servico'],und:['und'],qtd:['quantidade'],sentido:['sentido'],faixa:['faixa'],local:['localidade'],bloco:['bloco'],
+    kmIni:['km inicial'],kmFim:['km final'],comp:['comp'],larg:['larg'],esp:['esp.','esp'],dens:['densidade'],usina:['usina'],tipo:['tipo'],obs:['obs'],mun:['municipio']};
+  const REQ=['data','solAdot','desc','und','qtd','sentido','faixa','kmIni','kmFim'];
+  function headerOf(aoa){for(let i=0;i<Math.min(40,aoa.length);i++){const r=(aoa[i]||[]).map(norm);if(r.includes('km inicial')&&r.includes('sentido')&&r.includes('serial')){
+      const c={};for(const [k,names] of Object.entries(COLS)){const j=r.findIndex(h=>names.includes(h));c[k]=j}return {row:i,c}}}return null}
+  // data: número de série do Excel (1900) → aaaa-mm-dd
+  function isoDate(v){if(v instanceof Date&&!isNaN(v))return v.toISOString().slice(0,10);
+    if(isNum(v)&&v>30000&&v<80000){const d=new Date(Math.round((v-25569)*86400000));return d.toISOString().slice(0,10)}
+    const s=String(v==null?'':v).trim();let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[0]:null}
+  // família do serviço: solução aplicada (FF/FE) ou texto da solução adotada / descrição
+  function famOf(solApl,solAdot,desc){const a=String(solApl||'').trim().toUpperCase();if(/^(FF|FE|FS)$/.test(a))return a;
+    const s=norm(solAdot),d=norm(desc);
+    if(/dreno/.test(s)||/dreno/.test(d)){if(/saida|boca de dreno/.test(d))return 'SAIDA';if(/\braso\b/.test(d))return 'DR';if(/profundo/.test(d))return 'DP';return 'DRN?'}
+    if(/sinaliza/.test(s))return 'SH';if(/\bgap\b/.test(s))return 'GAP';
+    if(/funcional/.test(s))return 'FF';if(/estrutural/.test(s))return 'FE';if(/superficial/.test(s))return 'FS';return null}
+  const UNIT={'m³':'m3','m3':'m3','m²':'m2','m2':'m2','ton':'t','t':'t','m':'m','un':'un'};
+  function hash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+  const r2=v=>isNum(v)?Math.round(v*1000)/1000:null;
+  function parseSheet(k,nome,aoa){const out={k,aba:nome,segs:[],issues:[],cont:{linhas:0,vazias:0,servicos:0,foraPadrao:0}};
+    const H=headerOf(aoa);if(!H){out.issues.push({sev:'erro',cod:'cabecalho',msg:'Cabeçalho não encontrado (linha com Serial, Sentido e KM INICIAL).'});return out}
+    const miss=REQ.filter(c=>H.c[c]<0);if(miss.length){out.issues.push({sev:'erro',cod:'cabecalho',msg:'Colunas obrigatórias não encontradas: '+miss.join(', ')});return out}
+    const g=(r,c)=>H.c[c]>=0?r[H.c[c]]:null;const groups=new Map();
+    for(let i=H.row+1;i<aoa.length;i++){const r=aoa[i]||[],ln=i+1;out.cont.linhas++;
+      const sent=String(g(r,'sentido')==null?'':g(r,'sentido')).trim(),solA=g(r,'solAdot'),desc=g(r,'desc');
+      // linha sem lançamento (fórmulas zeradas ou em branco)
+      if(empty(sent)&&empty(g(r,'faixa'))&&empty(g(r,'kmIni'))&&empty(g(r,'kmFim'))&&empty(solA)&&empty(desc)&&empty(g(r,'qtd'))){out.cont.vazias++;continue}
+      const sn=norm(sent);const side=sn==='crescente'?'C':sn==='decrescente'?'D':null;
+      const fam=famOf(g(r,'solApl'),solA,desc);
+      if(!side&&fam!=='SH'){out.cont.foraPadrao++;out.issues.push({sev:'atencao',cod:'fora_padrao',linhas:[ln],msg:`Linha fora do padrão de lançamento (Sentido = "${sent||'vazio'}"${!empty(desc)?`, serviço "${desc}"`:''}): não importada.`});continue}
+      out.cont.servicos++;
+      const ki=g(r,'kmIni'),kf=g(r,'kmFim');const data=isoDate(g(r,'data'));
+      const key=[k,data||'?',norm(g(r,'equipe')),norm(g(r,'serial')),side||'-',norm(g(r,'faixa')),norm(g(r,'local')),isNum(ki)?ki:String(ki),isNum(kf)?kf:String(kf),norm(solA),fam||'?',norm(g(r,'tipo'))].join('|');
+      let s=groups.get(key);
+      if(!s){s={id:k+'-'+hash(key),aba:k,lin:[],data,dataRaw:data?null:g(r,'data'),nmed:isNum(g(r,'nmed'))?g(r,'nmed'):null,equipe:String(g(r,'equipe')||'').trim(),serial:empty(g(r,'serial'))?'':String(g(r,'serial')).trim(),
+        side,faixa:String(g(r,'faixa')||'').trim(),local:String(g(r,'local')||'').trim(),bloco:empty(g(r,'bloco'))?null:g(r,'bloco'),kmIni:isNum(ki)?ki:null,kmFim:isNum(kf)?kf:null,kmRaw:[ki,kf],
+        comp:r2(g(r,'comp')),larg:r2(g(r,'larg')),esp:r2(g(r,'esp')),solAdot:String(solA||'').trim(),solApl:String(g(r,'solApl')||'').trim(),fam,
+        tipo:String(g(r,'tipo')||'').trim(),obs:new Set(),mun:String(g(r,'mun')||'').trim(),usina:new Set(),dens:new Set(),serv:[],q:{}};groups.set(key,s)}
+      s.lin.push(ln);const o=String(g(r,'obs')||'').trim();if(o)s.obs.add(o);if(!empty(g(r,'usina')))s.usina.add(String(g(r,'usina')).trim());if(isNum(g(r,'dens'))&&g(r,'dens')>0)s.dens.add(g(r,'dens'));
+      const un=String(g(r,'und')||'').trim(),q=g(r,'qtd'),uk=UNIT[un]||un;
+      s.serv.push({ln,desc:String(desc||'').trim(),und:un,q:isNum(q)?r2(q):null});if(isNum(q))s.q[uk]=r2((s.q[uk]||0)+q)}
+    for(const s of groups.values()){s.obs=[...s.obs].join(' · ');s.usina=[...s.usina].join(', ');s.dens=[...s.dens];
+      const iss=[];const add=(sev,cod,msg)=>iss.push({sev,cod,msg});
+      const sh=s.fam==='SH';
+      // dreno com KM inicial = final: item pontual (saída/ala/boca), não é trecho longitudinal
+      s.pontual=(s.fam==='SAIDA')||((s.fam==='DR'||s.fam==='DP')&&s.kmIni!=null&&s.kmIni===s.kmFim);
+      if(!s.data)add('erro','obrigatorio',`Data ausente ou inválida (${s.dataRaw==null?'vazia':s.dataRaw}).`);
+      if(!sh&&(s.kmIni==null||s.kmFim==null))add('erro','obrigatorio',`KM inicial/final ausente ou não numérico (${s.kmRaw.map(v=>v==null||v===''?'vazio':v).join(' / ')}).`);
+      if(!sh&&!s.faixa)add('erro','obrigatorio','Faixa vazia.');
+      if(!s.fam)add('erro','obrigatorio',`Solução não reconhecida ("${s.solAdot||'vazia'}").`);
+      if(s.fam==='DRN?')add('erro','obrigatorio','Dreno sem tipo (raso/profundo) na descrição do serviço.');
+      if(s.fam==='SH')add('atencao','sem_segmento','Sinalização horizontal: serviço sem segmento no unifilar (não entra no status de execução).');
+      if(s.fam==='GAP')add('atencao','solucao','"MF + GAP": solução sem equivalente direto nas siglas do projeto (entra no status da faixa; a solução fica como GAP).');
+      if(/ramo/i.test(s.faixa)||/ramo/i.test(s.local))add('atencao','sem_pista','Faixa/localidade de ramo: o unifilar não tem ramos (não entra no status de execução).');
+      if(s.kmIni!=null&&s.kmFim!=null&&s.kmIni===s.kmFim&&!s.pontual&&!sh)add('erro','km_igual','KM inicial igual ao KM final.');
+      if(s.pontual&&s.fam!=='SAIDA')add('info','pontual',`Dreno pontual (KM inicial = final${s.comp?`, Comp ${s.comp} m`:''}${s.obs?`, OBS "${s.obs}"`:''}): não entra na extensão da faixa de dreno.`);
+      if(s.kmIni!=null&&s.kmFim!=null&&s.comp!=null&&s.comp>0&&!s.pontual&&Math.abs(Math.abs(s.kmFim-s.kmIni)-s.comp)>1)add('atencao','comp',`Comp (${s.comp} m) diferente de KM final − KM inicial (${r2(Math.abs(s.kmFim-s.kmIni))} m).`);
+      if(/retrabalho/i.test(s.tipo))add('atencao','retrabalho','TIPO = RETRABALHO.');
+      if(['FF','FE','FS','GAP'].includes(s.fam)&&s.esp!=null&&(s.esp>0.15||s.esp<0.02))add('atencao','esp',`Espessura lançada atípica (${s.esp} m).`);
+      const seen=new Map();for(const v of s.serv){const t=norm(v.desc)+'|'+v.und;if(seen.has(t))add('atencao','repetido',`Serviço "${v.desc}" lançado mais de uma vez no mesmo segmento (linhas ${seen.get(t)} e ${v.ln}).`);else seen.set(t,v.ln)}
+      s.iss=iss;delete s.dataRaw;out.segs.push(s)}
+    out.segs.sort((a,b)=>a.lin[0]-b.lin[0]);return out}
+  // wb: workbook do SheetJS (só as abas de lançamento precisam estar carregadas)
+  function parse(wb,XLSX){const res={abas:{},issues:[]};const names=wb.SheetNames;
+    for(const S of SHEETS){const nm=names.find(n=>S.test(norm(n)));
+      if(!nm){res.issues.push({sev:'erro',cod:'aba',aba:S.k,msg:`Aba "${S.nome}" não encontrada na planilha.`});continue}
+      const ws=wb.Sheets[nm];if(!ws){res.issues.push({sev:'erro',cod:'aba',aba:S.k,msg:`Aba "${nm}" não pôde ser lida.`});continue}
+      const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null,blankrows:true});res.abas[S.k]=parseSheet(S.k,nm,aoa)}
+    return res}
+  const sheetNames=names=>SHEETS.map(S=>names.find(n=>S.test(norm(n)))).filter(Boolean);
+  return {parse,parseSheet,sheetNames,norm,SHEETS}})();
+/*__PROD_PARSE_END__*/
+const PROD=(function(){
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const fmt=(v,d=0)=>Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const dt=ms=>ms?new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+  const brD=d=>d?d.split('-').reverse().join('/'):'—';
+  const norm=ProdParse.norm;
+  const SEV={erro:'Erro',atencao:'Atenção',info:'Informação'};
+  const FAMN={FF:'Fresagem funcional',FE:'Fresagem estrutural',FS:'Fresagem superficial',GAP:'MF + GAP',DR:'Dreno raso',DP:'Dreno profundo',SAIDA:'Saída de dreno',SH:'Sinalização horizontal'};
+  let META=null,SEG={B23:null,B4:null},STAT=null,RES=null,ver=0;
+  /* ---------- dados compartilhados (Firestore, via auth.js) ---------- */
+  function onDoc(id,d){try{const v=d&&d.json?JSON.parse(d.json):null;
+      if(id==='producao_meta')META=v;else if(id==='producao_b23')SEG.B23=v;else if(id==='producao_b4')SEG.B4=v;else if(id==='producao_status')STAT=d||null}catch(e){console.error(e)}
+    ver++;RES=null;emit('prod',ver)}
+  if(window.ProdDB)window.ProdDB.subscribe((id,d)=>onDoc(id,d));
+  /* ---------- ligação com o projeto: pista, estacas, bloco e solução ---------- */
+  function srcOf(k){if(k==='B23')return {Data,R,LANES,PANOS,ODO};const B=window.__SRC_B4;return B?{Data:B.Data,R:B.R,LANES:B.LANES,PANOS:B.PANOS,ODO:B.ODO}:null}
+  const est=m=>{const km=Math.floor(m/1000+1e-9);const o=Math.round((m-km*1000)*100)/100,ip=Math.floor(o+1e-9),fp=o-ip;return km+'+'+String(ip).padStart(3,'0')+(fp>1e-6?fp.toFixed(2).slice(1).replace(/0+$/,''):'')};
+  const grpOf=(fx,fam)=>{if(fam==='DR'||fam==='DP')return 'DRN';const f=norm(fx);if(/^(fx|faixa) ?1$/.test(f))return 'F1';if(/^(fx|faixa) ?(2|3)$/.test(f))return 'F23';if(/acost/.test(f))return 'AC';return null};
+  const projFam=p=>p.info.fam;
+  function resolve(){if(RES)return RES;const out={B23:[],B4:[],all:[]};
+    for(const k of ['B23','B4']){const S=SEG[k];if(!S)continue;const src=srcOf(k);
+      for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:''});
+        const err=r.iss.some(x=>x.sev==='erro');
+        const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.pontual?'item pontual de drenagem':r.iss.some(x=>x.cod==='sem_pista')?'ramo (fora do unifilar)':r.fam==='SAIDA'?'saída de dreno':'';
+        if(!src){r.iss.push({sev:'erro',cod:'base',msg:'Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.'})}
+        else if(r.kmIni!=null&&r.kmFim!=null&&r.fam!=='SH'){
+          const A=src.Data.parseKm(est(r.kmIni)),B=src.Data.parseKm(est(r.kmFim));
+          if(A.err||B.err)r.iss.push({sev:'erro',cod:'estaca',msg:`Sem estaca correspondente na base ${k==='B4'?'da BR-373 B4':'da BR-277'}: ${est(A.err?r.kmIni:r.kmFim)} (${A.err||B.err})`});
+          else{r.a=Math.min(A.s,B.s);r.b=Math.max(A.s,B.s);const i=Math.max(0,Math.min(src.R.length-1,Math.floor((r.a-src.ODO[0])/20)));const bl=src.R[i][4];
+            if(k==='B23'){r.blk='B'+bl;if(r.bloco!=null&&String(r.bloco)!==String(bl))r.iss.push({sev:'atencao',cod:'bloco',msg:`Coluna Bloco = "${r.bloco}", mas a estaca ${est(r.kmIni)} fica no Bloco ${bl}.`})}
+            else if(bl!==4)r.iss.push({sev:'atencao',cod:'bloco',msg:`Estaca fora do Bloco 04 na base (bloco ${bl}).`});
+            if(r.bloco!=null&&k==='B4'&&String(r.bloco)!=='4')r.iss.push({sev:'atencao',cod:'bloco',msg:`Coluna Bloco = "${r.bloco}" na aba do Bloco 04.`});
+            const grp=grpOf(r.faixa,r.fam);
+            if(!semStatus&&!grp)r.iss.push({sev:'erro',cod:'faixa',msg:`Faixa "${r.faixa}" sem pista correspondente no projeto.`});
+            if(grp&&!semStatus&&!r.iss.some(x=>x.sev==='erro')){
+              r.L=grp==='DRN'?(r.side==='C'?6:7):src.LANES.findIndex(l=>l.grp===grp&&l.side===r.side);
+              if(r.L<0)r.iss.push({sev:'erro',cod:'faixa',msg:'Sentido/faixa sem pista correspondente.'});
+              else if(r.b-r.a<0.5)r.iss.push({sev:'erro',cod:'km_igual',msg:'Trecho sem extensão nas estacas da base.'});
+              else{r.ap=true;let same=0,other=0;const fams=new Set();
+                for(const p of src.PANOS){if(p.L!==r.L)continue;const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,ov=Math.min(r.b,pb)-Math.max(r.a,pa);if(ov<=0)continue;const f=projFam(p);if(f===r.fam)same+=ov;else{other+=ov;fams.add(p.code)}}
+                const len=r.b-r.a;
+                if(same+other<0.5)r.iss.push({sev:'atencao',cod:'sem_projeto',msg:'O projeto não tem solução nesta faixa no trecho executado.'});
+                else if(same<len*0.5)r.iss.push({sev:'atencao',cod:'solucao_dif',msg:`Executado ${r.fam}; o projeto prevê ${[...fams].join(', ')} em ${fmt(other/len*100,0)}% do trecho.`})}}}}
+        if(!r.ap)r.motivo=semStatus||(r.iss.some(x=>x.sev==='erro')?'pendência de erro':'');
+        out[k].push(r);out.all.push(r)}}
+    // mesma pista com trechos sobrepostos em datas diferentes (possível reexecução ou lançamento duplicado)
+    const byL=new Map();for(const r of out.all){if(!r.ap)continue;const key=r.k+'|'+r.L;(byL.get(key)||byL.set(key,[]).get(key)).push(r)}
+    for(const arr of byL.values()){arr.sort((x,y)=>x.a-y.a);for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length&&arr[j].a<arr[i].b-1;j++){const x=arr[i],y=arr[j];if(Math.min(x.b,y.b)-y.a<=1)continue;
+      if(x.fam===y.fam&&x.data===y.data&&x.equipe===y.equipe)continue;
+      x.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${y.lin.join(', ')} (${brD(y.data)}, ${y.fam}).`});
+      y.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${x.lin.join(', ')} (${brD(x.data)}, ${x.fam}).`})}}
+    RES=out;return out}
+  // registros de execução no formato da página Relatórios (só os segmentos aplicados)
+  function execRecs(rod){const R0=resolve()[rod==='B4'?'B4':'B23'];return R0.filter(r=>r.ap).map(r=>({L:r.L,a:r.a,b:r.b,st:'exec',dateExec:r.data,dateProg:null,
+    tons:r.q&&r.q.t!=null?r.q.t:null,esp:['FF','FE','FS','GAP'].includes(r.fam)&&r.esp>0?Math.round(r.esp*1000)/10:null,exc:0,obs:'',src:'producao',tag:null}))}
+  function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const o=[];for(const x of iv){const l=o[o.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else o.push([x[0],x[1]])}return o}
+  const clip=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
+  // índice de status (mesmo formato do ExecIdx da página Relatórios), usado no Painel para o Bloco 04
+  function idx(rod){const by=new Map();for(const r of execRecs(rod)){(by.get(r.L)||by.set(r.L,[]).get(r.L)).push([r.a,r.b])}const U=new Map([...by].map(([L,v])=>[L,unite(v)]));
+    return (L,a,b)=>{const u=U.get(L);const ex=u?clip(u,a,b):0;return {st:ex>=b-a-0.5?'exec':ex>0.5?'and':'nao',exLen:ex,prLen:0,anLen:0}}}
+  const has=rod=>!!SEG[rod==='B4'?'B4':'B23'];
+
+  /* ---------- importação: leitura, validação, comparação e gravação ---------- */
+  function hashStr(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+  const pack=s=>{const o={id:s.id,lin:s.lin,data:s.data,nmed:s.nmed,equipe:s.equipe,serial:s.serial,side:s.side,faixa:s.faixa,local:s.local,bloco:s.bloco,kmIni:s.kmIni,kmFim:s.kmFim,
+      comp:s.comp,larg:s.larg,esp:s.esp,solAdot:s.solAdot,fam:s.fam,pontual:s.pontual||undefined,tipo:s.tipo,obs:s.obs||undefined,mun:s.mun||undefined,usina:s.usina||undefined,q:s.q,is:s.iss.map(x=>[x.sev,x.cod,x.msg])};
+    if(s.kmIni==null||s.kmFim==null)o.kmRaw=s.kmRaw;return o};
+  const loadJs=(src,ok)=>new Promise((res,rej)=>{if(ok())return res();const el=document.createElement('script');el.src=src;el.onload=()=>ok()?res():rej(new Error('a biblioteca de planilhas não carregou.'));el.onerror=()=>rej(new Error('não foi possível carregar a biblioteca de planilhas (sem internet?).'));document.head.appendChild(el)});
+  async function loadX(){await loadJs('lib/xlsx-prod.min.js',()=>!!window.XLSX_PROD);return window.XLSX_PROD}
+  // lê o arquivo (ArrayBuffer) e grava no servidor; devolve o resumo. Erros de aba/cabeçalho mantêm os dados anteriores daquela aba.
+  async function importBuffer(buf,info){const X=await loadX();let wb0,wb;
+    try{wb0=X.read(buf,{type:'array',bookSheets:true})}catch(e){const er=new Error(String(e.message||e));er.kind='leitura';throw er}
+    const names=ProdParse.sheetNames(wb0.SheetNames);
+    if(!names.length){const er=new Error('as abas "Lançamento lotes B2 - B3" e "Lançamento Lote B4" não foram encontradas (abas lidas: '+wb0.SheetNames.slice(0,8).join(', ')+'…).');er.kind='abas';throw er}
+    try{wb=X.read(buf,{type:'array',sheets:names,cellFormula:false,cellHTML:false,cellText:false,cellStyles:false,cellNF:false})}catch(e){const er=new Error(String(e.message||e));er.kind='leitura';throw er}
+    const res=ProdParse.parse(wb,X),now=Date.now(),parts={},sum={},erros=res.issues.map(x=>x.msg);
+    for(const k of ['B23','B4']){const a=res.abas[k];const prev=SEG[k];
+      if(!a||a.issues.some(x=>x.sev==='erro')){if(a)erros.push(...a.issues.filter(x=>x.sev==='erro').map(x=>`${a.aba}: ${x.msg}`));sum[k]={mantido:true};continue}
+      const pm=new Map((prev&&prev.segs||[]).map(s=>[s.id,s]));let novos=0,alt=0;const segs=a.segs.map(s=>{const o=pack(s);const h=hashStr(JSON.stringify(o));const p=pm.get(o.id);
+        if(p){o.p=p.p;o.up=p.h===h?p.up:now;if(p.h!==h)alt++;pm.delete(o.id)}else{o.p=now;o.up=now;novos++}o.h=h;return o});
+      const rem=[...pm.values()].map(s=>({id:s.id,aba:k,lin:s.lin,data:s.data,side:s.side,faixa:s.faixa,kmIni:s.kmIni,kmFim:s.kmFim,fam:s.fam,q:s.q,rem:now}));
+      parts[k.toLowerCase()]={at:now,aba:a.aba,cont:a.cont,segs,sheetIssues:a.issues};
+      sum[k]={aba:a.aba,total:segs.length,novos,alt,rem:rem.length,linhas:a.cont.servicos,fora:a.cont.foraPadrao,removidos:rem}}
+    if(!Object.keys(parts).length){const er=new Error(erros.join(' · ')||'nenhuma aba lida');er.kind='abas';throw er}
+    const m=Object.assign({hist:[],removidos:[]},META||{});const mudou=Object.values(sum).some(x=>!x.mantido&&(x.novos||x.alt||x.rem));
+    const removidos=[].concat(...Object.values(sum).map(x=>x.removidos||[]),m.removidos).slice(0,400);
+    const h={at:now,arq:info.name,mod:info.lastModified,size:info.size,origem:info.origem,por:(window.ACL&&ACL.user&&ACL.user.email)||'',erros,n:{}};
+    for(const [k,x] of Object.entries(sum))h.n[k]=x.mantido?{mantido:true}:{total:x.total,novos:x.novos,alt:x.alt,rem:x.rem,linhas:x.linhas,fora:x.fora};
+    parts.meta={...m,at:now,dadosAt:mudou||!m.dadosAt?now:m.dadosAt,arq:info.name,mod:info.lastModified,size:info.size,sig:info.sig||'',origem:info.origem,erros,hist:[h].concat(m.hist||[]).slice(0,40),removidos};
+    if(!window.ProdDB||!window.ProdDB.save)throw new Error('sem conexão com o servidor do app');
+    await window.ProdDB.save(parts);
+    // atualização local imediata (o retorno do servidor chega pelo onSnapshot)
+    META=parts.meta;if(parts.b23)SEG.B23=parts.b23;if(parts.b4)SEG.B4=parts.b4;ver++;RES=null;emit('prod',ver);
+    return {h,erros}}
+
+  /* ---------- monitoramento automático (computador com a pasta sincronizada; Chrome ou Edge) ---------- */
+  const W={dir:null,state:'off',msg:'',checkedAt:0,pend:null,busy:false,timer:null,lastStatusAt:0,lastStatusKey:'',file:null,fails:0};
+  const T0=window.__PROD_T||{},POLL_MS=T0.poll||60000,STABLE_MS=T0.stable||45000;
+  const fsOk=()=>'showDirectoryPicker' in window&&window.isSecureContext;
+  const canImport=()=>can('producao','create');
+  const idb=(mode,fn)=>new Promise((res,rej)=>{const rq=indexedDB.open('prodWatch',1);rq.onupgradeneeded=()=>rq.result.createObjectStore('kv');rq.onerror=()=>rej(rq.error);
+    rq.onsuccess=()=>{try{const tx=rq.result.transaction('kv',mode);const st=tx.objectStore('kv');const r=fn(st);tx.oncomplete=()=>res(r&&r.result);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error)}catch(e){rej(e)}}});
+  const idbGet=k=>idb('readonly',s=>s.get(k)),idbSet=(k,v)=>idb('readwrite',s=>s.put(v,k)),idbDel=k=>idb('readwrite',s=>s.delete(k));
+  const REV=/^acompanhamento de producao rev\s*(\d+)\.xls[bx]$/;
+  async function pickFile(dir){let best=null;for await(const h of dir.values()){if(h.kind!=='file')continue;const m=norm(h.name).match(REV);if(m&&(!best||+m[1]>best.rev))best={h,rev:+m[1]}}
+    if(!best){const er=new Error('nenhuma planilha "Acompanhamento de produção REV n.xlsb" na pasta vinculada.');er.kind='arquivo';throw er}return best.h}
+  function classify(e){const n=e&&e.name||'';if(n==='NotReadableError')return 'A planilha está bloqueada ou sendo gravada (Excel/OneDrive) e não pôde ser lida. Nova tentativa automática em 1 minuto.';
+    if(n==='NotFoundError')return 'Pasta ou arquivo não encontrado (foi movido ou renomeado?). Vincule a pasta de novo.';
+    if(n==='NotAllowedError'||n==='SecurityError')return 'O navegador retirou a permissão de leitura da pasta. Toque em "Retomar monitoramento".';
+    if(e&&e.kind==='leitura')return `Não foi possível ler a planilha (arquivo incompleto ou ainda sendo salvo; detalhe: ${e.message}). Nova tentativa automática em 1 minuto; os dados anteriores continuam valendo.`;
+    return 'Atualização não concluída: '+(e&&e.message||e)+' Os dados anteriores continuam valendo.'}
+  async function pushStatus(force){if(!window.ProdDB||!window.ProdDB.status||!canImport())return;const key=W.state+'|'+W.msg+'|'+(W.file&&W.file.sig||'');
+    if(!force&&key===W.lastStatusKey&&Date.now()-W.lastStatusAt<10*60000)return;W.lastStatusKey=key;W.lastStatusAt=Date.now();
+    try{await window.ProdDB.status({at:W.checkedAt,state:W.state,msg:W.msg,arq:W.file&&W.file.name||'',mod:W.file&&W.file.mod||null,size:W.file&&W.file.size||null,auto:true})}catch(e){}}
+  async function check(manual){if(!W.dir||W.busy)return;W.busy=true;render();
+    try{const fh=await pickFile(W.dir);const f=await fh.getFile();const sig=f.name+'|'+f.lastModified+'|'+f.size;W.checkedAt=Date.now();W.file={name:f.name,mod:f.lastModified,size:f.size,sig};
+      if(META&&META.sig===sig&&!manual){W.state='ok';W.msg='Sem alterações desde a última importação.';W.pend=null;W.fails=0}
+      else if(!W.pend||W.pend.sig!==sig){W.pend={sig,since:Date.now()};W.state='wait';W.msg=`Alteração detectada (arquivo salvo em ${dt(f.lastModified)}). Aguardando a gravação terminar para importar.`;
+        if(manual){W.pend.since=0}}
+      if(W.pend&&W.pend.sig===sig&&Date.now()-W.pend.since>=STABLE_MS){W.state='import';W.msg='Importando…';render();
+        const buf=await f.arrayBuffer();if(buf.byteLength!==f.size){const er=new Error(`leitura incompleta (${buf.byteLength} de ${f.size} bytes).`);er.kind='leitura';throw er}
+        const f2=await fh.getFile();if(f2.lastModified!==f.lastModified||f2.size!==f.size){W.pend={sig:f2.name+'|'+f2.lastModified+'|'+f2.size,since:Date.now()};W.state='wait';W.msg='A planilha mudou durante a leitura; nova tentativa quando a gravação terminar.'}
+        else{const r=await importBuffer(buf,{name:f.name,lastModified:f.lastModified,size:f.size,sig,origem:'automática'});W.pend=null;W.fails=0;
+          W.state=r.erros.length?'erro':'ok';W.msg=r.erros.length?'Importado com pendências de leitura: '+r.erros.join(' · '):'Dados atualizados.'}}}
+    catch(e){W.fails++;W.state='erro';W.msg=classify(e);if(W.pend)W.pend.since=Date.now()-STABLE_MS+POLL_MS;console.warn(e)}
+    finally{W.busy=false;pushStatus(W.state==='erro'||W.state==='ok'&&manual);render()}}
+  function startTimer(){if(W.timer)clearInterval(W.timer);W.timer=setInterval(()=>check(false),POLL_MS);check(false)}
+  async function linkDir(){try{const h=await window.showDirectoryPicker({id:'producao',mode:'read'});try{await idbSet('dir',h)}catch(e){console.warn('pasta não guardada para a próxima sessão',e)}W.dir=h;W.state='wait';W.msg='Pasta vinculada. Verificando…';startTimer()}
+    catch(e){if(e&&e.name==='AbortError')return;W.state='erro';W.msg=classify(e);render()}}
+  async function resumeDir(){if(!W.dir)return;try{const p=await W.dir.requestPermission({mode:'read'});if(p==='granted'){W.state='wait';W.msg='Monitoramento retomado.';startTimer()}else{W.state='perm';W.msg='Permissão de leitura negada.';render()}}catch(e){W.state='erro';W.msg=classify(e);render()}}
+  async function unlink(){if(W.timer)clearInterval(W.timer);W.timer=null;W.dir=null;W.state='off';W.msg='';W.pend=null;try{await idbDel('dir')}catch(e){}pushStatus(true);render()}
+  async function initWatch(){if(!fsOk()||!canImport())return;try{const h=await idbGet('dir');if(!h)return;W.dir=h;const p=await h.queryPermission({mode:'read'});
+      if(p==='granted')startTimer();else{W.state='perm';W.msg='O navegador pede para confirmar o acesso à pasta a cada sessão.';render()}}catch(e){}}
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&W.timer)check(false)});
+  async function importManual(f){if(!f)return;W.busy=true;W.state='import';W.msg='Importando '+f.name+'…';render();
+    try{const buf=await f.arrayBuffer();const r=await importBuffer(buf,{name:f.name,lastModified:f.lastModified,size:f.size,sig:f.name+'|'+f.lastModified+'|'+f.size,origem:'manual'});
+      W.state=r.erros.length?'erro':'ok';W.msg=r.erros.length?'Importado com pendências de leitura: '+r.erros.join(' · '):'Importação manual concluída.'}
+    catch(e){W.state='erro';W.msg=classify(e)}finally{W.busy=false;W.checkedAt=Date.now();pushStatus(true);render()}}
+
+  /* ---------- página ---------- */
+  const F={blk:'ALL',sev:'pend',q:'',lim:150};
+  function blockSum(list){const o={n:list.length,ap:0,len:{},t:0,un:0,err:0,att:0,d0:null,d1:null};
+    for(const r of list){if(r.ap){o.ap++;o.len[r.fam]=(o.len[r.fam]||0)+(r.b-r.a);if(r.q&&r.q.t)o.t+=r.q.t}if(r.fam==='SAIDA'&&r.q&&r.q.un)o.un+=r.q.un;
+      if(r.iss.some(x=>x.sev==='erro'))o.err++;else if(r.iss.some(x=>x.sev==='atencao'))o.att++;if(r.data){if(!o.d0||r.data<o.d0)o.d0=r.data;if(!o.d1||r.data>o.d1)o.d1=r.data}}return o}
+  function statusBox(){const st=W.dir||W.state!=='off'?W:null;const sh=STAT||{};
+    const chk=Math.max(W.checkedAt||0,sh.at||0);const state=st?W.state:(sh.state||'off');const msg=st?W.msg:(sh.msg||'');
+    const lab={off:'Monitoramento automático desligado neste aparelho',ok:W.dir||!st?'Monitorando':'Importação concluída',wait:'Aguardando gravação',import:'Importando',erro:'Atenção',perm:'Monitoramento pausado'}[state]||state;
+    const col={ok:'#1E8E4E',wait:'#C27A00',import:'#1A73E8',erro:'#C62828',perm:'#C27A00',off:'#8A939C'}[state]||'#8A939C';
+    const src=st?'neste aparelho':(sh.by?`por ${esc(sh.by)}`:'');
+    return `<div class="pd-st"><i style="background:${col}"></i><div><b>${esc(lab)}</b>${msg?`<p>${esc(msg)}</p>`:''}</div></div>
+      <div class="pd-kv"><div><span>Última verificação da planilha</span><b>${dt(chk)}</b><small>${esc(src)}${sh.arq&&!st?' · '+esc(sh.arq):''}</small></div>
+      <div><span>Última atualização dos dados</span><b>${dt(META&&META.dadosAt)}</b><small>${META?`importação ${esc(META.origem||'')} em ${dt(META.at)}`:'nenhuma importação'}</small></div>
+      <div><span>Arquivo importado</span><b>${META?esc(META.arq):'—'}</b><small>${META&&META.mod?'salvo em '+dt(META.mod):''}</small></div></div>`}
+  function render(){const root=$('pdRoot');if(!root||Router.cur()!=='producao')return;const R0=resolve();
+    const blks=[['B2','Bloco 02 (BR-277)',R0.B23.filter(r=>r.blk==='B2')],['B3','Bloco 03 (BR-277)',R0.B23.filter(r=>r.blk==='B3')],['B4','Bloco 04 (BR-373)',R0.B4]];
+    const semBl=R0.B23.filter(r=>!r.blk);
+    $('pdStatus').innerHTML=statusBox();
+    const fsBtns=canImport()?(fsOk()?(W.dir?(W.state==='perm'?`<button type="button" class="pd-b pri" id="pdResume">Retomar monitoramento</button>`:`<button type="button" class="pd-b" id="pdCheck"${W.busy?' disabled':''}>Verificar agora</button>`)+`<button type="button" class="pd-b" id="pdUnlink">Parar monitoramento</button>`
+        :`<button type="button" class="pd-b pri" id="pdLink">Vincular pasta da planilha (monitorar)</button>`):`<span class="pd-note">Este navegador não permite monitorar a pasta. Use o Chrome ou o Edge no computador com a pasta sincronizada, ou importe o arquivo manualmente.</span>`)
+        +`<label class="pd-b"><input type="file" id="pdFile" accept=".xlsb,.xlsx" hidden>Importar arquivo manualmente</label>`:'';
+    $('pdActs').innerHTML=fsBtns;
+    $('pdBlocks').innerHTML=blks.map(([b,t,l])=>{const s=blockSum(l);const lens=Object.entries(s.len).map(([f,v])=>`<span>${esc(FAMN[f]||f)}: <b>${fmt(v/1000,3)} km</b></span>`).join('');
+      return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${s.n}</b><span>segmentos</span></div><div><b>${s.ap}</b><span>no status de execução</span></div><div><b class="${s.err?'bad':''}">${s.err}</b><span>com erro</span></div><div><b class="${s.att?'warn':''}">${s.att}</b><span>com atenção</span></div></div>
+        <div class="pd-l">${lens||'<span>sem trechos aplicados</span>'}${s.t?`<span>CBUQ/GAP: <b>${fmt(s.t,1)} t</b></span>`:''}${s.un?`<span>Saídas de dreno: <b>${fmt(s.un)} un</b></span>`:''}</div>
+        <small>${s.d0?`Lançamentos de ${brD(s.d0)} a ${brD(s.d1)}`:'Sem lançamentos'}</small></div>`}).join('')+(semBl.length?`<div class="pd-blk"><h3>BR-277 sem bloco identificado</h3><div class="pd-n"><div><b>${semBl.length}</b><span>segmentos</span></div></div><small>Estacas sem correspondência na base: veja as pendências.</small></div>`:'');
+    // pendências e segmentos
+    const sheetIss=[];for(const k of ['B23','B4']){const S=SEG[k];if(S&&S.sheetIssues)for(const x of S.sheetIssues)sheetIss.push({k,...x})}
+    const all=R0.all.filter(r=>F.blk==='ALL'||(F.blk==='B4'?r.k==='B4':r.blk===F.blk));
+    const qs=norm(F.q).split(' ').filter(Boolean);
+    const list=all.filter(r=>(F.sev==='all'||(F.sev==='pend'?r.iss.some(x=>x.sev!=='info'):F.sev==='erro'?r.iss.some(x=>x.sev==='erro'):F.sev==='ap'?r.ap:!r.ap))&&
+      (!qs.length||qs.every(w=>norm([r.lin.join(' '),r.data,brD(r.data),r.faixa,r.fam,r.equipe,r.serial,est(r.kmIni||0),r.iss.map(x=>x.msg).join(' ')].join(' ')).includes(w))));
+    $('pdCount').textContent=`${list.length} de ${all.length} segmentos`;
+    $('pdSheet').innerHTML=sheetIss.length?`<details class="pd-sh"><summary>${sheetIss.length} linha(s) da planilha fora do padrão de lançamento (não importadas)</summary><ul>${sheetIss.map(x=>`<li>${x.k==='B4'?'Bloco 04':'B2/B3'} · linha ${(x.linhas||[]).join(', ')}: ${esc(x.msg)}</li>`).join('')}</ul></details>`:'';
+    const rows=list.slice(0,F.lim).map(r=>{const sv=r.iss.some(x=>x.sev==='erro')?'erro':r.iss.some(x=>x.sev==='atencao')?'atencao':'';const SRC=srcOf(r.k);
+      const e0=r.a!=null&&SRC?SRC.Data.nameAt?SRC.Data.nameAt(r.a):est(r.kmIni):r.kmIni!=null?est(r.kmIni):'—';
+      return `<tr class="${sv}"><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td class="n">${r.lin.join(', ')}</td><td>${brD(r.data)}</td><td>${r.side==='C'?'Cresc.':r.side==='D'?'Decr.':'—'} · ${esc(r.faixa||'—')}</td>
+        <td>${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):'—'}</td><td>${esc(r.fam||'?')}</td><td class="n">${r.q?Object.entries(r.q).map(([u,v])=>fmt(v,u==='un'?0:1)+' '+u.replace('m3','m³').replace('m2','m²')).join(' · '):''}</td>
+        <td>${r.ap?'<span class="pd-ok">aplicado</span>':`<span class="pd-no">${esc(r.motivo||'não aplicado')}</span>`}</td><td class="pd-is">${r.iss.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</td></tr>`}).join('');
+    $('pdList').innerHTML=list.length?`<table class="pd-t"><thead><tr><th>Bloco</th><th>Linha(s)</th><th>Data</th><th>Sentido · faixa</th><th>KM (planilha)</th><th>Solução</th><th>Quantidades</th><th>Status</th><th>Pendências</th></tr></thead><tbody>${rows}</tbody></table>${list.length>F.lim?`<button type="button" class="pd-b" id="pdMore">Mostrar mais (${list.length-F.lim} restantes)</button>`:''}`:'<p class="pd-note">Nenhum segmento neste filtro.</p>';
+    // histórico de importações e removidos
+    const H=(META&&META.hist)||[];
+    $('pdHist').innerHTML=H.length?`<table class="pd-t sm"><thead><tr><th>Importado em</th><th>Arquivo (salvo em)</th><th>Origem</th><th>B2/B3</th><th>B4</th><th>Observação</th></tr></thead><tbody>${H.map(h=>{const c=x=>!x?'—':x.mantido?'mantido (aba não lida)':`${x.total} seg. · +${x.novos} novos · ${x.alt} alterados · ${x.rem} removidos`;
+      return `<tr><td>${dt(h.at)}</td><td>${esc(h.arq)} (${dt(h.mod)})</td><td>${esc(h.origem)}${h.por?' · '+esc(h.por):''}</td><td>${c(h.n.B23)}</td><td>${c(h.n.B4)}</td><td>${h.erros&&h.erros.length?`<span class="pd-erro">${esc(h.erros.join(' · '))}</span>`:''}</td></tr>`}).join('')}</tbody></table>`:'<p class="pd-note">Nenhuma importação ainda.</p>';
+    const RM=(META&&META.removidos)||[];
+    $('pdRem').innerHTML=RM.length?`<details class="pd-sh"><summary>${RM.length} segmento(s) que saíram da planilha em importações anteriores (guardados para consulta)</summary><table class="pd-t sm"><thead><tr><th>Removido em</th><th>Aba</th><th>Linha(s)</th><th>Data</th><th>Sentido · faixa</th><th>KM</th><th>Solução</th></tr></thead><tbody>${RM.slice(0,200).map(r=>`<tr><td>${dt(r.rem)}</td><td>${r.aba==='B4'?'B4':'B2/B3'}</td><td>${(r.lin||[]).join(', ')}</td><td>${brD(r.data)}</td><td>${r.side||''} · ${esc(r.faixa||'')}</td><td>${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):'—'}</td><td>${esc(r.fam||'')}</td></tr>`).join('')}</tbody></table></details>`:'';
+    const b=id=>$(id);if(b('pdLink'))b('pdLink').onclick=linkDir;if(b('pdResume'))b('pdResume').onclick=resumeDir;if(b('pdCheck'))b('pdCheck').onclick=()=>check(true);if(b('pdUnlink'))b('pdUnlink').onclick=unlink;
+    if(b('pdFile'))b('pdFile').onchange=e=>{const f=e.target.files&&e.target.files[0];e.target.value='';importManual(f)};if(b('pdMore'))b('pdMore').onclick=()=>{F.lim+=300;render()}}
+  function init(){const root=$('pdRoot');if(!root)return;
+    $('pdBlk').onchange=e=>{F.blk=e.target.value;F.lim=150;render()};$('pdSev').onchange=e=>{F.sev=e.target.value;F.lim=150;render()};$('pdQ').oninput=e=>{F.q=e.target.value;F.lim=150;render()};render()}
+  Router.onInit('producao',init);on('page',p=>{if(p==='producao')render()});on('prod',()=>render());
+  setTimeout(initWatch,1200);
+  return {execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
+})();
+window.PROD=PROD;
+
 on('page',p=>{if(p==='admin'&&ACL&&ACL.admin&&ACL.renderAdmin)ACL.renderAdmin($('admRoot'))});
 if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]');if(a)a.hidden=false}
 /* ------------------------------ Início ------------------------------ */
@@ -4056,7 +4339,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 15:41';
+  const CUR_VER='22/11/2026 16:31';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

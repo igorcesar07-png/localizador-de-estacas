@@ -20,6 +20,7 @@ export const PAGES=[
   {k:'levbe',t:'Levantamento de Bota-Espera',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de registros e exportar Excel/CSV',create:'Registrar bota-esperas (e complementar ou desfazer os próprios registros)',edit:'Corrigir e complementar registros de qualquer usuário',delete:'Excluir registros de qualquer usuário (exclusão lógica)'}},
   {k:'levpat',t:'Levantamento de Patologias',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de ocorrências e exportar Excel/CSV',create:'Registrar panelas (e complementar ou desfazer as próprias ocorrências)',edit:'Corrigir e complementar ocorrências de qualquer usuário',delete:'Excluir ocorrências de qualquer usuário (exclusão lógica)'}},
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
+  {k:'producao',t:'Produção executada',acts:['view','create'],help:{view:'Ver os segmentos executados importados da planilha de produção, as pendências e o histórico de importações',create:'Vincular a pasta da planilha (monitoramento automático) e importar o arquivo manualmente'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
 const ACTS={view:'Visualizar',create:'Criar',edit:'Editar',delete:'Excluir'};
 
@@ -291,6 +292,13 @@ onAuthStateChanged(auth,async user=>{
         save:r=>track(setDoc(doc(db,C,r.id),r)),
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
+    // produção executada (planilha "Acompanhamento de produção"): 3 documentos de dados + 1 de status; lê quem usa o app, grava quem pode importar
+    {const PIDS=['producao_meta','producao_b23','producao_b4','producao_status'],pcan=isAdm||!!(window.ACL.perms.producao&&window.ACL.perms.producao.create);
+      window.ProdDB={subscribe:cb=>{const us=PIDS.map(id=>onSnapshot(doc(db,'base',id),s=>cb(id,s.exists()?s.data():null),e=>cb(id,null,e)));return ()=>us.forEach(u=>u())},
+        save:async parts=>{if(!pcan)throw new Error('sem permissão para importar a planilha de produção');const b=writeBatch(db);
+          for(const [k,obj] of Object.entries(parts)){const txt=JSON.stringify(obj),sz=new Blob([txt]).size;if(sz>1000000)throw new Error(`dados "${k}" grandes demais para o servidor (${Math.round(sz/1024)} KB; limite de 1 MB). Nada foi gravado.`);
+            b.set(doc(db,'base','producao_'+k),{json:txt,updatedAt:serverTimestamp(),by:user.email})}return track(b.commit())},
+        status:st=>pcan?soft(setDoc(doc(db,'base','producao_status'),{...st,by:user.email,updatedAt:serverTimestamp()})):Promise.resolve()}}
     // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
     const pc=window.ACL.perms.calculadora||{};
     if(isAdm||pc.view){const hid=eq=>String(eq).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').slice(0,80)||'_';

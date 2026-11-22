@@ -1261,6 +1261,23 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .histbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin:0 0 14px;padding:12px 14px;border-radius:12px;background:var(--hl-man);border:1.5px solid var(--hl-man-bd);color:var(--ink)}
 .histbar .hbtx{flex:1 1 320px;min-width:0}.histbar .hbtx b{display:block;font:800 16px/1.25 var(--cond)}.histbar small{display:block;margin-top:4px;color:var(--muted);line-height:1.35}
 .histbar .hbwarn{color:var(--hl-chip-warn-ink,#8A4B00);font-weight:700}.histbar .hbbtn{display:flex;flex-wrap:wrap;gap:8px}.histbar .hbbtn button{min-height:42px}
+#pProd{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pProd .topbar{background:var(--plate);color:var(--plate-ink)}#pProd .cwrap{max-width:1280px}
+.pd-c{padding:14px 16px}.pd-c h2{margin:0 0 10px;font:800 13px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pd-st{display:flex;gap:10px;align-items:flex-start}.pd-st i{flex:none;width:12px;height:12px;border-radius:50%;margin-top:4px}.pd-st b{font:700 16px var(--body)}.pd-st p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.pd-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}.pd-kv div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.pd-kv span{font-size:12px;color:var(--muted)}.pd-kv b{font:700 15px var(--body)}.pd-kv small{font-size:12px;color:var(--muted)}
+.pd-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0 8px}.pd-b{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:700 14px var(--body);padding:0 14px;cursor:pointer;display:inline-flex;align-items:center}
+.pd-b.pri{background:var(--ink);color:var(--surface);border-color:var(--ink)}.pd-b:disabled{opacity:.55}.pd-note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.pd-blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:12px 0}.pd-blk{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.pd-blk h3{margin:0 0 8px;font:700 15px var(--body)}.pd-n{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.pd-n div{display:flex;flex-direction:column}.pd-n b{font:800 20px var(--cond)}.pd-n b.bad{color:#C62828}.pd-n b.warn{color:#B26A00}.pd-n span{font-size:11.5px;color:var(--muted)}
+.pd-l{display:flex;flex-wrap:wrap;gap:4px 12px;margin:8px 0 4px;font-size:13px}.pd-blk small{font-size:12px;color:var(--muted)}
+.pd-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}#pdCount{font:700 13px var(--body);color:var(--muted)}
+.pd-f{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}.pd-f>.fld{flex:1 1 200px;min-width:0;width:auto;max-width:none}.pd-f>.pd-q{flex:2 1 280px}
+.pd-scroll{overflow:auto;max-width:100%}.pd-t{width:100%;border-collapse:collapse;font-size:13px}.pd-t th{text-align:left;font:700 12px var(--body);color:var(--muted);border-bottom:1px solid var(--line);padding:6px;white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+.pd-t td{border-bottom:1px solid var(--line);padding:6px;vertical-align:top}.pd-t td.n{white-space:nowrap}.pd-t tr.erro td:first-child{box-shadow:inset 3px 0 #C62828}.pd-t tr.atencao td:first-child{box-shadow:inset 3px 0 #E3A008}.pd-t.sm{font-size:12.5px}
+.pd-is span{display:block;margin:1px 0}.pd-erro{color:#B42318}.pd-atencao{color:#8A5300}.pd-info{color:var(--muted)}.pd-ok{color:#1E7A4C;font-weight:700}.pd-no{color:var(--muted)}
+.pd-sh{margin:6px 0 10px;font-size:13px}.pd-sh summary{cursor:pointer;font-weight:700}#pdMore{margin-top:10px}
+@media (max-width:760px){.pd-kv{grid-template-columns:1fr}.pd-f{grid-template-columns:1fr}}
 #pHist{display:flex;flex-direction:column;background:var(--ground);color:var(--ink)}#pHist .topbar{background:var(--plate);color:var(--plate-ink)}
 #pHist .cwrap{max-width:1180px}
 .hpfil{padding:14px 16px 12px}.hpfh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
@@ -1741,9 +1758,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#levpat" data-page="levpat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="14" rx="8.5" ry="5"/><path d="M7.5 13.5c1.4 1.5 7.6 1.5 9 0"/><path d="M6 6l2 2M12 4v3M18 6l-2 2"/></svg><span>Levantamento de Patologias<small>Panelas por pista e faixa</small></span></a>
     <a href="#analise" data-page="analise"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 20h18"/><path d="M5 17V9M9 17V5M13 17v-6M17 17V7"/></svg><span>Análise por km<small>Estratégia de execução e simulação</small></span></a>
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
+    <a href="#producao" data-page="producao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>Produção executada<small>Importação da planilha de produção</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 22/11/2026 15:41 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 22/11/2026 16:31 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2076,6 +2094,21 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   </div>
 </div>
 <div class="modal" id="lpMv" hidden role="dialog" aria-modal="true" aria-labelledby="lpMvT"><div class="mbox lv-edb"><h2 id="lpMvT">Arquivo do levantamento</h2><div class="lv-media" id="lpMvBody"></div><div class="mfoot"><span class="lv-sp"></span><button type="button" class="primary" id="lpMvClose">Fechar</button></div></div></div>
+<section class="page" id="pProd" data-page="producao" hidden>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Produção executada</h1></div>
+  <div class="cscroll"><div class="cwrap" id="pdRoot">
+    <div class="card pd-c"><h2>Planilha de produção</h2>
+      <div id="pdStatus" aria-live="polite"></div><div class="pd-acts" id="pdActs"></div>
+      <p class="pd-note">Fonte: "Acompanhamento de produção REV n.xlsb", abas <b>Lançamento lotes B2 - B3</b> (BR-277) e <b>Lançamento Lote B4</b> (BR-373). A planilha é só lida. No computador com a pasta sincronizada, vincule a pasta uma vez: com o app aberto, ele verifica o arquivo a cada minuto e importa quando a gravação termina. Os dados importados ficam no servidor e valem para todos os aparelhos.</p></div>
+    <div class="pd-blocks" id="pdBlocks"></div>
+    <div class="card pd-c"><div class="pd-h"><h2>Segmentos importados</h2><span id="pdCount"></span></div>
+      <div class="pd-f"><div class="fld"><label for="pdBlk">Bloco</label><select id="pdBlk"><option value="ALL">Todos</option><option value="B2">Bloco 02</option><option value="B3">Bloco 03</option><option value="B4">Bloco 04</option></select></div>
+        <div class="fld"><label for="pdSev">Mostrar</label><select id="pdSev"><option value="pend">Com pendência (erro ou atenção)</option><option value="erro">Só com erro</option><option value="na">Não aplicados ao status</option><option value="ap">Aplicados ao status</option><option value="all">Todos</option></select></div>
+        <div class="fld pd-q"><label for="pdQ">Buscar</label><input id="pdQ" type="search" placeholder="linha, data, km, faixa, equipe…" autocomplete="off"></div></div>
+      <div id="pdSheet"></div><div class="pd-scroll" id="pdList"></div></div>
+    <div class="card pd-c"><h2>Histórico de importações</h2><div class="pd-scroll" id="pdHist"></div><div id="pdRem"></div></div>
+  </div></div>
+</section>
 <section class="page" id="pHist" data-page="histprog" hidden>
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Histórico de programações</h1></div>
   <div class="cscroll"><div class="cwrap">
@@ -2109,7 +2142,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         <div class="an-pg"><h3>Pista</h3><div class="an-pills" id="aLanes"></div></div>
         <div class="an-pg"><h3>Solução <button type="button" class="linkbtn" id="aSolPav">só pavimento</button> · <button type="button" class="linkbtn" id="aSolAll">todas</button></h3><div class="an-pills" id="aSol"></div></div>
         <div class="an-pg" id="aStBox"><h3>Status de execução</h3><div class="an-pills" id="aSt"></div></div>
-        <p class="note an-pad" id="aStNone" hidden>Status de execução: sem dados para esta obra (os registros de execução da página Relatórios são da BR-277).</p>
+        <p class="note an-pad" id="aStNone" hidden>Status de execução: sem dados para esta obra (no Bloco 04 o status vem da planilha de produção, página Produção executada).</p>
         <p class="note an-pad" id="aSrcNote"></p>
         <div class="an-act"><button type="button" class="secondary" id="aReset">Limpar filtros</button><button type="button" class="primary" id="aExp">Exportar análise e programação (Excel)</button></div>
         <p class="note an-pad" id="aExpMsg" hidden aria-live="polite"></p>
@@ -2387,10 +2420,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261122184136";</script>
-<script src="native.js?v=20261122184136"></script>
-<script src="firebase-config.js?v=20261122184136"></script>
-<script src="auth.js?v=20261122184136"></script>
+<script>window.APP_BUILD="20261122193129";</script>
+<script src="native.js?v=20261122193129"></script>
+<script src="firebase-config.js?v=20261122193129"></script>
+<script src="auth.js?v=20261122193129"></script>
 
 </body>
 </html>

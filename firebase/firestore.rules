@@ -51,7 +51,7 @@ service cloud.firestore {
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
           || canView(p, 'analise') || canView(p, 'marcos') || canView(p, 'foto') || canView(p, 'relatorios')
-          || canView(p, 'levbe') || canView(p, 'levpat');
+          || canView(p, 'levbe') || canView(p, 'levpat') || canView(p, 'producao');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
@@ -144,6 +144,12 @@ service cloud.firestore {
       allow delete: if false;
     }
     // Base da BR-373 B4 (Lote 04): usuários ativos com "Estacas BR-373 B4", Calculadora, Análise por km, Marcos, Localização estaca ou Foto georreferenciada
+    // Produção executada (planilha "Acompanhamento de produção"): dados importados e status do monitoramento.
+    // Lê quem usa o app; grava o administrador ou quem tem "Produção executada: criar".
+    match /base/{id} {
+      allow read: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status'] && (isAdmin() || activeWithAccess());
+      allow write: if id in ['producao_meta', 'producao_b23', 'producao_b4', 'producao_status'] && canDo('producao', 'create');
+    }
     match /base/b4 {
       allow read: if isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'mapab4') || canView(permsOf(me()), 'calculadora') || canView(permsOf(me()), 'analise') || canView(permsOf(me()), 'marcos')
                     || canView(permsOf(me()), 'localizacao') || canView(permsOf(me()), 'foto') || canView(permsOf(me()), 'levbe') || canView(permsOf(me()), 'levpat')));
