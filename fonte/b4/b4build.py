@@ -101,6 +101,10 @@ def add_b4(t):
 const __G={{emit,on,store}};
 if(PROJECT_DATA_B4){{(function(){{
 // Bloco 04: "Gap Graded (GAP)" (sigla G no unifilar) passa a FS — Fresagem Superficial 3 cm; o nome original fica no registro do unifilar
+window.__B4_GAP=PROJECT_DATA_B4.__gap!=null?PROJECT_DATA_B4.__gap:(PROJECT_DATA_B4.__gap=PROJECT_DATA_B4.codes.includes('G'));
+// espessura de CBUQ (cm) de um registro do unifilar: REC/RP com capa de 5 cm (premissa "30 cm = 25 cm de base + 5 cm de CBUQ") usam 5 cm
+window.__B4_CBUQ_CM=s=>{{if(!s||!(s.espessura_m>0))return null;const P=PROJECT_DATA_B4.src.premissas||{{}},k=s.sigla==='REC'?'Espessura REC – Reciclagem':s.sigla==='RP'?'Espessura RP – Reparo Profundo':null;
+  if(k&&P[k]&&/5 cm de CBUQ/.test(P[k].unidade||''))return 5;return Math.round(s.espessura_m*1000)/10}};
 if(!PROJECT_DATA_B4.__fs){{PROJECT_DATA_B4.codes=PROJECT_DATA_B4.codes.map(c=>c==='G'?'FS':c);PROJECT_DATA_B4.__fs=1}}
 try{{const f=__G.store.get('b4.filters',null);if(f&&Array.isArray(f.sol)&&f.sol.includes('G')){{f.sol=f.sol.map(x=>x==='G'?'FS':x);__G.store.set('b4.filters',f)}}}}catch(e){{}}
 const emit=(e,d)=>__G.emit('b4:'+e,d),on=(e,f)=>__G.on(e==='page'?e:'b4:'+e,f);
@@ -117,20 +121,20 @@ on('page',p=>{{if(p!=='mapab4'||Loc.gps.on||!__G.store.get('gpsOn',false))return
     t=_rep(t,'/*__B4_JS__*/',block)
     return t
 
-FAM_B4='''  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:'Fresagem Superficial 3 cm',color:'#7FCBD9'},
+FAM_B4='''  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:window.__B4_GAP?'Fresagem Superficial 3 cm':'',color:'#7FCBD9'},
     REC:{desc:'',color:'#D62839'},PA:{desc:'',color:'#F08A2C'},RP:{desc:'',color:'#B0177A'},
-    DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'}};
+    DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'},OAE:{desc:'Intervenção em OAE',color:'#6D4C2F'}};
   (function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos,iS=F.indexOf('sigla')+3,iT=F.indexOf('tipo_solucao')+3,tx=v=>typeof v==='string'&&v[0]==='#'?T[+v.slice(1)]:v;
-    const fam=c=>c==='R'?'DR':c==='P'?'DP':c==='G'?'FS':/^PA/.test(c)?'PA':c;
+    const fam=c=>c==='R'?'DR':c==='P'?'DP':c==='G'?'FS':c==='ATB45'?'OAE':/^PA/.test(c)?'PA':c;
     for(const r of S.panos){const f=fam(tx(r[iS]));if(FAM[f]&&!FAM[f].desc)FAM[f].desc=tx(r[iT])}
     for(const k in FAM)if(!FAM[k].desc)FAM[k].desc=k})();
-  const FAM_ORDER=['FF','FE','FS','REC','PA','RP','RF','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c)))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
+  const FAM_ORDER=['FF','FE','FS','REC','PA','RP','RF','OAE','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c))||(f==='OAE'&&c==='ATB45'))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
 '''
 INFO_B4='''  function info(code){let fam,param=null,esp=null;
     if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}
     else if(code==='DR'){fam='DR'}else if(code==='DP'){fam='DP'}
     else if(code==='REC'){fam='REC';esp='25 cm'}else if(code==='RP'){fam='RP';esp='25 cm'}
-    else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else fam='RF';
+    else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else if(code==='ATB45'||code==='OAE'){fam='OAE'}else fam='RF';
     let color=FAM[fam].color;if(fam==='PA'&&PA_SHADES[param])color=PA_SHADES[param];
     return {code,fam,param,esp,color,desc:FAM[fam].desc,ink:inkOn(color)}}
 '''
@@ -161,12 +165,12 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   const recs=S.panos.map(r=>{const o={L:r[0],i0:r[1],i1:r[2]};F.forEach((k,j)=>o[k]=val(r[j+3]));return o});
   const byKey=new Map(),sai={C:new Map(),D:new Map()};let sem=0;
   recs.forEach(o=>{if(o.i0==null){sem++;return}if(o.L==='SC'||o.L==='SD'){for(let k=o.i0;k<=o.i1;k++)sai[o.L[1]].set(k,o)}else byKey.set(o.L+'|'+o.sigla+'|'+o.i0+'|'+o.i1,o)});
-  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code==='FS'?'G':p.code;p.src=byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
+  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code==='FS'?'G':p.code;p.src=byKey.get(p.L+'|'+p.code+'|'+p.i0+'|'+p.i1)||byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
   const nSai=recs.filter(o=>o.L==='SC'||o.L==='SD').length;
   const avisos=new Map(S.avisos.map(a=>[a[0],a[1]]));
   const semCoord=(S.kmz&&S.kmz.sem_coordenada)||[];
   function renderNote(){const el=document.getElementById('b4_fonte');if(!el)return;
-    const rv=S.revisao;el.innerHTML=(rv?`<b>Unifilar carregado: revisão ${rv.id}</b> (substitui a ${rv.anterior}; soluções alteradas nos km 225 a 230).<br>`:`<b>Unifilar carregado: revisão R00.</b> A revisão R03 REV1 ainda não foi enviada ao servidor (Administração › Base do projeto › Base da BR-373 B4).<br>`)+`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
+    const rv=S.revisao;el.innerHTML=(rv?`<b>Unifilar carregado: revisão ${rv.id}</b> (substitui a ${rv.anterior}${rv.km&&rv.km.length===2?`; soluções alteradas entre os km ${rv.km[0]} e ${rv.km[1]}`:''}).<br>`:`<b>Unifilar carregado: revisão R00.</b> A revisão R03 REV1 ainda não foi enviada ao servidor (Administração › Base do projeto › Base da BR-373 B4).<br>`)+`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
       `Importação: ${recs.length.toLocaleString('pt-BR')} panos de ${S.metadados.total_panos.toLocaleString('pt-BR')} — ${lig.toLocaleString('pt-BR')} em faixas, acostamentos e drenos ligados às estacas, ${nSai} de saídas de dreno`+
       `${sem?`, <b>${sem} sem estaca correspondente</b>`:''}${recs.length-lig-nSai-sem>0?`, <b>${recs.length-lig-nSai-sem} sem pano no mapa</b>`:''}.`+
       `${avisos.size?` Avisos: ${[...avisos.keys()].map(n=>'nº '+n).join(', ')} (estaca final "Sem linha no unifilar", fim pelo nº de blocos).`:''}`+

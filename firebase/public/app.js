@@ -581,6 +581,10 @@ renderGps(Loc.gps);
 const __G={emit,on,store};
 if(PROJECT_DATA_B4){(function(){
 // Bloco 04: "Gap Graded (GAP)" (sigla G no unifilar) passa a FS — Fresagem Superficial 3 cm; o nome original fica no registro do unifilar
+window.__B4_GAP=PROJECT_DATA_B4.__gap!=null?PROJECT_DATA_B4.__gap:(PROJECT_DATA_B4.__gap=PROJECT_DATA_B4.codes.includes('G'));
+// espessura de CBUQ (cm) de um registro do unifilar: REC/RP com capa de 5 cm (premissa "30 cm = 25 cm de base + 5 cm de CBUQ") usam 5 cm
+window.__B4_CBUQ_CM=s=>{if(!s||!(s.espessura_m>0))return null;const P=PROJECT_DATA_B4.src.premissas||{},k=s.sigla==='REC'?'Espessura REC – Reciclagem':s.sigla==='RP'?'Espessura RP – Reparo Profundo':null;
+  if(k&&P[k]&&/5 cm de CBUQ/.test(P[k].unidade||''))return 5;return Math.round(s.espessura_m*1000)/10};
 if(!PROJECT_DATA_B4.__fs){PROJECT_DATA_B4.codes=PROJECT_DATA_B4.codes.map(c=>c==='G'?'FS':c);PROJECT_DATA_B4.__fs=1}
 try{const f=__G.store.get('b4.filters',null);if(f&&Array.isArray(f.sol)&&f.sol.includes('G')){f.sol=f.sol.map(x=>x==='G'?'FS':x);__G.store.set('b4.filters',f)}}catch(e){}
 const emit=(e,d)=>__G.emit('b4:'+e,d),on=(e,f)=>__G.on(e==='page'?e:'b4:'+e,f);
@@ -588,21 +592,21 @@ const store={get:(k,d)=>__G.store.get('b4.'+k,d),set:(k,v)=>__G.store.set('b4.'+
 /* ------------------------------ Data ------------------------------ */
 const Data=(function(){
   const CODES=PROJECT_DATA_B4.codes,R=PROJECT_DATA_B4.rows,N=R.length;
-  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:'Fresagem Superficial 3 cm',color:'#7FCBD9'},
+  const FAM={FF:{desc:'',color:'#2E86C1'},FE:{desc:'',color:'#1D3F8F'},FS:{desc:window.__B4_GAP?'Fresagem Superficial 3 cm':'',color:'#7FCBD9'},
     REC:{desc:'',color:'#D62839'},PA:{desc:'',color:'#F08A2C'},RP:{desc:'',color:'#B0177A'},
-    DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'}};
+    DR:{desc:'',color:'#23A26B'},DP:{desc:'',color:'#0B5E43'},RF:{desc:'',color:'#8C7BC4'},OAE:{desc:'Intervenção em OAE',color:'#6D4C2F'}};
   (function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos,iS=F.indexOf('sigla')+3,iT=F.indexOf('tipo_solucao')+3,tx=v=>typeof v==='string'&&v[0]==='#'?T[+v.slice(1)]:v;
-    const fam=c=>c==='R'?'DR':c==='P'?'DP':c==='G'?'FS':/^PA/.test(c)?'PA':c;
+    const fam=c=>c==='R'?'DR':c==='P'?'DP':c==='G'?'FS':c==='ATB45'?'OAE':/^PA/.test(c)?'PA':c;
     for(const r of S.panos){const f=fam(tx(r[iS]));if(FAM[f]&&!FAM[f].desc)FAM[f].desc=tx(r[iT])}
     for(const k in FAM)if(!FAM[k].desc)FAM[k].desc=k})();
-  const FAM_ORDER=['FF','FE','FS','REC','PA','RP','RF','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c)))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
+  const FAM_ORDER=['FF','FE','FS','REC','PA','RP','RF','OAE','DR','DP'].filter(f=>PROJECT_DATA_B4.codes.some(c=>c===f||(f==='PA'&&/^PA/.test(c))||(f==='OAE'&&c==='ATB45'))||((f==='DR'||f==='DP')&&PROJECT_DATA_B4.rows.some(r=>r[7].includes(f==='DR'?'R':'P'))));
   const PA_SHADES={'1,5':'#FFD6A0','2,0':'#FDBA66','2,5':'#F79C3E','3,0':'#E47A2A','3,5':'#C95A1E','4,0':'#A64416','4,5':'#833310','5,0':'#5C240A'};
   function inkOn(hex){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;return (0.299*r+0.587*g+0.114*b)>150?'#141715':'#FFFFFF'}
   function info(code){let fam,param=null,esp=null;
     if(code==='FF'){fam='FF';esp='6 cm'}else if(code==='FE'){fam='FE';esp='10 cm'}else if(code==='FS'){fam='FS';esp='3 cm'}
     else if(code==='DR'){fam='DR'}else if(code==='DP'){fam='DP'}
     else if(code==='REC'){fam='REC';esp='25 cm'}else if(code==='RP'){fam='RP';esp='25 cm'}
-    else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else fam='RF';
+    else if(/^PA/.test(code)){fam='PA';param=code.slice(2);esp=param+' cm'}else if(code==='RF'){fam='RF'}else if(code==='ATB45'||code==='OAE'){fam='OAE'}else fam='RF';
     let color=FAM[fam].color;if(fam==='PA'&&PA_SHADES[param])color=PA_SHADES[param];
     return {code,fam,param,esp,color,desc:FAM[fam].desc,ink:inkOn(color)}}
   const LANES=[
@@ -1045,12 +1049,12 @@ const B4=(function(){const S=PROJECT_DATA_B4.src,T=S.textos,F=S.campos;
   const recs=S.panos.map(r=>{const o={L:r[0],i0:r[1],i1:r[2]};F.forEach((k,j)=>o[k]=val(r[j+3]));return o});
   const byKey=new Map(),sai={C:new Map(),D:new Map()};let sem=0;
   recs.forEach(o=>{if(o.i0==null){sem++;return}if(o.L==='SC'||o.L==='SD'){for(let k=o.i0;k<=o.i1;k++)sai[o.L[1]].set(k,o)}else byKey.set(o.L+'|'+o.sigla+'|'+o.i0+'|'+o.i1,o)});
-  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code==='FS'?'G':p.code;p.src=byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
+  let lig=0;PANOS.forEach(p=>{const c=p.L>=6?(p.code==='DR'?'R':'P'):p.code==='FS'?'G':p.code;p.src=byKey.get(p.L+'|'+p.code+'|'+p.i0+'|'+p.i1)||byKey.get(p.L+'|'+c+'|'+p.i0+'|'+p.i1)||null;if(p.src)lig++});
   const nSai=recs.filter(o=>o.L==='SC'||o.L==='SD').length;
   const avisos=new Map(S.avisos.map(a=>[a[0],a[1]]));
   const semCoord=(S.kmz&&S.kmz.sem_coordenada)||[];
   function renderNote(){const el=document.getElementById('b4_fonte');if(!el)return;
-    const rv=S.revisao;el.innerHTML=(rv?`<b>Unifilar carregado: revisão ${rv.id}</b> (substitui a ${rv.anterior}; soluções alteradas nos km 225 a 230).<br>`:`<b>Unifilar carregado: revisão R00.</b> A revisão R03 REV1 ainda não foi enviada ao servidor (Administração › Base do projeto › Base da BR-373 B4).<br>`)+`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
+    const rv=S.revisao;el.innerHTML=(rv?`<b>Unifilar carregado: revisão ${rv.id}</b> (substitui a ${rv.anterior}${rv.km&&rv.km.length===2?`; soluções alteradas entre os km ${rv.km[0]} e ${rv.km[1]}`:''}).<br>`:`<b>Unifilar carregado: revisão R00.</b> A revisão R03 REV1 ainda não foi enviada ao servidor (Administração › Base do projeto › Base da BR-373 B4).<br>`)+`Fonte: ${S.metadados.arquivo} (aba ${S.metadados.aba_panos}) e KMZ de estacas da BR-373 B4 (${N.toLocaleString('pt-BR')} estacas, ${R[0][0]} a ${R[N-1][0]}).<br>`+
       `Importação: ${recs.length.toLocaleString('pt-BR')} panos de ${S.metadados.total_panos.toLocaleString('pt-BR')} — ${lig.toLocaleString('pt-BR')} em faixas, acostamentos e drenos ligados às estacas, ${nSai} de saídas de dreno`+
       `${sem?`, <b>${sem} sem estaca correspondente</b>`:''}${recs.length-lig-nSai-sem>0?`, <b>${recs.length-lig-nSai-sem} sem pano no mapa</b>`:''}.`+
       `${avisos.size?` Avisos: ${[...avisos.keys()].map(n=>'nº '+n).join(', ')} (estaca final "Sem linha no unifilar", fim pelo nº de blocos).`:''}`+
@@ -1374,7 +1378,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
       // BR-373 B4: largura e espessura do próprio unifilar (o cadastro vale só quando o unifilar não informa)
-      const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?Math.round(us.espessura_m*1000)/10:null;
+      const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?(window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):Math.round(us.espessura_m*1000)/10):null;
       const ow=S.rowW[p.tag],wBase=uw!=null?uw:num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
       // espessura de projeto (unifilar na BR-373; cadastro na BR-277) e, se o usuário alterou, a espessura da programação
       const eProj=ue!=null?ue:num(S.esp[p.code]),oe=S.rowE[p.tag],eCustom=oe!=null&&oe!==''&&num(oe)>0&&num(oe)!==eProj;
@@ -2901,7 +2905,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const drn=grp==='DRN',totLen=20*(p.i1-p.i0+1);let w=null,e=null,excl=false,wFrom='',eFrom='';
       if(!drn){excl=C.excl(p.code);const us=k==='B4'&&p.src?p.src:null,rw=C.rowW(p.tag);
         if(rw!=null){w=rw;wFrom='pano (calculadora)'}else if(us&&us.largura_media_m>0){w=us.largura_media_m;wFrom='unifilar'}else{w=C.w[grp];wFrom='cadastro'}
-        if(!excl){if(us&&us.espessura_m>0){e=Math.round(us.espessura_m*1000)/10;eFrom='unifilar'}else{e=C.esp(p.code);eFrom='cadastro'}}}
+        if(!excl){if(us&&us.espessura_m>0){e=window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):Math.round(us.espessura_m*1000)/10;eFrom='unifilar'}else{e=C.esp(p.code);eFrom='cadastro'}}}
       const miss=!drn&&!excl&&(!(w>0)||!(e>0));
       let i=p.i0;while(i<=p.i1){const km=RR[i][5];let j=i;while(j+1<=p.i1&&RR[j+1][5]===km)j++;
         if(kms.has(km)){const len=20*(j-i+1),a=OD[i],b=OD[j]+20,area=!drn&&w>0?len*w:null,vol=!drn&&!excl&&area!=null&&e>0?area*e/100:null,t=vol!=null&&C.dens>0?vol*C.dens:null;
@@ -2940,12 +2944,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function pills(id,items,sel,onTog){const el=$(id);el.innerHTML=items.map(([k,t,c])=>`<button type="button" class="pill an-p" data-k="${esc(k)}" aria-pressed="${sel.includes(k)}">${c?`<span class="sw" style="background:${c}"></span>`:''}<span>${esc(t)}</span></button>`).join('');
     el.querySelectorAll('button').forEach(b=>b.onclick=()=>onTog(b.dataset.k))}
   function renderFilters(){const k=F.obra,SRC=srcOf(k);$('aObra').value=k;$('aKA').value=F.kA;$('aKB').value=F.kB;$('aSent').value=F.sent;$('aInd').value=F.ind;$('aGap').value=F.gap;$('aSort').value=F.sort;$('aRange').checked=!!F.range;
-    $('aSrcNote').innerHTML=k==='B4'?(SRC?'Fonte: <b>unifilar de soluções da BR-373 B4</b> e KMZ de estacas. Largura e espessura de cada segmento vêm do unifilar. A solução <b>Gap Graded (GAP)</b>, sigla G no unifilar, aparece como <b>FS — Fresagem Superficial 3 cm</b>; o nome original fica no detalhe do segmento e na exportação.':'<b>Base da BR-373 B4 não carregada.</b> O administrador precisa enviar a base em Administração › Base do projeto.'):
+    $('aSrcNote').innerHTML=k==='B4'?(SRC?'Fonte: <b>unifilar de soluções da BR-373 B4</b> e KMZ de estacas. Largura e espessura de cada segmento vêm do unifilar.'+(window.__B4_GAP?' A solução <b>Gap Graded (GAP)</b>, sigla G no unifilar, aparece como <b>FS — Fresagem Superficial 3 cm</b>; o nome original fica no detalhe do segmento e na exportação.':''):'<b>Base da BR-373 B4 não carregada.</b> O administrador precisa enviar a base em Administração › Base do projeto.'):
       'Fonte: <b>R08 Unifilar de Soluções B2+B3 BR-277</b> e KMZ de estacas. O R08 não traz largura: a largura e a espessura vêm do cadastro da Calculadora de programação.';
     if(!SRC){$('aSol').innerHTML='';$('aLanes').innerHTML='';$('aSt').innerHTML='';return}
     pills('aLanes',GRPS.map(([g])=>[g,grpName(k,g)]),F.lanes,g=>{F.lanes=F.lanes.includes(g)?F.lanes.filter(x=>x!==g):F.lanes.concat(g);saveF();refresh()});
     const fams=famsOf(SRC),sol=F.sol?F.sol.filter(f=>fams.includes(f)):fams.filter(f=>f!=='DR'&&f!=='DP');
-    pills('aSol',fams.map(f=>{const inf=SRC.Data.info(f==='PA'?(SRC.Data.CODES.find(c=>/^PA/.test(c))||'PA'):f==='REC'&&k==='277'?'RECe25':f==='RP'&&k==='277'?'RPe25':f);return [f,`${f} – ${f==='FS'&&k==='B4'?'Fresagem Superficial 3 cm':inf.desc}`,inf.color]}),sol,f=>{const cur=F.sol?F.sol.filter(x=>fams.includes(x)):sol.slice();F.sol=cur.includes(f)?cur.filter(x=>x!==f):cur.concat(f);saveF();refresh()});
+    pills('aSol',fams.map(f=>{const inf=SRC.Data.info(f==='PA'?(SRC.Data.CODES.find(c=>/^PA/.test(c))||'PA'):f==='REC'&&k==='277'?'RECe25':f==='RP'&&k==='277'?'RPe25':f);return [f,`${f} – ${f==='FS'&&k==='B4'&&window.__B4_GAP?'Fresagem Superficial 3 cm':inf.desc}`,inf.color]}),sol,f=>{const cur=F.sol?F.sol.filter(x=>fams.includes(x)):sol.slice();F.sol=cur.includes(f)?cur.filter(x=>x!==f):cur.concat(f);saveF();refresh()});
     const stOn=k==='277'&&!!window.ExecIdx;$('aStBox').hidden=!stOn;$('aStNone').hidden=stOn;
     if(stOn){const st=F.st||Object.keys(STATUS);pills('aSt',Object.entries(STATUS).map(([s,t])=>[s,t,ST_COLOR[s]]),st,s=>{const cur=F.st||Object.keys(STATUS);F.st=cur.includes(s)?cur.filter(x=>x!==s):cur.concat(s);saveF();refresh()})}}
   function scale(vals){const v=vals.filter(x=>x!=null&&x>0).sort((a,b)=>a-b);if(!v.length)return {col:()=>'#E4E7E5',br:[]};const q=f=>v[Math.min(v.length-1,Math.floor(f*(v.length-1)))];const br=[q(.2),q(.4),q(.6),q(.8)];
@@ -3021,7 +3025,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ${A.chains.slice(0,8).map(c=>{const D=RES.SRC.Data,dec=c.L0.side==='D';return `<tr><td class="l">${SDN[c.L0.side]} · ${esc(grpName(RES.k,c.L0.grp))}</td><td class="l">${tagH(c.info)} ${esc(solName(c.code,c.info))}${c.e!=null?' · '+nf(c.e,c.e%1?1:0)+' cm':''}</td><td>${D.nameAt(dec?c.b:c.a)}</td><td>${D.nameAt(dec?c.a:c.b)}</td><td>${c.items.length}</td><td>${nf(c.len,0)}</td></tr>`}).join('')||'<tr><td class="l" colspan="6">—</td></tr>'}</tbody></table></div>`;
     $('aStrat').innerHTML=h;$('aStrat').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{SEL={a:+b.dataset.k,b:+b.dataset.k};anchor=SEL.a;afterSel();$('aDiagCard').scrollIntoView({behavior:'smooth'})})}
   const tagH=inf=>`<span class="tag sm" style="background:${inf.color};color:${inf.ink}">${esc(inf.code)}</span>`;
-  const solName=(code,inf)=>code==='FS'&&RES.k==='B4'?'Fresagem Superficial 3 cm':inf.desc;
+  const solName=(code,inf)=>code==='FS'&&RES.k==='B4'&&window.__B4_GAP?'Fresagem Superficial 3 cm':inf.desc;
 
   function renderKmTab(){const ks=RES.kms.slice(),s=F.sort;
     if(s!=='km')ks.sort((x,y)=>{const v=o=>s==='t'?(o.A.tNone?-1:o.A.t):o.A[s];return v(y)-v(x)});
@@ -3085,7 +3089,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ['Segmentos (únicos)',A.n],['Segmentos ≥ 100 m',A.nL],['Segmentos < 100 m',A.nS],['Extensão média (m)',A.avg],['Fragmentação (seg./100 m)',A.frag],
       [],['Regras'],['Porte do segmento','pela extensão total do segmento (≥ 100 m ou < 100 m), mesmo quando só parte dele está no km'],['Rateio por km','extensão, área e CBUQ pela parcela do segmento dentro de cada km (blocos de 20 m)'],
       ['Metros de serviço','soma das extensões de todas as faixas; pode passar de 1.000 m por km'],['Sequência contínua',`mesma pista e sentido, mesma solução e espessura, intervalos até ${F.gap} m`],['Dados ausentes','segmentos sem largura ou espessura ficam fora das toneladas e são sinalizados (não contam como zero)'],
-      ...(RES.k==='B4'?[['Solução FS (Bloco 04)','Gap Graded (GAP), sigla G no unifilar, padronizada como FS — Fresagem Superficial 3 cm']]:[])];
+      ...(RES.k==='B4'&&window.__B4_GAP?[['Solução FS (Bloco 04)','Gap Graded (GAP), sigla G no unifilar, padronizada como FS — Fresagem Superficial 3 cm']]:[])];
     X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(resumo),'Resumo');
     X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([['Km','Metros de serviço (m)','Área (m²)','Volume (m³)','CBUQ (t)','CBUQ parcial','Segmentos','≥ 100 m','< 100 m','Ext. média (m)','Fragmentação (seg./100 m)','Maior sequência (m)',...RES.fams.map(f=>f+' (m)')],
       ...ks.map(o=>{const a=o.A;return [o.k,a.m,a.area,a.vol,a.cbuqM?(a.tNone?'sem dados':a.t):'',a.tPartial?'sim':'',a.n,a.nL,a.nS,a.avg,a.frag,a.best?a.best.len:'',...RES.fams.map(f=>a.bySol[f]||0)]})]),'Por km');
@@ -4052,7 +4056,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='20/11/2026 07:51';
+  const CUR_VER='22/11/2026 15:41';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

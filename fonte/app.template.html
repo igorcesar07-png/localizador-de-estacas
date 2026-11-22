@@ -2524,7 +2524,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}
       if(hid){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}
       // BR-373 B4: largura e espessura do próprio unifilar (o cadastro vale só quando o unifilar não informa)
-      const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?Math.round(us.espessura_m*1000)/10:null;
+      const us=SRCK==='B4'&&p.src?p.src:null,uw=us&&us.largura_media_m>0?us.largura_media_m:null,ue=us&&us.espessura_m>0?(window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):Math.round(us.espessura_m*1000)/10):null;
       const ow=S.rowW[p.tag],wBase=uw!=null?uw:num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
       // espessura de projeto (unifilar na BR-373; cadastro na BR-277) e, se o usuário alterou, a espessura da programação
       const eProj=ue!=null?ue:num(S.esp[p.code]),oe=S.rowE[p.tag],eCustom=oe!=null&&oe!==''&&num(oe)>0&&num(oe)!==eProj;
@@ -4051,7 +4051,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const drn=grp==='DRN',totLen=20*(p.i1-p.i0+1);let w=null,e=null,excl=false,wFrom='',eFrom='';
       if(!drn){excl=C.excl(p.code);const us=k==='B4'&&p.src?p.src:null,rw=C.rowW(p.tag);
         if(rw!=null){w=rw;wFrom='pano (calculadora)'}else if(us&&us.largura_media_m>0){w=us.largura_media_m;wFrom='unifilar'}else{w=C.w[grp];wFrom='cadastro'}
-        if(!excl){if(us&&us.espessura_m>0){e=Math.round(us.espessura_m*1000)/10;eFrom='unifilar'}else{e=C.esp(p.code);eFrom='cadastro'}}}
+        if(!excl){if(us&&us.espessura_m>0){e=window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):Math.round(us.espessura_m*1000)/10;eFrom='unifilar'}else{e=C.esp(p.code);eFrom='cadastro'}}}
       const miss=!drn&&!excl&&(!(w>0)||!(e>0));
       let i=p.i0;while(i<=p.i1){const km=RR[i][5];let j=i;while(j+1<=p.i1&&RR[j+1][5]===km)j++;
         if(kms.has(km)){const len=20*(j-i+1),a=OD[i],b=OD[j]+20,area=!drn&&w>0?len*w:null,vol=!drn&&!excl&&area!=null&&e>0?area*e/100:null,t=vol!=null&&C.dens>0?vol*C.dens:null;
@@ -4090,12 +4090,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   function pills(id,items,sel,onTog){const el=$(id);el.innerHTML=items.map(([k,t,c])=>`<button type="button" class="pill an-p" data-k="${esc(k)}" aria-pressed="${sel.includes(k)}">${c?`<span class="sw" style="background:${c}"></span>`:''}<span>${esc(t)}</span></button>`).join('');
     el.querySelectorAll('button').forEach(b=>b.onclick=()=>onTog(b.dataset.k))}
   function renderFilters(){const k=F.obra,SRC=srcOf(k);$('aObra').value=k;$('aKA').value=F.kA;$('aKB').value=F.kB;$('aSent').value=F.sent;$('aInd').value=F.ind;$('aGap').value=F.gap;$('aSort').value=F.sort;$('aRange').checked=!!F.range;
-    $('aSrcNote').innerHTML=k==='B4'?(SRC?'Fonte: <b>unifilar de soluções da BR-373 B4</b> e KMZ de estacas. Largura e espessura de cada segmento vêm do unifilar. A solução <b>Gap Graded (GAP)</b>, sigla G no unifilar, aparece como <b>FS — Fresagem Superficial 3 cm</b>; o nome original fica no detalhe do segmento e na exportação.':'<b>Base da BR-373 B4 não carregada.</b> O administrador precisa enviar a base em Administração › Base do projeto.'):
+    $('aSrcNote').innerHTML=k==='B4'?(SRC?'Fonte: <b>unifilar de soluções da BR-373 B4</b> e KMZ de estacas. Largura e espessura de cada segmento vêm do unifilar.'+(window.__B4_GAP?' A solução <b>Gap Graded (GAP)</b>, sigla G no unifilar, aparece como <b>FS — Fresagem Superficial 3 cm</b>; o nome original fica no detalhe do segmento e na exportação.':''):'<b>Base da BR-373 B4 não carregada.</b> O administrador precisa enviar a base em Administração › Base do projeto.'):
       'Fonte: <b>R08 Unifilar de Soluções B2+B3 BR-277</b> e KMZ de estacas. O R08 não traz largura: a largura e a espessura vêm do cadastro da Calculadora de programação.';
     if(!SRC){$('aSol').innerHTML='';$('aLanes').innerHTML='';$('aSt').innerHTML='';return}
     pills('aLanes',GRPS.map(([g])=>[g,grpName(k,g)]),F.lanes,g=>{F.lanes=F.lanes.includes(g)?F.lanes.filter(x=>x!==g):F.lanes.concat(g);saveF();refresh()});
     const fams=famsOf(SRC),sol=F.sol?F.sol.filter(f=>fams.includes(f)):fams.filter(f=>f!=='DR'&&f!=='DP');
-    pills('aSol',fams.map(f=>{const inf=SRC.Data.info(f==='PA'?(SRC.Data.CODES.find(c=>/^PA/.test(c))||'PA'):f==='REC'&&k==='277'?'RECe25':f==='RP'&&k==='277'?'RPe25':f);return [f,`${f} – ${f==='FS'&&k==='B4'?'Fresagem Superficial 3 cm':inf.desc}`,inf.color]}),sol,f=>{const cur=F.sol?F.sol.filter(x=>fams.includes(x)):sol.slice();F.sol=cur.includes(f)?cur.filter(x=>x!==f):cur.concat(f);saveF();refresh()});
+    pills('aSol',fams.map(f=>{const inf=SRC.Data.info(f==='PA'?(SRC.Data.CODES.find(c=>/^PA/.test(c))||'PA'):f==='REC'&&k==='277'?'RECe25':f==='RP'&&k==='277'?'RPe25':f);return [f,`${f} – ${f==='FS'&&k==='B4'&&window.__B4_GAP?'Fresagem Superficial 3 cm':inf.desc}`,inf.color]}),sol,f=>{const cur=F.sol?F.sol.filter(x=>fams.includes(x)):sol.slice();F.sol=cur.includes(f)?cur.filter(x=>x!==f):cur.concat(f);saveF();refresh()});
     const stOn=k==='277'&&!!window.ExecIdx;$('aStBox').hidden=!stOn;$('aStNone').hidden=stOn;
     if(stOn){const st=F.st||Object.keys(STATUS);pills('aSt',Object.entries(STATUS).map(([s,t])=>[s,t,ST_COLOR[s]]),st,s=>{const cur=F.st||Object.keys(STATUS);F.st=cur.includes(s)?cur.filter(x=>x!==s):cur.concat(s);saveF();refresh()})}}
   function scale(vals){const v=vals.filter(x=>x!=null&&x>0).sort((a,b)=>a-b);if(!v.length)return {col:()=>'#E4E7E5',br:[]};const q=f=>v[Math.min(v.length-1,Math.floor(f*(v.length-1)))];const br=[q(.2),q(.4),q(.6),q(.8)];
@@ -4171,7 +4171,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ${A.chains.slice(0,8).map(c=>{const D=RES.SRC.Data,dec=c.L0.side==='D';return `<tr><td class="l">${SDN[c.L0.side]} · ${esc(grpName(RES.k,c.L0.grp))}</td><td class="l">${tagH(c.info)} ${esc(solName(c.code,c.info))}${c.e!=null?' · '+nf(c.e,c.e%1?1:0)+' cm':''}</td><td>${D.nameAt(dec?c.b:c.a)}</td><td>${D.nameAt(dec?c.a:c.b)}</td><td>${c.items.length}</td><td>${nf(c.len,0)}</td></tr>`}).join('')||'<tr><td class="l" colspan="6">—</td></tr>'}</tbody></table></div>`;
     $('aStrat').innerHTML=h;$('aStrat').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{SEL={a:+b.dataset.k,b:+b.dataset.k};anchor=SEL.a;afterSel();$('aDiagCard').scrollIntoView({behavior:'smooth'})})}
   const tagH=inf=>`<span class="tag sm" style="background:${inf.color};color:${inf.ink}">${esc(inf.code)}</span>`;
-  const solName=(code,inf)=>code==='FS'&&RES.k==='B4'?'Fresagem Superficial 3 cm':inf.desc;
+  const solName=(code,inf)=>code==='FS'&&RES.k==='B4'&&window.__B4_GAP?'Fresagem Superficial 3 cm':inf.desc;
 
   function renderKmTab(){const ks=RES.kms.slice(),s=F.sort;
     if(s!=='km')ks.sort((x,y)=>{const v=o=>s==='t'?(o.A.tNone?-1:o.A.t):o.A[s];return v(y)-v(x)});
@@ -4235,7 +4235,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       ['Segmentos (únicos)',A.n],['Segmentos ≥ 100 m',A.nL],['Segmentos < 100 m',A.nS],['Extensão média (m)',A.avg],['Fragmentação (seg./100 m)',A.frag],
       [],['Regras'],['Porte do segmento','pela extensão total do segmento (≥ 100 m ou < 100 m), mesmo quando só parte dele está no km'],['Rateio por km','extensão, área e CBUQ pela parcela do segmento dentro de cada km (blocos de 20 m)'],
       ['Metros de serviço','soma das extensões de todas as faixas; pode passar de 1.000 m por km'],['Sequência contínua',`mesma pista e sentido, mesma solução e espessura, intervalos até ${F.gap} m`],['Dados ausentes','segmentos sem largura ou espessura ficam fora das toneladas e são sinalizados (não contam como zero)'],
-      ...(RES.k==='B4'?[['Solução FS (Bloco 04)','Gap Graded (GAP), sigla G no unifilar, padronizada como FS — Fresagem Superficial 3 cm']]:[])];
+      ...(RES.k==='B4'&&window.__B4_GAP?[['Solução FS (Bloco 04)','Gap Graded (GAP), sigla G no unifilar, padronizada como FS — Fresagem Superficial 3 cm']]:[])];
     X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet(resumo),'Resumo');
     X.utils.book_append_sheet(wb,X.utils.aoa_to_sheet([['Km','Metros de serviço (m)','Área (m²)','Volume (m³)','CBUQ (t)','CBUQ parcial','Segmentos','≥ 100 m','< 100 m','Ext. média (m)','Fragmentação (seg./100 m)','Maior sequência (m)',...RES.fams.map(f=>f+' (m)')],
       ...ks.map(o=>{const a=o.A;return [o.k,a.m,a.area,a.vol,a.cbuqM?(a.tNone?'sem dados':a.t):'',a.tPartial?'sim':'',a.n,a.nL,a.nS,a.avg,a.frag,a.best?a.best.len:'',...RES.fams.map(f=>a.bySol[f]||0)]})]),'Por km');
