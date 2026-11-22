@@ -1288,6 +1288,8 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .pd-fr select,.pd-fr input{width:100%;min-width:72px;min-height:32px;border:1px solid var(--line);border-radius:7px;font:500 12px var(--body);padding:0 4px;background:var(--surface);color:var(--ink);box-sizing:border-box}
 .pd-st2{display:inline-block;color:#fff;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;white-space:nowrap}.pd-rmp{display:inline-block;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;background:#FFF4D6;color:#7A5400}.pd-rmp.nao{background:#E3F1E8;color:#1E7A4C}.pd-rmp.forte{background:#C62828;color:#fff}
 .pd-mod{display:block;font-size:11px;color:var(--muted);max-width:200px}.pd-mod.forte{color:#B42318;font-weight:700}.pd-is details summary{cursor:pointer;font-size:12px;color:#8A5300}
+.pd-pop{position:fixed;z-index:4500;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:4px}.pd-pop[hidden]{display:none}
+.pd-pop ul{margin:4px 0;padding-left:18px}.pd-pop li.forte{color:#B42318;font-weight:700}.pd-pop small{color:var(--muted)}button.pd-rmp{border:0;cursor:pointer;min-height:28px}
 .pd-tt{display:flex;flex-wrap:wrap;gap:4px 14px;margin:8px 0 0;font-size:13px;padding:6px 8px;background:var(--ground);border-radius:8px}
 .pd-cols{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0}.pd-ck{display:flex;gap:6px;align-items:center;font-size:13px}.pd-rsum{font:700 13px var(--body);margin-right:auto}
 .pd-t tfoot td{border-top:2px solid var(--line);background:var(--ground)}
@@ -1778,7 +1780,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#producao" data-page="producao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>Produção executada<small>Importação da planilha de produção</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 22/11/2026 19:49 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 22/11/2026 19:55 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2121,7 +2123,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <div class="card pd-c"><div class="pd-h"><h2>Segmentos executados (planilha de produção)</h2><span id="pdCount"></span></div>
       <div class="pd-acts"><button type="button" class="pd-b" id="pdPX">Exportar pendências e motivos (Excel)</button><button type="button" class="pd-b" id="pdCClr">Limpar filtros das colunas</button><span class="pd-note" id="pdPMsg" role="status"></span></div>
       <div class="pd-f"><div class="fld"><label for="pdBlk">Bloco</label><select id="pdBlk"><option value="ALL">Todos</option><option value="B2">Bloco 02</option><option value="B3">Bloco 03</option><option value="B4">Bloco 04</option></select></div>
-        <div class="fld"><label for="pdSev">Mostrar</label><select id="pdSev"><option value="pend">Com pendência (erro, alerta ou atenção)</option><option value="erro">Só com erro</option><option value="alerta">Alertas especiais (redução / menor intervenção)</option><option value="rmp">Necessitam de RMP</option><option value="retrabalho">Retrabalho</option><option value="extra">Extra-projeto</option><option value="na">Não aplicados ao status</option><option value="ap">Aplicados ao status</option><option value="all">Todos</option></select></div>
+        <div class="fld"><label for="pdSev">Mostrar</label><select id="pdSev"><option value="pend">Com pendência (erro ou atenção)</option><option value="erro">Só com erro</option><option value="alerta">Alertas especiais (redução / menor intervenção)</option><option value="rmp">Necessitam de RMP</option><option value="retrabalho">Retrabalho</option><option value="extra">Extra-projeto</option><option value="na">Não aplicados ao status</option><option value="ap">Aplicados ao status</option><option value="all">Todos</option></select></div>
         <div class="fld pd-q"><label for="pdQ">Buscar</label><input id="pdQ" type="search" placeholder="linha, data, km, faixa, equipe…" autocomplete="off"></div></div>
       <div id="pdSheet"></div><div class="pd-scroll" id="pdList"></div></div>
     <div class="card pd-c" id="pdRep"><h2>Relatórios de produção</h2>
@@ -2449,10 +2451,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261122224958";</script>
-<script src="native.js?v=20261122224958"></script>
-<script src="firebase-config.js?v=20261122224958"></script>
-<script src="auth.js?v=20261122224958"></script>
+<script>window.APP_BUILD="20261122225550";</script>
+<script src="native.js?v=20261122225550"></script>
+<script src="firebase-config.js?v=20261122225550"></script>
+<script src="auth.js?v=20261122225550"></script>
 
 </body>
 </html>
