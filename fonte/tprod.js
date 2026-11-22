@@ -26,7 +26,7 @@ for(let i=0;i<40&&!(await p.evaluate(()=>window.__SAVES));i++)await W(500);await
 const st=await p.evaluate(()=>{const R=PROD.resolve();const c=a=>({n:a.length,ap:a.filter(r=>r.ap).length,err:a.filter(r=>r.iss.some(x=>x.sev==='erro')).length});
   return {B2:c(R.B23.filter(r=>r.blk==='B2')),B3:c(R.B23.filter(r=>r.blk==='B3')),semBl:R.B23.filter(r=>!r.blk).length,B4:c(R.B4),sizes:Object.fromEntries(Object.entries(__DOCS).map(([k,v])=>[k,(v.json||'').length])),hist:PROD.meta().hist.length}});
 console.log(JSON.stringify(st));
-ok(st.B2.n+st.B3.n+st.semBl===1472&&st.B4.n===186,'B2/B3 e B4 separados pelas abas (1472 + 186 segmentos)');
+ok(st.B2.n+st.B3.n+st.semBl===1468&&st.B4.n===185,'B2/B3 e B4 separados pelas abas (1468 + 185 segmentos)');
 ok(st.B2.n>0&&st.B3.n>0,'BR-277 dividida em Bloco 02 e Bloco 03 pela base');
 ok(Object.values(st.sizes).every(v=>v<1000000),'cada documento abaixo de 1 MB');
 const txt=await p.textContent('#pdBlocks');console.log(txt.replace(/\s+/g,' ').slice(0,600));
@@ -35,7 +35,7 @@ await p.screenshot({path:'/tmp/claude-0/prod_page.png',fullPage:true});
 await p.setInputFiles('#pdFile',{name:'Acompanhamento de produção REV 12.xlsb',mimeType:'application/octet-stream',buffer:Buffer.from(buf)});
 for(let i=0;i<40&&(await p.evaluate(()=>window.__SAVES))<2;i++)await W(500);await W(500);
 const h2=await p.evaluate(()=>PROD.meta().hist[0].n);console.log(JSON.stringify(h2));
-ok(h2.B23.novos===0&&h2.B23.alt===0&&h2.B23.rem===0&&h2.B4.novos===0&&h2.B23.total===1472,'reimportação não duplica nem altera');
+ok(h2.B23.novos===0&&h2.B23.alt===0&&h2.B23.rem===0&&h2.B4.novos===0&&h2.B23.total===1468,'reimportação não duplica nem altera');
 // 3) monitoramento: vincular pasta → detecta → espera estabilizar → importa
 await p.click('#pdLink');await W(400);
 let s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg]);console.log('após vincular',s1);
@@ -46,10 +46,10 @@ for(let i=0;i<30&&(await p.evaluate(()=>window.__SAVES))===sv0;i++)await W(500);
 s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.meta().origem]);console.log('importou',s1);ok(s1[2]==='automática'&&s1[0]==='ok','importação automática depois de estabilizar');
 // 4) arquivo bloqueado/em gravação: informa e mantém os dados
 await p.evaluate(()=>{window.__FS.lock=true});await W(2000);
-s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('bloqueado',s1);ok(s1[0]==='erro'&&/bloqueada|gravada/.test(s1[1])&&s1[2]===1658,'arquivo bloqueado: avisa e mantém os dados anteriores');
+s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('bloqueado',s1);ok(s1[0]==='erro'&&/bloqueada|gravada/.test(s1[1])&&s1[2]===1653,'arquivo bloqueado: avisa e mantém os dados anteriores');
 // 5) arquivo incompleto (corrompido)
 await p.evaluate(()=>{window.__FS.lock=false;window.__FS.buf=window.__FS.buf.slice(0,200000);window.__FS.mod=Date.now()});await W(6000);
-s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('incompleto',s1);ok(s1[0]==='erro'&&/ler a planilha/.test(s1[1])&&s1[2]===1658,'arquivo incompleto: não importa e avisa');
+s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('incompleto',s1);ok(s1[0]==='erro'&&/ler a planilha/.test(s1[1])&&s1[2]===1653,'arquivo incompleto: não importa e avisa');
 await p.selectOption('#pdSev','rmp');await W(300);await p.click('#pdList [data-nota] >> nth=0');await p.selectOption('#pdNM','Segregação');await p.fill('#pdNX','teste de motivo');await p.click('#pdNS');await W(500);
 ok((await p.textContent('#pdList')).includes('teste de motivo'),'motivo registrado no segmento (histórico)');
 await p.selectOption('#pdSev','all');await W(300);const hd=await p.$$eval('#pdList thead tr:first-child th',a=>a.map(x=>x.innerText.replace(/[▲▼]/g,'').trim()));console.log(hd.join(' | '));

@@ -4139,7 +4139,11 @@ const ProdParse=(function(){
       if(empty(sent)&&empty(g(r,'faixa'))&&empty(g(r,'kmIni'))&&empty(g(r,'kmFim'))&&empty(solA)&&empty(desc)&&empty(g(r,'qtd'))){out.cont.vazias++;continue}
       const sn=norm(sent);const side=sn==='crescente'?'C':sn==='decrescente'?'D':null;
       const fam=famOf(g(r,'solApl'),solA,desc);
-      if(!side&&fam!=='SH'){out.cont.foraPadrao++;out.issues.push({sev:'atencao',cod:'fora_padrao',linhas:[ln],msg:`Linha fora do padrão de lançamento (Sentido = "${sent||'vazio'}"${!empty(desc)?`, serviço "${desc}"`:''}): não importada.`});continue}
+      // linha não lançada (regra de 22/11/2026): Sentido vazio (ou 0), ou linha sem data e sem solução/serviço (totais, rótulos e anotações
+      // no rodapé da aba). Não é importada e não vira pendência; só entra na contagem de linhas sem lançamento.
+      const temLanc=!!isoDate(g(r,'data'))||!empty(solA)||!empty(desc);
+      if(empty(sent)||sn==='0'||!temLanc){out.cont.vazias++;continue}
+      if(!side){out.cont.foraPadrao++;out.issues.push({sev:'atencao',cod:'fora_padrao',linhas:[ln],msg:`Linha fora do padrão de lançamento (Sentido = "${sent||'vazio'}"${!empty(desc)?`, serviço "${desc}"`:''}): não importada.`});continue}
       out.cont.servicos++;
       const ki=g(r,'kmIni'),kf=g(r,'kmFim');const data=isoDate(g(r,'data'));
       const key=[k,data||'?',norm(g(r,'equipe')),norm(g(r,'serial')),side||'-',norm(g(r,'faixa')),norm(g(r,'local')),isNum(ki)?ki:String(ki),isNum(kf)?kf:String(kf),norm(solA),fam||'?',norm(g(r,'tipo'))].join('|');
@@ -4328,7 +4332,7 @@ const PROD=(function(){
     const removidos=[].concat(...Object.values(sum).map(x=>x.removidos||[]),m.removidos).slice(0,400);
     const h={at:now,arq:info.name,mod:info.lastModified,size:info.size,origem:info.origem,por:(window.ACL&&ACL.user&&ACL.user.email)||'',erros,n:{}};
     for(const [k,x] of Object.entries(sum))h.n[k]=x.mantido?{mantido:true}:{total:x.total,novos:x.novos,alt:x.alt,rem:x.rem,linhas:x.linhas,fora:x.fora};
-    parts.meta={...m,at:now,dadosAt:mudou||!m.dadosAt?now:m.dadosAt,arq:info.name,mod:info.lastModified,size:info.size,sig:info.sig||'',origem:info.origem,erros,hist:[h].concat(m.hist||[]).slice(0,40),removidos};
+    parts.meta={...m,pv:PARSE_VER,at:now,dadosAt:mudou||!m.dadosAt?now:m.dadosAt,arq:info.name,mod:info.lastModified,size:info.size,sig:info.sig||'',origem:info.origem,erros,hist:[h].concat(m.hist||[]).slice(0,40),removidos};
     if(!window.ProdDB||!window.ProdDB.save)throw new Error('sem conexão com o servidor do app');
     await window.ProdDB.save(parts);
     // atualização local imediata (o retorno do servidor chega pelo onSnapshot)
@@ -4337,6 +4341,8 @@ const PROD=(function(){
 
   /* ---------- monitoramento automático (computador com a pasta sincronizada; Chrome ou Edge) ---------- */
   const W={dir:null,state:'off',msg:'',checkedAt:0,pend:null,busy:false,timer:null,lastStatusAt:0,lastStatusKey:'',file:null,fails:0};
+  // versão das regras de leitura: quando muda, a planilha é lida de novo na próxima verificação, mesmo sem alteração no arquivo
+  const PARSE_VER=2;
   const T0=window.__PROD_T||{},POLL_MS=T0.poll||60000,STABLE_MS=T0.stable||45000;
   const fsOk=()=>'showDirectoryPicker' in window&&window.isSecureContext;
   const canImport=()=>can('producao','create');
@@ -4356,7 +4362,7 @@ const PROD=(function(){
     try{await window.ProdDB.status({at:W.checkedAt,state:W.state,msg:W.msg,arq:W.file&&W.file.name||'',mod:W.file&&W.file.mod||null,size:W.file&&W.file.size||null,auto:true})}catch(e){}}
   async function check(manual){if(!W.dir||W.busy)return;W.busy=true;render();
     try{const fh=await pickFile(W.dir);const f=await fh.getFile();const sig=f.name+'|'+f.lastModified+'|'+f.size;W.checkedAt=Date.now();W.file={name:f.name,mod:f.lastModified,size:f.size,sig};
-      if(META&&META.sig===sig&&!manual){W.state='ok';W.msg='Sem alterações desde a última importação.';W.pend=null;W.fails=0}
+      if(META&&META.sig===sig&&META.pv===PARSE_VER&&!manual){W.state='ok';W.msg='Sem alterações desde a última importação.';W.pend=null;W.fails=0}
       else if(!W.pend||W.pend.sig!==sig){W.pend={sig,since:Date.now()};W.state='wait';W.msg=`Alteração detectada (arquivo salvo em ${dt(f.lastModified)}). Aguardando a gravação terminar para importar.`;
         if(manual){W.pend.since=0}}
       if(W.pend&&W.pend.sig===sig&&Date.now()-W.pend.since>=STABLE_MS){W.state='import';W.msg='Importando…';render();
@@ -4560,7 +4566,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 18:31';
+  const CUR_VER='22/11/2026 19:37';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
