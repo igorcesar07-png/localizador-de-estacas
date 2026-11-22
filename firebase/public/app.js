@@ -4448,11 +4448,11 @@ const PROD=(function(){
     const head=TCOL.map(([k,t,ty])=>`<th class="${ty==='n'?'n':''}"><button type="button" class="pd-sort" data-sort="${k}">${esc(t)}${CF.sort.k===k?(CF.sort.d>0?' ▲':' ▼'):''}</button></th>`).join('');
     const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
     const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=r.iss.some(x=>x.sev==='alerta'&&RMPCOD.has(x.cod));const pend=pendOf(r);
-      return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<button type="button" class="pd-st2 pd-stb" data-st="${esc(r.id)}" style="background:${ST_C[st]}" title="Alterar status (Projeto, TRO, Monitoramento, Retrabalho)">${st}${r.stDiv?' ✎':''} ▾</button>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
+      return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<select class="pd-st2 pd-sts" data-st="${esc(r.id)}" style="background-color:${ST_C[st]}" aria-label="Status da execução" title="${r.stDiv?'Alterado no app; na planilha base: '+esc(r.stAuto):'Alterar status'}">${ST_MAN.map(o=>`<option value="${o}"${st===o?' selected':''}>${o}${r.stDiv&&st===o?' ✎':''}</option>`).join('')}${ST_MAN.includes(st)?'':`<option value="" selected>${esc(st)}</option>`}</select>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
         <td>${r.cls!=='projeto'?'<span class="pd-mod">não se aplica</span>':r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog" title="Ver o que mudou">Sim</button>`:'<span class="pd-rmp nao">Não</span>'}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
         <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),extOf(r)%1?1:0)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${r.q&&r.q.t?fmt(r.q.t,1):'—'}</td>
-        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${canNote()?`<button type="button" class="pd-mini${notaTxt(r)?' tem':''}" data-nota="${esc(r.id)}"${notaTxt(r)?` title="${esc(notaTxt(r))}"`:''}>Motivo${notaTxt(r)?' ✓':''}</button>`:''}</td></tr>`}).join('');
+        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${canNote()&&(r.rmp.length||r.cls==='retrabalho'||notaTxt(r))?`<button type="button" class="pd-mini${notaTxt(r)?' tem':''}" data-nota="${esc(r.id)}"${notaTxt(r)?` title="${esc(notaTxt(r))}"`:''}>Motivo${notaTxt(r)?' ✓':''}</button>`:''}</td></tr>`}).join('');
     return `<table class="pd-t pd-tab"><thead><tr>${head}</tr><tr class="pd-fr">${fil}</tr></thead><tbody>${rows}</tbody></table>`}
   // Excel com os segmentos que têm pendências ou motivos, para análise caso a caso e correção na planilha base
   async function exportPend(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const R0=resolve().all;
@@ -4510,19 +4510,17 @@ const PROD=(function(){
   /* ---------- motivo / observação de um segmento (histórico: nada é apagado) ---------- */
   const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Sola','Outra necessidade técnica'];
   function notaDlg(id,foco){const r=resolve().all.find(x=>x.id===id);if(!r)return;let d=$('pdNotaDlg');if(!d){d=document.createElement('div');d.id='pdNotaDlg';d.className='pd-dlg';document.body.appendChild(d)}
-    d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">${foco==='st'?'Status da execução':'Motivo / observação'}</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
+    d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">Motivo / observação</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
       ${r.notas[0]?`<p class="pd-note">Último registro: ${esc(dt(r.notas[0].at))}${r.notas[0].por?' · '+esc(r.notas[0].por):''}</p>`:''}
-      <div class="fld"><label for="pdNSt">Status</label><select id="pdNSt">${ST_MAN.map(o=>`<option${stOf(r)===o?' selected':''}>${o}</option>`).join('')}${ST_MAN.includes(stOf(r))?'':`<option selected value="">${esc(stOf(r))} (pela planilha)</option>`}</select><small class="pd-note">Fora de Projeto, a coluna RMP fica "não se aplica". Na planilha base: ${esc(r.stAuto)}.</small></div>
       <div class="fld"><label for="pdNM">Motivo</label><select id="pdNM"><option value="">—</option>${[...MOTIVOS,...(r.notas[0]&&r.notas[0].motivo&&!MOTIVOS.includes(r.notas[0].motivo)?[r.notas[0].motivo]:[])].map(m=>`<option${r.notas[0]&&r.notas[0].motivo===m?' selected':''}>${esc(m)}</option>`).join('')}</select></div>
       <div class="fld"><label for="pdNX">Observação</label><textarea id="pdNX" rows="3" maxlength="600">${esc(r.notas[0]&&r.notas[0].txt||'')}</textarea></div><p class="pd-note" id="pdNE"></p>
       <div class="pd-acts"><button type="button" class="pd-b" id="pdNC">Cancelar</button><button type="button" class="pd-b pri" id="pdNS">Salvar</button></div></div>`;
     d.hidden=false;$('pdNC').onclick=()=>d.hidden=true;d.onclick=e=>{if(e.target===d)d.hidden=true};
-    if(foco==='st')setTimeout(()=>$('pdNSt').focus(),0);
-    $('pdNS').onclick=async()=>{const m=$('pdNM').value,t=$('pdNX').value.trim(),sv=$('pdNSt').value,st=sv&&sv!==r.stAuto?sv:'';
-      // salva só o estado atual (sem histórico): status diferente da planilha, motivo e observação
-      const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u)all[k]=u}
-      if(st||m||t)all[id]={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',st,motivo:m,txt:t};else delete all[id];
-      try{if(!window.ProdDB||!window.ProdDB.saveNotas)throw new Error('sem conexão com o servidor do app');await window.ProdDB.saveNotas(all);NOTAS=all;RES=null;d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível registrar: '+(e.message||e)}}}
+    $('pdNS').onclick=async()=>{const n0=r.notas[0]||{};try{await salvaNota(id,{st:n0.st||'',motivo:$('pdNM').value,txt:$('pdNX').value.trim()});d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível salvar: '+(e.message||e)}}}
+  // salva só o estado atual do segmento (sem histórico): status diferente da planilha, motivo e observação
+  async function salvaNota(id,{st,motivo,txt}){const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u)all[k]=u}
+    if(st||motivo||txt)all[id]={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',st:st||'',motivo:motivo||'',txt:txt||''};else delete all[id];
+    if(!window.ProdDB||!window.ProdDB.saveNotas)throw new Error('sem conexão com o servidor do app');await window.ProdDB.saveNotas(all);NOTAS=all;RES=null}
 
   /* ---------- relatórios: CBUQ por km, histórico de execuções e RMP (filtros, campos, Excel e PDF) ---------- */
   const RF=Object.assign({tipo:'km',de:'',ate:'',blk:'ALL',eq:'ALL',fam:'ALL',cls:'ALL',cols:{}},store.get('pdRep',{}));
@@ -4572,8 +4570,10 @@ const PROD=(function(){
   const alertMsg=t=>{const el=$('pdRMsg');if(el)el.textContent=t};
   function init(){const root=$('pdRoot');if(!root)return;
     $('pdBlk').onchange=e=>{F.blk=e.target.value;F.lim=150;render()};$('pdSev').onchange=e=>{F.sev=e.target.value;F.lim=150;render()};$('pdQ').oninput=e=>{F.q=e.target.value;F.lim=150;render()};
-    $('pdList').addEventListener('click',e=>{const b=e.target.closest('[data-nota]');if(b)return notaDlg(b.dataset.nota);const sb=e.target.closest('[data-st]');if(sb)return notaDlg(sb.dataset.st,'st');const rb=e.target.closest('[data-rmp]');if(rb)return rmpPop(rb);const so=e.target.closest('[data-sort]');if(so){const k=so.dataset.sort;CF.sort=CF.sort.k===k?{k,d:-CF.sort.d}:{k,d:1};saveCF();render()}});
-    $('pdList').addEventListener('change',e=>{const c=e.target.closest('select[data-cf]');if(c){CF.f[c.dataset.cf]=c.value;F.lim=150;saveCF();render()}});
+    $('pdList').addEventListener('click',e=>{const b=e.target.closest('[data-nota]');if(b)return notaDlg(b.dataset.nota);const rb=e.target.closest('[data-rmp]');if(rb)return rmpPop(rb);const so=e.target.closest('[data-sort]');if(so){const k=so.dataset.sort;CF.sort=CF.sort.k===k?{k,d:-CF.sort.d}:{k,d:1};saveCF();render()}});
+    $('pdList').addEventListener('change',async e=>{const ss=e.target.closest('select[data-st]');if(ss){const r=resolve().all.find(x=>x.id===ss.dataset.st);if(!r||!ss.value)return;const n0=r.notas[0]||{};ss.disabled=true;
+        try{await salvaNota(r.id,{st:ss.value!==r.stAuto?ss.value:'',motivo:n0.motivo,txt:n0.txt})}catch(err){toast('Não foi possível alterar o status: '+(err.message||err))}render();return}
+      const c=e.target.closest('select[data-cf]');if(c){CF.f[c.dataset.cf]=c.value;F.lim=150;saveCF();render()}});
     let cfT;$('pdList').addEventListener('input',e=>{const c=e.target.closest('input[data-cf]');if(!c)return;clearTimeout(cfT);cfT=setTimeout(()=>{CF.f[c.dataset.cf]=c.value;F.lim=150;saveCF();const pos=c.selectionStart,k=c.dataset.cf;render();const n=$('pdList').querySelector(`input[data-cf="${k}"]`);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}},350)});
     $('pdPX').onclick=exportPend;$('pdCClr').onclick=()=>{CF.f={};saveCF();render()};
     [['pdRT','tipo'],['pdRDe','de'],['pdRAte','ate'],['pdRB','blk'],['pdREq','eq'],['pdRF','fam'],['pdRC','cls']].forEach(([id,k])=>$(id).addEventListener('change',()=>{RF[k]=$(id).value;saveRF();renderRep()}));
@@ -4596,7 +4596,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 20:45';
+  const CUR_VER='22/11/2026 20:49';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
