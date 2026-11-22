@@ -50,8 +50,16 @@ s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);con
 // 5) arquivo incompleto (corrompido)
 await p.evaluate(()=>{window.__FS.lock=false;window.__FS.buf=window.__FS.buf.slice(0,200000);window.__FS.mod=Date.now()});await W(6000);
 s1=await p.evaluate(()=>[PROD.W.state,PROD.W.msg,PROD.resolve().all.length]);console.log('incompleto',s1);ok(s1[0]==='erro'&&/ler a planilha/.test(s1[1])&&s1[2]===1658,'arquivo incompleto: não importa e avisa');
-await p.selectOption('#pdSev','rmp');await W(300);const nb=await p.$('#pdList [data-nota]');await nb.click();await p.selectOption('#pdNM','Segregação');await p.fill('#pdNX','teste de motivo');await p.click('#pdNS');await W(500);
+await p.selectOption('#pdSev','rmp');await W(300);await p.click('#pdList [data-nota] >> nth=0');await p.selectOption('#pdNM','Segregação');await p.fill('#pdNX','teste de motivo');await p.click('#pdNS');await W(500);
 ok((await p.textContent('#pdList')).includes('teste de motivo'),'motivo registrado no segmento (histórico)');
+await p.selectOption('#pdSev','all');await W(300);const hd=await p.$$eval('#pdList thead tr:first-child th',a=>a.map(x=>x.innerText.replace(/[▲▼]/g,'').trim()));console.log(hd.join(' | '));
+ok(hd[0]==='Data'&&hd.includes('Pista')&&hd.includes('Faixa')&&hd.includes('Solução de projeto')&&hd.includes('Solução executada')&&hd.includes('Est. inicial')&&hd.includes('Est. final')&&!hd.some(h=>/Linha/.test(h)),'tabela: data primeiro, pista e faixa separadas, soluções e estacas separadas, sem linhas');
+await p.selectOption('#pdList select[data-cf="rmp"]','Sim');await W(500);const rm=await p.$$eval('#pdList tbody tr td:nth-child(4)',a=>a.map(x=>x.innerText.split('\n')[0]));ok(rm.length>0&&rm.every(x=>x==='Sim'),'filtro por coluna (RMP = Sim)');
+const ext=await p.$$eval('#pdList tbody tr',a=>a.map(r=>r.children[2].innerText));ok(!ext.some(x=>/Extra/.test(x)),'sem RMP em extra-projeto (TRO/alça)');
+await p.click('#pdList [data-sort="t"]');await W(300);await p.click('#pdList [data-sort="t"]');await W(300);const ts=await p.$$eval('#pdList tbody tr td:nth-child(13)',a=>a.slice(0,5).map(x=>parseFloat(x.innerText.replace(/\./g,'').replace(',','.'))||0));ok(ts.every((v,i)=>!i||v<=ts[i-1]),'ordenação por coluna (CBUQ decrescente)');
+await p.click('#pdCClr');await W(300);
+const [dp]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#pdPX')]);ok(!!dp,'Excel de pendências e motivos gerado');if(dp)await dp.saveAs('/tmp/claude-0/pendencias.xlsx');
+await p.$eval('#pdList',e=>e.scrollIntoView());await p.screenshot({path:'/tmp/claude-0/pd_tab.png'});
 const stTxt=await p.textContent('#pdStatus');ok(/Última verificação/.test(stTxt)&&/Última atualização dos dados/.test(stTxt),'mostra última verificação e última atualização');
 await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados
@@ -59,6 +67,7 @@ await p.goto(`http://localhost:${PORT}/#relatorios`);await W(2500);
 await W(1000);const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');
 await p.selectOption('#rObra','B4');await W(1500);const rq4=await p.textContent('#rQuick');const ps4=await p.textContent('#rProdSum');console.log('relatórios B4:',rq4,'|',ps4.replace(/\s+/g,' '));
 ok(/exec/.test(rq4)&&!/ 0% exec/.test(rq4)&&/Extra-projeto/.test(ps4),'Relatórios do Bloco 04 com execução e separação projeto / extra-projeto');
+ok(await p.isVisible('#rVisMap')&&(await p.$$('#pRel .vheat td')).length>20,'Relatórios com gestão visual por km (mapa, barras e mapa de calor)');await p.screenshot({path:'/tmp/claude-0/rel_vis.png'});
 const [dx]=await Promise.all([p.waitForEvent('download',{timeout:40000}).catch(()=>null),p.click('#rXls').catch(()=>{})]);ok(!!dx,'Excel do relatório do Bloco 04 gerado');
 await p.selectOption('#rObra','277');await W(800);
 await p.goto(`http://localhost:${PORT}/#analise`);await W(2500);
