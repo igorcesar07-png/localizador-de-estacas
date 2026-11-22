@@ -5718,7 +5718,7 @@ const PROD=(function(){
     el.hidden=false;const rc=btn.getBoundingClientRect(),w=Math.min(360,innerWidth-16);el.style.width=w+'px';el.style.left=Math.max(8,Math.min(rc.left,innerWidth-w-8))+'px';
     const h=el.offsetHeight;el.style.top=(rc.bottom+6+h>innerHeight?Math.max(8,rc.top-h-6):rc.bottom+6)+'px'}
   /* ---------- motivo / observação de um segmento (histórico: nada é apagado) ---------- */
-  const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Outra necessidade técnica'];
+  const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Sola','Outra necessidade técnica'];
   function notaDlg(id,foco){const r=resolve().all.find(x=>x.id===id);if(!r)return;let d=$('pdNotaDlg');if(!d){d=document.createElement('div');d.id='pdNotaDlg';d.className='pd-dlg';document.body.appendChild(d)}
     d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">${foco==='st'?'Status da execução':'Motivo / observação'}</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
       ${r.notas[0]?`<p class="pd-note">Último registro: ${esc(dt(r.notas[0].at))}${r.notas[0].por?' · '+esc(r.notas[0].por):''}</p>`:''}
