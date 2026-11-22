@@ -4202,7 +4202,9 @@ const PROD=(function(){
   if(window.ProdDB)window.ProdDB.subscribe((id,d)=>onDoc(id,d));
   /* ---------- ligação com o projeto: pista, estacas, bloco e solução ---------- */
   function srcOf(k){if(k==='B23')return {Data,R,LANES,PANOS,ODO};const B=window.__SRC_B4;return B?{Data:B.Data,R:B.R,LANES:B.LANES,PANOS:B.PANOS,ODO:B.ODO}:null}
-  const est=m=>{const km=Math.floor(m/1000+1e-9);const o=Math.round((m-km*1000)*100)/100,ip=Math.floor(o+1e-9),fp=o-ip;return km+'+'+String(ip).padStart(3,'0')+(fp>1e-6?fp.toFixed(2).slice(1).replace(/0+$/,''):'')};
+  // KM da planilha em metros (235980 = 235+980). Valor com 7 dígitos é km e metros digitados juntos com 4 dígitos de metros (2881000 = 288+1000).
+  const kmo=m=>{if(m>=1e6&&m<1e7){const km=Math.floor(m/1e4);return {km,o:Math.round((m-km*1e4)*100)/100,junto:true}}const km=Math.floor(m/1000+1e-9);return {km,o:Math.round((m-km*1000)*100)/100}};
+  const est=m=>{const {km,o:o0}=kmo(m);const o=o0,ip=Math.floor(o+1e-9),fp=o-ip;return km+'+'+String(ip).padStart(3,'0')+(fp>1e-6?fp.toFixed(2).slice(1).replace(/0+$/,''):'')};
   const grpOf=(fx,fam)=>{if(fam==='DR'||fam==='DP')return 'DRN';const f=norm(fx);if(/^(fx|faixa) ?1$/.test(f))return 'F1';if(/^(fx|faixa) ?(2|3)$/.test(f))return 'F23';if(/acost/.test(f))return 'AC';return null};
   // código de projeto do pano (sigla do unifilar no Bloco 04; família no R08) e família de pavimento para comparar
   const projCode=(p,k)=>k==='B4'&&p.src&&p.src.sigla?p.src.sigla:p.code;
@@ -4218,7 +4220,7 @@ const PROD=(function(){
   const ESP_PAD={FS:3,FF:6,FE:10},TOL_LEN=5;
   const PESO={FS:1,FF:2,G:2,FE:3,REC:4,RP:4};  // intensidade da intervenção (para "substituição por solução de menor intervenção")
   const B4_CORTE='2026-11-22',B4_KM_NOVO=250;
-  function posOf(k,m,data,src){const km=Math.floor(m/1000+1e-9),o=Math.round((m-km*1000)*100)/100;
+  function posOf(k,m,data,src){const {km,o}=kmo(m);
     const P=window.PROJECT_DATA_B4&&window.PROJECT_DATA_B4.src,rv=P&&P.revisao&&P.revisao.id||'';
     if(k==='B4'&&data&&data<B4_CORTE&&km<=B4_KM_NOVO&&!/R03/.test(rv)){const T=P&&P.estaq_anterior;
       if(!T)return {err:'a base B4 carregada não traz a tabela do estaqueamento anterior (R03 REV1), necessária para lançamentos até 21/11/2026: envie a base B4 atualizada.'};
@@ -4226,7 +4228,7 @@ const PROD=(function(){
       if(o<f0)return {err:`no estaqueamento anterior o km ${km} começava em ${km}+${String(f0).padStart(3,'0')}.`};
       const s=h0+(Math.min(o,end)-f0);if(s<src.ODO[0]||s>src.ODO[src.ODO.length-1]+20)return {err:'fora do trecho da base.'};
       return {s,ant:true,over:o>end?end:null,km}}
-    const r=src.Data.parseKm(est(m));if(!r.err)return {s:r.s,km};
+    const r=src.Data.parseKm(km+'+'+o);if(!r.err)return {s:r.s,km};
     if(/vai até/.test(r.err)){const n=src.Data.parseKm(String(km+1));if(!n.err)return {s:n.s,over:true,km}}
     return {err:r.err}}
   function resolve(){if(RES)return RES;const out={B23:[],B4:[],all:[]};
@@ -4244,13 +4246,14 @@ const PROD=(function(){
         if(!src){add('erro','base','Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.')}
         else if(r.kmIni!=null&&r.kmFim!=null&&r.fam!=='SH'){
           const A=posOf(k,r.kmIni,r.data,src),B=posOf(k,r.kmFim,r.data,src);
+          for(const v of new Set([r.kmIni,r.kmFim]))if(kmo(v).junto)add('atencao','km_junto',`KM ${String(v)} lido como ${est(v)} (km e metros digitados juntos). Corrigir na planilha base.`);
           if(A.err||B.err)add('erro','estaca',`Sem estaca correspondente${k==='B4'?(A.ant||B.ant?' no estaqueamento anterior (R03 REV1)':' na base da BR-373 B4'):' na base da BR-277'}: ${est(A.err?r.kmIni:r.kmFim)} (${A.err||B.err})`);
           else{let a=Math.min(A.s,B.s),b=Math.max(A.s,B.s);const L=Math.abs(r.kmFim-r.kmIni);
             if(A.ant||B.ant)add('info','estaq_ant','Localizado pelo estaqueamento anterior (R03 REV1): lançamento até 21/11/2026 e km até 250.');
             if(A.over||B.over){const iniOver=r.kmIni<r.kmFim?A.over:B.over,fimOver=r.kmIni<r.kmFim?B.over:A.over;
               if((iniOver&&fimOver)||b-a<0.5){a=b-L} // os dois pontos no fim do km de projeto ou depois dele: os últimos L metros antes do marco
               const o=A.over?r.kmIni:r.kmFim,P2=A.over?A.s:B.s;
-              add('info','equivalencia',`Equivalência de fim de km: ${est(o)} = ${src.Data.nameAt(P2)} (fim do km ${Math.floor(o/1000)} = início do km ${Math.floor(o/1000)+1}). Comprimento e quantidades da planilha mantidos.`)}
+              add('info','equivalencia',`Equivalência de fim de km: ${est(o)} = ${src.Data.nameAt(P2)} (fim do km ${kmo(o).km} = início do km ${kmo(o).km+1}). Comprimento e quantidades da planilha mantidos.`)}
             r.a=a;r.b=b;const i=Math.max(0,Math.min(src.R.length-1,Math.floor((a-src.ODO[0])/20)));const bl=src.R[i][4];r.kmRef=src.R[i][5];
             if(k==='B23'){r.blk='B'+bl;if(r.bloco!=null&&String(r.bloco)!==String(bl))add('atencao','bloco',`Coluna Bloco = "${r.bloco}", mas a estaca ${est(r.kmIni)} fica no Bloco ${bl}.`)}
             else if(bl!==4)add('atencao','bloco',`Estaca fora do Bloco 04 na base (bloco ${bl}).`);
@@ -4408,7 +4411,7 @@ const PROD=(function(){
       <div><span>Arquivo importado</span><b>${META?esc(META.arq):'—'}</b><small>${META&&META.mod?'salvo em '+dt(META.mod):''}</small></div></div>`}
   const rodOf=r=>r.k==='B4'?'BR-373/PR':'BR-277/PR';
   const blkOf=r=>r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':r.blk==='B3'?'Bloco 03':'B2/B3 (sem estaca)';
-  const kmOf=r=>r.kmRef!=null?r.kmRef:r.kmIni!=null?Math.floor(r.kmIni/1000):null;
+  const kmOf=r=>r.kmRef!=null?r.kmRef:r.kmIni!=null?kmo(r.kmIni).km:null;
   const posTxt=r=>{const S=srcOf(r.k);return r.a!=null&&S?S.Data.nameAt(r.a)+' → '+S.Data.nameAt(r.b):''};
   const notaTxt=r=>(r.notas||[]).map(n=>`${brD(new Date(n.at).toISOString().slice(0,10))} ${n.motivo?n.motivo+': ':''}${n.txt||''}`).join(' | ');
   const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
@@ -4577,7 +4580,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 19:55';
+  const CUR_VER='22/11/2026 20:08';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
