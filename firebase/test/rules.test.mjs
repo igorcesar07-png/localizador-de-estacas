@@ -220,6 +220,9 @@ await env.withSecurityRulesDisabled(async c=>{await setDoc(doc(c.firestore(),'us
 await t('RDO: quem valida muda só a situação',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoval@x.com',validado_em:1,validacao_obs:''})));
 await t('RDO: validação não altera os segmentos enviados',()=>assertFails(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoval@x.com',validado_em:2,t:1})));
 await t('RDO: quem só envia não valida',()=>assertFails(updateDoc(doc(lp('rdoc'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoc@x.com',validado_em:3,validacao_obs:''})));
+await t('RDO: quem valida exclui segmento validado (só excl/histórico)',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{excl:[1],excl_hist:[{sid:1,acao:'excluir',em:1,por:'rdoval@x.com'}]})));
+await t('RDO: exclusão não altera os dados enviados',()=>assertFails(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{excl:[],excl_hist:[],t:0})));
+await t('RDO: quem só envia não exclui segmento',()=>assertFails(updateDoc(doc(lp('rdoc'),'rdo_envios','r1'),{excl:[2],excl_hist:[]})));
 await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','app'),{url:'https://x'})));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;

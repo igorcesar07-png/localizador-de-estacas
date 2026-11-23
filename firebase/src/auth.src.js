@@ -324,6 +324,8 @@ onAuthStateChanged(auth,async user=>{
         cfg:async()=>{try{const s=await getDoc(doc(db,'rdo_config','app'));return s.exists()?s.data():{}}catch(e){return {}}},
         setCfg:c=>isAdm?track(setDoc(doc(db,'rdo_config','app'),{...c,by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
         validate:(id,st,obs)=>track(updateDoc(doc(db,'rdo_envios',id),{status:st,validado_por:user.email,validado_em:Date.now(),validacao_obs:String(obs||'').slice(0,300)})),
+        // exclui (ou restaura) segmentos de um RDO validado da Produção executada; guarda quem e quando
+        excl:(id,list,hist)=>track(updateDoc(doc(db,'rdo_envios',id),{excl:list,excl_hist:hist.map(h=>({...h,por:h.por||user.email}))})),
         can:isAdm||!!prd.create,val:isAdm||!!prd.edit,admin:isAdm}}
     // versões do projeto (unifilares) com data de corte: lista leve (metadados) + dados lidos só quando usados
     {const VC=new Map();
