@@ -22,6 +22,7 @@ export const PAGES=[
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
   {k:'producao',t:'Produção executada',acts:['view','create'],help:{view:'Ver os segmentos executados importados da planilha de produção, as pendências e o histórico de importações',create:'Vincular a pasta da planilha (monitoramento automático) e importar o arquivo manualmente'}},
   {k:'rmp',t:'Controle de RMPs',acts:['view','create'],help:{view:'Ver os RMPs da produção executada, o que falta em cada um e exportar o relatório de pendências',create:'Registrar o motivo e as fotos dos RMPs (RMP assinado, patologia e espessura)'}},
+  {k:'rdo',t:'RDO de massa',acts:['view','create'],help:{view:'Abrir o RDO de massa, ver os envios, conferir com a planilha de produção e exportar a planilha',create:'Enviar o RDO do dia (arquivo do Controle de Massa)'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
 const ACTS={view:'Visualizar',create:'Criar',edit:'Editar',delete:'Excluir'};
 
@@ -136,7 +137,7 @@ function fresh(ref,label,sig,ms=5000){return new Promise((res,rej)=>{let done=fa
         else if(!navigator.onLine){clearTimeout(wait);clearTimeout(dead);done=true;const e=new Error('offline sem cache');e.code='offline-nocache';rej(e)}
         return}
       if(s.metadata.hasPendingWrites){used=sig(s);return}   // alteração feita neste aparelho: já está aplicada
-      if(!s.metadata.fromCache&&label&&sig(s)!==used){NEWDATA.set(label,true);SYNC.msg='';syncUi()}}  // aviso de dados novos substitui a mensagem da última sincronização,
+      if(!s.metadata.fromCache&&label&&sig(s)!==used){NEWDATA.set(label,true);SYNC.msg='';syncUi()}},  // aviso de dados novos substitui a mensagem da última sincronização
     e=>{clearTimeout(wait);clearTimeout(dead);if(!done){done=true;rej(e)}});
   LIVE.push(un)})}
 const sigBase=s=>s.exists()?String(s.data().version||''):'-';
@@ -310,6 +311,15 @@ onAuthStateChanged(auth,async user=>{
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null},
         can:isAdm||!!prm.create}}
+    // RDO de massa: envios do fim do dia (resumo + segmentos compactos) e o arquivo original, separados; nada é alterado depois de enviado
+    const prd=window.ACL.perms.rdo||{};
+    if(isAdm||prd.view||ppv.view){
+      window.RdoDB={subscribe:cb=>onSnapshot(collection(db,'rdo_envios'),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        save:(sum,raw)=>{const b=writeBatch(db);b.set(doc(db,'rdo_envios',sum.id),{...sum,enviado_por:user.email,enviado_em:Date.now()});b.set(doc(db,'rdo_envios_arq',sum.id),{id:sum.id,json:raw,enviado_por:user.email});return track(b.commit())},
+        exists:async id=>{try{return (await getDoc(doc(db,'rdo_envios',id))).exists()}catch(e){return false}},
+        cfg:async()=>{try{const s=await getDoc(doc(db,'rdo_config','app'));return s.exists()?s.data():{}}catch(e){return {}}},
+        setCfg:c=>isAdm?track(setDoc(doc(db,'rdo_config','app'),{...c,by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
+        can:isAdm||!!prd.create,admin:isAdm}}
     // versões do projeto (unifilares) com data de corte: lista leve (metadados) + dados lidos só quando usados
     {const VC=new Map();
       window.VersDB={subscribe:cb=>onSnapshot(collection(db,'base_versoes'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),

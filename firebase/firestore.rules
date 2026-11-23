@@ -52,11 +52,12 @@ service cloud.firestore {
       return d.id == id && d.id is string && d.id.size() <= 80 && d.seg is string && d.fotos is map && d.patologias is list && d.patologias.size() <= 10
           && d.atualizado_por == request.auth.token.email && d.atualizado_em is int;
     }
+    function rdoRead() { return isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'rdo') || canView(permsOf(me()), 'producao'))); }
     function levRead() { return isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'levbe')); }
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
           || canView(p, 'analise') || canView(p, 'marcos') || canView(p, 'foto') || canView(p, 'relatorios')
-          || canView(p, 'levbe') || canView(p, 'levpat') || canView(p, 'producao') || canView(p, 'rmp');
+          || canView(p, 'levbe') || canView(p, 'levpat') || canView(p, 'producao') || canView(p, 'rmp') || canView(p, 'rdo');
     }
     function activeWithAccess() { return hasMe() && me().active == true && anyView(permsOf(me())); }
     function emailKey() { return request.auth.token.email.lower(); }
@@ -149,6 +150,23 @@ service cloud.firestore {
                     && request.resource.data.data is string && request.resource.data.data.size() < 1000000
                     && request.resource.data.reg is string && request.resource.data.criado_por == request.auth.token.email;
       allow update, delete: if false;
+    }
+    // RDO de massa: cada envio é imutável (correção = novo envio); o arquivo original fica guardado para rastreabilidade
+    match /rdo_envios/{id} {
+      allow read: if rdoRead();
+      allow create: if canDo('rdo', 'create') && request.resource.data.id == id && request.resource.data.data is string
+                    && request.resource.data.segs is list && request.resource.data.segs.size() <= 2000 && request.resource.data.enviado_por == request.auth.token.email;
+      allow update, delete: if false;
+    }
+    match /rdo_envios_arq/{id} {
+      allow read: if rdoRead();
+      allow create: if canDo('rdo', 'create') && request.resource.data.id == id && request.resource.data.json is string && request.resource.data.json.size() < 1000000
+                    && request.resource.data.enviado_por == request.auth.token.email;
+      allow update, delete: if false;
+    }
+    match /rdo_config/{id} {
+      allow read: if rdoRead();
+      allow write: if isAdmin();
     }
     // Histórico de programações: resumo (lista) e dados completos. Cria em nome próprio; o autor altera a própria;
     // "editar" altera a de qualquer usuário; "excluir" só marca a exclusão. Nada é apagado do servidor.

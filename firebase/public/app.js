@@ -3,7 +3,7 @@ const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp','rdo']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -191,7 +191,7 @@ window.Theme=Theme;
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp','rdo'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -4635,6 +4635,7 @@ const PROD=(function(){
       <div class="tscroll"><table class="pd-t pd-ct"><thead><tr><th rowspan="2">Solução</th><th colspan="2">Segmentos</th><th colspan="3">km-faixa (nas estacas do projeto)</th><th colspan="3">Quantidade (consumo de contrato)</th></tr>
         <tr><th>prev.</th><th>exec.</th><th>prev.</th><th>exec.</th><th>%</th><th>prev.</th><th>exec.</th><th>%</th></tr></thead>
         <tbody>${['FE','FF','FS'].map(x=>row(x,'t')).join('')}${['REC','RP'].map(x=>row(x,'')).join('')}${['DR','DP'].map(x=>row(x,'m')).join('')}</tbody></table></div>
+      ${(()=>{const l=RDOS.filter(e=>rdoK(e.obra)===k);if(!l.length)return '';let n=0,nl=0;for(const e of l)for(const x of rdoMatch(e)){n++;if(x.st==='lançado')nl++}return `<p class="pd-note"><b>RDO de massa:</b> ${l.length} envio(s), ${n} segmento(s); ${n-nl?`<b>${n-nl} ainda não lançado(s) na planilha</b>`:'todos lançados na planilha'}. <a href="#rdo">ver</a></p>`})()}
       <small>Fresagens em toneladas de CBUQ; drenos em metros. km-faixa executado: só a parte executada dentro dos panos previstos. Quantidade executada: tudo o que foi lançado (inclui outra solução, RMP, retrabalho, TRO e monitoramento), por isso os dois percentuais podem ser diferentes. ${s.d0?`Lançamentos de ${brD(s.d0)} a ${brD(s.d1)}.`:''}</small></div>`}
   function statusBox(){const st=W.dir||W.state!=='off'?W:null;const sh=STAT||{};
     const chk=Math.max(W.checkedAt||0,sh.at||0);const state=st?W.state:(sh.state||'off');const msg=st?W.msg:(sh.msg||'');
@@ -4812,6 +4813,62 @@ const PROD=(function(){
     render()}
   Router.onInit('producao',init);on('page',p=>{if(p!=='producao')return;try{if(sessionStorage.getItem('pdRepKm')){sessionStorage.removeItem('pdRepKm');RF.tipo='km';saveRF();setTimeout(()=>{const el=$('pdRep');el&&el.scrollIntoView({behavior:'smooth'})},200)}}catch(e){}render()});on('prod',()=>render());
 
+
+  /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
+  let RDOS=[];if(window.RdoDB)window.RdoDB.subscribe(l=>{if(!l)return;RDOS=l;rdRender();render()});
+  const canRdo=()=>!!(window.RdoDB&&window.RdoDB.can);
+  // estaca do RDO ("236+300") → posição (m) na base da obra; fim pelo comprimento no sentido
+  function rdoSegs(d){const out=[],rdo=d.rdo||{};const KEYS=['start','direction','lane','length','width','thickness'];
+    for(const f of [...(d.fres||[]),...(d.extras||[]).map(x=>Object.assign({},x,{__extra:1}))]){const o=Object.assign({},f,(rdo[f.id]&&rdo[f.id].over)||{});
+      out.push({sid:String(f.id||''),ini:String(o.start||''),side:o.direction==='Decrescente'?'D':'C',lane:o.lane,len:+o.length||0,w:+o.width||0,e:+o.thickness||0,t:(+o.length||0)*(+o.width||0)*(+o.thickness||0)*(+d.density||0),
+        obs:(rdo[f.id]&&rdo[f.id].obs)||'',alt:!!(rdo[f.id]&&rdo[f.id].over&&Object.keys(rdo[f.id].over).some(k=>KEYS.includes(k))),extra:!!f.__extra})}
+    return out}
+  function rdoCheck(d){const err=[];if(!d||typeof d!=='object')return ['arquivo inválido'];if(![2,3].includes(d.version))err.push('versão do arquivo não reconhecida (esperado 2 ou 3)');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d.date||''))err.push('data do RDO ausente');if(!(d.density>0))err.push('densidade ausente');if(!Array.isArray(d.fres)||!d.fres.length)err.push('sem segmentos');
+    const bad=(d.fres||[]).filter(r=>!(r&&typeof r.start==='string'&&['Crescente','Decrescente'].includes(r.direction)&&Number.isInteger(r.lane)&&r.length>0&&r.width>0&&r.thickness>0)).length;if(bad)err.push(bad+' segmento(s) incompletos');return err}
+  const rdoK=o=>o==='BR-373'?'B4':'B23';
+  function rdoMatch(env){const k=rdoK(env.obra),src=srcOf(k);const R0=(resolve()[k]||[]);
+    return (env.segs||[]).map(sg=>{if(!src)return {sg,st:'sem base'};const A=src.Data.parseKm(sg.ini);if(A.err)return {sg,st:'estaca inválida'};const a0=A.s,b0=sg.side==='D'?a0-sg.len:a0+sg.len,a=Math.min(a0,b0),b=Math.max(a0,b0);
+      const grp=sg.lane===1?'F1':sg.lane===2?'F23':'AC',L=src.LANES.findIndex(l=>l.grp===grp&&l.side===sg.side);
+      const hit=R0.find(r=>r.data===env.data&&r.L===L&&r.a!=null&&Math.min(b,r.b)-Math.max(a,r.a)>=Math.min(b-a,r.b-r.a)*0.5);
+      return {sg,a,b,L,st:hit?'lançado':'não lançado',r:hit}})}
+  function rdRender(){const root=$('rdRoot');if(!root||Router.cur()!=='rdo')return;
+    const l=RDOS.slice().sort((a,b)=>String(b.data).localeCompare(String(a.data))||(b.enviado_em||0)-(a.enviado_em||0));
+    $('rdList').innerHTML=l.length?`<table class="pd-t pd-tab"><thead><tr><th>Data do RDO</th><th>Obra</th><th>Equipe</th><th>Responsável</th><th class="n">Segmentos</th><th class="n">Massa aplicada (t)</th><th>Planilha de produção</th><th>Enviado</th></tr></thead><tbody>
+      ${l.map(e=>{const m=rdoMatch(e),nl=m.filter(x=>x.st==='lançado').length;return `<tr><td class="n">${brD(e.data)}</td><td>${esc(e.obra)}</td><td>${esc(EQ_CURTO(e.equipe||''))}</td><td>${esc(e.resp||'')}</td><td class="n">${(e.segs||[]).length}</td><td class="n">${fmt(e.t,1)}</td>
+        <td>${nl===m.length?'<span class="rm-sit ok">✓ todos lançados</span>':`<span class="rm-sit pend">${m.length-nl} não lançado(s)</span>`}<small>${m.filter(x=>x.st!=='lançado').slice(0,4).map(x=>esc(x.sg.ini+' '+(x.sg.side==='D'?'D':'C')+' F'+x.sg.lane)).join(' · ')}</small></td>
+        <td><small>${esc(dt(e.enviado_em))}<br>${esc(e.enviado_por||'')}${e.__pend?' · <b>pendente de envio</b>':''}</small></td></tr>`}).join('')}</tbody></table>`:'<p class="pd-note">Nenhum RDO enviado ainda.</p>'}
+  let RDPEND=null;
+  async function rdFile(f){const box=$('rdPrev');RDPEND=null;if(!f){box.innerHTML='';return}
+    try{const raw=await f.text();if(raw.length>950000)throw new Error('arquivo grande demais (limite de ~1 MB)');let d;try{d=JSON.parse(raw)}catch(e){throw new Error('o arquivo não é um JSON válido')}
+      const err=rdoCheck(d);const segs=rdoSegs(d);const id='rdo-'+d.date+'-'+hashStr(raw);const ja=window.RdoDB?await window.RdoDB.exists(id):false;
+      if(/373/.test(d.job||''))$('rdObra').value='BR-373';else if(/277/.test(d.job||''))$('rdObra').value='BR-277';
+      const t=segs.reduce((x,s)=>x+s.t,0);
+      box.innerHTML=`<div class="pd-blk"><h3>${esc(f.name)}</h3><div class="pd-n"><div><b>${brD(d.date)}</b><span>data do RDO</span></div><div><b>${segs.length}</b><span>segmentos${segs.filter(s=>s.alt).length?` (${segs.filter(s=>s.alt).length} alterados no RDO)`:''}</span></div><div><b>${fmt(t,1)}</b><span>t aplicadas</span></div></div>
+        <small>Obra no arquivo: ${esc(d.job||'—')} · responsável: ${esc(d.resp||'—')} · densidade ${fmt(d.density,3)} t/m³ · usinado ${fmt(d.usinado||0,1)} t</small>
+        ${err.length?`<p class="pd-erro">Não pode ser enviado: ${esc(err.join('; '))}.</p>`:ja?'<p class="pd-note"><b>Este arquivo já foi enviado.</b> Nada a fazer.</p>':''}
+        ${!err.length&&!ja&&canRdo()?'<div class="pd-acts"><button type="button" class="pd-b pri" id="rdSend">Enviar o RDO</button></div>':''}${!canRdo()?'<p class="pd-note">Sem permissão para enviar RDO.</p>':''}</div>`;
+      if(!err.length&&!ja)RDPEND={id,d,raw,segs,t,arquivo:f.name};const sb=$('rdSend');if(sb)sb.onclick=rdSend}
+    catch(e){box.innerHTML=`<p class="pd-erro">Não foi possível ler o arquivo: ${esc(e.message||e)}</p>`}}
+  async function rdSend(){if(!RDPEND)return;const eq=$('rdEq').value;if(!eq){$('rdMsg').textContent='';$('rdPrev').insertAdjacentHTML('beforeend','<p class="pd-erro">Escolha a equipe.</p>');return}
+    const P=RDPEND,d=P.d;const sum={id:P.id,data:d.date,obra:$('rdObra').value,equipe:eq,resp:String(d.resp||'').slice(0,120),job:String(d.job||'').slice(0,60),densidade:d.density,usinado:d.usinado||0,
+      segs:P.segs.map(s=>({sid:s.sid,ini:s.ini,side:s.side,lane:s.lane,len:Math.round(s.len*100)/100,w:Math.round(s.w*100)/100,e:Math.round(s.e*1000)/1000,t:Math.round(s.t*100)/100,alt:s.alt,extra:s.extra,...(s.obs?{obs:String(s.obs).slice(0,300)}:{})})),
+      t:Math.round(P.t*100)/100,arquivo:P.arquivo};
+    try{$('rdSend').disabled=true;await window.RdoDB.save(sum,P.raw);RDPEND=null;$('rdPrev').innerHTML=`<p class="pd-note"><b>RDO de ${brD(d.date)} enviado.</b> Sem internet, ele fica guardado no aparelho e sobe quando houver conexão.</p>`;$('rdFile').value=''}
+    catch(e){$('rdPrev').insertAdjacentHTML('beforeend',`<p class="pd-erro">Não foi possível enviar: ${esc(e.message||e)}</p>`);const b=$('rdSend');if(b)b.disabled=false}}
+  async function rdXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const H=['Data do RDO','Obra','Equipe','Responsável','Estaca inicial','Sentido','Faixa','Comprimento (m)','Largura (m)','Espessura (cm)','Massa (t)','Alterado no RDO','Segmento extra','Observação','Planilha de produção','Linhas da planilha','Enviado por','Enviado em','Arquivo','ID do envio'];
+      const rows=[];for(const e of RDOS.slice().sort((a,b)=>String(a.data).localeCompare(String(b.data)))){for(const x of rdoMatch(e)){const s=x.sg;rows.push([brD(e.data),e.obra,e.equipe,e.resp||'',s.ini,s.side==='D'?'Decrescente':'Crescente',s.lane===1?'Faixa 1':s.lane===2?'Faixa 2/3':'Acostamento',s.len,s.w,Math.round(s.e*1000)/10,s.t,s.alt?'Sim':'Não',s.extra?'Sim':'Não',s.obs||'',x.st,x.r?x.r.lin.join(', '):'',e.enviado_por||'',dt(e.enviado_em),e.arquivo||'',e.id])}}
+      const ws=X.utils.aoa_to_sheet([['RDO de massa — envios'],['Emitido em',dt(Date.now())],[],H,...rows]);ws['!cols']=H.map(h=>({wch:/Observação|Arquivo|ID/.test(h)?30:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:3,c:0},e:{r:3+rows.length,c:H.length-1}})};
+      const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'RDO');X.writeFile(wb,`rdo-massa-${new Date().toISOString().slice(0,10)}.xlsx`);$('rdMsg').textContent=rows.length+' segmento(s) na planilha.'}
+    catch(e){$('rdMsg').textContent='Não foi possível gerar o Excel: '+(e.message||e)}}
+  async function rdApp(){const box=$('rdApp');if(!box||!window.RdoDB){if(box)box.innerHTML='<p class="pd-note">Sem acesso ao servidor do app.</p>';return}const c=await window.RdoDB.cfg();const url=c.url||'';
+    box.innerHTML=(url?`<div class="pd-acts"><a class="pd-b" href="${esc(url)}" target="_blank" rel="noopener">Abrir o RDO em outra aba</a></div><iframe class="rd-if" src="${esc(url)}" title="RDO de massa (Controle de Massa)" loading="lazy" allow="geolocation"></iframe>`
+      :'<p class="pd-note">O endereço do RDO de massa (Controle de Massa) ainda não foi informado pelo administrador.</p>')
+      +(window.RdoDB.admin?`<div class="pd-fl"><div class="fld"><label for="rdUrl">Endereço do RDO de massa (administrador)</label><input id="rdUrl" type="url" value="${esc(url)}" placeholder="https://…"></div><div class="pd-acts"><button type="button" class="pd-b" id="rdUrlS">Salvar endereço</button></div></div>`:'');
+    const sb=$('rdUrlS');if(sb)sb.onclick=async()=>{const u=$('rdUrl').value.trim();if(u&&!/^https:\/\//.test(u)){$('rdMsg').textContent='Use um endereço https://';return}try{await window.RdoDB.setCfg({url:u});rdApp()}catch(e){$('rdMsg').textContent='Não foi possível salvar: '+(e.message||e)}}}
+  function rdInit(){if(!$('rdRoot'))return;$('rdEq').innerHTML='<option value="">Selecione…</option>'+EQUIPES.map(e=>`<option>${e}</option>`).join('');
+    $('rdFile').onchange=e=>rdFile(e.target.files[0]);$('rdXls').onclick=rdXls;rdApp()}
+  Router.onInit('rdo',rdInit);on('page',p=>{if(p==='rdo')rdRender()});on('prod',()=>rdRender());
   /* ---------- controle de RMPs (página própria, ligada à produção executada) ---------- */
   let RMPC=new Map();const RMEDIA=new Map();
   const RFOTO=[['assinado','RMP assinado pelo fiscal ou responsável'],['patologia','Foto da patologia'],['espessura','Foto da linha mostrando a espessura']];
@@ -4918,7 +4975,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 23:40';
+  const CUR_VER='22/11/2026 23:43';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

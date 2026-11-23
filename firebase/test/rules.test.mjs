@@ -205,6 +205,16 @@ await t('RMP: quem vê a Produção executada lê o controle',()=>assertSucceeds
 await t('RMP: foto é gravada e não pode ser apagada',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1'),{id:'rf1',reg:'B23-abc',cat:'assinado',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'rmreg@x.com'}));
   await assertFails(deleteDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1')))});
 await t('RMP: quem registra RMP grava o motivo (producao_notas), mas não os dados da planilha',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'base','producao_notas'),{json:'{}'}));await assertFails(setDoc(doc(lp('rmreg'),'base','producao_b23'),{json:'{}'}))});
+// RDO de massa
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  const U=(id,email,perms)=>setDoc(doc(d,'users',id),{email,name:id,profile:null,custom:true,perms,active:true,invited:true});
+  await U('rdoc','rdoc@x.com',{rdo:{view:true,create:true}});await U('rdov','rdov@x.com',{rdo:{view:true}});
+});
+const RDO=(id,by)=>({id,data:'2026-11-22',obra:'BR-277',equipe:'Equipe Pavimentação Johonatan',resp:'A',segs:[{ini:'236+000',fim:'236+100',side:'C',lane:1,len:100,w:3.6,e:0.06,t:54.6}],t:54.6,arquivo:'a.json',enviado_por:by,enviado_em:1});
+await t('RDO: quem tem "criar" envia o RDO do dia',()=>assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_envios','r1'),RDO('r1','rdoc@x.com'))));
+await t('RDO: envio não pode ser alterado depois',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_envios','r1'),RDO('r1','rdoc@x.com'))));
+await t('RDO: só "ver" não envia, mas lê',async()=>{await assertFails(setDoc(doc(lp('rdov'),'rdo_envios','r2'),RDO('r2','rdov@x.com')));await assertSucceeds(getDoc(doc(lp('rdov'),'rdo_envios','r1')))});
+await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','app'),{url:'https://x'})));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
 const txt=`Regras do Firestore: ${ok}/${results.length} testes OK\n\n`+results.map(r=>r.join('  ')).join('\n')+'\n';

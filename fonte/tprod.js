@@ -16,6 +16,10 @@ await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs=
   // versões do projeto (B4: R03 REV1 até 21/11/2026, R01 a partir de 22/11/2026)
   const VL=[{id:'B4-r03',obra:'B4',rev:'R03 REV1',arquivo:'base_B4_R03_REV1.json',corte:'2026-01-01',atual:false},{id:'B4-r01',obra:'B4',rev:'R01',arquivo:'base-BR373-B4_R01.json',corte:'2026-11-22',atual:true}];
   window.VersDB={subscribe:cb=>{setTimeout(()=>cb(VL),80);return ()=>{}},get:async id=>id==='B4-r03'?(await fetch('v_r03.json')).json():(await fetch('data_b4.json')).json()};
+  // RDO de massa simulado
+  const rd=JSON.parse(localStorage.getItem('__rdo')||'{}'),dsubs=[];const dkeep=()=>{try{localStorage.setItem('__rdo',JSON.stringify(rd))}catch(e){}};
+  window.RdoDB={subscribe:cb=>{dsubs.push(cb);setTimeout(()=>cb(Object.values(rd)),70);return ()=>{}},save:async(sum,raw)=>{rd[sum.id]=Object.assign({},sum,{enviado_por:'teste@x',enviado_em:Date.now()});dkeep();setTimeout(()=>dsubs.forEach(cb=>cb(Object.values(rd))),20)},
+    exists:async id=>!!rd[id],cfg:async()=>({}),setCfg:async()=>{},can:true,admin:true};
   // pasta simulada: o arquivo pode "mudar" (lastModified) e ficar "bloqueado"
   window.__FS={mod:Date.now()-3600e3,lock:false,buf:null,name:'Acompanhamento de produção REV 12.xlsb'};
   const fh={kind:'file',get name(){return __FS.name},getFile:async()=>{if(__FS.lock){const e=new Error('locked');e.name='NotReadableError';throw e}return new File([__FS.buf],__FS.name,{lastModified:__FS.mod})}};
@@ -100,6 +104,13 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.evaluate(()=>window.__mxB4.setRev('B4-r03'));await W(2500);const nd=await p.evaluate(()=>[window.__mxB4.difs(),window.__mxB4.rev()]);console.log('difs',nd);ok(nd[1]>0,'mapa B4: revisão R03 REV1 exibida e diferenças listadas ('+nd[0]+')');
   await p.screenshot({path:'/tmp/claude-0/mapa_rev.png'});
   await p.goto(`http://localhost:${PORT}/#mapa`);await W(3000);const n2=await p.evaluate(()=>window.__mxB23&&window.__mxB23.n());ok(n2>0,'mapa BR-277: panos executados desenhados ('+n2+')')}
+// 5d) RDO de massa: envio do arquivo, conferência com a planilha e Excel
+{await p.goto(`http://localhost:${PORT}/#rdo`);await W(1500);const buf=await p.evaluate(async()=>Array.from(new Uint8Array(await (await fetch('rdo_test.json')).arrayBuffer())));
+  await p.setInputFiles('#rdFile',{name:'apontamento-massa-BR277.json',mimeType:'application/json',buffer:Buffer.from(buf)});await W(800);
+  ok(/segmentos/.test(await p.textContent('#rdPrev'))&&!!(await p.$('#rdSend')),'RDO: arquivo conferido e resumo exibido');
+  await p.selectOption('#rdEq','Equipe Pavimentação Johonatan');await p.click('#rdSend');await W(800);const nr=await p.$$eval('#rdList tbody tr',a=>a.length);ok(nr===1&&/enviado/.test(await p.textContent('#rdPrev')),'RDO enviado e listado com a conferência da planilha');
+  await p.setInputFiles('#rdFile',{name:'apontamento-massa-BR277.json',mimeType:'application/json',buffer:Buffer.from(buf)});await W(800);ok(/já foi enviado/.test(await p.textContent('#rdPrev')),'RDO: o mesmo arquivo não é enviado duas vezes');
+  const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#rdXls')]);ok(!!dx,'RDO: planilha em Excel')}
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados
 await p.goto(`http://localhost:${PORT}/#relatorios`);await W(2500);
 await W(1000);const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');
