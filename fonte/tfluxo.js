@@ -24,6 +24,7 @@ await p.screenshot({path:'/tmp/claude-0/fl_rdo.png'});await p.setViewportSize({w
 await p.click('#cmRoot [data-cm="send"]');await W(900);ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'5) RDO enviado para validação ('+(await p.textContent('#cmMsg')).slice(0,80)+')');
 ok(/Aguardando validação/.test(await p.textContent('#cmRoot')),'   segmentos ficam "Aguardando validação"');
 let pr=await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').length);ok(pr===0,'   antes da validação nada entra na Produção executada');
+await p.click('#rdList tr[data-rdrow] td:nth-child(3)');await W(200);ok(!(await p.$eval('#rdList [data-rdsegs]',e=>e.hidden)),'   tocar na linha do envio abre os segmentos');await p.click('#rdList tr[data-rdrow] td:nth-child(3)');await W(200);
 await p.click('#rdList [data-rddet]');await W(200);ok(/Programado/.test(await p.textContent('#rdList'))&&/RMP/.test(await p.textContent('#rdList')),'6) conferência: programado × executado e RMP no envio');
 await p.click('#rdList [data-rdval]');await W(1200);ok(/Validado/.test(await p.textContent('#rdList')),'   RDO validado');
 const R=await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').map(r=>({ap:r.ap,L:r.L,fam:r.fam,larg:r.larg,esp:r.esp,rmp:r.rmp.length,mot:(r.notas[0]||{}).motivos})));console.log(JSON.stringify(R));
@@ -36,6 +37,7 @@ await p.evaluate(()=>location.hash='#producao');await W(1500);await p.selectOpti
   await p.click('#rdList [data-rdrest]');await W(800);ok(await nR()===tags.length,'   restaurar na aba RDO volta para a produção');
   await p.click('#rdList [data-rdxs] >> nth=0');await W(800);ok(await nR()===tags.length-1,'12) excluir o validado na aba RDO tira da Produção executada');
   await p.click('#rdList [data-rdrest]');await W(800);ok(await nR()===tags.length,'   e restaurar devolve')}
+await p.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));await W(200);await (await p.$('#rdList')).screenshot({path:'/tmp/claude-0/rd_dark.png'});await p.evaluate(()=>document.documentElement.setAttribute('data-theme','light'));await (await p.$('#rdList')).screenshot({path:'/tmp/claude-0/rd_light.png'});
 await p.evaluate(()=>location.hash='#producao');await W(1500);
 const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#pdBX')]);ok(dx&&/planilha-base-RDO/.test(dx.suggestedFilename()),'8) Excel "RDO validado" para a planilha base');
 await p.evaluate(()=>location.hash='#calculadora');await W(1500);await p.click('#cForm button[type=submit]');await W(1200);

@@ -4918,7 +4918,7 @@ const PROD=(function(){
     const nA=l.filter(e=>(e.status||'aguardando')==='aguardando').length;
     $('rdList').innerHTML=(nA?`<p class="pd-note"><b>${nA} RDO(s) aguardando validação.</b>${V?' Confira e valide: só depois de validados entram na Produção executada.':' Quem tem a permissão "RDO de massa: validar" confere e valida.'}</p>`:'')+(l.length?`<table class="pd-t pd-tab"><thead><tr><th>Situação</th><th>Data do RDO</th><th>Obra</th><th>Equipe</th><th class="n">Segmentos</th><th class="n">Massa (t)</th><th>Planilha de produção</th><th>Enviado</th><th></th></tr></thead><tbody>
       ${l.map(e=>{const m=rdoMatch(e),nl=m.filter(x=>x.st==='lançado').length,st=e.status||'aguardando',S0=RST[st]||RST.aguardando;const nr=(e.segs||[]).filter(x=>x.rmp).length;
-        return `<tr><td><span class="rm-sit ${S0[1]}">${S0[0]}</span>${e.validado_por?`<small>${esc(e.validado_por)}${e.validado_em?' · '+esc(dt(e.validado_em)):''}${e.validacao_obs?' · '+esc(e.validacao_obs):''}</small>`:''}</td><td class="n">${brD(e.data)}</td><td>${esc(e.obra)}</td><td>${esc(EQ_CURTO(e.equipe||''))}</td><td class="n">${(e.segs||[]).length}${nr?`<small>${nr} com RMP</small>`:''}</td><td class="n">${fmt(e.t,1)}</td>
+        return `<tr class="rd-row${RDOPEN.has(e.id)?' open':''}" data-rdrow="${esc(e.id)}" title="Toque para ver os segmentos"><td><span class="rm-sit ${S0[1]}">${S0[0]}</span>${e.validado_por?`<small>${esc(e.validado_por)}${e.validado_em?' · '+esc(dt(e.validado_em)):''}${e.validacao_obs?' · '+esc(e.validacao_obs):''}</small>`:''}</td><td class="n">${brD(e.data)}</td><td>${esc(e.obra)}</td><td>${esc(EQ_CURTO(e.equipe||''))}</td><td class="n">${(e.segs||[]).length}${nr?`<small>${nr} com RMP</small>`:''}</td><td class="n">${fmt(e.t,1)}</td>
         <td>${nl===m.length?'<span class="rm-sit ok">✓ todos lançados</span>':`<span class="rm-sit pend">${m.length-nl} não lançado(s)</span>`}</td>
         <td><small>${esc(dt(e.enviado_em))}<br>${esc(e.enviado_por||'')}${e.__pend?' · <b>pendente de envio</b>':''}</small></td>
         <td><button type="button" class="cm-mini rd-det" data-rddet="${esc(e.id)}" aria-label="Ver segmentos" title="Ver segmentos">▾</button>${V&&st==='aguardando'?`<button type="button" class="pd-b pri rd-v" data-rdval="${esc(e.id)}">Validar</button><button type="button" class="pd-b rd-v" data-rddev="${esc(e.id)}">Devolver</button>`:''}</td></tr>
@@ -5214,8 +5214,10 @@ const PROD=(function(){
   window.__CM={get:()=>CM,load:d=>cmLoad(d,false),rmp:()=>{cmRmp();return CM.fres.map(f=>f.rmp)}};
   function rdInit(){if(!$('rdRoot'))return;cmBind();cmRender();$('rdEq').innerHTML='<option value="">Selecione…</option>'+EQUIPES.map(e=>`<option>${e}</option>`).join('');
     $('rdFile').onchange=e=>rdFile(e.target.files[0]);$('rdXls').onclick=rdXls;rdApp();
-    $('rdList').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
-      if(b.dataset.rddet){const tr=$('rdList').querySelector(`[data-rdsegs="${CSS.escape(b.dataset.rddet)}"]`);if(tr){tr.hidden=!tr.hidden;tr.hidden?RDOPEN.delete(b.dataset.rddet):RDOPEN.add(b.dataset.rddet)}return}
+    $('rdList').addEventListener('click',async e=>{const b=e.target.closest('button');
+      if(!b){const row=e.target.closest('tr[data-rdrow]');if(!row||e.target.closest('a,input,select,label'))return;const id=row.dataset.rdrow,tr=$('rdList').querySelector(`[data-rdsegs="${CSS.escape(id)}"]`);
+        if(tr){tr.hidden=!tr.hidden;tr.hidden?RDOPEN.delete(id):RDOPEN.add(id);row.classList.toggle('open',!tr.hidden)}return}
+      if(b.dataset.rddet){const tr=$('rdList').querySelector(`[data-rdsegs="${CSS.escape(b.dataset.rddet)}"]`);if(tr){tr.hidden=!tr.hidden;tr.hidden?RDOPEN.delete(b.dataset.rddet):RDOPEN.add(b.dataset.rddet);const row=b.closest('tr[data-rdrow]');if(row)row.classList.toggle('open',!tr.hidden)}return}
       if(b.dataset.rdxs)return rdoExclSeg(b.dataset.rdxs,b.dataset.sid,false);if(b.dataset.rdrest)return rdoExclSeg(b.dataset.rdrest,b.dataset.sid,true);
       const id=b.dataset.rdval||b.dataset.rddev;if(!id)return;const ok=!!b.dataset.rdval;const env=RDOS.find(x=>x.id===id);if(!env)return;
       const obs=ok?'':prompt('Motivo da devolução (o apontador corrige e envia de novo):','');if(!ok&&obs===null)return;
@@ -5387,7 +5389,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 14:59';
+  const CUR_VER='23/11/2026 15:34';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
