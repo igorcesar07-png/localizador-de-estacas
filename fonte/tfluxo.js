@@ -12,29 +12,28 @@ await p.fill('#cKmA','236+000');await p.fill('#cKmB','236+600');await p.selectOp
 const tags=await p.$$eval('#cOut table.q tbody tr[data-tag]',a=>a.map(t=>t.dataset.tag));console.log('panos',tags);
 await p.click('#cRep');await W(1800);let H=await p.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('br277.histProgs')||'{}')));ok(H.length===1,'1) programação gerada vai sozinha para o Histórico');
 await p.click('#rvClose').catch(()=>{});
-await p.evaluate(()=>location.hash='#histprog');await W(900);ok(await p.$('.hpcard [data-rdo]'),'2) Histórico tem "Exportar para RDO de Massa"');
+await p.evaluate(()=>location.hash='#histprog');await W(900);ok(await p.$('.hpcard [data-rdo]'),'2) Histórico tem "Exportar para o RDO"');
 await p.click('.hpcard [data-rdo]');await W(1500);ok(await p.evaluate(()=>location.hash)==='#rdo','   e leva para a página RDO de Massa');
 const cm=await p.evaluate(()=>window.__CM.get());ok(cm.fres.length===tags.length&&cm.fres.every(f=>f.prog&&f.tag)&&/Johonatan/.test(cm.equipe),'3) segmentos programados com o programado guardado como referência ('+cm.fres.length+')');
-ok(/Programado/.test(await p.textContent('#cmRoot'))&&(await p.$$('#cmRoot .cm-in.req')).length>0,'   status Programado e campos a preencher destacados');
+ok(/Valores programados/.test(await p.textContent('#cmRoot'))&&(await p.$$('#cmRoot .cm-in.req')).length>0,'   status Programado e campos a preencher destacados');
 // largura real 3,76 no 1º; espessura 10 cm no 2º (sola) → RMP
 await p.fill('#cmRoot [data-fi="0"][data-fk="width"]','3.76');await p.press('#cmRoot [data-fi="0"][data-fk="width"]','Tab');await W(500);
 await p.fill('#cmRoot [data-fi="1"][data-fk="thickness"]','13');await p.press('#cmRoot [data-fi="1"][data-fk="thickness"]','Tab');await W(600);
-await p.click('#cmRoot [data-cm="camp"][data-i="0"]');await W(300);await p.click('#cmRoot [data-cm="camp"][data-i="1"]');await W(300);
-const t2=await p.textContent('#cmRoot');ok(/RMP de espessura \(13,0 × 10,0 cm\)/.test(t2)&&/▲ \+0,16/.test(t2),'4) largura 3,76 (▲ +0,16) e espessura 13 cm (projeto 10) com RMP');
-await p.screenshot({path:'/tmp/claude-0/fl_rdo.png'});await p.setViewportSize({width:390,height:844});await W(300);await p.screenshot({path:'/tmp/claude-0/fl_rdo_m.png'});await p.setViewportSize({width:1280,height:900});await p.click('[data-cmtab="fres"]');await W(200);await p.selectOption('#cmRoot [data-fmot="1"]','Sola');await W(200);
+const t2=await p.textContent('#cmRoot');ok(/RMP de espessura \(13,0 × 10,0 cm\)/.test(t2)&&/\+0,16/.test(t2)&&/entra no Controle de RMPs como pendência/.test(t2),'4) largura 3,76 (▲ +0,16) e espessura 13 cm (projeto 10) com RMP');
+await p.screenshot({path:'/tmp/claude-0/fl_rdo.png'});await p.setViewportSize({width:390,height:844});await W(300);await p.screenshot({path:'/tmp/claude-0/fl_rdo_m.png'});await p.setViewportSize({width:1280,height:900});await p.click('[data-cmtab="fres"]');await W(200);
 await p.click('#cmRoot [data-cm="send"]');await W(900);ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'5) RDO enviado para validação ('+(await p.textContent('#cmMsg')).slice(0,80)+')');
 ok(/Aguardando validação/.test(await p.textContent('#cmRoot')),'   segmentos ficam "Aguardando validação"');
 let pr=await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').length);ok(pr===0,'   antes da validação nada entra na Produção executada');
-await p.click('#rdList [data-rddet]');await W(200);ok(/Programado/.test(await p.textContent('#rdList'))&&/Sola/.test(await p.textContent('#rdList')),'6) conferência: programado × executado e RMP no envio');
+await p.click('#rdList [data-rddet]');await W(200);ok(/Programado/.test(await p.textContent('#rdList'))&&/RMP/.test(await p.textContent('#rdList')),'6) conferência: programado × executado e RMP no envio');
 await p.click('#rdList [data-rdval]');await W(1200);ok(/Validado/.test(await p.textContent('#rdList')),'   RDO validado');
 const R=await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').map(r=>({ap:r.ap,L:r.L,fam:r.fam,larg:r.larg,esp:r.esp,rmp:r.rmp.length,mot:(r.notas[0]||{}).motivos})));console.log(JSON.stringify(R));
-ok(R.length===2&&R.every(r=>r.ap)&&R.some(r=>r.larg===3.76)&&R.some(r=>r.rmp>0&&String(r.mot).includes('Sola')),'7) validado → Produção executada (com RMP e motivo)');
+ok(R.length===tags.length&&R.every(r=>r.ap)&&R.some(r=>r.larg===3.76)&&R.some(r=>r.rmp>0),'7) validado → Produção executada (com RMP; motivo vai no Controle de RMPs)');
 ok(/Validado/.test(await p.textContent('#cmRoot')),'   RDO do aparelho mostra "Validado"');
 await p.evaluate(()=>location.hash='#producao');await W(1500);await p.selectOption('#pdSev','all').catch(()=>{});await W(400);ok((await p.$$('#pdList .pd-org')).length>=1,'   linhas com selo RDO na Produção executada');
 const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#pdBX')]);ok(dx&&/planilha-base-RDO/.test(dx.suggestedFilename()),'8) Excel "RDO validado" para a planilha base');
 await p.evaluate(()=>location.hash='#calculadora');await W(1500);await p.click('#cForm button[type=submit]');await W(1200);
 await p.screenshot({path:'/tmp/claude-0/fl_calc.png'});const fl=await p.$$eval('#cOut table.q tbody tr[data-tag]',a=>a.map(t=>[t.dataset.tag,(t.querySelector('.flw')||{}).textContent||'',!!t.querySelector('.rprog')]));console.log(JSON.stringify(fl));
-ok(fl.filter(x=>x[1]==='Validado'&&!x[2]).length===2,'9) Calculadora: os 2 executados aparecem "Validado" e não podem ser programados');
-ok(fl.some(x=>x[1]==='Em execução'),'   o que ficou no RDO sem enviar aparece "Em execução"');
+ok(fl.filter(x=>x[1]==='Validado'&&!x[2]).length===tags.length,'9) Calculadora: os executados aparecem "Validado" e não podem ser programados');
+
 await p.evaluate(()=>location.hash='#mapa');await W(2500);const ne=await p.evaluate(()=>window.__mxB23&&window.__mxB23.n());ok(ne>0,'10) mapa B2/B3 com os executados ('+ne+')');
 ok(!errs.length,'sem erros JS');console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

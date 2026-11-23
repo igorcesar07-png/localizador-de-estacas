@@ -635,21 +635,35 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .cm-dec{display:flex;flex-direction:column;gap:4px;border-radius:10px;padding:10px 12px;margin:8px 0}.cm-dec input{width:70px;min-height:0;height:28px;padding:2px 6px;display:inline-block}.cm-dec .pd-b{align-self:flex-start}
 .cm-send{border-top:1px solid var(--line);margin-top:12px;padding-top:6px}.cm-box{width:min(620px,100%)}
 .cm-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}
-.cm-seg{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;border:1px solid var(--line);border-left:5px solid #5B6470;border-radius:12px;padding:10px 12px;background:var(--surface,#fff)}
-.cm-seg.st-exec{border-left-color:#B45309}.cm-seg.st-ok{border-left-color:#1E7A4C;background:#F6FBF8}.cm-seg.st-env{border-left-color:#1A56DB;background:#F5F8FF}.cm-seg.st-val{border-left-color:#15803D;background:#F1FAF4}
-.cm-sl{display:flex;flex-direction:column;align-items:center;gap:6px}.cm-n{font:800 18px var(--body)}.cm-btv{flex-direction:column;margin:0;gap:4px}
-.cm-sm{min-width:0}.cm-sh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}.cm-sh b{font-size:15px}.cm-sh span{font-size:12.5px;color:var(--muted,#667)}
+.cm-seg{position:relative;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-left:4px solid #5B6470;border-radius:14px;padding:10px 12px 12px;background:var(--surface);color:var(--ink);-webkit-touch-callout:none;transition:transform .18s ease,box-shadow .18s ease}
+.cm-seg.st-ok{border-left-color:#1E8E4E}.cm-seg.st-env{border-left-color:#1A73E8}.cm-seg.st-val{border-left-color:#15803D;background:color-mix(in srgb,#1E8E4E 7%,var(--surface))}
+.cm-seg.cm-drag{z-index:5;transition:none;box-shadow:0 14px 34px rgba(0,0,0,.35);border-color:var(--accent);border-left-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.cm-list.cm-dragging .cm-seg:not(.cm-drag){opacity:.85}.cm-list.cm-dragging{user-select:none;-webkit-user-select:none}
+.cmi{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.cm-hd{display:flex;align-items:flex-start;gap:8px;user-select:none;-webkit-user-select:none}
+.cm-seg{user-select:none;-webkit-user-select:none}.cm-seg input{user-select:text;-webkit-user-select:text}
+.cm-grip{color:var(--muted);margin-top:1px;cursor:grab;display:inline-flex}.cm-grip .cmi{width:16px;height:16px;fill:currentColor;stroke:none}
+.cm-n{font:800 17px/1.2 var(--body);min-width:18px}
+.cm-sh{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px}.cm-sh b{font-size:15.5px;font-variant-numeric:tabular-nums;white-space:nowrap}.cm-sh>span:last-child{flex-basis:100%;font-size:12.5px;color:var(--muted)}
 .cm-stc{color:#fff!important;font:700 11px var(--body)!important;padding:2px 8px;border-radius:999px}
-.cm-pr{font-size:12px;color:var(--muted,#667);margin:4px 0 6px;padding:3px 8px;background:var(--ground);border-radius:6px;display:inline-block}
-.cm-ins{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 10px}
-.cm-in{display:flex;flex-direction:column;gap:2px;font-size:11.5px;color:var(--muted,#667);position:relative}.cm-in span{font-weight:700}
-.cm-in input{width:104px;height:38px;min-height:0;padding:4px 26px 4px 8px;box-sizing:border-box;font:700 16px var(--body);text-align:right;border:1.5px solid var(--line);border-radius:8px;background:var(--surface,#fff);color:var(--ink)}
-.cm-in.req input{background:#FFF8D6;border-color:#E0B100}.cm-in em{position:absolute;right:7px;bottom:10px;font-style:normal;font-size:11px;color:var(--muted,#667)}
-.cm-df{align-self:center;font:700 11.5px var(--body);color:#B45309;margin-left:-4px}.cm-mass{align-self:center;margin-left:auto;font:800 15px var(--body);font-variant-numeric:tabular-nums}
-.cm-rmp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-top:8px;padding:6px 10px;background:#FDECEC;border-radius:8px;font-size:12.5px;color:#8A1C1C}.cm-rmp b{background:#C62828;color:#fff;border-radius:5px;padding:0 6px}
-.cm-rmp label{display:flex;align-items:center;gap:6px;font-weight:700}.cm-rmp select{min-height:32px;font-size:13px;max-width:240px}
-.cm-xx{display:block;font-size:11.5px;color:#7A4A00;margin-top:3px}.cm-sr{display:flex;align-items:center}.cm-ok{min-height:36px;padding:4px 12px;font-size:13px;white-space:nowrap}.cm-ok.on{background:#1E7A4C;color:#fff;border-color:#1E7A4C}
-@media(max-width:640px){.cm-seg{grid-template-columns:auto 1fr;gap:8px;padding:8px}.cm-sr{grid-column:1/-1}.cm-ok{width:100%}.cm-in input{width:96px}.cm-btv{flex-direction:column}}
+.cm-act{display:flex;gap:4px;margin:-4px -6px 0 0}.cm-act button{width:36px;height:36px;min-height:0;padding:0;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:var(--muted);cursor:pointer}
+.cm-act button:hover,.cm-act button:focus-visible{background:var(--surface-2);color:var(--ink)}.cm-act .cm-x:hover,.cm-act .cm-x:focus-visible{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}
+.cm-bt button .cmi,.cm-mini .cmi{width:15px;height:15px}.cm-bt button,.cm-mini{display:inline-grid;place-items:center}
+.cm-pr{font-size:12px;color:var(--muted);padding:4px 8px;background:var(--surface-2);border-radius:8px;align-self:flex-start}
+.cm-ins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cm-in{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--muted);min-width:0}.cm-in>span:first-child{font-weight:700}
+.cm-iw{position:relative;display:block}
+.cm-in input{width:100%;height:42px;min-height:0;padding:4px 28px 4px 8px;box-sizing:border-box;font:700 16px var(--body);font-variant-numeric:tabular-nums;text-align:right;border:1.5px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink)}
+.cm-in input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.cm-in input::-webkit-inner-spin-button,.cm-in input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.cm-in input{-moz-appearance:textfield;appearance:textfield}
+.cm-in.req input{border-color:color-mix(in srgb,var(--accent) 70%,var(--line))}.cm-in input:disabled{opacity:.7}
+.cm-in em{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-style:normal;font-size:11.5px;color:var(--muted);pointer-events:none}
+.cm-df{font:700 11px var(--body);color:var(--warn);text-align:right}
+.cm-ft{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}.cm-mass{margin-left:auto;font:800 15px var(--body);font-variant-numeric:tabular-nums}
+.cm-xx{font-size:11.5px;color:var(--muted)}
+.cm-rmp{display:flex;gap:10px;align-items:flex-start;padding:9px 11px;border-radius:10px;font-size:12.5px;line-height:1.4;color:var(--ink);background:color-mix(in srgb,#E3A008 14%,var(--surface));border:1px solid color-mix(in srgb,#E3A008 50%,var(--surface));border-left:4px solid #E3A008}
+.cm-rmp .cmi{color:#B7791F;margin-top:1px}.cm-rmp b{display:block;font-size:13px}.cm-rmp span{color:var(--muted)}.cm-rmp a{color:inherit;font-weight:700}
+@media(max-width:640px){.cm-seg{padding:9px 10px 10px}.cm-ins{gap:6px}.cm-in input{padding-right:24px;font-size:16px}.cm-in em{right:6px}}
 .rd-if{width:100%;height:70vh;min-height:480px;border:1px solid var(--line);border-radius:12px;background:#fff}.pd-erro{color:#B42318;font-weight:600}.pd-org{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#1A56DB;color:#fff;font:700 10.5px var(--body);vertical-align:middle}.pd-org.ok{background:#E3F1E8;color:#1E7A4C}.cm-prog{display:flex;flex-direction:column;background:#EEF4FF;border-left:4px solid #1A56DB;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13px}.cm-prog span{font-size:12px;color:#334}.rd-v{min-height:30px;padding:3px 10px;font-size:12.5px;margin-left:4px}.rd-segs>td{background:#FAFAF7;padding:6px 8px}.rm-sit.bad{background:#FDE8E8;color:#8A1C1C}.falvo{position:absolute;left:50%;transform:translateX(-50%);bottom:110px;z-index:30;display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(26,86,219,.94);color:#fff;border-radius:14px;padding:10px 16px;font:13px var(--body);text-align:center;max-width:92%}.falvo b{font-size:14px}.falvo button{margin-top:4px;background:#fff;color:#1A56DB;border:0;border-radius:9px;padding:6px 12px;font:700 13px var(--body)}.rm-fb{display:inline-flex;gap:6px;flex-wrap:wrap}.rm-iw{position:relative;display:inline-block}.rm-x{position:absolute;top:-6px;right:-6px;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:2px solid #fff;background:#C62828;color:#fff;font:800 15px/1 var(--body);cursor:pointer}.rm-sort{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;min-height:0}.rm-t .pd-fr th{padding:3px 4px}.rm-t .pd-fr select,.rm-t .pd-fr input{width:100%;min-width:74px;min-height:0;height:28px;font-size:12px;padding:2px 4px}.ph-btns{display:inline-flex;gap:6px;flex-wrap:nowrap}.ph-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:5px 12px;border:1px solid var(--line,#d5d8d2);border-radius:999px;background:var(--surface,#fff);color:var(--ink,#111);font:700 13px var(--body);cursor:pointer;white-space:nowrap}
 .rm-corte{margin:4px 0 10px}.rm-cf{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.rm-cf label{font-weight:700;font-size:13px}.rm-cf input{min-height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--surface);color:var(--ink);font:inherit}
 .rm-sit.pc{color:var(--muted);font-weight:700}.rm-pc{display:inline-grid;place-items:center;margin-left:4px;min-width:18px;height:18px;border-radius:50%;background:#E4E7E5;color:#56605A;font:700 12px/1 var(--body)}
@@ -1154,7 +1168,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#relatorios" data-page="relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 3h9l4 4v14H6z"/><path d="M9 17v-4M12 17v-7M15 17v-2"/></svg><span>Relatórios<small>Resumo gerencial, PDF e Excel</small></span></a>
     <a href="#producao" data-page="producao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>Produção executada<small>Importação da planilha de produção</small></span></a>
     <a href="#rmp" data-page="rmp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 2h3v16H5V5h3z"/><path d="M9 12l2 2 4-4"/></svg><span>Controle de RMPs<small>Motivo e fotos dos RMPs</small></span></a>
-    <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO de massa<small>Envio dos apontamentos do dia</small></span></a>
+    <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO<small>Massa aplicada e envio dos apontamentos do dia</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
   <div class="dfoot">Versão /*__VERSION__*/ · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
@@ -1424,7 +1438,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 </div>
 <div class="modal" id="lpMv" hidden role="dialog" aria-modal="true" aria-labelledby="lpMvT"><div class="mbox lv-edb"><h2 id="lpMvT">Arquivo do levantamento</h2><div class="lv-media" id="lpMvBody"></div><div class="mfoot"><span class="lv-sp"></span><button type="button" class="primary" id="lpMvClose">Fechar</button></div></div></div>
 <section class="page" id="pRdo" data-page="rdo" hidden>
-  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>RDO de massa</h1></div>
+  <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>RDO</h1></div>
   <div class="cscroll"><div class="cwrap" id="rdRoot">
     <div class="card pd-c cm-card"><h2>Controle de massa</h2>
       <p class="pd-note">Fresagem, RDO da aplicação e acompanhamento do CBUQ do dia. Os dados ficam salvos neste aparelho a cada alteração (funciona sem internet) e, no fim do dia, <b>Enviar o RDO do dia</b> grava no banco do app e alimenta a conferência da Produção executada.</p>
@@ -5456,8 +5470,8 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
     rep:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
     del:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
     rdo:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h12M12 6l6 6-6 6"/><path d="M20 4v16"/></svg>'};
-  async function toRdo(id){const sum=ALL.find(r=>r.id===id);if(!sum)return;if(!window.__cmFromHist){say('RDO de massa indisponível.');return}
-    say('Levando a programação para o RDO de Massa…');let data=null;
+  async function toRdo(id){const sum=ALL.find(r=>r.id===id);if(!sum)return;if(!window.__cmFromHist){say('RDO indisponível.');return}
+    say('Levando a programação para o RDO…');let data=null;
     try{data=await Promise.race([DB().get(id),new Promise((_,rej)=>setTimeout(()=>rej(new Error('tempo esgotado')),12000))])}catch(e){say('Não foi possível ler os dados desta programação (sem internet?).');return}
     if(!data||!data.rows){say('Dados desta programação não encontrados.');return}
     const err=window.__cmFromHist(sum,data);if(err==='cancelado')return;if(err){say(err);return}location.hash='#rdo'}
@@ -5473,7 +5487,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
         <p class="hptr"><span class="hprod">${rodTxt(r)}</span>${PISTA[r.pista]?`<span class="hpfx">${esc(PISTA[r.pista])}</span>`:''}</p>
         <p class="hpkm">Km ${esc(r.kmA)} ao Km ${esc(r.kmB)}</p>
         <div class="hpsv"><span class="hpsvh">Serviços</span>${servHtml(r)}</div>
-        ${r.excluido?'':`<div class="hpbtns"><button type="button" class="hpb" data-open="${esc(r.id)}">${IC.open}<span>Visualizar / Editar</span></button><button type="button" class="hpb" data-rep="${esc(r.id)}">${IC.rep}<span>Relatório</span></button><button type="button" class="hpb rdo" data-rdo="${esc(r.id)}"${r.nSeg?'':' disabled title="Sem panos de pavimentação"'}>${IC.rdo}<span>Exportar para RDO de Massa</span></button><button type="button" class="hpb del" data-del="${esc(r.id)}" data-acl="histprog:delete">${IC.del}<span>Excluir</span></button></div>`}
+        ${r.excluido?'':`<div class="hpbtns"><button type="button" class="hpb" data-open="${esc(r.id)}">${IC.open}<span>Visualizar / Editar</span></button><button type="button" class="hpb" data-rep="${esc(r.id)}">${IC.rep}<span>Relatório</span></button><button type="button" class="hpb rdo" data-rdo="${esc(r.id)}"${r.nSeg?'':' disabled title="Sem panos de pavimentação"'}>${IC.rdo}<span>Exportar para o RDO</span></button><button type="button" class="hpb del" data-del="${esc(r.id)}" data-acl="histprog:delete">${IC.del}<span>Excluir</span></button></div>`}
       </article>`).join('')}</div></section>`).join('')}
   function say(t){const m=$('hpMsg');m.hidden=false;m.textContent=t;m.dataset.keep='1';setTimeout(()=>{delete m.dataset.keep},6000)}
   async function load(id,report){const sum=ALL.find(r=>r.id===id);if(!sum)return;
@@ -6214,29 +6228,30 @@ const PROD=(function(){
   const cmAplicar=()=>[...CM.fres.filter(f=>!CM.applied[f.id]),...CM.extras.filter(x=>!CM.applied[x.id])];
   const cmNec=()=>tot(cmAplicar()).t;
   const cmDisp=()=>(CM.usinado||0)-(CM.accum||0)+(CM.truckFull?0:(CM.truckLeft||0));
-  const IC={up:'▲',dn:'▼',cut:'✂',ed:'✏',del:'🗑'};
+  const IC={"up": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 15l6-6 6 6\"/></svg>", "dn": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 9l6 6 6-6\"/></svg>", "cut": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"6\" cy=\"6\" r=\"2.6\"/><circle cx=\"6\" cy=\"18\" r=\"2.6\"/><path d=\"M8.2 7.6L20 18M8.2 16.4L20 6\"/></svg>", "ed": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 20h4L19.2 8.8a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 16z\"/><path d=\"M13.5 6.5l4 4\"/></svg>", "del": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2\"/></svg>", "x": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6L6 18\"/></svg>", "grip": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"6\" r=\"1.3\"/><circle cx=\"15\" cy=\"6\" r=\"1.3\"/><circle cx=\"9\" cy=\"12\" r=\"1.3\"/><circle cx=\"15\" cy=\"12\" r=\"1.3\"/><circle cx=\"9\" cy=\"18\" r=\"1.3\"/><circle cx=\"15\" cy=\"18\" r=\"1.3\"/></svg>", "warn": "<svg class=\"cmi\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3.5L2.8 19.5h18.4z\"/><path d=\"M12 10v4.5M12 17.2v.3\"/></svg>"};
   // status do segmento no fluxo: Programado → Em execução (dados de campo) → Aguardando validação → Validado
-  const FST={prog:['Programado','#5B6470'],exec:['Em execução','#B45309'],ok:['Executado no campo','#1E7A4C'],env:['Aguardando validação','#1A56DB'],val:['Validado','#1E7A4C']};
-  const fSt=f=>f.envio?(f.envio.st==='validado'?'val':'env'):f.campo?'ok':f.mexeu?'exec':'prog';
-  const dfx=(a,b,d)=>a!=null&&b!=null&&Math.abs(a-b)>1e-6?`<small class="cm-df">${b>a?'▲ +':'▼ −'}${fmt(Math.abs(b-a),d)}</small>`:'';
-  function cmFresHtml(){cmRmp();const T=tot(CM.fres),Tx=tot(CM.fres.filter(f=>f.campo));const np=CM.fres.filter(f=>!f.campo).length;
-    return `${CM.progRef?`<div class="cm-prog"><b>Programação de ${brD(CM.progRef.data)} · ${esc(CM.progRef.equipe)}</b><span>${CM.progRef.n} pano(s) programados · ${fmt(CM.progRef.t,1)} t previstas. Os valores programados ficam como referência; preencha em amarelo o que foi executado.</span></div>`:''}
+  const FST={prog:['Valores programados','#5B6470'],ok:['Executado','#1E7A4C'],env:['Aguardando validação','#1A56DB'],val:['Validado','#15803D']};
+  // o RDO só recebe panos executados: todo segmento da lista é executado; "valores programados" = ainda com os números da programação
+  const fSt=f=>f.envio?(f.envio.st==='validado'?'val':'env'):f.mexeu||f.campo?'ok':'prog';
+  const dfx=(a,b,d)=>a!=null&&b!=null&&Math.abs(a-b)>1e-6?`<small class="cm-df">${b>a?'+':'−'}${fmt(Math.abs(b-a),d)}</small>`:'';
+  function cmFresHtml(){cmRmp();const T=tot(CM.fres),Tx=T;const np=0;
+    return `${CM.progRef?`<div class="cm-prog"><b>Programação de ${brD(CM.progRef.data)} · ${esc(CM.progRef.equipe)}</b><span>${CM.progRef.n} pano(s) programados · ${fmt(CM.progRef.t,1)} t previstas. Os valores programados ficam como referência; confira e corrija o que foi executado. Exclua (×) o pano que não foi executado.</span></div>`:''}
       <div class="cm-g2"><div class="fld"><label for="cmDens">Densidade do CBUQ (t/m³)</label><input id="cmDens" type="number" step="0.001" inputmode="decimal" value="${CM.density||''}"></div>
       <div class="fld"><label for="cmUsi">Massa total usinada do dia (t)</label><input id="cmUsi" type="number" step="0.01" inputmode="decimal" value="${CM.usinado||''}"></div></div>
-      <div class="cm-kpi"><div><b>${CM.fres.length-np} / ${CM.fres.length}</b><span>segmentos executados</span></div><div><b>${fmt(Tx.ext,1)}</b><span>m executados</span></div><div><b>${fmt(Tx.t,2)}</b><span>t executadas</span></div><div><b>${fmt(T.t,2)}</b><span>t de todos os panos</span></div></div>
+      <div class="cm-kpi"><div><b>${CM.fres.length}</b><span>segmentos executados</span></div><div><b>${fmt(Tx.ext,1)}</b><span>m executados</span></div><div><b>${fmt(Tx.t,2)}</b><span>t executadas</span></div><div><b>${fmt((CM.usinado||0)-Tx.t,2)}</b><span>t usinado − executado</span></div></div>
       ${CM.fres.length?`<div class="cm-list">${CM.fres.map((f,i)=>{const P=f.prog||null,st=fSt(f),lock=!!f.envio;const al=CM.rdo[f.id]&&CM.rdo[f.id].over&&Object.keys(CM.rdo[f.id].over).length;
-        const inp=(k,v,step,lbl,unit)=>`<label class="cm-in${f.campo?'':' req'}"><span>${lbl}</span><input type="number" step="${step}" inputmode="decimal" data-fi="${i}" data-fk="${k}" value="${v??''}"${lock?' disabled':''}><em>${unit}</em></label>`;
-        return `<article class="cm-seg st-${st}${i%2?' z':''}" data-i="${i}">
-          <div class="cm-sl"><b class="cm-n">${i+1}</b><span class="cm-bt cm-btv">${lock?'':`<button type="button" data-cm="ed" data-i="${i}" aria-label="Editar o pano ${i+1}" title="Editar">${IC.ed}</button><button type="button" data-cm="cut" data-i="${i}" aria-label="Dividir / RMP" title="Dividir / RMP">${IC.cut}</button><button type="button" data-cm="up" data-i="${i}" aria-label="Subir" title="Subir">${IC.up}</button><button type="button" data-cm="dn" data-i="${i}" aria-label="Descer" title="Descer">${IC.dn}</button><button type="button" data-cm="del" data-i="${i}" aria-label="Excluir" title="Excluir">${IC.del}</button>`}</span></div>
-          <div class="cm-sm"><div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span><b>${f.sequential?'↳ ':''}${esc(f.start)} → ${esc(cmEnd(f))}</b><span>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'} · ${LANE_N[f.lane]||''}${f.solucao?' · '+esc(f.solucao):''}${f.tag?' · '+esc(f.tag):''}</span></div>
-            ${P?`<div class="cm-pr">Programado: ${esc(P.start)} · ${fmt(P.length,2)} m × ${fmt(P.width,2)} m × ${fmt(P.thickness*100,1)} cm · ${fmt(P.length*P.width*P.thickness*(CM.density||0),2)} t</div>`:''}
-            <div class="cm-ins">${inp('length',f.length,'0.01','Compr. executado','m')}${dfx(P&&P.length,f.length,2)}${inp('width',f.width,'0.01','Largura média','m')}${dfx(P&&P.width,f.width,2)}${inp('thickness',f.thickness!=null?Math.round(f.thickness*1000)/10:null,'0.1','Espessura','cm')}${dfx(P&&P.thickness*100,f.thickness*100,1)}
-              <span class="cm-mass">${fmt(mas(f),2)} t</span></div>
-            ${f.rmp?`<div class="cm-rmp"><b>RMP</b> ${esc(rmpTx(f))}<label>Motivo <select data-fmot="${i}"${lock?' disabled':''}><option value="">Selecione…</option>${MOTIVOS.map(m=>`<option${f.motivo===m?' selected':''}>${esc(m)}</option>`).join('')}</select></label></div>`:''}
-            ${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}</div>
-          <div class="cm-sr">${lock?`<small>${esc(FST[st][0])}</small>`:f.campo?`<button type="button" class="pd-b cm-ok on" data-cm="camp" data-i="${i}" aria-pressed="true">✓ Executado</button>`:`<button type="button" class="pd-b cm-ok" data-cm="camp" data-i="${i}" aria-pressed="false">Marcar executado</button>`}</div></article>`}).join('')}</div>
+        const inp=(k,v,step,lbl,unit,df)=>`<label class="cm-in${st==='prog'?' req':''}"><span>${lbl}</span><span class="cm-iw"><input type="number" step="${step}" inputmode="decimal" data-fi="${i}" data-fk="${k}" value="${v??''}"${lock?' disabled':''}><em>${unit}</em></span>${df||''}</label>`;
+        return `<article class="cm-seg st-${st}" data-i="${i}">
+          <div class="cm-hd"><span class="cm-grip" title="Toque e segure o cartão para mudar a posição">${IC.grip}</span><b class="cm-n">${i+1}</b>
+            <div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span><b>${f.sequential?'↳ ':''}${esc(f.start)} → ${esc(cmEnd(f))}</b><span>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'} · ${LANE_N[f.lane]||''}${f.solucao?' · '+esc(f.solucao):''}${f.tag?' · '+esc(f.tag):''}</span></div>
+            ${lock?'':`<div class="cm-act"><button type="button" data-cm="ed" data-i="${i}" aria-label="Editar o pano ${i+1}" title="Editar">${IC.ed}</button><button type="button" data-cm="cut" data-i="${i}" aria-label="Dividir / RMP" title="Dividir / RMP">${IC.cut}</button><button type="button" class="cm-x" data-cm="del" data-i="${i}" aria-label="Excluir o pano ${i+1}" title="Excluir">${IC.x}</button></div>`}</div>
+          ${P?`<div class="cm-pr">Programado: ${esc(P.start)} · ${fmt(P.length,2)} m × ${fmt(P.width,2)} m × ${fmt(P.thickness*100,1)} cm · ${fmt(P.length*P.width*P.thickness*(CM.density||0),2)} t</div>`:''}
+          <div class="cm-ins">${inp('length',f.length,'0.01','Comprimento','m',dfx(P&&P.length,f.length,2))}${inp('width',f.width,'0.01','Largura','m',dfx(P&&P.width,f.width,2))}${inp('thickness',f.thickness!=null?Math.round(f.thickness*1000)/10:null,'0.1','Espessura','cm',dfx(P&&P.thickness*100,f.thickness*100,1))}</div>
+          <div class="cm-ft">${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:'',lock?FST[st][0]:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}<span class="cm-mass">${fmt(mas(f),2)} t</span></div>
+          ${f.rmp?`<div class="cm-rmp" role="note">${IC.warn}<div><b>${esc(rmpTx(f))}</b><span>Ao validar o RDO, este segmento entra no <a href="#rmp">Controle de RMPs</a> como pendência: motivo, RMP assinado e fotos são lançados lá.</span></div></div>`:''}
+          </article>`}).join('')}</div>
       <div class="pd-acts"><button type="button" class="pd-b pri" data-cm="add">+ Adicionar segmento</button><button type="button" class="pd-b" data-cm="ordC">Ordenar ↑ crescente</button><button type="button" class="pd-b" data-cm="ordD">Ordenar ↓ decrescente</button><button type="button" class="pd-b" data-cm="clear">Limpar todos os panos</button>${CMUNDO?'<button type="button" class="pd-b pri" data-cm="undo">Desfazer</button>':''}</div>`
-      :`<p class="pd-note">Nenhum segmento. No <b>Histórico de programações</b>, toque em <b>Exportar para RDO de Massa</b> na programação do dia, ou use + Adicionar segmento.</p><div class="pd-acts"><button type="button" class="pd-b pri" data-cm="add">+ Adicionar segmento</button>${CMUNDO?'<button type="button" class="pd-b pri" data-cm="undo">Desfazer</button>':''}</div>`}`}
+      :`<p class="pd-note">Nenhum segmento. No <b>Histórico de programações</b>, toque em <b>Exportar para o RDO</b> na programação do dia, ou use + Adicionar segmento.</p><div class="pd-acts"><button type="button" class="pd-b pri" data-cm="add">+ Adicionar segmento</button>${CMUNDO?'<button type="button" class="pd-b pri" data-cm="undo">Desfazer</button>':''}</div>`}`}
   function cmRdoHtml(){const A=CM.fres.map(ap),Ta=tot(A),u=CM.usinado||0;const dif=[];
     for(const f of CM.fres){const o=(CM.rdo[f.id]||{}).over||{};for(const [k,v] of Object.entries(o)){if(!['length','width','thickness'].includes(k))continue;const d=v-f[k];dif.push({f,k,a:f[k],b:v,d})}}
     const KN={length:'Comprimento',width:'Largura',thickness:'Espessura'};const fv=(k,v)=>k==='thickness'?fmt(v*100,1)+' cm':fmt(v,2)+' m';
@@ -6268,7 +6283,7 @@ const PROD=(function(){
       <details class="cm-menu"><summary aria-label="Mais ações">⋯</summary><div><button type="button" data-cm="prog">Carregar a programação da Calculadora</button><button type="button" data-cm="open">📂 Abrir arquivo (.json)</button><button type="button" data-cm="savef">💾 Salvar em arquivo</button><button type="button" data-cm="novo">🗒️ Novo apontamento</button></div></details></div>
       ${cmAlert()}<div class="cm-tabs" role="tablist">${tabs.map(([k,t])=>`<button type="button" role="tab" aria-selected="${CMTAB===k}" data-cmtab="${k}">${t}</button>`).join('')}</div>
       <div class="cm-body">${CMTAB==='fres'?cmFresHtml():CMTAB==='rdo'?cmRdoHtml():cmAcoHtml()}</div>
-      <div class="cm-send"><h3 class="cm-h">Enviar o RDO do dia para validação</h3><p class="pd-note">Vão os segmentos marcados como executados. Até a validação não contam como produção executada.</p><div class="cm-g2"><div class="fld"><label for="cmDt">Data</label><input id="cmDt" type="date" value="${esc(CM.date)}"></div><div class="fld"><label for="cmJob">Obra</label><select id="cmJob"><option value="BR277"${CM.job==='BR277'?' selected':''}>BR-277 — Blocos 02 e 03</option><option value="BR373"${CM.job==='BR373'?' selected':''}>BR-373 — Bloco 04</option></select></div>
+      <div class="cm-send"><h3 class="cm-h">Enviar o RDO do dia para validação</h3><p class="pd-note">Vão todos os segmentos da lista (o RDO é só dos panos executados). Até a validação não contam como produção executada.</p><div class="cm-g2"><div class="fld"><label for="cmDt">Data</label><input id="cmDt" type="date" value="${esc(CM.date)}"></div><div class="fld"><label for="cmJob">Obra</label><select id="cmJob"><option value="BR277"${CM.job==='BR277'?' selected':''}>BR-277 — Blocos 02 e 03</option><option value="BR373"${CM.job==='BR373'?' selected':''}>BR-373 — Bloco 04</option></select></div>
         <div class="fld"><label for="cmEq">Equipe</label><select id="cmEq"><option value="">Selecione…</option>${EQUIPES.map(e=>`<option${CM.equipe===e?' selected':''}>${e}</option>`).join('')}</select></div><div class="fld"><label for="cmResp">Responsável</label><input id="cmResp" value="${esc(CM.resp||'')}" maxlength="80"></div></div>
         <div class="pd-acts"><button type="button" class="pd-b pri" data-cm="send"${canRdo()?'':' disabled'}>Enviar o RDO do dia para validação</button><span class="pd-note" id="cmMsg" aria-live="polite"></span></div></div>`}
   // formulário de pano / extra / RDO
@@ -6327,11 +6342,10 @@ const PROD=(function(){
   function cmLoad(d,prog){const keep={tolerance:CM.tolerance};CM=Object.assign(cmNew(),d,{equipe:d.equipe||CM.equipe||''});if(prog)CM.tolerance=keep.tolerance;CM.fres=(CM.fres||[]).map(f=>{const p=f.espProjeto==null?cmProj(f.start,f.direction,f.lane):null;return Object.assign({},f,p&&f.espProjeto==null?{espProjeto:p.esp,solucao:f.solucao||p.code}:{})});cmSave()}
   async function cmSend(){const msg=$('cmMsg');if(!canRdo())return;CM.date=$('cmDt').value;CM.job=$('cmJob').value;CM.equipe=$('cmEq').value;CM.resp=$('cmResp').value.trim();store.set(CMK,CM);
     if(!CM.equipe){msg.textContent='Escolha a equipe.';return}cmRmp();
-    const ex=CM.fres.filter(f=>f.campo&&!f.envio);if(!ex.length){msg.textContent='Nenhum segmento marcado como executado (botão "Marcar executado" em cada segmento).';return}
-    const semMot=ex.filter(f=>f.rmp&&!f.motivo);if(semMot.length){msg.textContent=`Informe o motivo do RMP em ${semMot.length} segmento(s): ${semMot.map(f=>CM.fres.indexOf(f)+1).join(', ')}.`;return}
+    const ex=CM.fres.filter(f=>!f.envio);if(!ex.length){msg.textContent='Nenhum segmento a enviar.';return}
     const D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))});const err=rdoCheck(D0);if(err.length){msg.textContent='Não dá para enviar: '+err.join('; ')+'.';return}
     const raw=JSON.stringify(D0);const id='rdo-'+CM.date+'-'+hashStr(raw);if(await window.RdoDB.exists(id)){msg.textContent='Este RDO já foi enviado (sem alterações desde o envio).';return}
-    if(!confirm(`Enviar para validação ${ex.length} segmento(s) executado(s)${CM.fres.length-ex.length?` (${CM.fres.length-ex.length} ainda não executado(s) ficam no RDO)`:''}? Até a validação não contam como produção executada.`))return;
+    const nr=ex.filter(f=>f.rmp).length;if(!confirm(`Enviar para validação ${ex.length} segmento(s) executado(s)?${nr?` ${nr} com RMP: depois da validação aparecem como pendência no Controle de RMPs.`:''} Até a validação não contam como produção executada.`))return;
     const segs=rdoSegs(D0),t=segs.reduce((a,s)=>a+s.t,0);
     const sum={id,data:CM.date,obra:CM.job==='BR373'?'BR-373':'BR-277',equipe:CM.equipe,resp:String(CM.resp||'').slice(0,120),job:CM.job,densidade:CM.density,usinado:CM.usinado||0,origem:'app',
       segs:segs.map(s=>({sid:s.sid,ini:s.ini,side:s.side,lane:s.lane,len:Math.round(s.len*100)/100,w:Math.round(s.w*100)/100,e:Math.round(s.e*1000)/1000,t:Math.round(s.t*100)/100,alt:s.alt,extra:s.extra,...(s.obs?{obs:String(s.obs).slice(0,300)}:{}),
@@ -6364,6 +6378,29 @@ const PROD=(function(){
     let CMDIRTY=null;
     root.addEventListener('input',e=>{const t=e.target;if(!t.dataset||t.dataset.fi==null)return;const f=CM.fres[+t.dataset.fi];if(!f)return;const v=n(t.value);if(v==null)return;
       f[t.dataset.fk]=t.dataset.fk==='thickness'?v/100:v;f.mexeu=true;store.set(CMK,CM);const art=t.closest('.cm-seg');const ms=art&&art.querySelector('.cm-mass');if(ms)ms.textContent=fmt(mas(f),2)+' t';CMDIRTY=art});
+    // tocar e segurar o cartão (~0,4 s) seleciona o segmento; arrastando para cima ou para baixo muda a posição na sequência
+    let DG=null,DGskip=0;
+    const dgOk=t=>!t.closest('input,select,textarea,button,a,label,.cm-act');
+    const dgStart=(x,y,t)=>{const art=t.closest('.cm-list .cm-seg');if(!art||!dgOk(t))return;const st={art,x0:x,y0:y,y,on:false};st.tm=setTimeout(()=>dgOn(st),420);DG=st};
+    function dgOn(st){if(DG!==st)return;const list=st.art.parentElement,cards=[...list.children],sc=st.art.closest('.cscroll')||document.scrollingElement;
+      st.on=true;st.list=list;st.cards=cards;st.i=cards.indexOf(st.art);st.j=st.i;st.sc=sc;st.s0=sc.scrollTop;const gap=parseFloat(getComputedStyle(list).rowGap)||8;
+      st.mids=cards.map(c=>{const r=c.getBoundingClientRect();return r.top+r.height/2+st.s0});st.h=st.art.getBoundingClientRect().height+gap;
+      list.classList.add('cm-dragging');st.art.classList.add('cm-drag');try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}
+      try{const sel=window.getSelection&&window.getSelection();if(sel)sel.removeAllRanges()}catch(e){}
+      st.iv=setInterval(()=>{const r=sc===document.scrollingElement?{top:0,bottom:innerHeight}:sc.getBoundingClientRect();const v=st.y<r.top+70?-12:st.y>r.bottom-70?12:0;if(v){sc.scrollTop+=v;dgMove(st.y)}},16)}
+    function dgMove(y){const st=DG;if(!st)return;st.y=y;if(!st.on){if(Math.abs(y-st.y0)>8){clearTimeout(st.tm);DG=null}return}
+      const ds=st.sc.scrollTop-st.s0,dy=y-st.y0+ds;st.art.style.transform=`translateY(${dy}px)`;const c=st.mids[st.i]+dy;
+      let j=0;st.mids.forEach((m,k)=>{if(k!==st.i&&m<c)j++});st.j=j;
+      st.cards.forEach((el,k)=>{if(k===st.i)return;const sh=k>st.i&&k<=j?-st.h:k<st.i&&k>=j?st.h:0;el.style.transform=sh?`translateY(${sh}px)`:''})}
+    function dgEnd(){const st=DG;DG=null;if(!st)return;clearTimeout(st.tm);if(!st.on)return;clearInterval(st.iv);DGskip=Date.now();
+      st.cards.forEach(el=>{el.style.transform=''});st.art.classList.remove('cm-drag');st.list.classList.remove('cm-dragging');if(st.j!==st.i)cmMove(st.i,st.j)}
+    root.addEventListener('touchstart',e=>{if(e.touches.length===1)dgStart(e.touches[0].clientX,e.touches[0].clientY,e.target)},{passive:true});
+    root.addEventListener('touchmove',e=>{if(!DG)return;if(DG.on)e.preventDefault();dgMove(e.touches[0].clientY)},{passive:false});
+    root.addEventListener('touchend',dgEnd);root.addEventListener('touchcancel',dgEnd);
+    root.addEventListener('mousedown',e=>{if(e.button===0)dgStart(e.clientX,e.clientY,e.target)});
+    document.addEventListener('mousemove',e=>{if(DG)dgMove(e.clientY)});document.addEventListener('mouseup',()=>{if(DG)dgEnd()});
+    root.addEventListener('contextmenu',e=>{if(DG&&DG.on)e.preventDefault()});
+    root.addEventListener('click',e=>{if(Date.now()-DGskip<350){e.stopPropagation();e.preventDefault()}},true);
     root.addEventListener('focusout',e=>{if(!CMDIRTY)return;const art=CMDIRTY;setTimeout(()=>{if(CMDIRTY===art&&!art.contains(document.activeElement)){CMDIRTY=null;cmRender()}},300)});
     root.addEventListener('change',e=>{const t=e.target;const ids={cmDens:'density',cmUsi:'usinado',cmTT:'trucksTotal',cmTN:'truckNo',cmAc:'accum',cmLeft:'truckLeft',cmTol:'tolerance'};
       if(ids[t.id]){CM[ids[t.id]]=n(t.value);cmSoft();return}if(t.id==='cmPl'){CM.plate=t.value.trim();cmSoft();return}if(t.id==='cmFull'){CM.truckFull=t.value==='1';cmSave();return}
@@ -6385,12 +6422,12 @@ const PROD=(function(){
     if(pl>=len-0.5)return {st:'Executado',c:'exe',lock:true,t:'Executado (planilha de produção): não pode ser programado de novo'};
     if(pl+rv>=len-0.5)return {st:'Validado',c:'val',lock:true,t:'Executado no RDO validado: não pode ser programado de novo'};
     const ag=cov(F.ag[k]);if(ag>=len*0.5)return {st:'Aguardando validação',c:'env',t:'Enviado no RDO, aguardando validação'};
-    if(CM.fres.some(f=>f.tag===tag&&!f.envio))return {st:'Em execução',c:'run',t:'No RDO de massa do dia'};
+    if(CM.fres.some(f=>f.tag===tag&&!f.envio))return {st:'Em execução',c:'run',t:'No RDO do dia'};
     const H=window.HistStore?window.HistStore.all():[];const tl=String(tag||'').toLowerCase();if(tl&&H.some(h=>!h.excluido&&String(h.busca||'').includes(tl)))return {st:'Programado',c:'prog',t:'Já está numa programação do histórico'};
     if(pl+rv>0.5)return {st:`Parcial ${Math.round((pl+rv)/len*100)}%`,c:'par',t:`Executado em ${fmt(pl+rv,1)} de ${fmt(len,1)} m`};return null}catch(e){return null}};
   window.__cmFromHist=function(sum,data){const k=sum.srck==='B4'?'B4':'B23',src=srcOf(k);if(!src)return 'Base do projeto não carregada neste aparelho.';
     const LN={F1:1,F23:2,AC:3},rows=(data.rows||[]).filter(r=>r.k==='pav'&&r.len>0&&r.w>0&&r.e>0);if(!rows.length)return 'Esta programação não tem panos de pavimentação com largura e espessura.';
-    if(CM.fres.length&&CM.fres.some(f=>f.campo&&!f.envio)&&!confirm('O RDO deste aparelho tem segmentos executados ainda não enviados. Substituir pela programação escolhida?'))return 'cancelado';
+    if(CM.fres.length&&CM.fres.some(f=>f.mexeu&&!f.envio)&&!confirm('O RDO deste aparelho tem segmentos executados ainda não enviados. Substituir pela programação escolhida?'))return 'cancelado';
     const fres=[];let prev=null;for(const r of rows.sort((a,b)=>a.ord-b.ord)){const L0=src.LANES[r.L];if(!L0||!LN[L0.grp])continue;const dir=L0.side==='D'?'Decrescente':'Crescente',start=src.Data.nameAt(dir==='Decrescente'?r.b:r.a);
       const pj=cmProjAt(k,r.L,r.a);const f={id:cmId(),tag:r.tag,start,direction:dir,lane:LN[L0.grp],length:Math.round(r.len*100)/100,width:Math.round(r.w*1e4)/1e4,thickness:Math.round(r.e*1e4)/1e6,
         sequential:!!prev&&prev.direction===dir&&prev.lane===LN[L0.grp]&&cmEndK(k,prev)===start,espProjeto:pj&&pj.esp!=null?pj.esp:Math.round(r.e*1e4)/1e6,solucao:r.code||'',campo:false};

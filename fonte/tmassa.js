@@ -27,7 +27,11 @@ const a2=await p.textContent('#cmRoot');ok(/Falta: 14,60 t/.test(a2)&&/Aplicados
 await p.click('#cmRoot [data-cm="xadd"]');await W(200);await p.fill('#cfIni','237+000');await p.fill('#cfLen','10');await p.fill('#cfW','3');await p.fill('#cfE','5');await p.click('#cmDlg button[type=submit]');await W(300);ok(/extra/.test(await p.textContent('#cmRoot')),'+ Extra');
 await p.screenshot({path:'/tmp/claude-0/cm_aco.png'});
 // envio
-await p.click('[data-cmtab="fres"]');await W(200);for(let i=0;i<4;i++){await p.click(`#cmRoot [data-cm="camp"][data-i="${i}"]`);await W(150)}for(const s of await p.$$('#cmRoot [data-fmot]'))await s.selectOption('Chuva');await W(100);await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
+await p.click('[data-cmtab="fres"]');await W(200);ok(!(await p.$('#cmRoot [data-cm="camp"]'))&&!(await p.$('#cmRoot [data-fmot]')),'sem "Marcar executado" e sem motivo no RDO (vai para o Controle de RMPs)');
+{const st0=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-sh b').textContent.replace('↳ ','')));const c=await p.$('#cmRoot .cm-seg[data-i="0"] .cm-sh>span:last-child');const bb=await c.boundingBox();const b1=await (await p.$('#cmRoot .cm-seg[data-i="1"]')).boundingBox();
+  await p.mouse.move(bb.x+5,bb.y+5);await p.mouse.down();await W(600);ok(await p.$('#cmRoot .cm-seg.cm-drag'),'tocar e segurar destaca o segmento');for(let k=1;k<=10;k++){await p.mouse.move(bb.x+5,bb.y+5+(b1.y+b1.height-bb.y)*k/10);await W(20)}await p.mouse.up();await W(400);
+  const st1=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-sh b').textContent.replace('↳ ','')));ok(st1[1]===st0[0]&&st1[0]===st0[1],'arrastar para baixo muda a posição na sequência')}
+await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
 ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'RDO do dia enviado para validação');ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
 await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
 const pm=await b.newPage({viewport:{width:390,height:800}});await pm.goto('http://localhost:8772/#rdo');await W(1500);await pm.screenshot({path:'/tmp/claude-0/cm_mob.png'});
