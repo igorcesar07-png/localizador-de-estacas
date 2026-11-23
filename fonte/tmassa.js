@@ -1,0 +1,34 @@
+const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modules/playwright');const W=ms=>new Promise(r=>setTimeout(r,ms));
+const res=[];const ok=(c,n)=>{res.push(!!c);console.log((c?'OK  ':'FALHOU ')+n)};
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1280,height:900}});
+await ctx.addInitScript(()=>{const rd={},subs=[];window.RdoDB={subscribe:cb=>{subs.push(cb);setTimeout(()=>cb(Object.values(rd)),50);return()=>{}},save:async(s)=>{rd[s.id]=Object.assign({},s,{enviado_por:'t@x',enviado_em:Date.now()});subs.forEach(cb=>cb(Object.values(rd)))},exists:async id=>!!rd[id],cfg:async()=>({}),setCfg:async()=>{},can:true,admin:false}});
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>{errs.push(e.message);console.log('STACK',(e.stack||'').split('\n').slice(0,4).join(' | '))});p.on('dialog',d=>d.accept());await p.route(/(openstreetmap|arcgisonline)/,r=>r.abort());
+await p.goto('http://localhost:8772/#rdo');await W(2000);ok(await p.$('#cmRoot .cm-tabs'),'Controle de massa aparece na página RDO');
+await p.fill('#cmUsi','60');await p.dispatchEvent('#cmUsi','change');await W(200);
+const add=async(ini,len,e)=>{await p.click('#cmRoot [data-cm="add"] >> nth=0');await W(200);await p.fill('#cfIni',ini);await p.fill('#cfLen',String(len));await p.fill('#cfW','3.6');await p.fill('#cfE',String(e));await p.click('#cfBus');await W(100);await p.click('#cmDlg button[type=submit]');await W(300)};
+await add('236300',200,6);await add('236,5',100,6);const n=await p.$$eval('#cmRoot .cm-t tbody tr:not(.cm-x)',a=>a.length);ok(n===2,'2 panos adicionados (estaca 236300 e 236,5)');
+const t1=await p.textContent('#cmRoot');ok(/236\+300/.test(t1)&&/236\+500/.test(t1)&&/236\+600/.test(t1),'estacas inicial e final calculadas');
+ok(/Esp\. projeto/.test(t1),'esp. projeto exibida');
+// dividir: 130/6 + 20/7.5 + 65/6 = 215 (acréscimo de 15 no final)
+await p.click('#cmRoot [data-cm="cut"][data-i="0"]');await W(300);await p.fill('#ctE','6');await p.dispatchEvent('#ctE','change');await W(100);
+const setSeg=async(k,len,e)=>{await p.fill(`[data-sk="length"][data-k="${k}"]`,String(len));await p.dispatchEvent(`[data-sk="length"][data-k="${k}"]`,'change');await W(80);await p.fill(`[data-sk="thickness"][data-k="${k}"]`,String(e));await p.dispatchEvent(`[data-sk="thickness"][data-k="${k}"]`,'change');await W(80)};
+await setSeg(0,130,6);await p.click('#ctAdd');await W(80);await setSeg(1,20,7.5);await p.click('#ctAdd');await W(80);await setSeg(2,65,6);
+const ext=await p.textContent('#cmDlg');ok(/excede 15,00 m/.test(ext),'soma comparada com o projeto (excede 15 m)');await p.click('#ctOk');await W(400);
+const rm=await p.evaluate(()=>window.__CM.rmp());console.log(JSON.stringify(rm));ok(rm.length===4&&!rm[0]&&rm[1]&&rm[1].esp&&!rm[1].ext&&rm[2]&&rm[2].ext===15&&!rm[2].esp,'RMP: espessura só no 2º segmento; extensão de 15 m só no último');
+// RDO
+await p.click('[data-cmtab="rdo"]');await W(200);await p.click('#cmRoot [data-cm="red"][data-i="0"]');await W(200);await p.fill('#cfLen','128');await p.fill('#cfObs','chuva');await p.click('#cmDlg button[type=submit]');await W(300);
+ok(/Diferenças RDO × fresagem/.test(await p.textContent('#cmRoot'))&&/▼ −2,00 m/.test(await p.textContent('#cmRoot')),'RDO: diferença campo a campo');
+await p.click('#cmRoot [data-cm="rres"][data-i="0"]');await W(200);ok(!/Diferenças RDO/.test(await p.textContent('#cmRoot')),'RDO: restaurar');
+// acompanhamento
+await p.click('[data-cmtab="aco"]');await W(200);await p.fill('#cmAc','20');await p.dispatchEvent('#cmAc','change');await W(200);
+const a1=await p.textContent('#cmRoot');ok(/Falta CBUQ/.test(a1),'acompanhamento: falta CBUQ');
+for(let i=0;i<3;i++){await p.check('#cmRoot [data-cmap] >> nth=0');await W(150)}
+const a2=await p.textContent('#cmRoot');ok(/Falta: 14,60 t/.test(a2)&&/Aplicados \(3\)/.test(a2),'marcar aplicados muda o saldo');
+await p.click('#cmRoot [data-cm="xadd"]');await W(200);await p.fill('#cfIni','237+000');await p.fill('#cfLen','10');await p.fill('#cfW','3');await p.fill('#cfE','5');await p.click('#cmDlg button[type=submit]');await W(300);ok(/extra/.test(await p.textContent('#cmRoot')),'+ Extra');
+await p.screenshot({path:'/tmp/claude-0/cm_aco.png'});
+// envio
+await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
+ok(/enviado/.test(await p.textContent('#cmMsg')),'RDO do dia enviado pelo app');ok((await p.$$eval('#rdList tbody tr',a=>a.length))===1,'envio aparece na lista de conferência');
+await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
+const pm=await b.newPage({viewport:{width:390,height:800}});await pm.goto('http://localhost:8772/#rdo');await W(1500);await pm.screenshot({path:'/tmp/claude-0/cm_mob.png'});
+ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();
