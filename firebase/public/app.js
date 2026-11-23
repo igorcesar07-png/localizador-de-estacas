@@ -4389,7 +4389,8 @@ const PROD=(function(){
   const projCode=(p,k)=>k==='B4'&&p.src&&p.src.sigla?p.src.sigla:p.code;
   // espessura de projeto (cm) do pano: unifilar no Bloco 04 (REC/RP pela capa de CBUQ), padrão da solução no R08
   const espProj=(p,k)=>{if(k==='B4'&&p.src&&window.__B4_CBUQ_CM){const v=window.__B4_CBUQ_CM(p.src);if(v!=null)return v}const m=String(p.info&&p.info.esp||'').match(/^([\d.,]+) cm$/);return m?parseFloat(m[1].replace(',','.')):null};
-  const grpPav=f=>f==='FF'||f==='FS'||f==='G'?'SUP':f;
+  // fresagens (FS/G, FF, FE) são a mesma intervenção com profundidades diferentes: mudar entre elas é RMP de espessura, não troca de solução
+  const grpPav=f=>f==='FF'||f==='FS'||f==='G'||f==='FE'?'FRES':f;
   const famPav=c=>/^FF/.test(c)?'FF':/^FE/.test(c)?'FE':/^FS/.test(c)?'FS':c==='G'?'FS':/^REC/.test(c)?'REC':/^RP/.test(c)?'RP':null;
   // Regras de 22/11/2026:
   // · estaca com "+" além do fim do km no projeto: o fim do km de campo é o mesmo ponto que o 000 do km seguinte (equivalência); o comprimento e as quantidades da planilha não mudam;
@@ -4500,20 +4501,18 @@ const PROD=(function(){
                     ov=ov2;pe=pe2;add('info','revisao',`Comparado com a revisão ${vv.rev||vv.arquivo} (data de corte ${brD(vv.corte)}), válida na data da execução.`)}
                   else add('info','revisao_pend',`Revisão ${vv.rev||vv.arquivo} (válida na data) ainda não carregada neste aparelho: comparado com a base atual.`)}}
                 const len=Math.max(b-a,1e-6),tot=[...ov.values()].reduce((x,y)=>x+y,0);const dom=[...ov].sort((x,y)=>y[1]-x[1])[0];
-                r.proj=dom?{code:dom[0],pct:dom[1]/len,list:[...ov.keys()],esp:pe.get(dom[0])}:null;
+                r.proj=dom?{code:dom[0],pct:dom[1]/len,list:[...ov.keys()],esp:pe.get(dom[0])}:null;r.extProj=Math.min(tot,len);r.ovProj=[...ov].map(([c,v])=>[c,v,pe.get(c)]);
                 if(!semStatus){r.ap=true;
                   if(tot<0.5)add('atencao','sem_projeto','O projeto não tem solução nesta faixa no trecho executado (verificar se é extra-projeto).');
                   else if(['FF','FE','FS','GAP'].includes(r.fam)){const pc=famPav(dom[0]),ex=r.fam==='GAP'?'FS':r.fam;
                     if(pc&&grpPav(pc)!==grpPav(ex)){const less=(PESO[ex]||0)<(PESO[pc]||0);r.rmp.push(less?'troca_menor':'troca');
                       add(less?'alerta':'atencao','troca',less?`ALERTA – substituição por solução de menor intervenção: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}.`:`Alteração da solução de projeto: projeto ${dom[0]} (${fmt(dom[1]/len*100,0)}% do trecho), executado ${r.fam}. Necessita RMP.`)}}
                   else if((r.fam==='DR'||r.fam==='DP')&&!ov.has(r.fam))add('atencao','solucao_dif',`Executado ${r.fam}; o projeto prevê ${[...ov.keys()].join(', ')} nesta posição.`);
-                  // comprimento: trecho executado além do pano da mesma solução no projeto (acréscimo). Acréscimo numa solução e supressão
-                  // na seguinte geram um só RMP, no acréscimo (regra informada em 22/11/2026). Tolerância de 5 m, a mesma da página Relatórios.
-                  if(['FF','FE','FS','GAP'].includes(r.fam)&&!r.rmp.some(x=>x==='troca'||x==='troca_menor')){const ex=r.fam==='GAP'?'FS':r.fam;let same=0;const fora=[];for(const [c,v] of ov){if(grpPav(famPav(c))===grpPav(ex))same+=v;else fora.push([c,v])}
-                    const exc=len-same;
-                    if(exc>TOL_LEN&&(tot<0.5||grpPav(famPav(dom[0]))===grpPav(ex))){const pior=fora.some(([c])=>(PESO[famPav(c)]||0)>(PESO[ex]||0)&&grpPav(famPav(c))!==grpPav(ex));r.rmp.push('comprimento');
-                      const sup=fora.filter(([,v])=>v>0.5).map(([c,v])=>`${c} ${fmt(v,0)} m`).join(', ');
-                      add(pior?'alerta':'atencao','comprimento',`${pior?'ALERTA – ':''}Comprimento diferente do projeto: ${fmt(exc,0)} m de ${r.fam} executados além do pano de ${r.fam} do projeto${sup?` (sobre ${sup}, que fica suprimido)`:' (trecho sem essa solução no projeto)'}. Necessita RMP — um só, no acréscimo.`)}}}}}}}
+                  // RMP de extensão: só quando o executado ultrapassa os limites do projeto nesta faixa (início antes ou fim depois do segmento projetado).
+                  // Dividir o segmento dentro da extensão projetada (ex.: 60 m com 10 cm + 40 m com 6 cm) não é extensão: é RMP de espessura (regra de 23/11/2026).
+                  if(['FF','FE','FS','GAP'].includes(r.fam)&&!r.rmp.some(x=>x==='troca'||x==='troca_menor')){const exc=len-Math.min(tot,len);
+                    if(exc>TOL_LEN){r.rmp.push('comprimento');r.rmpExt=exc;
+                      add('atencao','comprimento',tot<0.5?`RMP de extensão: ${fmt(exc,0)} m de ${r.fam} executados onde o projeto não prevê solução nesta faixa.`:`RMP de extensão: ${fmt(exc,0)} m de ${r.fam} executados além dos limites do projeto nesta faixa (${fmt(tot,0)} m projetados, ${fmt(len,0)} m executados).`)}}}}}}}
         // espessura executada × espessura de projeto da solução executada
         // não se faz RMP em extra-projeto (TRO, alças/ramos, marginais)
         if(r.extra)r.rmp=[];
@@ -4523,7 +4522,11 @@ const PROD=(function(){
           const ref=!troca&&pc&&grpPav(pc)===grpPav(ex)&&r.proj.esp!=null?{v:r.proj.esp,t:r.proj.code}:ESP_PAD[ex]?{v:ESP_PAD[ex],t:ex}:null;
           if(!r.extra&&ref&&['FF','FE','FS','GAP'].includes(r.fam)&&r.esp!=null&&r.esp>0){const e=Math.round(r.esp*1000)/10,pd=ref.v;
             if(e>pd+0.05){r.rmp.push('aumento');add('atencao','esp_aumento',`Espessura ${fmt(e,1)} cm maior que a de projeto (${ref.t} ${fmt(pd,pd%1?1:0)} cm): aumento de espessura, necessita RMP.`)}
-            else if(e<pd-0.05){r.rmp.push('reducao');add('alerta','esp_reducao',`ALERTA – redução de espessura: ${fmt(e,1)} cm, abaixo dos ${fmt(pd,pd%1?1:0)} cm de projeto (${ref.t}). Necessita RMP.`)}}}
+            else if(e<pd-0.05){r.rmp.push('reducao');add('alerta','esp_reducao',`ALERTA – redução de espessura: ${fmt(e,1)} cm, abaixo dos ${fmt(pd,pd%1?1:0)} cm de projeto (${ref.t}). Necessita RMP.`)}
+            // parte do trecho sobre outra fresagem do projeto com espessura diferente (dentro da extensão projetada): também é RMP de espessura
+            else if(!troca)for(const [c,v,ec] of (r.ovProj||[])){if(v<=TOL_LEN||ec==null||grpPav(famPav(c))!==grpPav(ex)||Math.abs(e-ec)<=0.05)continue;
+              const up=e>ec;r.rmp.push(up?'aumento':'reducao');add(up?'atencao':'alerta',up?'esp_aumento':'esp_reducao',`${up?'':'ALERTA – '}RMP de espessura: ${fmt(v,0)} m sobre ${c} de projeto (${fmt(ec,ec%1?1:0)} cm) executados com ${fmt(e,1)} cm.`);break}}}
+        r.rmp=[...new Set(r.rmp)];
         // RMP só se aplica à execução de projeto: TRO, monitoramento, alças/marginais e retrabalho ficam "não se aplica"
         if(r.cls!=='projeto'){r.rmp=[];r.iss=r.iss.filter(x=>!['troca','esp_aumento','esp_reducao','comprimento'].includes(x.cod))}
         if(!r.ap)r.motivo=semStatus||(r.iss.some(x=>x.sev==='erro')?'pendência de erro':'');
@@ -4641,7 +4644,7 @@ const PROD=(function(){
   /* ---------- página ---------- */
   const F={blk:'ALL',sev:'pend',q:'',lim:150};
   const CLS={projeto:'Projeto',retrabalho:'Retrabalho',extra:'Extra-projeto'};
-  const RMPN={comprimento:'Comprimento diferente do projeto (acréscimo)',aumento:'Aumento de espessura',reducao:'Redução de espessura',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
+  const RMPN={comprimento:'RMP de extensão (além dos limites do projeto)',aumento:'RMP de espessura (aumento)',reducao:'RMP de espessura (redução)',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
   const tOf=r=>r.q&&r.q.t?r.q.t:0;
   const hasSev=(r,s)=>r.iss.some(x=>x.sev===s);
   const RMPCOD=new Set(['troca','esp_aumento','esp_reducao','comprimento']);const pendOf=r=>r.iss.filter(x=>x.sev!=='info'&&!RMPCOD.has(x.cod));
@@ -4713,7 +4716,7 @@ const PROD=(function(){
   const solExec=r=>`${FAMX[r.fam]||r.fam||'?'}${r.esp?' · '+fmt(r.esp*100,1)+' cm':''}`;
   // quantidade: fresagem = CBUQ (ton); dreno longitudinal = comprimento (m); saída de dreno = 1 (und)
   const qtOf=r=>['FF','FE','FS','GAP'].includes(r.fam)?[r.q&&r.q.t||0,'ton']:r.fam==='DR'||r.fam==='DP'?[r.q&&r.q.m!=null?r.q.m:extOf(r),'m']:r.fam==='SAIDA'?[r.q&&r.q.un||1,'und']:r.fam==='DRCB'?[0,'—']:[r.q&&r.q.t||r.q&&r.q.m||0,r.q&&r.q.t?'ton':r.q&&r.q.m?'m':'—'];
-  const rmpTxt=r=>r.rmp.map(x=>RMPN[x]).join('; ');
+  const rmpTxt=r=>r.rmp.map(x=>x==='comprimento'&&r.rmpExt?`RMP de extensão (+${fmt(r.rmpExt,0)} m além do projeto)`:RMPN[x]).join('; ');
   const TCOL=[['data','Data','d'],['blk','Bloco','c'],['st','Classificação','c'],['rmp','RMP','c'],['eq','Equipe','c'],['pista','Pista','c'],['faixa','Faixa','c'],['sp','Solução de projeto','c'],['se','Solução executada','c'],['ini','Est. inicial','t'],['fim','Est. final','t'],['ext','Extensão (m)','n'],['larg','Largura (m)','n'],['qt','Quantidade','n'],['un','Unidade','c'],['pend','Pendências','t']];
   const val=(r,k)=>k==='data'?r.data||'':k==='blk'?(r.k==='B4'?'B4':r.blk||'B2/B3'):k==='st'?stOf(r):k==='rmp'?(r.cls!=='projeto'?'Não se aplica':r.rmp.length?'Sim':'Não'):k==='pista'?(r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'—'):k==='faixa'?FXN(r):k==='sp'?solProj(r):k==='se'?solExec(r):
     k==='ini'?(r.kmIni!=null?est(r.kmIni):''):k==='fim'?(r.kmFim!=null?est(r.kmFim):''):k==='ext'?extOf(r):k==='larg'?(r.larg||0):k==='t'?(r.q&&r.q.t||0):k==='qt'?qtOf(r)[0]:k==='un'?qtOf(r)[1]:k==='eq'?eqOf(r):k==='cls'?CLS[r.cls]+(r.extra?' ('+r.extra+')':''):k==='pend'?pendOf(r).map(x=>x.msg).join(' '):'';
@@ -4888,7 +4891,7 @@ const PROD=(function(){
   async function rdoExclSeg(eid,sid,restaurar){const e=(window.__RDOS||[]).find(x=>x.id===eid);if(!e||!window.RdoDB||!window.RdoDB.excl)return;const g=(e.segs||[]).find(x=>x.sid===sid);if(!g)return;
     const fim=(()=>{try{const src=srcOf(e.obra==='BR-373'?'B4':'B23');const A=src.Data.parseKm(String(g.ini).replace(',','.'));return src.Data.nameAt(g.side==='D'?A.s-g.len:A.s+g.len)}catch(x){return ''}})();const seg=`${g.ini}${fim?' → '+fim:''}`;
     if(!confirm(restaurar?`Restaurar o segmento ${seg} do RDO de ${brD(e.data)}? Ele volta a contar na Produção executada.`
-      :`Excluir o segmento ${seg} (${fmt(g.len,1)} m, ${fmt(g.t,2)} t) do RDO validado de ${brD(e.data)}?\n\nEle some da Produção executada. O envio original continua guardado e o segmento pode ser restaurado na aba RDO.`))return;
+      :`Excluir o segmento ${seg} (${fmt(g.len,1)} m, ${fmt(g.t,2)} t) do RDO ${e.status==='validado'?'validado':'enviado'} de ${brD(e.data)}?\n\n${e.status==='validado'?'Ele sai da Produção executada, da Calculadora e do mapa de executados':'Ele não entra na Produção executada quando o RDO for validado'}. O envio original fica guardado (com quem excluiu e quando) e o segmento pode ser restaurado na aba RDO.`))return;
     const old={excl:e.excl,excl_hist:e.excl_hist};const cur=new Set(e.excl||[]);restaurar?cur.delete(sid):cur.add(sid);const list=[...cur],hist=[...(e.excl_hist||[]),{sid,acao:restaurar?'restaurar':'excluir',em:Date.now(),seg}];
     e.excl=list;e.excl_hist=hist;RES=null;render();rdRender();emit('prod',1);
     try{await window.RdoDB.excl(e.id,list,hist)}catch(x){Object.assign(e,old);RES=null;render();rdRender();alert('Não foi possível '+(restaurar?'restaurar':'excluir')+': '+(x.message||x))}}
@@ -4919,11 +4922,11 @@ const PROD=(function(){
         <td>${nl===m.length?'<span class="rm-sit ok">✓ todos lançados</span>':`<span class="rm-sit pend">${m.length-nl} não lançado(s)</span>`}</td>
         <td><small>${esc(dt(e.enviado_em))}<br>${esc(e.enviado_por||'')}${e.__pend?' · <b>pendente de envio</b>':''}</small></td>
         <td><button type="button" class="cm-mini rd-det" data-rddet="${esc(e.id)}" aria-label="Ver segmentos" title="Ver segmentos">▾</button>${V&&st==='aguardando'?`<button type="button" class="pd-b pri rd-v" data-rdval="${esc(e.id)}">Validar</button><button type="button" class="pd-b rd-v" data-rddev="${esc(e.id)}">Devolver</button>`:''}</td></tr>
-        <tr class="rd-segs" data-rdsegs="${esc(e.id)}"${RDOPEN.has(e.id)?'':' hidden'}><td colspan="9"><table class="cm-t"><thead><tr><th>Pano</th><th>Estaca</th><th>Sentido · faixa</th><th>Programado</th><th>Executado</th><th>Diferença</th><th>RMP</th>${V&&st==='validado'?'<th></th>':''}</tr></thead><tbody>
-          ${(e.segs||[]).map(g=>{const P=g.prog;const d=P?[g.len-P.len,g.w-P.w,(g.e-P.e)*100]:null;const xc=(e.excl||[]).includes(g.sid);return `<tr${xc?' class="rd-xc" title="Excluído da Produção executada"':''}><td>${esc(g.tag||'—')}${xc?' <small class="pd-erro">excluído da produção</small>':''}</td><td>${esc(g.ini)}</td><td>${g.side==='D'?'↓':'↑'} ${g.lane===1?'Faixa 1':g.lane===2?'Faixa 2/3':'Acostamento'}</td>
+        <tr class="rd-segs" data-rdsegs="${esc(e.id)}"${RDOPEN.has(e.id)?'':' hidden'}><td colspan="9"><table class="cm-t"><thead><tr><th>Pano</th><th>Estaca</th><th>Sentido · faixa</th><th>Programado</th><th>Executado</th><th>Diferença</th><th>RMP</th>${V?'<th></th>':''}</tr></thead><tbody>
+          ${(e.segs||[]).map(g=>{const P=g.prog;const d=P?[g.len-P.len,g.w-P.w,(g.e-P.e)*100]:null;const xc=(e.excl||[]).includes(g.sid);return `<tr${xc?' class="rd-xc" title="Excluído da Produção executada"':''}><td>${esc(g.tag||'—')}${xc?' <small class="pd-erro">excluído</small>':''}</td><td>${esc(g.ini)}</td><td>${g.side==='D'?'↓':'↑'} ${g.lane===1?'Faixa 1':g.lane===2?'Faixa 2/3':'Acostamento'}</td>
             <td>${P?`${fmt(P.len,2)} m × ${fmt(P.w,2)} m × ${fmt(P.e*100,1)} cm`:'—'}</td><td><b>${fmt(g.len,2)} m × ${fmt(g.w,2)} m × ${fmt(g.e*100,1)} cm</b> · ${fmt(g.t,2)} t</td>
             <td>${d?[['m',d[0],2],['m larg.',d[1],2],['cm',d[2],1]].filter(x=>Math.abs(x[1])>1e-6).map(x=>`${x[1]>0?'▲ +':'▼ −'}${fmt(Math.abs(x[1]),x[2])} ${x[0]}`).join(' · ')||'igual':''}</td>
-            <td>${g.rmp?`<b class="cm-red">Sim</b> ${g.rmp.esp?'espessura':''}${g.rmp.ext?' extensão +'+fmt(g.rmp.ext,1)+' m':''}${g.mot?' · '+esc(g.mot):''}`:'Não'}</td>${V&&st==='validado'?`<td>${xc?`<button type="button" class="pd-b rd-v" data-rdrest="${esc(e.id)}" data-sid="${esc(g.sid)}">Restaurar</button>`:`<button type="button" class="pd-rdx" data-rdxs="${esc(e.id)}" data-sid="${esc(g.sid)}" aria-label="Excluir este segmento" title="Excluir este segmento validado (some também da Produção executada)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`}</td>`:''}</tr>`}).join('')}</tbody></table></td></tr>`}).join('')}</tbody></table>`:'<p class="pd-note">Nenhum RDO enviado ainda.</p>')}
+            <td>${g.rmp?`<b class="cm-red">Sim</b> ${g.rmp.esp?'espessura':''}${g.rmp.ext?' extensão +'+fmt(g.rmp.ext,1)+' m':''}${g.mot?' · '+esc(g.mot):''}`:'Não'}</td>${V?`<td>${xc?`<button type="button" class="pd-b rd-v" data-rdrest="${esc(e.id)}" data-sid="${esc(g.sid)}">Restaurar</button>`:`<button type="button" class="pd-rdx" data-rdxs="${esc(e.id)}" data-sid="${esc(g.sid)}" aria-label="Excluir este segmento" title="Excluir este segmento do RDO (some também da Produção executada e da Calculadora)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`}</td>`:''}</tr>`}).join('')}</tbody></table></td></tr>`}).join('')}</tbody></table>`:'<p class="pd-note">Nenhum RDO enviado ainda.</p>')}
   let RDPEND=null;
   async function rdFile(f){const box=$('rdPrev');RDPEND=null;if(!f){box.innerHTML='';return}
     try{const raw=await f.text();if(raw.length>950000)throw new Error('arquivo grande demais (limite de ~1 MB)');let d;try{d=JSON.parse(raw)}catch(e){throw new Error('o arquivo não é um JSON válido')}
@@ -4985,6 +4988,7 @@ const PROD=(function(){
   // classificação (manual, 5.2): espessura diferente do projeto = RMP de espessura; excedente de extensão do pano original = RMP de extensão no 1º ou no último segmento
   function cmRmp(){const by={};for(const f of CM.fres){f.rmp=null;if(f.origem)(by[f.origem.id]=by[f.origem.id]||[]).push(f)}
     for(const f of CM.fres){const ep=f.espProjeto!=null?f.espProjeto:null;const esp=ep!=null&&Math.abs(f.thickness-ep)>1e-4;f.rmp=esp?{esp:true,ext:0}:null}
+    for(const f of CM.fres){if(f.origem||!f.prog||f.prog.length==null)continue;const exc=Math.round(((f.length||0)-f.prog.length)*100)/100;if(exc>0.5)f.rmp=Object.assign(f.rmp||{esp:false},{ext:exc})}
     for(const [id,l] of Object.entries(by)){const o=l[0].origem;const soma=l.reduce((a,f)=>a+f.length,0),exc=Math.round((soma-o.length)*100)/100;if(exc>0.005){const t=o.acr==='inicio'?l[0]:l[l.length-1];t.rmp=Object.assign(t.rmp||{esp:false},{ext:exc})}}}
   const rmpTx=f=>f.rmp?[f.rmp.esp?`RMP de espessura (${fmt(f.thickness*100,1)} × ${fmt(f.espProjeto*100,1)} cm)`:'',f.rmp.ext?`RMP de extensão (+${fmt(f.rmp.ext,2)} m)`:''].filter(Boolean).join(' · '):'';
   const tot=l=>({n:l.length,ext:l.reduce((a,f)=>a+(f.length||0),0),v:l.reduce((a,f)=>a+vol(f),0),t:l.reduce((a,f)=>a+mas(f),0)});
@@ -5185,7 +5189,7 @@ const PROD=(function(){
   function flowIdx(){const R0=resolve(),nR=(window.__RDOS||[]).length;if(FLC&&FLC.res===R0&&FLC.nR===nR)return FLC;const U=m=>new Map([...m].map(([L,v])=>[L,unite(v)]));const ix={},ag={};
     for(const k of ['B23','B4']){const pl=new Map(),rv=new Map();for(const r of R0[k]){if(!r.ap||r.cls==='extra')continue;const m=r.origem==='RDO'?rv:pl;(m.get(r.L)||m.set(r.L,[]).get(r.L)).push([r.a,r.b]);if(r.rdoInfo&&r.origem!=='RDO')(rv.get(r.L)||rv.set(r.L,[]).get(r.L)).push([r.a,r.b])}ix[k]={pl:U(pl),rv:U(rv)};ag[k]=new Map()}
     for(const e of (window.__RDOS||[])){if((e.status||'aguardando')!=='aguardando')continue;const k=e.obra==='BR-373'?'B4':'B23',src=srcOf(k);if(!src)continue;
-      for(const g of e.segs||[]){const A=src.Data.parseKm(String(g.ini).replace(',','.'));if(A.err)continue;const a=g.side==='D'?A.s-g.len:A.s,grp=g.lane===1?'F1':g.lane===2?'F23':'AC',L=src.LANES.findIndex(l=>l.grp===grp&&l.side===g.side);(ag[k].get(L)||ag[k].set(L,[]).get(L)).push([a,a+g.len])}}
+      const EXg=new Set(e.excl||[]);for(const g of e.segs||[]){if(EXg.has(g.sid))continue;const A=src.Data.parseKm(String(g.ini).replace(',','.'));if(A.err)continue;const a=g.side==='D'?A.s-g.len:A.s,grp=g.lane===1?'F1':g.lane===2?'F23':'AC',L=src.LANES.findIndex(l=>l.grp===grp&&l.side===g.side);(ag[k].get(L)||ag[k].set(L,[]).get(L)).push([a,a+g.len])}}
     for(const k of ['B23','B4'])ag[k]=U(ag[k]);FLC={res:R0,nR,ix,ag};return FLC}
   window.__flowStatus=(srck,tag,L,a,b)=>{try{const k=srck==='B4'?'B4':'B23',F=flowIdx(),len=b-a;if(!(len>0))return null;const cov=m=>m&&m.has(L)?clip(m.get(L),a,b):0;
     const pl=cov(F.ix[k].pl),rv=cov(F.ix[k].rv);
@@ -5254,7 +5258,7 @@ const PROD=(function(){
       return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${l.length}</b><span>RMPs</span></div><div><b class="${pe?'warn':''}">${pe}</b><span>pendentes</span></div><div><b style="color:#1E7A4C">${ok}</b><span>completos</span></div>${RMCORTE?`<div><b style="color:#56605A">${pc}</b><span>antes do corte</span></div>`:''}</div>
         <small>${Object.keys(FALTA_N).map(k=>`${FALTA_N[k]}: ${f[k]||0}`).join(' · ')}</small></div>`}).join('');
     const RCOL=[['data','Data','d',r=>r.data||''],['blk','Bloco','c',r=>r.k==='B4'?'B4':(r.blk||'')],['pf','Pista · faixa','c',r=>val(r,'pista')+' · '+val(r,'faixa')],['ini','Est. inicial','t',r=>val(r,'ini')],['fim','Est. final','t',r=>val(r,'fim')],
-      ['sp','Projeto','c',r=>solProj(r)],['se','Executado','c',r=>solExec(r)],['mud','O que mudou','t',r=>rmpTxt(r)],['mot','Motivo','c',r=>notaTxt(r)?'Com motivo':'Sem motivo'],
+      ['sp','Projeto','c',r=>solProj(r)],['se','Executado','c',r=>solExec(r)],['xp','Ext. projeto (m)','t',r=>r.extProj!=null?fmt(r.extProj,1):'—'],['xe','Ext. executada (m)','t',r=>fmt(extOf(r),1)],['mud','O que mudou','t',r=>rmpTxt(r)],['mot','Motivo','c',r=>notaTxt(r)?'Com motivo':'Sem motivo'],
       ['ass','Assinado','c',r=>((RMPC.get(r.id)||{}).fotos||{}).assinado&&RMPC.get(r.id).fotos.assinado.length?'✓':'✗'],['pat','Patologia','c',r=>((RMPC.get(r.id)||{}).fotos||{}).patologia&&RMPC.get(r.id).fotos.patologia.length?'✓':'✗'],
       ['esp','Espessura','c',r=>((RMPC.get(r.id)||{}).fotos||{}).espessura&&RMPC.get(r.id).fotos.espessura.length?'✓':'✗'],['sit','Situação','c',r=>rmpOk(r)?'Completo':preCorte(r)?'Antes do corte':'Pendente']];
     const l0=rmFiltered();const fs=Object.entries(RCF.f).filter(([,v])=>v);
@@ -5265,7 +5269,7 @@ const PROD=(function(){
       <tr class="pd-fr"><th>${fs.length?`<button type="button" class="cm-mini" data-rclr="1" title="Limpar filtros das colunas" aria-label="Limpar filtros das colunas">✕</button>`:''}</th>${RCOL.map(c=>`<th>${c[2]==='c'?`<select data-rcf="${c[0]}" aria-label="Filtrar ${c[1]}"><option value="">Todos</option>${opt(c).map(o=>`<option${RCF.f[c[0]]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input data-rcf="${c[0]}" value="${esc(RCF.f[c[0]]||'')}" placeholder="filtrar" aria-label="Filtrar ${c[1]}">`}</th>`).join('')}</tr>`;
     $('rmList').innerHTML=`<p class="pd-note">${l.length} de ${l0.length} RMP(s)${fs.length?' com os filtros das colunas':''}.</p><table class="pd-t pd-tab rm-t"><thead>${head}</thead><tbody>
       ${l.slice(0,400).map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};return `<tr id="rm-${esc(r.id)}"><td><button type="button" class="pd-pen ${fl.length?'falta':'ok'}" data-rm="${esc(r.id)}" aria-label="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}" title="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button></td>
-        <td class="n">${brD(r.data)}<small>linha ${r.lin.join(', ')}</small></td><td>${r.k==='B4'?'B4':esc(r.blk||'')}</td><td>${val(r,'pista')} · ${esc(val(r,'faixa'))}</td><td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
+        <td class="n">${brD(r.data)}<small>linha ${r.lin.join(', ')}</small></td><td>${r.k==='B4'?'B4':esc(r.blk||'')}</td><td>${val(r,'pista')} · ${esc(val(r,'faixa'))}</td><td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td><td class="n">${r.extProj!=null?fmt(r.extProj,1):'—'}</td><td class="n${r.rmp.includes('comprimento')?' rm-xe':''}">${fmt(extOf(r),1)}</td>
         <td class="rm-mud">${esc(rmpTxt(r))}</td><td>${notaTxt(r)?`<span title="${esc(notaTxt(r))}">${ck(true)} ${esc(((r.notas[0]||{}).motivos||[]).join(', '))}</span>`:ck(false)}</td>
         <td>${ck((f.assinado||[]).length)}</td><td>${ck((f.patologia||[]).length)}${(c.patologias||[]).length?`<small> ${esc(c.patologias.join(', '))}</small>`:''}</td><td>${ck((f.espessura||[]).length)}</td>
         <td>${fl.length&&preCorte(r)?`<span class="rm-sit pc" title="${esc(corteTit())}">Antes do corte</span><small>falta: ${fl.map(x=>FALTA_N[x]).join(', ')}</small>`:fl.length?`<span class="rm-sit pend">Pendente</span><small>falta: ${fl.map(x=>FALTA_N[x]).join(', ')}</small>`:'<span class="rm-sit ok">✓ Completo</span>'}</td></tr>`}).join('')}</tbody></table>${l.length>400?`<p class="pd-note">Mostrando 400 de ${l.length}. O relatório em Excel traz todos.</p>`:''}`;
@@ -5340,10 +5344,10 @@ const PROD=(function(){
         await window.RmpDB.save(doc);RMPC.set(id,Object.assign({},doc,{atualizado_em:Date.now()}));close();RES=null;render();rmRender()}
       catch(x){$('rmDE').textContent='Não foi possível salvar: '+(x.message||x);$('rmDS').disabled=false}}}
   function rmRows(l){return l.map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};
-    return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),rmpTxt(r),eqOf(r),((r.notas[0]||{}).motivos||[]).join(', '),(r.notas[0]||{}).txt||'',
+    return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),r.extProj!=null?Math.round(r.extProj*10)/10:'',Math.round(extOf(r)*10)/10,rmpTxt(r),eqOf(r),((r.notas[0]||{}).motivos||[]).join(', '),(r.notas[0]||{}).txt||'',
       (f.assinado||[]).length?'Sim':'Não',(f.patologia||[]).length?'Sim':'Não',(c.patologias||[]).join(', '),(f.espessura||[]).length?'Sim':'Não',fl.length?(preCorte(r)?'Antes do corte':'Pendente'):'Completo',fl.map(x=>FALTA_N[x]).join(', '),r.lin.join(', '),r.id]})}
   async function rmXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const l=rmFiltered();
-      const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','O que mudou (RMP)','Equipe','Motivo','Observação','RMP assinado','Foto da patologia','Patologias','Foto da espessura','Situação','Faltando','Linhas da planilha','ID do segmento'];
+      const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','Extensão de projeto (m)','Extensão executada (m)','O que mudou (RMP)','Equipe','Motivo','Observação','RMP assinado','Foto da patologia','Patologias','Foto da espessura','Situação','Faltando','Linhas da planilha','ID do segmento'];
       const filt=`Bloco: ${RMF.blk==='ALL'?'todos':RMF.blk} · Situação: ${{pend:'pendentes',ok:'completos',pre:'antes do corte',all:'todos'}[RMF.sit]}${RMCORTE?' · data de corte: '+brD(RMCORTE):''}${RMF.falta?' · faltando: '+FALTA_N[RMF.falta]:''}${RMF.q?' · busca: '+RMF.q:''}`;
       const ws=X.utils.aoa_to_sheet([['Controle de RMPs — pendências'],['Filtro',filt],['Emitido em',dt(Date.now())],['Completo','motivo + foto do RMP assinado + foto da patologia + foto da espessura'],[],H,...rmRows(l)]);
       ws['!cols']=H.map(h=>({wch:/mudou|Motivo|Observação|Faltando/.test(h)?40:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+l.length,c:H.length-1}})};
@@ -5383,7 +5387,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 14:27';
+  const CUR_VER='23/11/2026 14:59';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

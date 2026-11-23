@@ -167,7 +167,7 @@ service cloud.firestore {
                     && request.resource.data.validado_por == request.auth.token.email
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'validado_por', 'validado_em', 'validacao_obs']);
       // exclusão de segmentos da Produção executada: quem valida marca os segmentos excluídos (lista + histórico); os dados enviados não mudam
-      allow update: if canDo('rdo', 'edit') && resource.data.status == 'validado'
+      allow update: if canDo('rdo', 'edit')
                     && request.resource.data.excl is list && request.resource.data.excl.size() <= 2000
                     && request.resource.data.excl_hist is list && request.resource.data.excl_hist.size() <= 4000
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['excl', 'excl_hist']);

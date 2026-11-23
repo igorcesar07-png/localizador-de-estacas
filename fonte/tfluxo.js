@@ -32,7 +32,7 @@ ok(/Validado/.test(await p.textContent('#cmRoot')),'   RDO do aparelho mostra "V
 await p.evaluate(()=>location.hash='#producao');await W(1500);await p.selectOption('#pdSev','all').catch(()=>{});await W(400);ok((await p.$$('#pdList .pd-org')).length>=1,'   linhas com selo RDO na Produção executada');
 {const nR=()=>p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').length);ok(!/RDO ✓/.test(await p.textContent('#pdList')),'   sem selo "RDO ✓" nas linhas da planilha');
   await p.click('#pdList [data-rdx] >> nth=0');await W(800);const n1=await nR();ok(n1===tags.length-1&&(await p.$$('#pdList [data-rdx]')).length===tags.length-1,'11) excluir segmento do RDO na Produção executada ('+n1+')');
-  await p.evaluate(()=>location.hash='#rdo');await W(1200);const vis=await p.$('#rdList [data-rdrest]');ok(!!vis&&/excluído da produção/.test(await p.textContent('#rdList')),'   aba RDO mostra o excluído e permite restaurar');
+  await p.evaluate(()=>location.hash='#rdo');await W(1200);const vis=await p.$('#rdList [data-rdrest]');ok(!!vis&&/excluído/.test(await p.textContent('#rdList')),'   aba RDO mostra o excluído e permite restaurar');
   await p.click('#rdList [data-rdrest]');await W(800);ok(await nR()===tags.length,'   restaurar na aba RDO volta para a produção');
   await p.click('#rdList [data-rdxs] >> nth=0');await W(800);ok(await nR()===tags.length-1,'12) excluir o validado na aba RDO tira da Produção executada');
   await p.click('#rdList [data-rdrest]');await W(800);ok(await nR()===tags.length,'   e restaurar devolve')}
