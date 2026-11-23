@@ -3,7 +3,7 @@ const PROJECT_DATA_B4 = window.PROJECT_DATA_B4||null;
 const ACL=window.ACL||null;
 const can=(pg,a)=>!ACL||ACL.admin||!!(((ACL.perms||{})[pg]||{})[a||'view']);
 (function aclCss(){if(!ACL)return;let css='';
-  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
+  for(const pg of ['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp']){if(!can(pg))css+=`#drawer a[data-page="${pg}"]{display:none!important}`;
     for(const a of ['create','edit','delete'])if(!can(pg,a))css+=`[data-acl~="${pg}:${a}"]{display:none!important}[data-acl-ro~="${pg}:${a}"] input,[data-acl-ro~="${pg}:${a}"] select,[data-acl-ro~="${pg}:${a}"] button{pointer-events:none;opacity:.55}`}
   if(!ACL.admin)css+='#drawer a[data-page="admin"]{display:none!important}';
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)})();
@@ -191,7 +191,7 @@ window.Theme=Theme;
 
 /* ------------------------------ Menu e páginas ------------------------------ */
 const Router=(function(){
-  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
+  const PAGES=['localizacao','mapa','mapab4','calculadora','histprog','analise','marcos','levbe','levpat','foto','relatorios','producao','rmp'].filter(p=>can(p)).concat(ACL&&ACL.admin?['admin']:[]);const inits={};const shown={};let cur=null;
   document.querySelectorAll('[data-menu]').forEach(b=>{b.appendChild($('menuIcon').content.cloneNode(true));b.onclick=open});
   function open(){$('drawer').classList.add('open');$('scrim').classList.add('open');$('drawer').setAttribute('aria-hidden','false');const a=$('drawer').querySelector('[aria-current="page"]')||$('drawer').querySelector('a');a&&a.focus()}
   function close(){$('drawer').classList.remove('open');$('scrim').classList.remove('open');$('drawer').setAttribute('aria-hidden','true')}
@@ -4454,7 +4454,7 @@ const PROD=(function(){
     for(const r of R0){const fm=r.fam==='GAP'?'FS':r.fam;if(!f[fm])continue;if(['FE','FF','FS'].includes(fm))f[fm].tEx+=r.q&&r.q.t||0;else if(fm==='DR'||fm==='DP')f[fm].mEx+=r.q&&r.q.m!=null?r.q.m:extOf(r)}
     const tot=x=>FAM_RES.reduce((s,k2)=>s+f[k2][x],0);
     const rmpL=R0.filter(r=>r.rmp.length&&r.cls==='projeto');
-    return {f,nPrev:tot('n'),nEx:tot('nEx'),nLanc:R0.length,rmp:rmpL.length,rmpPend:rmpL.filter(r=>!notaTxt(r)).length,retrab:R0.filter(r=>r.cls==='retrabalho').length,
+    return {f,nPrev:tot('n'),nEx:tot('nEx'),nLanc:R0.length,rmp:rmpL.length,rmpPend:rmpL.filter(r=>!rmpOk(r)).length,retrab:R0.filter(r=>r.cls==='retrabalho').length,
       troMon:R0.filter(r=>r.extra==='TRO'||r.extra==='Monitoramento').length,erro:R0.filter(r=>hasSev(r,'erro')).length,att:R0.filter(r=>!hasSev(r,'erro')&&pendOf(r).length).length,
       d0:R0.reduce((m,r)=>r.data&&(!m||r.data<m)?r.data:m,null),d1:R0.reduce((m,r)=>r.data&&(!m||r.data>m)?r.data:m,null)}}
   const pct=(a,b)=>b>0?fmt(a/b*100,1)+'%':'—';
@@ -4464,7 +4464,7 @@ const PROD=(function(){
       const q=u==='t'?`<td class="n">${fmt(o.t,1)}</td><td class="n">${fmt(o.tEx,1)}</td><td class="n"><b>${pct(o.tEx,o.t)}</b></td>`:u==='m'?`<td class="n">${fmt(o.len,1)}</td><td class="n">${fmt(o.mEx,1)}</td><td class="n"><b>${pct(o.mEx,o.len)}</b></td>`:'<td class="n">—</td><td class="n">—</td><td class="n">—</td>';
       return `<tr><th>${fm}<small>${esc(FAMN[fm]||(fm==='REC'?'Reciclagem':fm==='RP'?'Reciclagem profunda':''))}</small></th><td class="n">${o.n}</td><td class="n">${o.nEx}</td>${km}${q}</tr>`};
     return `<div class="pd-blk pd-ctr"><h3>${t}</h3>
-      <div class="pd-n"><div><b>${fmt(s.nPrev)}</b><span>segmentos previstos (panos)</span></div><div><b>${fmt(s.nEx)}</b><span>segmentos executados</span></div><div><b class="${s.rmpPend?'warn':''}">${s.rmpPend}</b><span>RMPs pendentes de motivo${s.rmp?` (de ${s.rmp})`:''}</span></div><div><b>${s.retrab}</b><span>retrabalho</span></div><div><b>${s.troMon}</b><span>TRO ou monitoramento</span></div><div><b class="${s.erro?'bad':''}">${s.erro}</b><span>com erro</span></div></div>
+      <div class="pd-n"><div><b>${fmt(s.nPrev)}</b><span>segmentos previstos (panos)</span></div><div><b>${fmt(s.nEx)}</b><span>segmentos executados</span></div><div><b class="${s.rmpPend?'warn':''}">${s.rmpPend}</b><span>RMPs pendentes de motivo ou foto${s.rmp?` (de ${s.rmp})`:''}</span></div><div><b>${s.retrab}</b><span>retrabalho</span></div><div><b>${s.troMon}</b><span>TRO ou monitoramento</span></div><div><b class="${s.erro?'bad':''}">${s.erro}</b><span>com erro</span></div></div>
       <div class="tscroll"><table class="pd-t pd-ct"><thead><tr><th rowspan="2">Solução</th><th colspan="2">Segmentos</th><th colspan="3">km-faixa (nas estacas do projeto)</th><th colspan="3">Quantidade (consumo de contrato)</th></tr>
         <tr><th>prev.</th><th>exec.</th><th>prev.</th><th>exec.</th><th>%</th><th>prev.</th><th>exec.</th><th>%</th></tr></thead>
         <tbody>${['FE','FF','FS'].map(x=>row(x,'t')).join('')}${['REC','RP'].map(x=>row(x,'')).join('')}${['DR','DP'].map(x=>row(x,'m')).join('')}</tbody></table></div>
@@ -4512,7 +4512,7 @@ const PROD=(function(){
     const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=r.iss.some(x=>x.sev==='alerta'&&RMPCOD.has(x.cod));const pend=pendOf(r);
       return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<select class="pd-st2 pd-sts" data-st="${esc(r.id)}" style="background-color:${ST_C[st]}" aria-label="Status da execução" title="${r.stDiv?'Alterado no app; na planilha base: '+esc(r.stAuto):'Alterar status'}">${ST_MAN.map(o=>`<option value="${o}"${st===o?' selected':''}>${o}${r.stDiv&&st===o?' ✎':''}</option>`).join('')}${ST_MAN.includes(st)?'':`<option value="" selected>${esc(st)}</option>`}</select>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
         <td><span class="pd-rc">${(()=>{const mt=notaTxt(r),tt=mt?' title="Motivo: '+esc(mt)+'"':'';
-            return r.cls!=='projeto'?`<span class="pd-mod"${tt}>não se aplica</span>`:r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog"${mt?tt:' title="Ver o que mudou"'}>Sim</button>`:`<span class="pd-rmp nao"${tt}>Não</span>`})()}${canNote()&&(podeMotivo(r)||notaTxt(r))?`<button type="button" class="pd-pen ${notaTxt(r)?'ok':'falta'}" data-nota="${esc(r.id)}" aria-label="${notaTxt(r)?'Editar o motivo':'Informar o motivo'}" title="${notaTxt(r)?'Motivo: '+esc(notaTxt(r)):'Sem motivo: clique para informar'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>`:''}</span></td>
+            return r.cls!=='projeto'?`<span class="pd-mod"${tt}>não se aplica</span>`:r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog"${mt?tt:' title="Ver o que mudou"'}>Sim</button>${rmpOk(r)?'<span class="rm-ok" title="RMP completo no Controle de RMPs (motivo e fotos)" aria-label="RMP completo">✓</span>':`<span class="rm-pd" title="RMP pendente no Controle de RMPs: falta ${esc(rmpFalta(r).map(x=>FALTA_N[x]).join(', '))}" aria-label="RMP pendente">!</span>`}`:`<span class="pd-rmp nao"${tt}>Não</span>`})()}${canNote()&&(podeMotivo(r)||notaTxt(r))?`<button type="button" class="pd-pen ${notaTxt(r)?'ok':'falta'}" data-nota="${esc(r.id)}" aria-label="${notaTxt(r)?'Editar o motivo':'Informar o motivo'}" title="${notaTxt(r)?'Motivo: '+esc(notaTxt(r)):'Sem motivo: clique para informar'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>`:''}</span></td>
         <td>${canNote()?`<select class="pd-eqs" data-eq="${esc(r.id)}" aria-label="Equipe executora" title="${esc(eqOf(r))}">${EQUIPES.includes(eqOf(r))?'':`<option value="" selected>${esc(eqOf(r))}</option>`}${EQUIPES.map(o=>`<option value="${o}"${eqOf(r)===o?' selected':''}>${EQ_CURTO(o)}</option>`).join('')}</select>`:esc(EQ_CURTO(eqOf(r)))}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td${r.prim?' class="pd-prim" title="Retrabalho: solução da primeira execução"':''}>${esc(solProj(r))}</td><td${r.famLanc&&r.famLanc!==r.fam?` title="Lançado na planilha como ${esc(r.famLanc)}"`:''}>${esc(solExec(r))}</td>
         <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),1)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${(()=>{const [q,u]=qtOf(r);return u==='—'?'—':fmt(q,u==='und'?0:u==='ton'?1:1)})()}</td><td>${qtOf(r)[1]}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}</td></tr>`}).join('');
@@ -4563,7 +4563,7 @@ const PROD=(function(){
     if(!el){el=document.createElement('div');el.id='pdRmpPop';el.className='pd-pop';el.setAttribute('role','dialog');document.body.appendChild(el);
       document.addEventListener('click',e=>{if(!el.hidden&&!e.target.closest('#pdRmpPop')&&!e.target.closest('[data-rmp]'))el.hidden=true});document.addEventListener('keydown',e=>{if(e.key==='Escape')el.hidden=true})}
     if(!r)return;const its=r.iss.filter(x=>RMPCOD.has(x.cod));el.dataset.id=r.id;
-    el.innerHTML=`<b>RMP — o que mudou em relação ao projeto</b><small>${brD(r.data)} · ${val(r,'pista')} · ${esc(val(r,'faixa'))} · ${val(r,'ini')} → ${val(r,'fim')}</small><ul>${its.map(x=>`<li class="${x.sev==='alerta'?'forte':''}">${esc(x.msg.replace(/^ALERTA – /,''))}</li>`).join('')}</ul><small>Projeto: ${esc(solProj(r))} · executado: ${esc(solExec(r))}</small>${notaTxt(r)?`<small><b>Motivo:</b> ${esc(notaTxt(r))}</small>`:''}`;
+    el.innerHTML=`<b>RMP — o que mudou em relação ao projeto</b><small>${brD(r.data)} · ${val(r,'pista')} · ${esc(val(r,'faixa'))} · ${val(r,'ini')} → ${val(r,'fim')}</small><ul>${its.map(x=>`<li class="${x.sev==='alerta'?'forte':''}">${esc(x.msg.replace(/^ALERTA – /,''))}</li>`).join('')}</ul><small>Projeto: ${esc(solProj(r))} · executado: ${esc(solExec(r))}</small>${notaTxt(r)?`<small><b>Motivo:</b> ${esc(notaTxt(r))}</small>`:''}<small><b>Controle de RMPs:</b> ${rmpOk(r)?'completo ✓':'pendente (falta '+esc(rmpFalta(r).map(x=>FALTA_N[x]).join(', '))+')'} · <a href="#rmp" data-rmfoco="${esc(r.id)}">abrir</a></small>`;
     el.hidden=false;const rc=btn.getBoundingClientRect(),w=Math.min(360,innerWidth-16);el.style.width=w+'px';el.style.left=Math.max(8,Math.min(rc.left,innerWidth-w-8))+'px';
     const h=el.offsetHeight;el.style.top=(rc.bottom+6+h>innerHeight?Math.max(8,rc.top-h-6):rc.bottom+6)+'px'}
   /* ---------- motivo / observação de um segmento (histórico: nada é apagado) ---------- */
@@ -4644,8 +4644,95 @@ const PROD=(function(){
     if(/rep=km/.test(location.hash)||sessionStorage.getItem('pdRepKm')){sessionStorage.removeItem('pdRepKm');RF.tipo='km';saveRF()}
     render()}
   Router.onInit('producao',init);on('page',p=>{if(p!=='producao')return;try{if(sessionStorage.getItem('pdRepKm')){sessionStorage.removeItem('pdRepKm');RF.tipo='km';saveRF();setTimeout(()=>{const el=$('pdRep');el&&el.scrollIntoView({behavior:'smooth'})},200)}}catch(e){}render()});on('prod',()=>render());
+
+  /* ---------- controle de RMPs (página própria, ligada à produção executada) ---------- */
+  let RMPC=new Map();const RMEDIA=new Map();
+  const RFOTO=[['assinado','RMP assinado pelo fiscal ou responsável'],['patologia','Foto da patologia'],['espessura','Foto da linha mostrando a espessura']];
+  const FALTA_N={motivo:'Motivo',assinado:'RMP assinado',patologia:'Foto da patologia',espessura:'Foto da espessura'};
+  const PATS=['Sola','Segregação','Trincas','Vertente de água','Desagregação por umidade'];
+  const rmpList=()=>resolve().all.filter(r=>r.rmp.length&&r.cls==='projeto');
+  function rmpFalta(r){const c=RMPC.get(r.id)||{},f=c.fotos||{},n=r.notas&&r.notas[0],o=[];if(!(n&&n.motivos&&n.motivos.length))o.push('motivo');for(const [k] of RFOTO)if(!(f[k]||[]).length)o.push(k);return o}
+  const rmpOk=r=>!rmpFalta(r).length;
+  if(window.RmpDB)window.RmpDB.subscribe(l=>{if(!l)return;RMPC=new Map(l.map(x=>[x.id,x]));render();rmRender()});
+  const canRmp=()=>!!(window.RmpDB&&window.RmpDB.can);
+  const RMF=Object.assign({blk:'ALL',sit:'pend',falta:'',q:''},store.get('rmF',{}));const saveRMF=()=>store.set('rmF',RMF);
+  function rmFiltered(){const qs=norm(RMF.q).split(/\s+/).filter(Boolean);
+    return rmpList().filter(r=>(RMF.blk==='ALL'||(RMF.blk==='B4'?r.k==='B4':r.blk===RMF.blk))&&(RMF.sit==='all'||(RMF.sit==='ok')===rmpOk(r))&&(!RMF.falta||rmpFalta(r).includes(RMF.falta))
+      &&(!qs.length||qs.every(w=>norm([brD(r.data),r.data,val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),eqOf(r),val(r,'faixa'),val(r,'pista'),rmpTxt(r)].join(' ')).includes(w))))
+      .sort((a,b)=>String(a.data).localeCompare(String(b.data))||(a.kmIni||0)-(b.kmIni||0))}
+  const ck=v=>v?'<span class="rm-y" title="registrado">✓</span>':'<span class="rm-n" title="faltando">✗</span>';
+  function rmRender(){const root=$('rmRoot');if(!root||Router.cur()!=='rmp')return;const all=rmpList();
+    const by=k=>all.filter(r=>k==='B4'?r.k==='B4':r.blk===k);
+    $('rmCards').innerHTML=[['Todos',all],['Bloco 02',by('B2')],['Bloco 03',by('B3')],['Bloco 04',by('B4')]].map(([t,l])=>{const ok=l.filter(rmpOk).length;const f={};for(const r of l)for(const x of rmpFalta(r))f[x]=(f[x]||0)+1;
+      return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${l.length}</b><span>RMPs</span></div><div><b class="${l.length-ok?'warn':''}">${l.length-ok}</b><span>pendentes</span></div><div><b style="color:#1E7A4C">${ok}</b><span>completos</span></div></div>
+        <small>${Object.keys(FALTA_N).map(k=>`${FALTA_N[k]}: ${f[k]||0}`).join(' · ')}</small></div>`}).join('');
+    const l=rmFiltered();
+    $('rmList').innerHTML=l.length?`<table class="pd-t pd-tab rm-t"><thead><tr><th></th><th>Data</th><th>Bloco</th><th>Pista · faixa</th><th>Est. inicial</th><th>Est. final</th><th>Projeto</th><th>Executado</th><th>O que mudou</th><th>Motivo</th><th>Assinado</th><th>Patologia</th><th>Espessura</th><th>Situação</th></tr></thead><tbody>
+      ${l.slice(0,300).map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};return `<tr id="rm-${esc(r.id)}"><td><button type="button" class="pd-pen ${fl.length?'falta':'ok'}" data-rm="${esc(r.id)}" aria-label="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}" title="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button></td>
+        <td class="n">${brD(r.data)}<small>linha ${r.lin.join(', ')}</small></td><td>${r.k==='B4'?'B4':esc(r.blk||'')}</td><td>${val(r,'pista')} · ${esc(val(r,'faixa'))}</td><td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
+        <td class="rm-mud">${esc(rmpTxt(r))}</td><td>${notaTxt(r)?`<span title="${esc(notaTxt(r))}">${ck(true)} ${esc(((r.notas[0]||{}).motivos||[]).join(', '))}</span>`:ck(false)}</td>
+        <td>${ck((f.assinado||[]).length)}</td><td>${ck((f.patologia||[]).length)}${(c.patologias||[]).length?`<small> ${esc(c.patologias.join(', '))}</small>`:''}</td><td>${ck((f.espessura||[]).length)}</td>
+        <td>${fl.length?`<span class="rm-sit pend">Pendente</span><small>falta: ${fl.map(x=>FALTA_N[x]).join(', ')}</small>`:'<span class="rm-sit ok">✓ Completo</span>'}</td></tr>`}).join('')}</tbody></table>${l.length>300?`<p class="pd-note">Mostrando 300 de ${l.length}. O relatório em Excel traz todos.</p>`:''}`
+      :'<p class="pd-note">Nenhum RMP neste filtro.</p>';
+    try{const h=sessionStorage.getItem('rmFoco');if(h){sessionStorage.removeItem('rmFoco');const el=document.getElementById('rm-'+h);if(el){el.scrollIntoView({block:'center'});el.classList.add('rm-foco')}}}catch(e){}}
+  async function rmMedia(id){if(RMEDIA.has(id))return RMEDIA.get(id);try{const m=await window.RmpDB.getMedia(id);if(m)RMEDIA.set(id,m);return m}catch(e){return null}}
+  async function comprFoto(file){const u=URL.createObjectURL(file);try{const img=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=u});
+      let side=1600,q=0.72,out='';for(let k=0;k<8;k++){const sc=Math.min(1,side/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*sc);c.height=Math.round(img.naturalHeight*sc);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);out=c.toDataURL('image/jpeg',q);if(out.length<700000)break;if(q>0.5)q-=0.1;else side=Math.round(side*0.8)}
+      return out}finally{URL.revokeObjectURL(u)}}
+  const newId=()=>{try{if(crypto.randomUUID)return crypto.randomUUID()}catch(e){}return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,10)};
+  function rmDlg(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};const w=canRmp();
+    const D={fotos:{assinado:[...((c.fotos||{}).assinado||[])],patologia:[...((c.fotos||{}).patologia||[])],espessura:[...((c.fotos||{}).espessura||[])]},patologias:[...(c.patologias||[])]};const n0=r.notas[0]||{};
+    let d=$('rmDlg');if(!d){d=document.createElement('div');d.id='rmDlg';d.className='pd-dlg';document.body.appendChild(d)}
+    d.innerHTML=`<div class="pd-dbox rm-box" role="dialog" aria-modal="true" aria-labelledby="rmDT"><h3 id="rmDT">RMP · ${brD(r.data)} · ${val(r,'ini')} → ${val(r,'fim')}</h3>
+      <p class="pd-note">${r.k==='B4'?'Bloco 04':esc(r.blk||'')} · ${val(r,'pista')} · ${esc(val(r,'faixa'))} · Projeto ${esc(solProj(r))} → executado ${esc(solExec(r))} · ${esc(eqOf(r))}<br><b>O que mudou:</b> ${esc(rmpTxt(r))}</p>
+      ${c.atualizado_em?`<p class="pd-note">Último registro: ${esc(dt(c.atualizado_em))}${c.atualizado_por?' · '+esc(c.atualizado_por):''}</p>`:''}
+      <fieldset class="fld pd-mots" id="rmMot"><legend>Motivo do RMP (um ou mais)</legend>${[...MOTIVOS,...(n0.motivos||[]).filter(m=>!MOTIVOS.includes(m))].map(m=>`<label><input type="checkbox" value="${esc(m)}"${(n0.motivos||[]).includes(m)?' checked':''}${w?'':' disabled'}> ${esc(m)}</label>`).join('')}</fieldset>
+      <div class="fld"><label for="rmObs">Observação</label><textarea id="rmObs" rows="2" maxlength="600"${w?'':' disabled'}>${esc(n0.txt||'')}</textarea></div>
+      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<label class="pd-b rm-add">+ Foto<input type="file" accept="image/*" data-cat="${k}" hidden multiple></label>`:''}</div>
+        ${k==='patologia'?`<div class="rm-pats">${PATS.map(p=>`<label><input type="checkbox" value="${esc(p)}"${D.patologias.includes(p)?' checked':''}${w?'':' disabled'}> ${esc(p)}</label>`).join('')}</div>`:''}<div class="rm-th" data-th="${k}"></div></div>`).join('')}
+      <p class="pd-note" id="rmDE" aria-live="polite"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="rmDC">${w?'Cancelar':'Fechar'}</button>${w?'<button type="button" class="pd-b pri" id="rmDS">Salvar</button>':''}</div></div>`;
+    d.hidden=false;const close=()=>{d.hidden=true};$('rmDC').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    async function thumbs(){for(const [k] of RFOTO){const box=d.querySelector(`[data-th="${k}"]`);const ids=D.fotos[k];
+        box.innerHTML=ids.length?ids.map(i=>`<button type="button" class="rm-img" data-big="${esc(i)}"><span class="pd-note">carregando…</span></button>`).join(''):'<span class="pd-note">Sem foto.</span>';
+        for(const i of ids){const m=await rmMedia(i);const el=box.querySelector(`[data-big="${CSS.escape(i)}"]`);if(el)el.innerHTML=m?`<img src="${m.data}" alt="${esc(k)}">`:'<span class="pd-note">indisponível (sem internet?)</span>'}}}
+    thumbs();
+    d.querySelectorAll('input[type=file][data-cat]').forEach(inp=>inp.onchange=async e=>{const k=inp.dataset.cat,fs=[...(e.target.files||[])];e.target.value='';
+      for(const f of fs){try{$('rmDE').textContent='Comprimindo foto…';const data=await comprFoto(f);if(data.length>950000)throw new Error('foto grande demais');
+        const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now()};
+        await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);D.fotos[k].push(m.id);$('rmDE').textContent='Foto adicionada. Toque em Salvar.'}catch(x){$('rmDE').textContent='Não foi possível adicionar a foto: '+(x.message||x)}}thumbs()});
+    d.addEventListener('click',async e=>{const b=e.target.closest('[data-big]');if(!b)return;const m=await rmMedia(b.dataset.big);if(!m)return;
+      let v=$('rmView');if(!v){v=document.createElement('div');v.id='rmView';v.className='pd-dlg rm-view';document.body.appendChild(v)}v.innerHTML=`<img src="${m.data}" alt="Foto do RMP"><button type="button" class="pd-b" id="rmVC">Fechar</button>`;v.hidden=false;v.onclick=()=>v.hidden=true});
+    if(w)$('rmDS').onclick=async()=>{const mot=[...$('rmMot').querySelectorAll('input:checked')].map(x=>x.value),txt=$('rmObs').value.trim();D.patologias=[...d.querySelectorAll('.rm-pats input:checked')].map(x=>x.value);
+      try{$('rmDS').disabled=true;const nm=(n0.motivos||[]).join('|'),ch=mot.join('|')!==nm||txt!==(n0.txt||'');
+        if(ch)await salvaNota(id,{motivos:mot,txt});
+        const r2=resolve().all.find(x=>x.id===id)||r;const fl=[];if(!mot.length)fl.push('motivo');for(const [k] of RFOTO)if(!D.fotos[k].length)fl.push(k);
+        const doc={id,seg:id,k:r.k,data:r.data||'',fotos:D.fotos,patologias:D.patologias,completo:!fl.length,falta:fl};
+        await window.RmpDB.save(doc);RMPC.set(id,Object.assign({},doc,{atualizado_em:Date.now()}));close();RES=null;render();rmRender()}
+      catch(x){$('rmDE').textContent='Não foi possível salvar: '+(x.message||x);$('rmDS').disabled=false}}}
+  function rmRows(l){return l.map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};
+    return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),rmpTxt(r),eqOf(r),((r.notas[0]||{}).motivos||[]).join(', '),(r.notas[0]||{}).txt||'',
+      (f.assinado||[]).length?'Sim':'Não',(f.patologia||[]).length?'Sim':'Não',(c.patologias||[]).join(', '),(f.espessura||[]).length?'Sim':'Não',fl.length?'Pendente':'Completo',fl.map(x=>FALTA_N[x]).join(', '),r.lin.join(', '),r.id]})}
+  async function rmXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const l=rmFiltered();
+      const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','O que mudou (RMP)','Equipe','Motivo','Observação','RMP assinado','Foto da patologia','Patologias','Foto da espessura','Situação','Faltando','Linhas da planilha','ID do segmento'];
+      const filt=`Bloco: ${RMF.blk==='ALL'?'todos':RMF.blk} · Situação: ${{pend:'pendentes',ok:'completos',all:'todos'}[RMF.sit]}${RMF.falta?' · faltando: '+FALTA_N[RMF.falta]:''}${RMF.q?' · busca: '+RMF.q:''}`;
+      const ws=X.utils.aoa_to_sheet([['Controle de RMPs — pendências'],['Filtro',filt],['Emitido em',dt(Date.now())],['Completo','motivo + foto do RMP assinado + foto da patologia + foto da espessura'],[],H,...rmRows(l)]);
+      ws['!cols']=H.map(h=>({wch:/mudou|Motivo|Observação|Faltando/.test(h)?40:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+l.length,c:H.length-1}})};
+      const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'RMPs');X.writeFile(wb,`controle-rmp-${new Date().toISOString().slice(0,10)}.xlsx`);$('rmMsg').textContent=`${l.length} RMP(s) no relatório.`}
+    catch(e){$('rmMsg').textContent='Não foi possível gerar o Excel: '+(e.message||e)}}
+  function rmResumo(){const l=rmFiltered().filter(r=>!rmpOk(r));const by={};for(const r of l){const b=r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':'Bloco 03';(by[b]=by[b]||[]).push(r)}
+    let t=`RMPs pendentes (${dt(Date.now())}): ${l.length}\n`;for(const [b,a] of Object.entries(by)){t+=`\n${b} (${a.length})\n`;for(const r of a)t+=`- ${brD(r.data)} · ${val(r,'pista')} ${val(r,'faixa')} · ${val(r,'ini')} a ${val(r,'fim')} · ${solProj(r)} → ${solExec(r)} · falta: ${rmpFalta(r).map(x=>FALTA_N[x]).join(', ')}\n`}return t}
+  document.addEventListener('click',e=>{const a=e.target.closest('[data-rmfoco]');if(!a)return;Object.assign(RMF,{blk:'ALL',sit:'all',falta:'',q:''});saveRMF();try{sessionStorage.setItem('rmFoco',a.dataset.rmfoco)}catch(x){}const pp=$('pdRmpPop');if(pp)pp.hidden=true;
+    if($('rmBlk')){$('rmBlk').value='ALL';$('rmSit').value='all';$('rmFalta').value='';$('rmQ').value=''}});
+  function rmInit(){if(!$('rmRoot'))return;$('rmBlk').value=RMF.blk;$('rmSit').value=RMF.sit;$('rmFalta').value=RMF.falta;$('rmQ').value=RMF.q;
+    $('rmBlk').onchange=e=>{RMF.blk=e.target.value;saveRMF();rmRender()};$('rmSit').onchange=e=>{RMF.sit=e.target.value;saveRMF();rmRender()};$('rmFalta').onchange=e=>{RMF.falta=e.target.value;saveRMF();rmRender()};
+    let qt;$('rmQ').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{RMF.q=e.target.value;saveRMF();rmRender()},300)};
+    $('rmList').onclick=e=>{const b=e.target.closest('[data-rm]');if(b)rmDlg(b.dataset.rm)};$('rmXls').onclick=rmXls;
+    $('rmTxt').onclick=async()=>{const t=rmResumo();try{if(navigator.share&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){await navigator.share({title:'RMPs pendentes',text:t});return}await navigator.clipboard.writeText(t);$('rmMsg').textContent='Resumo copiado. Cole no e-mail ou no WhatsApp.'}catch(e){$('rmMsg').textContent='Não foi possível copiar o resumo.'}}}
+  Router.onInit('rmp',rmInit);on('page',p=>{if(p==='rmp')rmRender()});on('prod',()=>rmRender());
   setTimeout(initWatch,1200);
-  return {execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
+  return {rmpOk,rmpFalta,execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
 })();
 window.PROD=PROD;
 
@@ -4658,7 +4745,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 23:10';
+  const CUR_VER='22/11/2026 23:22';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

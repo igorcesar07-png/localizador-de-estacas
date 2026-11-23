@@ -9,6 +9,10 @@ await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs=
   window.ProdDB={subscribe:cb=>{subs.push(cb);setTimeout(()=>['producao_meta','producao_b23','producao_b4','producao_status'].forEach(id=>cb(id,docs[id]||null)),50);return ()=>{}},
     save:async parts=>{for(const [k,o] of Object.entries(parts)){const txt=JSON.stringify(o);if(txt.length>1000000)throw new Error('grande demais '+k+' '+txt.length);docs['producao_'+k]={json:txt}}keep();window.__SAVES++;setTimeout(()=>Object.keys(parts).forEach(k=>fire('producao_'+k)),30)},
     status:async st=>{docs.producao_status=Object.assign({},st,{by:'teste@x'});keep();fire('producao_status')},saveNotas:async all=>{docs.producao_notas={json:JSON.stringify(all)};keep();fire('producao_notas')}};
+  // controle de RMPs simulado (coleção e fotos em memória/localStorage)
+  const rm=JSON.parse(localStorage.getItem('__rmp')||'{}'),rmM={},rsubs=[];const rkeep=()=>{try{localStorage.setItem('__rmp',JSON.stringify(rm))}catch(e){}};const rfire=()=>rsubs.forEach(cb=>cb(Object.values(rm)));
+  window.RmpDB={subscribe:cb=>{rsubs.push(cb);setTimeout(()=>cb(Object.values(rm)),60);return ()=>{}},save:async r=>{rm[r.id]=Object.assign({},r,{atualizado_por:'teste@x',atualizado_em:Date.now()});rkeep();setTimeout(rfire,20)},
+    saveMedia:async m=>{rmM[m.id]=m},getMedia:async id=>rmM[id]||null,can:true};
   // pasta simulada: o arquivo pode "mudar" (lastModified) e ficar "bloqueado"
   window.__FS={mod:Date.now()-3600e3,lock:false,buf:null,name:'Acompanhamento de produção REV 12.xlsb'};
   const fh={kind:'file',get name(){return __FS.name},getFile:async()=>{if(__FS.lock){const e=new Error('locked');e.name='NotReadableError';throw e}return new File([__FS.buf],__FS.name,{lastModified:__FS.mod})}};
@@ -73,6 +77,19 @@ const [dp]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch((
 await p.$eval('#pdList',e=>e.scrollIntoView());await p.screenshot({path:'/tmp/claude-0/pd_tab.png'});
 const stTxt=await p.textContent('#pdStatus');ok(/Última verificação/.test(stTxt)&&/Última atualização dos dados/.test(stTxt),'mostra última verificação e última atualização');
 await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
+// 5b) Controle de RMPs: lista, registro de motivo e 3 fotos → completo; reflexo na Produção executada
+{await p.goto(`http://localhost:${PORT}/#rmp`);await W(1500);const n0=await p.$$eval('#rmList tbody tr',a=>a.length);ok(n0>0,'Controle de RMPs lista os RMPs pendentes ('+n0+')');
+  const rid=await p.getAttribute('#rmList [data-rm] >> nth=0','data-rm');await p.click('#rmList [data-rm] >> nth=0');await W(400);
+  await p.check('#rmMot input[value="Chuva"]');await p.check('#rmMot input[value="Reprovação de IRI"]');await p.check('.rm-pats input[value="Sola"]');
+  const jpg=Buffer.from('/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=','base64');
+  for(const c of ['assinado','patologia','espessura'])await p.setInputFiles(`#rmDlg input[data-cat="${c}"]`,{name:c+'.jpg',mimeType:'image/jpeg',buffer:jpg});
+  await W(1500);const th=await p.$$eval('#rmDlg .rm-img',a=>a.length);await p.click('#rmDS');await W(800);
+  const st=await p.evaluate(id=>{const r=PROD.resolve().all.find(x=>x.id===id);return [PROD.rmpOk(r),PROD.rmpFalta(r)]},rid);console.log('rmp',th,st);ok(th===3&&st[0]===true,'RMP com motivo e 3 fotos fica completo');
+  await p.selectOption('#rmSit','ok');await W(400);ok((await p.$$eval('#rmList tbody tr',a=>a.length))>=1,'filtro de completos');
+  const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#rmXls')]);ok(!!dx,'relatório de pendências de RMP em Excel');
+  await p.goto(`http://localhost:${PORT}/#producao`);await W(1500);await p.selectOption('#pdSev','all');await W(500);await p.fill('#pdList input[data-cf="ini"]','');
+  const okMark=await p.evaluate(id=>{const t=[...document.querySelectorAll('#pdList [data-rmp]')].find(b=>b.dataset.rmp===id);return t?!!t.parentElement.querySelector('.rm-ok'):null},rid);
+  const pend=await p.$$('#pdList .rm-pd');ok(okMark!==false&&pend.length>0,'Produção executada: ✓ verde no RMP completo e "!" nos pendentes')}
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados
 await p.goto(`http://localhost:${PORT}/#relatorios`);await W(2500);
 await W(1000);const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');

@@ -192,6 +192,19 @@ await t('Histórico: "excluir" só marca a exclusão',async()=>{await assertFail
 await t('Histórico: sem a permissão de excluir não exclui',()=>assertFails(updateDoc(doc(hp('hped'),'programacoes','h1'),{excluido:true,excluido_em:1,excluido_por:'hped@x.com',excluido_por_nome:'x'})));
 await t('Histórico: nada é apagado do servidor',async()=>{await assertFails(deleteDoc(doc(admin,'programacoes','h1')));await assertFails(deleteDoc(doc(admin,'programacoes_dados','h1')))});
 await t('Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)',()=>assertSucceeds(getDoc(doc(lv('lvver'),'base','b4'))));
+// Controle de RMPs
+await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();
+  const U=(id,email,perms)=>setDoc(doc(d,'users',id),{email,name:id,profile:null,custom:true,perms,active:true,invited:true});
+  await U('rmreg','rmreg@x.com',{rmp:{view:true,create:true}});await U('rmver','rmver@x.com',{rmp:{view:true}});await U('rmpv','rmpv@x.com',{producao:{view:true}});
+});
+const RM=(id,by)=>({id,seg:id,k:'B23',data:'2026-08-01',fotos:{assinado:['f1'],patologia:[],espessura:[]},patologias:['Sola'],completo:false,falta:['patologia','espessura'],atualizado_por:by,atualizado_em:1760000000000});
+await t('RMP: quem tem "criar" registra o controle do segmento',()=>assertSucceeds(setDoc(doc(lp('rmreg'),'rmp_controle','B23-abc'),RM('B23-abc','rmreg@x.com'))));
+await t('RMP: não grava em nome de outro usuário',()=>assertFails(setDoc(doc(lp('rmreg'),'rmp_controle','B23-abd'),RM('B23-abd','outro@x.com'))));
+await t('RMP: só "ver" não grava',()=>assertFails(setDoc(doc(lp('rmver'),'rmp_controle','B23-abe'),RM('B23-abe','rmver@x.com'))));
+await t('RMP: quem vê a Produção executada lê o controle',()=>assertSucceeds(getDoc(doc(lp('rmpv'),'rmp_controle','B23-abc'))));
+await t('RMP: foto é gravada e não pode ser apagada',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1'),{id:'rf1',reg:'B23-abc',cat:'assinado',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'rmreg@x.com'}));
+  await assertFails(deleteDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1')))});
+await t('RMP: quem registra RMP grava o motivo (producao_notas), mas não os dados da planilha',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'base','producao_notas'),{json:'{}'}));await assertFails(setDoc(doc(lp('rmreg'),'base','producao_b23'),{json:'{}'}))});
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
 const txt=`Regras do Firestore: ${ok}/${results.length} testes OK\n\n`+results.map(r=>r.join('  ')).join('\n')+'\n';

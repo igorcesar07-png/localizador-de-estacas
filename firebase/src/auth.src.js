@@ -21,6 +21,7 @@ export const PAGES=[
   {k:'levpat',t:'Levantamento de Patologias',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de ocorrências e exportar Excel/CSV',create:'Registrar panelas (e complementar ou desfazer as próprias ocorrências)',edit:'Corrigir e complementar ocorrências de qualquer usuário',delete:'Excluir ocorrências de qualquer usuário (exclusão lógica)'}},
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
   {k:'producao',t:'Produção executada',acts:['view','create'],help:{view:'Ver os segmentos executados importados da planilha de produção, as pendências e o histórico de importações',create:'Vincular a pasta da planilha (monitoramento automático) e importar o arquivo manualmente'}},
+  {k:'rmp',t:'Controle de RMPs',acts:['view','create'],help:{view:'Ver os RMPs da produção executada, o que falta em cada um e exportar o relatório de pendências',create:'Registrar o motivo e as fotos dos RMPs (RMP assinado, patologia e espessura)'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
 const ACTS={view:'Visualizar',create:'Criar',edit:'Editar',delete:'Excluir'};
 
@@ -293,14 +294,22 @@ onAuthStateChanged(auth,async user=>{
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null}}}
     // produção executada (planilha "Acompanhamento de produção"): 3 documentos de dados + 1 de status; lê quem usa o app, grava quem pode importar
-    {const PIDS=['producao_meta','producao_b23','producao_b4','producao_status','producao_notas'],pcan=isAdm||!!(window.ACL.perms.producao&&window.ACL.perms.producao.create);
+    {const PIDS=['producao_meta','producao_b23','producao_b4','producao_status','producao_notas'],pcan=isAdm||!!(window.ACL.perms.producao&&window.ACL.perms.producao.create),ncan=pcan||!!(window.ACL.perms.rmp&&window.ACL.perms.rmp.create);
       window.ProdDB={subscribe:cb=>{const us=PIDS.map(id=>onSnapshot(doc(db,'base',id),s=>cb(id,s.exists()?s.data():null),e=>cb(id,null,e)));return ()=>us.forEach(u=>u())},
         save:async parts=>{if(!pcan)throw new Error('sem permissão para importar a planilha de produção');const b=writeBatch(db);
           for(const [k,obj] of Object.entries(parts)){const txt=JSON.stringify(obj),sz=new Blob([txt]).size;if(sz>1000000)throw new Error(`dados "${k}" grandes demais para o servidor (${Math.round(sz/1024)} KB; limite de 1 MB). Nada foi gravado.`);
             b.set(doc(db,'base','producao_'+k),{json:txt,updatedAt:serverTimestamp(),by:user.email})}return track(b.commit())},
         // motivos/observações por segmento (lista acumulada: nada é apagado)
-        saveNotas:async all=>{if(!pcan)throw new Error('sem permissão');const txt=JSON.stringify(all);if(new Blob([txt]).size>1000000)throw new Error('observações grandes demais para o servidor');return track(setDoc(doc(db,'base','producao_notas'),{json:txt,updatedAt:serverTimestamp(),by:user.email}))},
+        saveNotas:async all=>{if(!ncan)throw new Error('sem permissão');const txt=JSON.stringify(all);if(new Blob([txt]).size>1000000)throw new Error('observações grandes demais para o servidor');return track(setDoc(doc(db,'base','producao_notas'),{json:txt,updatedAt:serverTimestamp(),by:user.email}))},
         status:st=>pcan?soft(setDoc(doc(db,'base','producao_status'),{...st,by:user.email,updatedAt:serverTimestamp()})):Promise.resolve()}}
+    // controle de RMPs: um documento por segmento da produção (id do segmento); fotos comprimidas em outra coleção, lidas ao abrir
+    const prm=window.ACL.perms.rmp||{},ppv=window.ACL.perms.producao||{};
+    if(isAdm||prm.view||ppv.view){const C='rmp_controle',CM='rmp_controle_midia';
+      window.RmpDB={subscribe:cb=>onSnapshot(collection(db,C),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        save:r=>track(setDoc(doc(db,C,r.id),{...r,atualizado_por:user.email,atualizado_em:Date.now()})),
+        saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
+        getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null},
+        can:isAdm||!!prm.create}}
     // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
     const pc=window.ACL.perms.calculadora||{};
     if(isAdm||pc.view){const hid=eq=>String(eq).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').slice(0,80)||'_';
