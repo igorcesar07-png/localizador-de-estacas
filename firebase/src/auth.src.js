@@ -59,7 +59,7 @@ const CSS=`
 .adm-row:hover{background:var(--surface-2)}.adm-row b{display:block;font-size:15px}.adm-row small{color:var(--muted);font-size:12.5px;display:block;overflow:hidden;text-overflow:ellipsis}
 .adm-st{font:700 11px var(--body);border-radius:6px;padding:3px 8px;color:#fff;white-space:nowrap}.st-on{background:#1E7A4C}.st-off{background:#7A2B2B}.st-wait{background:#B07A00}.st-inv{background:#1A73E8}.st-adm{background:#111}
 .adm-btn{min-height:44px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:700 14.5px var(--body);padding:0 16px;cursor:pointer}.adm-btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.adm-btn.red{background:#C8101A;color:#fff}.adm-btn.yel{background:#F2B705;color:#111}
-.adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+.adm-vt{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.adm-vt th,.adm-vt td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:middle}.adm-vt small{display:block;color:var(--muted)}.adm-vt input{min-height:34px;width:100%;box-sizing:border-box}.adm-vrev{max-width:120px}.adm-ck{display:flex;align-items:center;gap:6px}.adm-ck input{width:auto}.adm-vf{align-items:end}.adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
 .adm-form label{display:flex;flex-direction:column;gap:4px;font:600 13px var(--body);color:var(--muted)}
 .adm-form input,.adm-form select{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 10px}
 .adm-mx{width:100%;border-collapse:collapse;font-size:14px}.adm-mx th{font:700 12px var(--body);color:var(--muted);text-align:center;padding:6px 4px;border-bottom:1px solid var(--line)}.adm-mx th:first-child{text-align:left}
@@ -310,6 +310,10 @@ onAuthStateChanged(auth,async user=>{
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null},
         can:isAdm||!!prm.create}}
+    // versões do projeto (unifilares) com data de corte: lista leve (metadados) + dados lidos só quando usados
+    {const VC=new Map();
+      window.VersDB={subscribe:cb=>onSnapshot(collection(db,'base_versoes'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),
+        get:async id=>{if(VC.has(id))return VC.get(id);const p=getDoc(doc(db,'base_versoes_dados',id)).then(s=>s.exists()?JSON.parse(s.data().json):null);VC.set(id,p);try{return await p}catch(e){VC.delete(id);throw e}}}}
     // último horário de cada equipe (sinalização e equipe): compartilhado entre os aparelhos; o app compara pela data do registro
     const pc=window.ACL.perms.calculadora||{};
     if(isAdm||pc.view){const hid=eq=>String(eq).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w-]+/g,'_').slice(0,80)||'_';
@@ -400,6 +404,46 @@ function profilesTab(B,root){const sel=ADM.sel;
     ${ADM.profiles.map((p,k)=>`<button type="button" class="adm-row" data-k="${k}"><div><b>${esc(p.name)}</b><small>${permsSummary(p.perms)} · ${ADM.users.filter(u=>!u.custom&&u.profile===p.id).length} usuário(s)</small></div><span class="adm-st st-inv">Editar</span></button>`).join('')||'<p class="adm-note">Nenhum perfil criado. Exemplos: "Apontador de campo" (Localização, Mapa e Foto), "Programação" (Calculadora e Relatórios).</p>'}</div></div>`;
   $('pNew').onclick=()=>{ADM.sel={kind:'new',perms:{}};renderAdmin(root)};B.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ADM.sel=ADM.profiles[+b.dataset.k];renderAdmin(root)})}
 
+const OBRA_N={'277':'BR-277 B2 + B3','B4':'BR-373 B4'};
+const vId=(obra,rev)=>(obra+'-'+String(rev||'rev').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString(36)).slice(0,80);
+function checkVersao(txt,obra){let d;try{d=JSON.parse(txt)}catch(e){throw new Error('Arquivo não é um JSON válido.')}
+  if(!d||!Array.isArray(d.codes)||!Array.isArray(d.rows)||!d.rows.length)throw new Error('O arquivo não tem o formato da base (codes e rows).');
+  const isB4=!!(d.src&&Array.isArray(d.src.panos)&&d.base==='BR-373 B4');if(obra==='B4'&&!isB4)throw new Error('Este não é um arquivo da BR-373 B4.');if(obra==='277'&&isB4)throw new Error('Este é um arquivo da BR-373 B4.');
+  if(new Blob([txt]).size>1040000)throw new Error('Arquivo grande demais para o servidor (limite de 1 MB).');return d}
+async function versoesHtml(){let vs=[];try{vs=(await getDocs(collection(db,'base_versoes'))).docs.map(d=>({...d.data(),id:d.id}))}catch(e){return `<div class="adm-card"><h2>Versões do projeto</h2><p class="adm-note">${esc(errTxt(e))}</p></div>`}
+  return ['277','B4'].map(o=>{const l=vs.filter(v=>v.obra===o).sort((a,b)=>String(a.corte).localeCompare(String(b.corte)));
+    return `<div class="adm-card"><h2>Versões do projeto (unifilares) — ${OBRA_N[o]}</h2>
+      <p class="adm-note">A data de corte define a partir de quando cada revisão vale para o RMP: um lançamento usa a revisão com a maior data de corte até a data da execução. A versão "atual" é a base que o app usa no mapa e na Calculadora.</p>
+      <div class="tscroll"><table class="adm-vt"><thead><tr><th>Arquivo</th><th>Revisão</th><th>Data de corte</th><th>Carregada</th><th>Situação</th></tr></thead><tbody>
+      ${l.map(v=>`<tr><td>${esc(v.arquivo||'')}<small>${esc(v.rows||'')} estacas${v.panos?' · '+esc(v.panos)+' panos':''}</small></td><td><input class="adm-vrev" data-vrev="${esc(v.id)}" value="${esc(v.rev||'')}" maxlength="40" aria-label="Revisão"></td>
+        <td><input type="date" data-vcorte="${esc(v.id)}" value="${esc(v.corte||'')}" aria-label="Data de corte"></td><td><small>${esc(v.carregado||'')}<br>${esc(v.por||'')}</small></td>
+        <td>${v.atual?'<b class="adm-st st-ok">Atual</b>':`<button type="button" class="adm-btn" data-vatual="${esc(v.id)}">Tornar atual</button>`}</td></tr>`).join('')||'<tr><td colspan="5"><small>Nenhuma versão cadastrada. Cadastre a base atual e as revisões anteriores com a data de corte de cada uma.</small></td></tr>'}
+      </tbody></table></div>
+      <div class="adm-form adm-vf"><label>Arquivo da versão (.json)<input type="file" id="vFile${o}" accept=".json,application/json" style="padding-top:10px"></label>
+        <label>Revisão<input id="vRev${o}" maxlength="40" placeholder="ex.: R01"></label><label>Data de corte<input type="date" id="vCorte${o}"></label>
+        <label class="adm-ck"><input type="checkbox" id="vAtual${o}"> tornar esta a base atual</label>
+        <button type="button" class="adm-btn yel" data-vadd="${o}">Cadastrar versão</button>
+        ${l.some(v=>v.atual)?'':`<button type="button" class="adm-btn" data-vcur="${o}">Cadastrar a base atual do servidor como versão</button>`}</div></div>`}).join('')}
+async function setAtual(id,obra){const vs=(await getDocs(collection(db,'base_versoes'))).docs.map(d=>({...d.data(),id:d.id})).filter(v=>v.obra===obra);
+  const ds=await getDoc(doc(db,'base_versoes_dados',id));if(!ds.exists())throw new Error('Dados da versão não encontrados.');const txt=ds.data().json,d=JSON.parse(txt);
+  const ver=new Date().toLocaleString('pt-BR'),b=writeBatch(db);const isB4=obra==='B4';
+  b.set(doc(db,'base',isB4?'b4':'r08'),{json:txt,version:ver,rows:d.rows.length,...(isB4?{panos:d.src.panos.length}:{}),updatedAt:serverTimestamp(),by:auth.currentUser.email,versao:id});
+  for(const v of vs)b.update(doc(db,'base_versoes',v.id),{atual:v.id===id});await b.commit()}
+function bindVersoes(B,root){
+  B.querySelectorAll('[data-vcorte]').forEach(i=>i.onchange=async()=>{try{await updateDoc(doc(db,'base_versoes',i.dataset.vcorte),{corte:i.value});msgA('Data de corte salva.','ok')}catch(x){msgA(errTxt(x),'bad')}});
+  B.querySelectorAll('[data-vrev]').forEach(i=>i.onchange=async()=>{try{await updateDoc(doc(db,'base_versoes',i.dataset.vrev),{rev:i.value.trim()});msgA('Revisão salva.','ok')}catch(x){msgA(errTxt(x),'bad')}});
+  B.querySelectorAll('[data-vatual]').forEach(b=>b.onclick=async()=>{const id=b.dataset.vatual,obra=id.startsWith('B4-')?'B4':'277';if(!confirm('Tornar esta versão a base atual do app ('+OBRA_N[obra]+')? Os usuários recebem a nova base ao abrir o app.'))return;
+    try{b.disabled=true;await setAtual(id,obra);msgA('Base atual trocada.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad');b.disabled=false}});
+  B.querySelectorAll('[data-vadd]').forEach(b=>b.onclick=async()=>{const o=b.dataset.vadd,f=$('vFile'+o).files[0],rev=$('vRev'+o).value.trim(),corte=$('vCorte'+o).value;
+    if(!f||!rev||!corte){msgA('Informe o arquivo, a revisão e a data de corte.','bad');return}
+    try{b.disabled=true;const txt=await f.text(),d=checkVersao(txt,o);const id=vId(o==='B4'?'B4':'277',rev),bt=writeBatch(db);
+      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:f.name,rev,corte,atual:false,rows:d.rows.length,...(d.src&&d.src.panos?{panos:d.src.panos.length}:{}),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
+      await bt.commit();if($('vAtual'+o).checked)await setAtual(id,o);msgA('Versão cadastrada.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad');b.disabled=false}});
+  B.querySelectorAll('[data-vcur]').forEach(b=>b.onclick=async()=>{const o=b.dataset.vcur;const corte=prompt('Data de corte da base atual (AAAA-MM-DD):','');if(!corte)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(corte)){msgA('Data no formato AAAA-MM-DD.','bad');return}
+    const rev=prompt('Revisão da base atual (ex.: R01):','')||'atual';
+    try{const s=await getDoc(doc(db,'base',o==='B4'?'b4':'r08'));if(!s.exists())throw new Error('Sem base atual no servidor.');const txt=s.data().json,d=JSON.parse(txt);const id=vId(o==='B4'?'B4':'277',rev),bt=writeBatch(db);
+      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:(o==='B4'?'base-BR373-B4':'data')+'.json (base atual de '+(s.data().version||'')+')',rev,corte,atual:true,rows:d.rows.length,...(d.src&&d.src.panos?{panos:d.src.panos.length}:{}),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
+      await bt.commit();msgA('Base atual cadastrada como versão.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}})}
 async function baseTab(B,root){const info={};
   for(const id of ['r08','b4']){try{const s=await getDoc(doc(db,'base',id));if(s.exists()){const d=s.data();info[id]=`Versão carregada em ${esc(d.version)} · ${esc(d.rows||'')} estacas${d.panos?` · ${esc(d.panos)} panos`:''} · por ${esc(d.by||'')}`}}catch(e){info[id]=esc(errTxt(e))}}
   B.innerHTML=`<div class="adm-card"><h2>Base do projeto (R08 + estacas)</h2><p class="adm-note">${info.r08||'Nenhuma base carregada.'}</p>
@@ -407,6 +451,7 @@ async function baseTab(B,root){const info={};
     <div class="adm-form"><label>Novo arquivo da base<input type="file" id="bFile" accept=".json,application/json" style="padding-top:10px"></label></div></div>
     <div class="adm-card"><h2>Base da BR-373 B4 (unifilar + KMZ de estacas)</h2><p class="adm-note">${info.b4||'Nenhuma base carregada: a aba Estacas BR-373 B4 fica sem dados até o envio.'}</p>
     <p class="adm-note">Entregue só a usuários ativos com a página "Estacas BR-373 B4" liberada. Arquivo: base-BR373-B4.json.</p>
-    <div class="adm-form"><label>Arquivo da base B4<input type="file" id="bFileB4" accept=".json,application/json" style="padding-top:10px"></label></div></div>`;
+    <div class="adm-form"><label>Arquivo da base B4<input type="file" id="bFileB4" accept=".json,application/json" style="padding-top:10px"></label></div></div>`+await versoesHtml();
+  bindVersoes(B,root);
   $('bFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const v=await uploadBase(f);msgA('Base atualizada ('+v+'). Os usuários recebem a nova versão ao abrir o app.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}};
   $('bFileB4').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const v=await uploadBase(f,'b4');msgA('Base da BR-373 B4 carregada ('+v+'). Reabra o app para ver a aba com os dados.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}}}

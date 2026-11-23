@@ -368,7 +368,7 @@ const Layers=(function(){
           L.polyline([Geo.off(i,c-hw),Geo.off(i,c+hw)],{renderer,color:tc,weight:2,opacity:.85,interactive:false}).addTo(dyn)}}}}}
   map.on('zoomend',()=>{restyle();detail()});map.on('moveend',detail);
   let rotT=0;map.on('rotate',()=>{clearTimeout(rotT);rotT=setTimeout(detail,120);showBearing()});
-  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i}};
+  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i},showPanos:v=>{if(v){if(!map.hasLayer(panoLayer))panoLayer.addTo(map)}else map.removeLayer(panoLayer)}};
 })();
 
 const tagHtml=(inf,cls)=>`<span class="tag${cls?' '+cls:''}" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
@@ -570,6 +570,74 @@ window.addEventListener('resize',()=>{map.invalidateSize();if(Loc.st.r&&!Loc.st.
 on('position',onPosition);on('gps',renderGps);
 on('page',p=>{if(p==='mapa')setTimeout(()=>{if(window.__sheetOpen){window.__sheetOpen=0;Sheet.to(1)}map.invalidateSize();Layers.detail();if(Loc.st.r&&!Loc.st.r.outside){drawReti(Loc.st.r.s);if(follow)map.setView([Loc.st.lat,Loc.st.lon],map.getZoom())}},30)});
 Layers.init();renderFilters();
+/* ---- camadas extras do mapa: execução (planilha de produção) e revisões do projeto (versões com data de corte) ---- */
+const Extra=(function(){
+  const OBK=window.__mapB4===map?'B4':'B23',ORK=OBK==='B4'?'B4':'277';
+  const mppX=z=>156543.03392*Math.cos(Geo.lat0*Math.PI/180)/Math.pow(2,z),exagX=z=>Math.max(1,5*mppX(z)/3.6);
+  const exL=L.layerGroup().addTo(map),revL=L.layerGroup().addTo(map),difL=L.layerGroup().addTo(map);
+  const ST={exec:store.get('mxExec',true),rev:'',dif:true};let VL=[],VM=null,DIFS=[];
+  const CC={projeto:'#16A34A',TRO:'#7C3AED',Monitoramento:'#0E7C86',retrabalho:'#EA580C',outro:'#7A5AC8'};
+  const colOf=r=>r.cls==='retrabalho'?CC.retrabalho:r.extra==='TRO'?CC.TRO:r.extra==='Monitoramento'?CC.Monitoramento:r.extra?CC.outro:CC.projeto;
+  const clsTxt=r=>r.cls==='retrabalho'?'Retrabalho':r.extra?r.extra+' (fora de projeto)':'Projeto';
+  function ptAt(s,o){let i=Math.floor((s-ODO[0])/20+1e-9);i=Math.max(0,Math.min(N-1,i));const j=Math.min(N-1,i+1),t=Math.max(0,Math.min(1,(s-ODO[i])/20));
+    const x=X[i]+(X[j]-X[i])*t+NX[i]*o,y=Y[i]+(Y[j]-Y[i])*t+NY[i]*o;return Geo.toLL(x,y)}
+  function lineAt(a,b,o){const pts=[ptAt(a,o)];for(let i=Math.ceil((a-ODO[0])/20+1e-6);i<N&&ODO[i]<b-1e-6;i++)pts.push(Geo.off(i,o));pts.push(ptAt(b,o));return pts}
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const f1=(v,d)=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const brD=d=>d?d.split('-').reverse().join('/'):'—';
+  function popup(r){const P=window.PROD,pi=P.info(r);
+    return `<div class="mx-pop"><b>${esc(clsTxt(r))}</b> · ${brD(r.data)}<br>${esc(pi.pista)} · ${esc(pi.faixa)} · ${esc(pi.ini)} → ${esc(pi.fim)}
+      <dl><dt>Executado</dt><dd>${esc(pi.exec)}</dd><dt>Solução de projeto</dt><dd>${esc(pi.proj)}${pi.rev?` <small>(revisão ${esc(pi.rev)})</small>`:''}</dd>${pi.projAtual&&pi.projAtual!==pi.proj?`<dt>Na revisão atual</dt><dd>${esc(pi.projAtual)} <small>(mudou com a revisão)</small></dd>`:''}
+      <dt>Dimensões</dt><dd>${f1(pi.ext,1)} m × ${f1(r.larg,2)} m${r.esp?` × ${f1(r.esp*100,1)} cm`:''}</dd><dt>Quantidade</dt><dd>${esc(pi.qt)}</dd><dt>Equipe</dt><dd>${esc(pi.eq)}</dd>
+      <dt>RMP</dt><dd>${pi.rmp}</dd>${pi.motivo?`<dt>Motivo</dt><dd>${esc(pi.motivo)}</dd>`:''}${pi.prim?`<dt>1ª execução</dt><dd>${esc(pi.prim)}</dd>`:''}</dl>
+      ${pi.fotos?`<div class="mx-fts" data-fts="${esc(r.id)}"><small>carregando fotos do RMP…</small></div>`:''}${pi.rmpSim?`<a href="#rmp" data-rmfoco="${esc(r.id)}">Abrir no Controle de RMPs</a>`:''}</div>`}
+  function drawExec(){exL.clearLayers();if(!ST.exec||!window.PROD||!window.PROD.has(OBK==='B4'?'B4':'B23'))return;const k=exagX(map.getZoom()),m=mppX(map.getZoom());
+    for(const r of window.PROD.resolve()[OBK]){if(r.a==null||r.b==null||r.L<0||!(r.b>r.a))continue;const L0=LANES[r.L];if(!L0)continue;const o=L0.off*k,pts=lineAt(r.a,r.b,o);
+      const w=Math.max(2,L0.grp==='DRN'?2.5:(L0.w*k/m)*0.42);
+      L.polyline(pts,{renderer,color:'#fff',weight:w+2.5,opacity:.95,lineCap:'butt',interactive:false}).addTo(exL);
+      L.polyline(pts,{renderer,color:colOf(r),weight:w,opacity:1,lineCap:'butt'}).bindPopup(()=>popup(r),{maxWidth:330}).addTo(exL)}}
+  map.on('popupopen',async e=>{const el=e.popup.getElement();const b=el&&el.querySelector('[data-fts]');if(!b||!window.PROD)return;try{b.innerHTML=await window.PROD.fotosHtml(b.dataset.fts)}catch(x){b.innerHTML='<small>fotos indisponíveis</small>'}});
+  // revisões
+  function vModel(json){const codes=json.codes.map(c=>OBK==='B4'&&c==='G'?'FS':c),R2=json.rows,DREN={R:'DR',P:'DP'};const byO=new Map();
+    const codeAt=(Lx,i)=>{if(Lx<6){const c=R2[i][6][Lx];return c?codes[c-1]:null}const dd=R2[i][7];return dd?DREN[dd[Lx===6?2:1]]||null:null};
+    const pan=[];for(let Lx=0;Lx<8;Lx++){let i=0;while(i<R2.length){const c=codeAt(Lx,i);if(!c){i++;continue}let j=i;while(j+1<R2.length&&codeAt(Lx,j+1)===c&&R2[j+1][5]===R2[i][5])j++;pan.push({L:Lx,code:c,pa:R2[i][3],pb:R2[j][3]+20});i=j+1}}
+    R2.forEach((row,i)=>byO.set(Math.round(row[3]),i));return {pan,codeAt,byO}}
+  function curCode(Lx,i){const q=PANO_AT[Lx][i];return q>=0?PANOS[q].code:null}
+  function diffs(M){const out=[];for(let Lx=0;Lx<8;Lx++){let cur=null;for(let i=0;i<N;i++){const j=M.byO.get(Math.round(ODO[i]));const a=curCode(Lx,i),b=j==null?null:M.codeAt(Lx,j);
+      const fa=a&&Data.info(a).fam,fb=b&&Data.info(b).fam;const dif=(a||b)&&(a!==b);
+      if(dif){if(cur&&cur.i1===i-1&&cur.a===a&&cur.b===b)cur.i1=i;else{cur={L:Lx,i0:i,i1:i,a,b,fam:fa!==fb};out.push(cur)}}else cur=null}}return out}
+  async function setRev(id){ST.rev=id;revL.clearLayers();difL.clearLayers();VM=null;DIFS=[];const box=map.getContainer().querySelector('.mx-dif');
+    if(!id){Layers.showPanos(true);if(box)box.innerHTML='';return}
+    if(box)box.innerHTML='<small>Carregando a revisão…</small>';
+    try{const json=await window.VersDB.get(id);if(!json)throw new Error('sem dados');VM=vModel(json);DIFS=diffs(VM);Layers.showPanos(false);drawRev();listDifs()}
+    catch(e){if(box)box.innerHTML='<small>Não foi possível carregar a revisão: '+esc(e.message||e)+'</small>';Layers.showPanos(true)}}
+  function drawRev(){revL.clearLayers();difL.clearLayers();if(!VM)return;const z=map.getZoom(),k=exagX(z),m=mppX(z);
+    for(const p of VM.pan){const L0=LANES[p.L];const inf=Data.info(p.code);const w=L0.grp==='DRN'?2.4:Math.max(2,L0.w*k/m-0.6);
+      L.polyline(lineAt(p.pa,p.pb,L0.off*k),{renderer,color:inf.color,weight:w,opacity:1,lineCap:'butt',dashArray:L0.grp==='DRN'?(p.code==='DP'?'12 3 2 3':'4 3'):null}).bindTooltip(`${esc(p.code)} · revisão ${esc((VL.find(v=>v.id===ST.rev)||{}).rev||'')}`).addTo(revL)}
+    if(ST.dif)for(const d of DIFS){const L0=LANES[d.L];const w=(L0.grp==='DRN'?2.4:Math.max(2,L0.w*k/m-0.6))+5;
+      L.polyline(lineAt(ODO[d.i0],ODO[d.i1]+20,L0.off*k),{renderer,color:'#FF00C8',weight:w,opacity:.55,lineCap:'butt',dashArray:'6 5'}).bindTooltip(`Mudou: ${esc(d.b||'sem solução')} (revisão) → ${esc(d.a||'sem solução')} (atual)`).addTo(difL)}
+    difL.eachLayer(l=>l.bringToBack&&l.bringToBack())}
+  function listDifs(){const box=map.getContainer().querySelector('.mx-dif');if(!box)return;const v=VL.find(x=>x.id===ST.rev)||{};
+    box.innerHTML=`<small>Mostrando a revisão <b>${esc(v.rev||'')}</b>${v.corte?` (corte ${brD(v.corte)})`:''}. ${DIFS.length} trecho(s) diferentes da atual${DIFS.length?`, ${DIFS.filter(d=>d.fam).length} com troca de solução`:''}.</small>
+      ${DIFS.length?`<ol class="mx-dl">${DIFS.slice(0,80).map((d,n)=>`<li><button type="button" data-dif="${n}">${esc(R[d.i0][0])}–${esc(Data.endName(d.i1))} · ${esc(SIDE[LANES[d.L].side].slice(0,5))}. ${esc(LANES[d.L].name)}: <b>${esc(d.b||'—')}</b> → <b>${esc(d.a||'—')}</b></button></li>`).join('')}</ol>${DIFS.length>80?'<small>Mostrando 80 trechos.</small>':''}`:''}`;
+    box.querySelectorAll('[data-dif]').forEach(b=>b.onclick=()=>{const d=DIFS[+b.dataset.dif];map.setView([LAT[d.i0],LON[d.i0]],Math.max(17,map.getZoom()))})}
+  const C=L.control({position:'topright'});
+  C.onAdd=()=>{const d=L.DomUtil.create('div','mx-ctl');d.innerHTML=`<details${store.get('mxOpen',false)?' open':''}><summary>Camadas</summary>
+      <label class="mx-ck"><input type="checkbox" class="mx-ex"${ST.exec?' checked':''}> Executado (produção)</label>
+      <div class="mx-leg">${[['Projeto',CC.projeto],['TRO',CC.TRO],['Monitoramento',CC.Monitoramento],['Retrabalho',CC.retrabalho]].map(([t,c])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')}</div>
+      <label class="mx-lb">Revisão do projeto<select class="mx-rev"><option value="">Atual (base do app)</option></select></label>
+      <label class="mx-ck"><input type="checkbox" class="mx-df" checked> Destacar o que mudou</label><div class="mx-dif"></div></details>`;
+    L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);
+    d.querySelector('details').addEventListener('toggle',e=>store.set('mxOpen',e.target.open));
+    d.querySelector('.mx-ex').onchange=e=>{ST.exec=e.target.checked;store.set('mxExec',ST.exec);drawExec()};
+    d.querySelector('.mx-rev').onchange=e=>setRev(e.target.value);d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
+  C.addTo(map);
+  function fillRev(){const s=map.getContainer().querySelector('.mx-rev');if(!s)return;const l=VL.filter(v=>v.obra===ORK).sort((a,b)=>String(b.corte).localeCompare(String(a.corte)));
+    s.innerHTML='<option value="">Atual (base do app)</option>'+l.map(v=>`<option value="${esc(v.id)}"${ST.rev===v.id?' selected':''}>${esc(v.rev||v.arquivo)}${v.corte?' · corte '+brD(v.corte):''}${v.atual?' (atual)':''}</option>`).join('')}
+  if(window.VersDB)window.VersDB.subscribe(l=>{if(!l)return;VL=l;fillRev()});
+  map.on('zoomend',()=>{drawExec();if(VM)drawRev()});(typeof __G!=='undefined'?__G.on:on)('prod',drawExec);
+  const api={drawExec,setRev,n:()=>exL.getLayers().length,difs:()=>DIFS.length,rev:()=>revL.getLayers().length};window['__mx'+OBK]=api;return api})();
+setTimeout(()=>Extra.drawExec(),1500);
 if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
 renderGps(Loc.gps);
 });
@@ -823,7 +891,7 @@ const Layers=(function(){
           L.polyline([Geo.off(i,c-hw),Geo.off(i,c+hw)],{renderer,color:tc,weight:2,opacity:.85,interactive:false}).addTo(dyn)}}}}}
   map.on('zoomend',()=>{restyle();detail()});map.on('moveend',detail);
   let rotT=0;map.on('rotate',()=>{clearTimeout(rotT);rotT=setTimeout(detail,120);showBearing()});
-  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i}};
+  return {setBase,nextBase:()=>setBase((bi+1)%BASES.length),init:()=>{setBase(bi);restyle();applyFilters()},applyFilters,detail,setHot:i=>{hot=i},showPanos:v=>{if(v){if(!map.hasLayer(panoLayer))panoLayer.addTo(map)}else map.removeLayer(panoLayer)}};
 })();
 
 const tagHtml=(inf,cls)=>`<span class="tag${cls?' '+cls:''}" style="background:${inf.color};color:${inf.ink}">${inf.code}</span>`;
@@ -1038,6 +1106,74 @@ window.addEventListener('resize',()=>{map.invalidateSize();if(Loc.st.r&&!Loc.st.
 on('position',onPosition);on('gps',renderGps);
 on('page',p=>{if(p==='mapab4')setTimeout(()=>{if(window.__sheetOpen){window.__sheetOpen=0;Sheet.to(1)}map.invalidateSize();Layers.detail();if(Loc.st.r&&!Loc.st.r.outside){drawReti(Loc.st.r.s);if(follow)map.setView([Loc.st.lat,Loc.st.lon],map.getZoom())}},30)});
 Layers.init();renderFilters();B4.renderNote();
+/* ---- camadas extras do mapa: execução (planilha de produção) e revisões do projeto (versões com data de corte) ---- */
+const Extra=(function(){
+  const OBK=window.__mapB4===map?'B4':'B23',ORK=OBK==='B4'?'B4':'277';
+  const mppX=z=>156543.03392*Math.cos(Geo.lat0*Math.PI/180)/Math.pow(2,z),exagX=z=>Math.max(1,5*mppX(z)/3.6);
+  const exL=L.layerGroup().addTo(map),revL=L.layerGroup().addTo(map),difL=L.layerGroup().addTo(map);
+  const ST={exec:store.get('mxExec',true),rev:'',dif:true};let VL=[],VM=null,DIFS=[];
+  const CC={projeto:'#16A34A',TRO:'#7C3AED',Monitoramento:'#0E7C86',retrabalho:'#EA580C',outro:'#7A5AC8'};
+  const colOf=r=>r.cls==='retrabalho'?CC.retrabalho:r.extra==='TRO'?CC.TRO:r.extra==='Monitoramento'?CC.Monitoramento:r.extra?CC.outro:CC.projeto;
+  const clsTxt=r=>r.cls==='retrabalho'?'Retrabalho':r.extra?r.extra+' (fora de projeto)':'Projeto';
+  function ptAt(s,o){let i=Math.floor((s-ODO[0])/20+1e-9);i=Math.max(0,Math.min(N-1,i));const j=Math.min(N-1,i+1),t=Math.max(0,Math.min(1,(s-ODO[i])/20));
+    const x=X[i]+(X[j]-X[i])*t+NX[i]*o,y=Y[i]+(Y[j]-Y[i])*t+NY[i]*o;return Geo.toLL(x,y)}
+  function lineAt(a,b,o){const pts=[ptAt(a,o)];for(let i=Math.ceil((a-ODO[0])/20+1e-6);i<N&&ODO[i]<b-1e-6;i++)pts.push(Geo.off(i,o));pts.push(ptAt(b,o));return pts}
+  const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const f1=(v,d)=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const brD=d=>d?d.split('-').reverse().join('/'):'—';
+  function popup(r){const P=window.PROD,pi=P.info(r);
+    return `<div class="mx-pop"><b>${esc(clsTxt(r))}</b> · ${brD(r.data)}<br>${esc(pi.pista)} · ${esc(pi.faixa)} · ${esc(pi.ini)} → ${esc(pi.fim)}
+      <dl><dt>Executado</dt><dd>${esc(pi.exec)}</dd><dt>Solução de projeto</dt><dd>${esc(pi.proj)}${pi.rev?` <small>(revisão ${esc(pi.rev)})</small>`:''}</dd>${pi.projAtual&&pi.projAtual!==pi.proj?`<dt>Na revisão atual</dt><dd>${esc(pi.projAtual)} <small>(mudou com a revisão)</small></dd>`:''}
+      <dt>Dimensões</dt><dd>${f1(pi.ext,1)} m × ${f1(r.larg,2)} m${r.esp?` × ${f1(r.esp*100,1)} cm`:''}</dd><dt>Quantidade</dt><dd>${esc(pi.qt)}</dd><dt>Equipe</dt><dd>${esc(pi.eq)}</dd>
+      <dt>RMP</dt><dd>${pi.rmp}</dd>${pi.motivo?`<dt>Motivo</dt><dd>${esc(pi.motivo)}</dd>`:''}${pi.prim?`<dt>1ª execução</dt><dd>${esc(pi.prim)}</dd>`:''}</dl>
+      ${pi.fotos?`<div class="mx-fts" data-fts="${esc(r.id)}"><small>carregando fotos do RMP…</small></div>`:''}${pi.rmpSim?`<a href="#rmp" data-rmfoco="${esc(r.id)}">Abrir no Controle de RMPs</a>`:''}</div>`}
+  function drawExec(){exL.clearLayers();if(!ST.exec||!window.PROD||!window.PROD.has(OBK==='B4'?'B4':'B23'))return;const k=exagX(map.getZoom()),m=mppX(map.getZoom());
+    for(const r of window.PROD.resolve()[OBK]){if(r.a==null||r.b==null||r.L<0||!(r.b>r.a))continue;const L0=LANES[r.L];if(!L0)continue;const o=L0.off*k,pts=lineAt(r.a,r.b,o);
+      const w=Math.max(2,L0.grp==='DRN'?2.5:(L0.w*k/m)*0.42);
+      L.polyline(pts,{renderer,color:'#fff',weight:w+2.5,opacity:.95,lineCap:'butt',interactive:false}).addTo(exL);
+      L.polyline(pts,{renderer,color:colOf(r),weight:w,opacity:1,lineCap:'butt'}).bindPopup(()=>popup(r),{maxWidth:330}).addTo(exL)}}
+  map.on('popupopen',async e=>{const el=e.popup.getElement();const b=el&&el.querySelector('[data-fts]');if(!b||!window.PROD)return;try{b.innerHTML=await window.PROD.fotosHtml(b.dataset.fts)}catch(x){b.innerHTML='<small>fotos indisponíveis</small>'}});
+  // revisões
+  function vModel(json){const codes=json.codes.map(c=>OBK==='B4'&&c==='G'?'FS':c),R2=json.rows,DREN={R:'DR',P:'DP'};const byO=new Map();
+    const codeAt=(Lx,i)=>{if(Lx<6){const c=R2[i][6][Lx];return c?codes[c-1]:null}const dd=R2[i][7];return dd?DREN[dd[Lx===6?2:1]]||null:null};
+    const pan=[];for(let Lx=0;Lx<8;Lx++){let i=0;while(i<R2.length){const c=codeAt(Lx,i);if(!c){i++;continue}let j=i;while(j+1<R2.length&&codeAt(Lx,j+1)===c&&R2[j+1][5]===R2[i][5])j++;pan.push({L:Lx,code:c,pa:R2[i][3],pb:R2[j][3]+20});i=j+1}}
+    R2.forEach((row,i)=>byO.set(Math.round(row[3]),i));return {pan,codeAt,byO}}
+  function curCode(Lx,i){const q=PANO_AT[Lx][i];return q>=0?PANOS[q].code:null}
+  function diffs(M){const out=[];for(let Lx=0;Lx<8;Lx++){let cur=null;for(let i=0;i<N;i++){const j=M.byO.get(Math.round(ODO[i]));const a=curCode(Lx,i),b=j==null?null:M.codeAt(Lx,j);
+      const fa=a&&Data.info(a).fam,fb=b&&Data.info(b).fam;const dif=(a||b)&&(a!==b);
+      if(dif){if(cur&&cur.i1===i-1&&cur.a===a&&cur.b===b)cur.i1=i;else{cur={L:Lx,i0:i,i1:i,a,b,fam:fa!==fb};out.push(cur)}}else cur=null}}return out}
+  async function setRev(id){ST.rev=id;revL.clearLayers();difL.clearLayers();VM=null;DIFS=[];const box=map.getContainer().querySelector('.mx-dif');
+    if(!id){Layers.showPanos(true);if(box)box.innerHTML='';return}
+    if(box)box.innerHTML='<small>Carregando a revisão…</small>';
+    try{const json=await window.VersDB.get(id);if(!json)throw new Error('sem dados');VM=vModel(json);DIFS=diffs(VM);Layers.showPanos(false);drawRev();listDifs()}
+    catch(e){if(box)box.innerHTML='<small>Não foi possível carregar a revisão: '+esc(e.message||e)+'</small>';Layers.showPanos(true)}}
+  function drawRev(){revL.clearLayers();difL.clearLayers();if(!VM)return;const z=map.getZoom(),k=exagX(z),m=mppX(z);
+    for(const p of VM.pan){const L0=LANES[p.L];const inf=Data.info(p.code);const w=L0.grp==='DRN'?2.4:Math.max(2,L0.w*k/m-0.6);
+      L.polyline(lineAt(p.pa,p.pb,L0.off*k),{renderer,color:inf.color,weight:w,opacity:1,lineCap:'butt',dashArray:L0.grp==='DRN'?(p.code==='DP'?'12 3 2 3':'4 3'):null}).bindTooltip(`${esc(p.code)} · revisão ${esc((VL.find(v=>v.id===ST.rev)||{}).rev||'')}`).addTo(revL)}
+    if(ST.dif)for(const d of DIFS){const L0=LANES[d.L];const w=(L0.grp==='DRN'?2.4:Math.max(2,L0.w*k/m-0.6))+5;
+      L.polyline(lineAt(ODO[d.i0],ODO[d.i1]+20,L0.off*k),{renderer,color:'#FF00C8',weight:w,opacity:.55,lineCap:'butt',dashArray:'6 5'}).bindTooltip(`Mudou: ${esc(d.b||'sem solução')} (revisão) → ${esc(d.a||'sem solução')} (atual)`).addTo(difL)}
+    difL.eachLayer(l=>l.bringToBack&&l.bringToBack())}
+  function listDifs(){const box=map.getContainer().querySelector('.mx-dif');if(!box)return;const v=VL.find(x=>x.id===ST.rev)||{};
+    box.innerHTML=`<small>Mostrando a revisão <b>${esc(v.rev||'')}</b>${v.corte?` (corte ${brD(v.corte)})`:''}. ${DIFS.length} trecho(s) diferentes da atual${DIFS.length?`, ${DIFS.filter(d=>d.fam).length} com troca de solução`:''}.</small>
+      ${DIFS.length?`<ol class="mx-dl">${DIFS.slice(0,80).map((d,n)=>`<li><button type="button" data-dif="${n}">${esc(R[d.i0][0])}–${esc(Data.endName(d.i1))} · ${esc(SIDE[LANES[d.L].side].slice(0,5))}. ${esc(LANES[d.L].name)}: <b>${esc(d.b||'—')}</b> → <b>${esc(d.a||'—')}</b></button></li>`).join('')}</ol>${DIFS.length>80?'<small>Mostrando 80 trechos.</small>':''}`:''}`;
+    box.querySelectorAll('[data-dif]').forEach(b=>b.onclick=()=>{const d=DIFS[+b.dataset.dif];map.setView([LAT[d.i0],LON[d.i0]],Math.max(17,map.getZoom()))})}
+  const C=L.control({position:'topright'});
+  C.onAdd=()=>{const d=L.DomUtil.create('div','mx-ctl');d.innerHTML=`<details${store.get('mxOpen',false)?' open':''}><summary>Camadas</summary>
+      <label class="mx-ck"><input type="checkbox" class="mx-ex"${ST.exec?' checked':''}> Executado (produção)</label>
+      <div class="mx-leg">${[['Projeto',CC.projeto],['TRO',CC.TRO],['Monitoramento',CC.Monitoramento],['Retrabalho',CC.retrabalho]].map(([t,c])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')}</div>
+      <label class="mx-lb">Revisão do projeto<select class="mx-rev"><option value="">Atual (base do app)</option></select></label>
+      <label class="mx-ck"><input type="checkbox" class="mx-df" checked> Destacar o que mudou</label><div class="mx-dif"></div></details>`;
+    L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);
+    d.querySelector('details').addEventListener('toggle',e=>store.set('mxOpen',e.target.open));
+    d.querySelector('.mx-ex').onchange=e=>{ST.exec=e.target.checked;store.set('mxExec',ST.exec);drawExec()};
+    d.querySelector('.mx-rev').onchange=e=>setRev(e.target.value);d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
+  C.addTo(map);
+  function fillRev(){const s=map.getContainer().querySelector('.mx-rev');if(!s)return;const l=VL.filter(v=>v.obra===ORK).sort((a,b)=>String(b.corte).localeCompare(String(a.corte)));
+    s.innerHTML='<option value="">Atual (base do app)</option>'+l.map(v=>`<option value="${esc(v.id)}"${ST.rev===v.id?' selected':''}>${esc(v.rev||v.arquivo)}${v.corte?' · corte '+brD(v.corte):''}${v.atual?' (atual)':''}</option>`).join('')}
+  if(window.VersDB)window.VersDB.subscribe(l=>{if(!l)return;VL=l;fillRev()});
+  map.on('zoomend',()=>{drawExec();if(VM)drawRev()});(typeof __G!=='undefined'?__G.on:on)('prod',drawExec);
+  const api={drawExec,setRev,n:()=>exL.getLayers().length,difs:()=>DIFS.length,rev:()=>revL.getLayers().length};window['__mx'+OBK]=api;return api})();
+setTimeout(()=>Extra.drawExec(),1500);
 if(Loc.st.lat!=null){map.setView([Loc.st.lat,Loc.st.lon],18);onPosition(Loc.st)}
 renderGps(Loc.gps);
 });
@@ -4231,6 +4367,18 @@ const PROD=(function(){
     const r=src.Data.parseKm(km+'+'+o);if(!r.err)return {s:r.s,km};
     if(/vai até/.test(r.err)){const n=src.Data.parseKm(String(km+1));if(!n.err)return {s:n.s,over:true,km}}
     return {err:r.err}}
+  /* ---------- versões do projeto: a revisão válida na data da execução (maior data de corte até a data) é a referência do RMP ---------- */
+  let VERS=[];const VMOD=new Map();
+  function versAt(k,d){const o=k==='B4'?'B4':'277';const l=VERS.filter(v=>v.obra===o&&v.corte).sort((a,b)=>a.corte.localeCompare(b.corte));if(!l.length||!d)return null;return l.filter(x=>x.corte<=d).pop()||l[0]}
+  function vModel(json,k){const codes=json.codes.map(c=>k==='B4'&&c==='G'?'FS':c),R2=json.rows,DREN={R:'DR',P:'DP'},pan=[];
+    const codeAt=(Lx,i)=>{if(Lx<6){const c=R2[i][6][Lx];return c?codes[c-1]:null}const dd=R2[i][7];return dd?DREN[dd[Lx===6?2:1]]||null:null};
+    for(let Lx=0;Lx<8;Lx++){let i=0;while(i<R2.length){const c=codeAt(Lx,i);if(!c){i++;continue}let j=i;while(j+1<R2.length&&codeAt(Lx,j+1)===c&&R2[j+1][5]===R2[i][5])j++;pan.push({L:Lx,code:c,pa:R2[i][3],pb:R2[j][3]+20});i=j+1}}
+    return {pan}}
+  let VLOAD=false;
+  async function loadVers(){if(!window.VersDB||VLOAD)return;const need=new Map();
+    for(const k of ['B23','B4']){const S=SEG[k];if(!S)continue;for(const sg of S.segs){const v=versAt(k,sg.data);if(v&&!v.atual&&!VMOD.has(v.id))need.set(v.id,k)}}
+    if(!need.size)return;VLOAD=true;try{for(const [id,k] of need){try{const j=await window.VersDB.get(id);if(j)VMOD.set(id,vModel(j,k))}catch(e){console.warn('versão',id,e)}}}finally{VLOAD=false}RES=null;render();emit('prod',1)}
+  if(window.VersDB)window.VersDB.subscribe(l=>{if(!l)return;VERS=l;VMOD.clear();RES=null;loadVers();render()});on('prod',()=>{if(VERS.length)loadVers()});
   const ST_MAN=['Projeto','TRO','Monitoramento','Retrabalho'];
   // um único registro por segmento (vale o último salvo). Registros antigos em lista são reduzidos ao estado final.
   // um registro por segmento: status (st), equipe (eq), motivos (lista) e observação (txt)
@@ -4291,7 +4439,14 @@ const PROD=(function(){
               r.L=grp==='DRN'?(r.side==='C'?6:7):src.LANES.findIndex(l=>l.grp===grp&&l.side===r.side);
               if(r.L<0)add('erro','faixa','Sentido/faixa sem pista correspondente.');
               else if(b-a<0.5&&!semStatus)add('erro','km_igual','Trecho sem extensão nas estacas da base.');
-              else{const ov=new Map(),pe=new Map();for(const p of src.PANOS){if(p.L!==r.L)continue;const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,x=Math.min(b,pb)-Math.max(a,pa);if(x<=0)continue;const c=projCode(p,k);ov.set(c,(ov.get(c)||0)+x);if(!pe.has(c))pe.set(c,espProj(p,k))}
+              else{let ov=new Map(),pe=new Map();for(const p of src.PANOS){if(p.L!==r.L)continue;const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,x=Math.min(b,pb)-Math.max(a,pa);if(x<=0)continue;const c=projCode(p,k);ov.set(c,(ov.get(c)||0)+x);if(!pe.has(c))pe.set(c,espProj(p,k))}
+                {const dom0=[...ov].sort((x,y)=>y[1]-x[1])[0];r.projCur=dom0?{code:dom0[0],esp:pe.get(dom0[0])}:null}
+                // revisão válida na data da execução (data de corte); a atual é a base carregada
+                const vv=versAt(k,r.data);if(vv){r.rev=vv.rev||'';if(!vv.atual){const vm=VMOD.get(vv.id);
+                  if(vm){const ov2=new Map(),pe2=new Map();for(const p of vm.pan){if(p.L!==r.L)continue;const x=Math.min(b,p.pb)-Math.max(a,p.pa);if(x<=0)continue;ov2.set(p.code,(ov2.get(p.code)||0)+x);
+                      if(!pe2.has(p.code)){const m=String((src.Data.info(p.code)||{}).esp||'').match(/^([\d.,]+) cm$/);pe2.set(p.code,m?parseFloat(m[1].replace(',','.')):ESP_PAD[famPav(p.code)]??null)}}
+                    ov=ov2;pe=pe2;add('info','revisao',`Comparado com a revisão ${vv.rev||vv.arquivo} (data de corte ${brD(vv.corte)}), válida na data da execução.`)}
+                  else add('info','revisao_pend',`Revisão ${vv.rev||vv.arquivo} (válida na data) ainda não carregada neste aparelho: comparado com a base atual.`)}}
                 const len=Math.max(b-a,1e-6),tot=[...ov.values()].reduce((x,y)=>x+y,0);const dom=[...ov].sort((x,y)=>y[1]-x[1])[0];
                 r.proj=dom?{code:dom[0],pct:dom[1]/len,list:[...ov.keys()],esp:pe.get(dom[0])}:null;
                 if(!semStatus){r.ap=true;
@@ -4731,8 +4886,14 @@ const PROD=(function(){
     $('rmList').onclick=e=>{const b=e.target.closest('[data-rm]');if(b)rmDlg(b.dataset.rm)};$('rmXls').onclick=rmXls;
     $('rmTxt').onclick=async()=>{const t=rmResumo();try{if(navigator.share&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){await navigator.share({title:'RMPs pendentes',text:t});return}await navigator.clipboard.writeText(t);$('rmMsg').textContent='Resumo copiado. Cole no e-mail ou no WhatsApp.'}catch(e){$('rmMsg').textContent='Não foi possível copiar o resumo.'}}}
   Router.onInit('rmp',rmInit);on('page',p=>{if(p==='rmp')rmRender()});on('prod',()=>rmRender());
+  function info(r){const [q,u]=qtOf(r);const pj=x=>x?`${x.code}${x.esp!=null?' · '+fmt(x.esp,x.esp%1?1:0)+' cm':''}`:'—';const c=RMPC.get(r.id)||{},nf=Object.values(c.fotos||{}).reduce((s,a)=>s+(a||[]).length,0);
+    return {pista:val(r,'pista'),faixa:val(r,'faixa'),ini:val(r,'ini'),fim:val(r,'fim'),exec:solExec(r),proj:pj(r.proj&&{code:r.proj.code,esp:r.proj.esp}),projAtual:r.proj&&r.projCur&&r.projCur.code!==r.proj.code?pj(r.projCur):'',rev:r.rev||'',
+      ext:extOf(r),qt:u==='—'?'—':fmt(q,u==='und'?0:1)+' '+u,eq:eqOf(r),motivo:notaTxt(r),prim:r.prim?`${r.prim.fam}${r.prim.esp?' '+fmt(r.prim.esp*100,1)+' cm':''} em ${brD(r.prim.data)}`:'',
+      rmpSim:r.cls==='projeto'&&r.rmp.length>0,rmp:r.cls!=='projeto'?'não se aplica':r.rmp.length?`Sim — ${esc(rmpTxt(r))} · ${rmpOk(r)?'<b style="color:#1E7A4C">completo ✓</b>':'<b style="color:#C27A00">pendente</b>'}`:'Não',fotos:nf>0}}
+  async function fotosHtml(id){const c=RMPC.get(id)||{},f=c.fotos||{};const ids=[].concat(f.assinado||[],f.patologia||[],f.espessura||[]).slice(0,6);if(!ids.length)return '';
+    const ms=await Promise.all(ids.map(rmMedia));return ms.filter(Boolean).map(m=>`<img src="${m.data}" alt="Foto do RMP">`).join('')||'<small>fotos indisponíveis (sem internet?)</small>'}
   setTimeout(initWatch,1200);
-  return {rmpOk,rmpFalta,execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
+  return {info,fotosHtml,rmpOk,rmpFalta,execRecs,idx,has,resolve,importBuffer,check,W,meta:()=>META,seg:()=>SEG,stat:()=>STAT};
 })();
 window.PROD=PROD;
 
@@ -4745,7 +4906,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 23:22';
+  const CUR_VER='22/11/2026 23:32';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

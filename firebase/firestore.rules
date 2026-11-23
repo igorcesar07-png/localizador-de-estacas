@@ -63,6 +63,15 @@ service cloud.firestore {
 
     // Base do projeto BR-277 (R08 + estacas): só para usuários ativos com alguma página liberada
     // (o app usa esta base em todas as páginas, inclusive para abrir)
+    // Versões do projeto (unifilares) com data de corte: lê quem usa o app; só o administrador cadastra
+    match /base_versoes/{id} {
+      allow read: if isAdmin() || activeWithAccess();
+      allow write: if isAdmin();
+    }
+    match /base_versoes_dados/{id} {
+      allow read: if isAdmin() || activeWithAccess();
+      allow write: if isAdmin();
+    }
     match /base/r08 {
       allow read: if isAdmin() || activeWithAccess();
       allow write: if isAdmin();

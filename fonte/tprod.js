@@ -13,6 +13,9 @@ await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs=
   const rm=JSON.parse(localStorage.getItem('__rmp')||'{}'),rmM={},rsubs=[];const rkeep=()=>{try{localStorage.setItem('__rmp',JSON.stringify(rm))}catch(e){}};const rfire=()=>rsubs.forEach(cb=>cb(Object.values(rm)));
   window.RmpDB={subscribe:cb=>{rsubs.push(cb);setTimeout(()=>cb(Object.values(rm)),60);return ()=>{}},save:async r=>{rm[r.id]=Object.assign({},r,{atualizado_por:'teste@x',atualizado_em:Date.now()});rkeep();setTimeout(rfire,20)},
     saveMedia:async m=>{rmM[m.id]=m},getMedia:async id=>rmM[id]||null,can:true};
+  // versões do projeto (B4: R03 REV1 até 21/11/2026, R01 a partir de 22/11/2026)
+  const VL=[{id:'B4-r03',obra:'B4',rev:'R03 REV1',arquivo:'base_B4_R03_REV1.json',corte:'2026-01-01',atual:false},{id:'B4-r01',obra:'B4',rev:'R01',arquivo:'base-BR373-B4_R01.json',corte:'2026-11-22',atual:true}];
+  window.VersDB={subscribe:cb=>{setTimeout(()=>cb(VL),80);return ()=>{}},get:async id=>id==='B4-r03'?(await fetch('v_r03.json')).json():(await fetch('data_b4.json')).json()};
   // pasta simulada: o arquivo pode "mudar" (lastModified) e ficar "bloqueado"
   window.__FS={mod:Date.now()-3600e3,lock:false,buf:null,name:'Acompanhamento de produção REV 12.xlsb'};
   const fh={kind:'file',get name(){return __FS.name},getFile:async()=>{if(__FS.lock){const e=new Error('locked');e.name='NotReadableError';throw e}return new File([__FS.buf],__FS.name,{lastModified:__FS.mod})}};
@@ -90,6 +93,13 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.goto(`http://localhost:${PORT}/#producao`);await W(1500);await p.selectOption('#pdSev','all');await W(500);await p.fill('#pdList input[data-cf="ini"]','');
   const okMark=await p.evaluate(id=>{const t=[...document.querySelectorAll('#pdList [data-rmp]')].find(b=>b.dataset.rmp===id);return t?!!t.parentElement.querySelector('.rm-ok'):null},rid);
   const pend=await p.$$('#pdList .rm-pd');ok(okMark!==false&&pend.length>0,'Produção executada: ✓ verde no RMP completo e "!" nos pendentes')}
+// 5c) versões: RMP pela revisão válida na data; mapa com execução e comparação de revisões
+{await p.goto(`http://localhost:${PORT}/#producao`);await W(2500);const vr=await p.evaluate(()=>{const R=PROD.resolve().B4;return [R.filter(r=>r.iss.some(x=>x.cod==='revisao')).length,R.filter(r=>r.iss.some(x=>x.cod==='revisao_pend')).length,R.length]});
+  console.log('versões B4',vr);ok(vr[0]>0&&vr[1]===0,'B4: lançamentos antes do corte comparados com a revisão R03 REV1');
+  await p.goto(`http://localhost:${PORT}/#mapab4`);await W(3000);const ne=await p.evaluate(()=>window.__mxB4&&window.__mxB4.n());ok(ne>0,'mapa B4: panos executados desenhados ('+ne+')');
+  await p.evaluate(()=>window.__mxB4.setRev('B4-r03'));await W(2500);const nd=await p.evaluate(()=>[window.__mxB4.difs(),window.__mxB4.rev()]);console.log('difs',nd);ok(nd[1]>0,'mapa B4: revisão R03 REV1 exibida e diferenças listadas ('+nd[0]+')');
+  await p.screenshot({path:'/tmp/claude-0/mapa_rev.png'});
+  await p.goto(`http://localhost:${PORT}/#mapa`);await W(3000);const n2=await p.evaluate(()=>window.__mxB23&&window.__mxB23.n());ok(n2>0,'mapa BR-277: panos executados desenhados ('+n2+')')}
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados
 await p.goto(`http://localhost:${PORT}/#relatorios`);await W(2500);
 await W(1000);const rq=await p.textContent('#rQuick').catch(()=>'');console.log('relatórios:',rq);ok(/exec/.test(rq)&&!/ 0% exec/.test(rq),'Relatórios (BR-277) com % executado vindo da planilha');
