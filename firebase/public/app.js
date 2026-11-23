@@ -4426,6 +4426,9 @@ const PROD=(function(){
   const blkOf=r=>r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':r.blk==='B3'?'Bloco 03':'B2/B3 (sem estaca)';
   const kmOf=r=>r.kmRef!=null?r.kmRef:r.kmIni!=null?kmo(r.kmIni).km:null;
   const posTxt=r=>{const S=srcOf(r.k);return r.a!=null&&S?S.Data.nameAt(r.a)+' → '+S.Data.nameAt(r.b):''};
+  const ST_ED='Editados no app',ST_DIV='Diferentes da planilha base';
+  // motivo: TRO, monitoramento, retrabalho e projeto com RMP (ou quando já existe um motivo salvo)
+  const podeMotivo=r=>['TRO','Monitoramento','Retrabalho'].includes(stOf(r))||r.rmp.length>0;
   const notaTxt=r=>(r.notas||[]).filter(n=>n.motivo||n.txt).map(n=>(n.motivo?n.motivo+(n.txt?': ':''):'')+(n.txt||'')).join(' | ');
   const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
   // tabela de segmentos no mesmo formato da "Relação dos panos" (Relatórios): data primeiro, colunas separadas, filtro e ordenação por coluna
@@ -4442,17 +4445,18 @@ const PROD=(function(){
   const val=(r,k)=>k==='data'?r.data||'':k==='blk'?(r.k==='B4'?'B4':r.blk||'B2/B3'):k==='st'?stOf(r):k==='rmp'?(r.cls!=='projeto'?'Não se aplica':r.rmp.length?'Sim':'Não'):k==='pista'?(r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'—'):k==='faixa'?FXN(r):k==='sp'?solProj(r):k==='se'?solExec(r):
     k==='ini'?(r.kmIni!=null?est(r.kmIni):''):k==='fim'?(r.kmFim!=null?est(r.kmFim):''):k==='ext'?extOf(r):k==='larg'?(r.larg||0):k==='t'?(r.q&&r.q.t||0):k==='cls'?CLS[r.cls]+(r.extra?' ('+r.extra+')':''):k==='pend'?pendOf(r).map(x=>x.msg).join(' '):'';
   function colFilter(list){const fs=Object.entries(CF.f).filter(([,v])=>v!==''&&v!=null);if(!fs.length)return list;
-    return list.filter(r=>fs.every(([k,v])=>{const c=TCOL.find(x=>x[0]===k);if(!c)return true;const x=val(r,k);return c[2]==='c'?String(x)===v:c[2]==='d'?brD(x).includes(v)||x.includes(v):norm(String(x)).includes(norm(v))}))}
+    return list.filter(r=>fs.every(([k,v])=>{const c=TCOL.find(x=>x[0]===k);if(!c)return true;if(k==='st'&&v===ST_ED)return !!r.stMan;if(k==='st'&&v===ST_DIV)return !!r.stDiv;const x=val(r,k);return c[2]==='c'?String(x)===v:c[2]==='d'?brD(x).includes(v)||x.includes(v):norm(String(x)).includes(norm(v))}))}
   function sortList(list){const {k,d}=CF.sort;const c=TCOL.find(x=>x[0]===k);if(!c)return list;return list.slice().sort((a,b)=>{const x=val(a,k),y=val(b,k);return (c[2]==='n'?(x-y):String(x).localeCompare(String(y),'pt',{numeric:true}))*d||(a.kmIni||0)-(b.kmIni||0)})}
   function tableHtml(base,list){const opts=k=>[...new Set(base.map(r=>String(val(r,k))))].sort((a,b)=>a.localeCompare(b,'pt',{numeric:true}));
     const head=TCOL.map(([k,t,ty])=>`<th class="${ty==='n'?'n':''}"><button type="button" class="pd-sort" data-sort="${k}">${esc(t)}${CF.sort.k===k?(CF.sort.d>0?' ▲':' ▼'):''}</button></th>`).join('');
-    const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
+    const fil=TCOL.map(([k,t,ty])=>`<th>${ty==='c'?`<select data-cf="${k}" aria-label="Filtrar ${esc(t)}"><option value="">Todos</option>${k==='st'?[ST_ED,ST_DIV].map(o=>`<option${CF.f[k]===o?' selected':''}>${o}</option>`).join(''):''}${opts(k).map(o=>`<option${CF.f[k]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:ty==='n'?'':`<input data-cf="${k}" type="search" value="${esc(CF.f[k]||'')}" placeholder="filtrar" aria-label="Filtrar ${esc(t)}">`}</th>`).join('');
     const rows=list.slice(0,F.lim).map(r=>{const st=stOf(r),forte=r.iss.some(x=>x.sev==='alerta'&&RMPCOD.has(x.cod));const pend=pendOf(r);
       return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<select class="pd-st2 pd-sts" data-st="${esc(r.id)}" style="background-color:${ST_C[st]}" aria-label="Status da execução" title="${r.stDiv?'Alterado no app; na planilha base: '+esc(r.stAuto):'Alterar status'}">${ST_MAN.map(o=>`<option value="${o}"${st===o?' selected':''}>${o}${r.stDiv&&st===o?' ✎':''}</option>`).join('')}${ST_MAN.includes(st)?'':`<option value="" selected>${esc(st)}</option>`}</select>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
-        <td>${r.cls!=='projeto'?'<span class="pd-mod">não se aplica</span>':r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog" title="Ver o que mudou">Sim</button>`:'<span class="pd-rmp nao">Não</span>'}</td>
+        <td>${r.cls!=='projeto'?'<span class="pd-mod">não se aplica</span>':r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog" title="Ver o que mudou">Sim</button>`:'<span class="pd-rmp nao">Não</span>'}
+          ${notaTxt(r)?`<span class="pd-mot" title="${esc(notaTxt(r))}">${esc(notaTxt(r))}</span>`:''}${canNote()&&(podeMotivo(r)||notaTxt(r))?`<button type="button" class="pd-mini pd-mb" data-nota="${esc(r.id)}" title="${notaTxt(r)?'Editar o motivo':'Informar o motivo'}">${notaTxt(r)?'Editar motivo':'+ Motivo'}</button>`:''}</td>
         <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
         <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),extOf(r)%1?1:0)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${r.q&&r.q.t?fmt(r.q.t,1):'—'}</td>
-        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}${canNote()&&(r.rmp.length||r.cls==='retrabalho'||notaTxt(r))?`<button type="button" class="pd-mini${notaTxt(r)?' tem':''}" data-nota="${esc(r.id)}"${notaTxt(r)?` title="${esc(notaTxt(r))}"`:''}>Motivo${notaTxt(r)?' ✓':''}</button>`:''}</td></tr>`}).join('');
+        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}</td></tr>`}).join('');
     return `<table class="pd-t pd-tab"><thead><tr>${head}</tr><tr class="pd-fr">${fil}</tr></thead><tbody>${rows}</tbody></table>`}
   // Excel com os segmentos que têm pendências ou motivos, para análise caso a caso e correção na planilha base
   async function exportPend(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const R0=resolve().all;
@@ -4596,7 +4600,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 20:49';
+  const CUR_VER='22/11/2026 21:02';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
