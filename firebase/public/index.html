@@ -1286,7 +1286,7 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .pd-mini{margin-top:4px;min-height:32px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 12px var(--body);padding:0 10px;cursor:pointer}
 .pd-tab th{vertical-align:bottom}.pd-sort{border:0;background:none;font:700 12px var(--body);color:var(--muted);cursor:pointer;padding:0;text-align:left;white-space:nowrap}.pd-tab .pd-fr th{position:static;padding:4px}
 .pd-fr select,.pd-fr input{width:100%;min-width:72px;min-height:32px;border:1px solid var(--line);border-radius:7px;font:500 12px var(--body);padding:0 4px;background:var(--surface);color:var(--ink);box-sizing:border-box}
-.pd-mot{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:190px;margin-top:4px;font:12px/1.35 var(--body);color:var(--ink,#222);background:#F4F1E8;border-left:3px solid #9A7B2F;border-radius:4px;padding:3px 6px}.pd-mb{display:block;min-height:28px;font-size:12px;padding:2px 8px}.pd-sts{border:0;cursor:pointer;appearance:auto;color:#fff;padding:3px 4px;min-height:28px}.pd-sts option{background:#fff;color:#111}.pd-sts:focus-visible{outline:2px solid var(--ink,#111);outline-offset:2px}.pd-st2{display:inline-block;color:#fff;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;white-space:nowrap}.pd-rmp{display:inline-block;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;background:#FFF4D6;color:#7A5400}.pd-rmp.nao{background:#E3F1E8;color:#1E7A4C}.pd-rmp.forte{background:#C62828;color:#fff}
+.pd-rc{display:inline-flex;align-items:center;gap:5px}.pd-pen{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;cursor:pointer;padding:0;border:1.5px solid}.pd-pen.falta{color:#C62828;border-color:#C62828;background:#FDECEC}.pd-pen.ok{color:#1E7A4C;border-color:#1E7A4C;background:#E3F1E8}.pd-pen:focus-visible{outline:2px solid var(--ink,#111);outline-offset:2px}.pd-mot{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-width:190px;margin-top:4px;font:12px/1.35 var(--body);color:var(--ink,#222);background:#F4F1E8;border-left:3px solid #9A7B2F;border-radius:4px;padding:3px 6px}.pd-mb{display:block;min-height:28px;font-size:12px;padding:2px 8px}.pd-sts{border:0;cursor:pointer;appearance:auto;color:#fff;padding:3px 4px;min-height:28px}.pd-sts option{background:#fff;color:#111}.pd-sts:focus-visible{outline:2px solid var(--ink,#111);outline-offset:2px}.pd-st2{display:inline-block;color:#fff;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;white-space:nowrap}.pd-rmp{display:inline-block;font:700 11.5px var(--body);border-radius:6px;padding:2px 7px;background:#FFF4D6;color:#7A5400}.pd-rmp.nao{background:#E3F1E8;color:#1E7A4C}.pd-rmp.forte{background:#C62828;color:#fff}
 .pd-mod{display:block;font-size:11px;color:var(--muted);max-width:200px}.pd-mod.forte{color:#B42318;font-weight:700}.pd-is details summary{cursor:pointer;font-size:12px;color:#8A5300}
 .pd-pop{position:fixed;z-index:4500;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px 12px;font-size:13px;display:flex;flex-direction:column;gap:4px}.pd-pop[hidden]{display:none}
 .pd-pop ul{margin:4px 0;padding-left:18px}.pd-pop li.forte{color:#B42318;font-weight:700}.pd-pop small{color:var(--muted)}button.pd-rmp{border:0;cursor:pointer;min-height:28px}
@@ -1780,7 +1780,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#producao" data-page="producao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4z"/><path d="M8 13l2.5 2.5L16 10"/></svg><span>Produção executada<small>Importação da planilha de produção</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 22/11/2026 21:02 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 22/11/2026 21:23 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2451,10 +2451,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261123000201";</script>
-<script src="native.js?v=20261123000201"></script>
-<script src="firebase-config.js?v=20261123000201"></script>
-<script src="auth.js?v=20261123000201"></script>
+<script>window.APP_BUILD="20261123002331";</script>
+<script src="native.js?v=20261123002331"></script>
+<script src="firebase-config.js?v=20261123002331"></script>
+<script src="auth.js?v=20261123002331"></script>
 
 </body>
 </html>
