@@ -204,6 +204,8 @@ await t('RMP: só "ver" não grava',()=>assertFails(setDoc(doc(lp('rmver'),'rmp_
 await t('RMP: quem vê a Produção executada lê o controle',()=>assertSucceeds(getDoc(doc(lp('rmpv'),'rmp_controle','B23-abc'))));
 await t('RMP: foto é gravada e não pode ser apagada',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1'),{id:'rf1',reg:'B23-abc',cat:'assinado',tipo:'foto',mime:'image/jpeg',data:'data:image/jpeg;base64,AAAA',bytes:3,criado_em:1,criado_por:'rmreg@x.com'}));
   await assertFails(deleteDoc(doc(lp('rmreg'),'rmp_controle_midia','rf1')))});
+await t('RMP: data de corte só o administrador grava',()=>assertFails(setDoc(doc(lp('rmreg'),'rmp_config','app'),{corte:'2026-10-01'})));
+await t('RMP: quem vê o controle lê a data de corte',()=>assertSucceeds(getDoc(doc(lp('rmver'),'rmp_config','app'))));
 await t('RMP: quem registra RMP grava o motivo (producao_notas), mas não os dados da planilha',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'base','producao_notas'),{json:'{}'}));await assertFails(setDoc(doc(lp('rmreg'),'base','producao_b23'),{json:'{}'}))});
 // RDO de massa
 await env.withSecurityRulesDisabled(async c=>{const d=c.firestore();

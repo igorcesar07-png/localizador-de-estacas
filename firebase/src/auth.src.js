@@ -311,7 +311,10 @@ onAuthStateChanged(auth,async user=>{
         save:r=>track(setDoc(doc(db,C,r.id),{...r,atualizado_por:user.email,atualizado_em:Date.now()})),
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null},
-        can:isAdm||!!prm.create}}
+        // data de corte do controle de pendências: todos leem, só o administrador altera
+        cfg:async()=>{try{const s=await getDoc(doc(db,'rmp_config','app'));return s.exists()?s.data():{}}catch(e){return {}}},
+        setCfg:c=>isAdm?track(setDoc(doc(db,'rmp_config','app'),{corte:String(c.corte||''),by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
+        can:isAdm||!!prm.create,admin:isAdm}}
     // RDO de massa: envios do fim do dia (resumo + segmentos compactos) e o arquivo original, separados; nada é alterado depois de enviado
     const prd=window.ACL.perms.rdo||{};
     if(isAdm||prd.view||ppv.view){

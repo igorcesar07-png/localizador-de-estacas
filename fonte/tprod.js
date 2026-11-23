@@ -12,7 +12,7 @@ await ctx.addInitScript(()=>{window.__PROD_T={poll:1500,stable:2500};const docs=
   // controle de RMPs simulado (coleção e fotos em memória/localStorage)
   const rm=JSON.parse(localStorage.getItem('__rmp')||'{}'),rmM={},rsubs=[];const rkeep=()=>{try{localStorage.setItem('__rmp',JSON.stringify(rm))}catch(e){}};const rfire=()=>rsubs.forEach(cb=>cb(Object.values(rm)));
   window.RmpDB={subscribe:cb=>{rsubs.push(cb);setTimeout(()=>cb(Object.values(rm)),60);return ()=>{}},save:async r=>{rm[r.id]=Object.assign({},r,{atualizado_por:'teste@x',atualizado_em:Date.now()});rkeep();setTimeout(rfire,20)},
-    saveMedia:async m=>{rmM[m.id]=m},getMedia:async id=>rmM[id]||null,can:true};
+    saveMedia:async m=>{rmM[m.id]=m},getMedia:async id=>rmM[id]||null,can:true,admin:true,cfg:async()=>JSON.parse(localStorage.getItem('__rmcfg')||'{}'),setCfg:async c=>localStorage.setItem('__rmcfg',JSON.stringify(c))};
   // versões do projeto (B4: R03 REV1 até 21/11/2026, R01 a partir de 22/11/2026)
   const VL=[{id:'B4-r03',obra:'B4',rev:'R03 REV1',arquivo:'base_B4_R03_REV1.json',corte:'2026-01-01',atual:false},{id:'B4-r01',obra:'B4',rev:'R01',arquivo:'base-BR373-B4_R01.json',corte:'2026-11-22',atual:true}];
   window.VersDB={subscribe:cb=>{setTimeout(()=>cb(VL),80);return ()=>{}},get:async id=>id==='B4-r03'?(await fetch('v_r03.json')).json():(await fetch('data_b4.json')).json()};
@@ -104,6 +104,14 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.click(`#rmList [data-rm="${rid}"]`);await W(400);const ne0=await p.$$eval('#rmDlg [data-th="espessura"] .rm-img',a=>a.length);await p.click('#rmDlg [data-app="espessura"]');await W(600);
   await p.fill('#rmPkQ','999');await W(200);const npk=await p.$$eval('#rmPkG [data-pk]',a=>a.length);await p.click('#rmPkG [data-pk] >> nth=0');await p.click('#rmPkOk');await W(1500);
   const ne1=await p.$$eval('#rmDlg [data-th="espessura"] .rm-img',a=>a.length);ok(npk>=1&&ne1===ne0+1,'RMP: busca e adiciona foto salva na Foto georreferenciada ('+npk+' encontrada, '+ne0+'→'+ne1+')');await p.click('#rmDS');await W(600);
+  // data de corte do controle de pendências
+  const pend0=await p.$eval('#rmCards .pd-blk .pd-n div:nth-child(2) b',e=>+e.textContent);
+  await p.fill('#rmCorteD','2099-01-01');await p.click('#rmCorteS');await W(500);
+  const pend1=await p.$eval('#rmCards .pd-blk .pd-n div:nth-child(2) b',e=>+e.textContent);const pc=await p.$eval('#rmCards .pd-blk .pd-n div:nth-child(4) b',e=>+e.textContent).catch(()=>-1);
+  await p.selectOption('#rmSit','pre');await W(300);const npre=await p.$$eval('#rmList tbody tr',a=>a.length);
+  ok(pend0>0&&pend1===0&&pc===pend0&&npre===pend0&&/a partir de/.test(await p.textContent('#rmCorte')),'RMP: data de corte tira os anteriores das pendências ('+pend0+'→'+pend1+', antes do corte '+pc+')');
+  p.once('dialog',dg=>dg.accept());await p.click('#rmCorteX');await W(500);await p.selectOption('#rmSit','all');await W(300);
+  ok((await p.$eval('#rmCards .pd-blk .pd-n div:nth-child(2) b',e=>+e.textContent))===pend0,'RMP: remover a data de corte volta as pendências');
   ok(await p.inputValue('#rmSit')==='all','RMP: padrão mostra todos (pendentes e completos)');
   await p.selectOption('#rmSit','pend');await p.fill('#rmQ','zzz');await W(500);await p.click('#rmClr');await W(300);ok(await p.inputValue('#rmSit')==='all'&&await p.inputValue('#rmQ')==='','RMP: botão Limpar filtros');
   await p.selectOption('#rmList select[data-rcf="sit"]','Completo');await W(400);const nc=await p.$$eval('#rmList tbody tr',a=>a.length);await p.click('#rmList [data-rsort="data"]');await W(300);
