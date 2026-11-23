@@ -625,15 +625,16 @@ const Extra=(function(){
   C.onAdd=()=>{const d=L.DomUtil.create('div','mx-ctl');d.innerHTML=`<details${store.get('mxOpen',false)?' open':''}><summary>Camadas</summary>
       <label class="mx-ck"><input type="checkbox" class="mx-ex"${ST.exec?' checked':''}> Executado (produção)</label>
       <div class="mx-leg">${[['Projeto',CC.projeto],['TRO',CC.TRO],['Monitoramento',CC.Monitoramento],['Retrabalho',CC.retrabalho]].map(([t,c])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')}</div>
-      <label class="mx-lb">Revisão do projeto<select class="mx-rev"><option value="">Atual (base do app)</option></select></label>
+      <fieldset class="mx-revs"><legend>Revisões do projeto</legend><div class="mx-rev"></div></fieldset>
       <label class="mx-ck"><input type="checkbox" class="mx-df" checked> Destacar o que mudou</label><div class="mx-dif"></div></details>`;
     L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);
     d.querySelector('details').addEventListener('toggle',e=>store.set('mxOpen',e.target.open));
     d.querySelector('.mx-ex').onchange=e=>{ST.exec=e.target.checked;store.set('mxExec',ST.exec);drawExec()};
-    d.querySelector('.mx-rev').onchange=e=>setRev(e.target.value);d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
+    d.querySelector('.mx-rev').onchange=e=>{if(e.target.name==='mxrev')setRev(e.target.value)};d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
   C.addTo(map);
   function fillRev(){const s=map.getContainer().querySelector('.mx-rev');if(!s)return;const l=VL.filter(v=>v.obra===ORK).sort((a,b)=>String(b.corte).localeCompare(String(a.corte)));
-    s.innerHTML='<option value="">Atual (base do app)</option>'+l.map(v=>`<option value="${esc(v.id)}"${ST.rev===v.id?' selected':''}>${esc(v.rev||v.arquivo)}${v.corte?' · corte '+brD(v.corte):''}${v.atual?' (atual)':''}</option>`).join('')}
+    const at=l.find(v=>v.atual);const nm='mxrev';
+    s.innerHTML=`<label class="mx-ck"><input type="radio" name="${nm}" value=""${ST.rev?'':' checked'}> Base atual do app${at?` <small>(${esc(at.rev||at.arquivo)})</small>`:''}</label>`+l.filter(v=>!v.atual).map(v=>`<label class="mx-ck"><input type="radio" name="${nm}" value="${esc(v.id)}"${ST.rev===v.id?' checked':''}> ${esc(v.rev||v.arquivo)}${v.corte?` <small>corte ${brD(v.corte)}</small>`:''}</label>`).join('')+(l.length?'':'<small>Nenhuma versão cadastrada (Administração › Base).</small>')}
   if(window.VersDB)window.VersDB.subscribe(l=>{if(!l)return;VL=l;fillRev()});
   map.on('zoomend',()=>{drawExec();if(VM)drawRev()});(typeof __G!=='undefined'?__G.on:on)('prod',drawExec);
   const api={drawExec,setRev,n:()=>exL.getLayers().length,difs:()=>DIFS.length,rev:()=>revL.getLayers().length};window['__mx'+OBK]=api;return api})();
@@ -1161,15 +1162,16 @@ const Extra=(function(){
   C.onAdd=()=>{const d=L.DomUtil.create('div','mx-ctl');d.innerHTML=`<details${store.get('mxOpen',false)?' open':''}><summary>Camadas</summary>
       <label class="mx-ck"><input type="checkbox" class="mx-ex"${ST.exec?' checked':''}> Executado (produção)</label>
       <div class="mx-leg">${[['Projeto',CC.projeto],['TRO',CC.TRO],['Monitoramento',CC.Monitoramento],['Retrabalho',CC.retrabalho]].map(([t,c])=>`<span><i style="background:${c}"></i>${t}</span>`).join('')}</div>
-      <label class="mx-lb">Revisão do projeto<select class="mx-rev"><option value="">Atual (base do app)</option></select></label>
+      <fieldset class="mx-revs"><legend>Revisões do projeto</legend><div class="mx-rev"></div></fieldset>
       <label class="mx-ck"><input type="checkbox" class="mx-df" checked> Destacar o que mudou</label><div class="mx-dif"></div></details>`;
     L.DomEvent.disableClickPropagation(d);L.DomEvent.disableScrollPropagation(d);
     d.querySelector('details').addEventListener('toggle',e=>store.set('mxOpen',e.target.open));
     d.querySelector('.mx-ex').onchange=e=>{ST.exec=e.target.checked;store.set('mxExec',ST.exec);drawExec()};
-    d.querySelector('.mx-rev').onchange=e=>setRev(e.target.value);d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
+    d.querySelector('.mx-rev').onchange=e=>{if(e.target.name==='mxrev')setRev(e.target.value)};d.querySelector('.mx-df').onchange=e=>{ST.dif=e.target.checked;drawRev()};return d};
   C.addTo(map);
   function fillRev(){const s=map.getContainer().querySelector('.mx-rev');if(!s)return;const l=VL.filter(v=>v.obra===ORK).sort((a,b)=>String(b.corte).localeCompare(String(a.corte)));
-    s.innerHTML='<option value="">Atual (base do app)</option>'+l.map(v=>`<option value="${esc(v.id)}"${ST.rev===v.id?' selected':''}>${esc(v.rev||v.arquivo)}${v.corte?' · corte '+brD(v.corte):''}${v.atual?' (atual)':''}</option>`).join('')}
+    const at=l.find(v=>v.atual);const nm='mxrev';
+    s.innerHTML=`<label class="mx-ck"><input type="radio" name="${nm}" value=""${ST.rev?'':' checked'}> Base atual do app${at?` <small>(${esc(at.rev||at.arquivo)})</small>`:''}</label>`+l.filter(v=>!v.atual).map(v=>`<label class="mx-ck"><input type="radio" name="${nm}" value="${esc(v.id)}"${ST.rev===v.id?' checked':''}> ${esc(v.rev||v.arquivo)}${v.corte?` <small>corte ${brD(v.corte)}</small>`:''}</label>`).join('')+(l.length?'':'<small>Nenhuma versão cadastrada (Administração › Base).</small>')}
   if(window.VersDB)window.VersDB.subscribe(l=>{if(!l)return;VL=l;fillRev()});
   map.on('zoomend',()=>{drawExec();if(VM)drawRev()});(typeof __G!=='undefined'?__G.on:on)('prod',drawExec);
   const api={drawExec,setRev,n:()=>exL.getLayers().length,difs:()=>DIFS.length,rev:()=>revL.getLayers().length};window['__mx'+OBK]=api;return api})();
@@ -5272,7 +5274,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 10:41';
+  const CUR_VER='23/11/2026 11:16';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

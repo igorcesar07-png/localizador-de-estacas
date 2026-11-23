@@ -60,7 +60,7 @@ const CSS=`
 .adm-row:hover{background:var(--surface-2)}.adm-row b{display:block;font-size:15px}.adm-row small{color:var(--muted);font-size:12.5px;display:block;overflow:hidden;text-overflow:ellipsis}
 .adm-st{font:700 11px var(--body);border-radius:6px;padding:3px 8px;color:#fff;white-space:nowrap}.st-on{background:#1E7A4C}.st-off{background:#7A2B2B}.st-wait{background:#B07A00}.st-inv{background:#1A73E8}.st-adm{background:#111}
 .adm-btn{min-height:44px;border-radius:12px;border:0;background:var(--ink);color:var(--surface);font:700 14.5px var(--body);padding:0 16px;cursor:pointer}.adm-btn.sec{background:var(--surface);color:var(--ink);border:1px solid var(--line)}.adm-btn.red{background:#C8101A;color:#fff}.adm-btn.yel{background:#F2B705;color:#111}
-.adm-vt{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.adm-vt th,.adm-vt td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:middle}.adm-vt small{display:block;color:var(--muted)}.adm-vt input{min-height:34px;width:100%;box-sizing:border-box}.adm-vrev{max-width:120px}.adm-ck{display:flex;align-items:center;gap:6px}.adm-ck input{width:auto}.adm-vf{align-items:end}.adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+.adm-btn.adm-del{margin-left:6px;background:transparent;color:#B42318;border:1px solid #F3B4B4}.adm-vt{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.adm-vt th,.adm-vt td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:middle}.adm-vt small{display:block;color:var(--muted)}.adm-vt input{min-height:34px;width:100%;box-sizing:border-box}.adm-vrev{max-width:120px}.adm-ck{display:flex;align-items:center;gap:6px}.adm-ck input{width:auto}.adm-vf{align-items:end}.adm-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
 .adm-form label{display:flex;flex-direction:column;gap:4px;font:600 13px var(--body);color:var(--muted)}
 .adm-form input,.adm-form select{min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 16px var(--body);padding:0 10px}
 .adm-mx{width:100%;border-collapse:collapse;font-size:14px}.adm-mx th{font:700 12px var(--body);color:var(--muted);text-align:center;padding:6px 4px;border-bottom:1px solid var(--line)}.adm-mx th:first-child{text-align:left}
@@ -426,9 +426,9 @@ async function versoesHtml(){let vs=[];try{vs=(await getDocs(collection(db,'base
     return `<div class="adm-card"><h2>Versões do projeto (unifilares) — ${OBRA_N[o]}</h2>
       <p class="adm-note">A data de corte define a partir de quando cada revisão vale para o RMP: um lançamento usa a revisão com a maior data de corte até a data da execução. A versão "atual" é a base que o app usa no mapa e na Calculadora.</p>
       <div class="tscroll"><table class="adm-vt"><thead><tr><th>Arquivo</th><th>Revisão</th><th>Data de corte</th><th>Carregada</th><th>Situação</th></tr></thead><tbody>
-      ${l.map(v=>`<tr><td>${esc(v.arquivo||'')}<small>${esc(v.rows||'')} estacas${v.panos?' · '+esc(v.panos)+' panos':''}</small></td><td><input class="adm-vrev" data-vrev="${esc(v.id)}" value="${esc(v.rev||'')}" maxlength="40" aria-label="Revisão"></td>
+      ${l.map(v=>`<tr><td>${esc(v.arquivo||'')}<small>${esc(v.rows||'')} estacas · <span data-vpanos="${esc(v.id)}">${v.panos?esc(v.panos)+' panos':'contando panos…'}</span></small></td><td><input class="adm-vrev" data-vrev="${esc(v.id)}" value="${esc(v.rev||'')}" maxlength="40" aria-label="Revisão"></td>
         <td><input type="date" data-vcorte="${esc(v.id)}" value="${esc(v.corte||'')}" aria-label="Data de corte"></td><td><small>${esc(v.carregado||'')}<br>${esc(v.por||'')}</small></td>
-        <td>${v.atual?'<b class="adm-st st-ok">Atual</b>':`<button type="button" class="adm-btn" data-vatual="${esc(v.id)}">Tornar atual</button>`}</td></tr>`).join('')||'<tr><td colspan="5"><small>Nenhuma versão cadastrada. Cadastre a base atual e as revisões anteriores com a data de corte de cada uma.</small></td></tr>'}
+        <td>${v.atual?'<b class="adm-st st-ok">Atual</b>':`<button type="button" class="adm-btn" data-vatual="${esc(v.id)}">Tornar atual</button><button type="button" class="adm-btn adm-del" data-vdel="${esc(v.id)}" title="Excluir esta versão">Excluir</button>`}</td></tr>`).join('')||'<tr><td colspan="5"><small>Nenhuma versão cadastrada. Cadastre a base atual e as revisões anteriores com a data de corte de cada uma.</small></td></tr>'}
       </tbody></table></div>
       <div class="adm-form adm-vf"><label>Arquivo da versão (.json)<input type="file" id="vFile${o}" accept=".json,application/json" style="padding-top:10px"></label>
         <label>Revisão<input id="vRev${o}" maxlength="40" placeholder="ex.: R01"></label><label>Data de corte<input type="date" id="vCorte${o}"></label>
@@ -440,7 +440,16 @@ async function setAtual(id,obra){const vs=(await getDocs(collection(db,'base_ver
   const ver=new Date().toLocaleString('pt-BR'),b=writeBatch(db);const isB4=obra==='B4';
   b.set(doc(db,'base',isB4?'b4':'r08'),{json:txt,version:ver,rows:d.rows.length,...(isB4?{panos:d.src.panos.length}:{}),updatedAt:serverTimestamp(),by:auth.currentUser.email,versao:id});
   for(const v of vs)b.update(doc(db,'base_versoes',v.id),{atual:v.id===id});await b.commit()}
+// panos de uma base: trechos contínuos da mesma solução na mesma faixa e no mesmo km (BR-277 conta pelas linhas; B4 pelo src.panos)
+function contaPanos(d){if(d&&d.src&&Array.isArray(d.src.panos))return d.src.panos.length;const R=d.rows||[];let n=0;
+  for(let L=0;L<6;L++){let i=0;while(i<R.length){const c=R[i][6]&&R[i][6][L];if(!c){i++;continue}let j=i;while(j+1<R.length&&R[j+1][6][L]===c&&R[j+1][5]===R[i][5])j++;n++;i=j+1}}return n}
 function bindVersoes(B,root){
+  // versões sem a contagem de panos (cadastradas antes): conta e grava
+  B.querySelectorAll('[data-vpanos]').forEach(async el=>{if(!/contando/.test(el.textContent))return;const id=el.dataset.vpanos;
+    try{const s=await getDoc(doc(db,'base_versoes_dados',id));if(!s.exists()){el.textContent='sem dados';return}const n=contaPanos(JSON.parse(s.data().json));el.textContent=n+' panos';await updateDoc(doc(db,'base_versoes',id),{panos:n})}catch(x){el.textContent='panos: —'}});
+  B.querySelectorAll('[data-vdel]').forEach(b=>b.onclick=async()=>{const id=b.dataset.vdel;const tr=b.closest('tr');const nome=tr?tr.cells[0].firstChild.textContent:id;
+    if(!confirm(`Excluir a versão "${nome}"?\n\nEla sai da lista, dos mapas e da comparação do RMP. A base atual do app não muda.`))return;
+    try{b.disabled=true;const bt=writeBatch(db);bt.delete(doc(db,'base_versoes',id));bt.delete(doc(db,'base_versoes_dados',id));await bt.commit();msgA('Versão excluída.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad');b.disabled=false}});
   B.querySelectorAll('[data-vcorte]').forEach(i=>i.onchange=async()=>{try{await updateDoc(doc(db,'base_versoes',i.dataset.vcorte),{corte:i.value});msgA('Data de corte salva.','ok')}catch(x){msgA(errTxt(x),'bad')}});
   B.querySelectorAll('[data-vrev]').forEach(i=>i.onchange=async()=>{try{await updateDoc(doc(db,'base_versoes',i.dataset.vrev),{rev:i.value.trim()});msgA('Revisão salva.','ok')}catch(x){msgA(errTxt(x),'bad')}});
   B.querySelectorAll('[data-vatual]').forEach(b=>b.onclick=async()=>{const id=b.dataset.vatual,obra=id.startsWith('B4-')?'B4':'277';if(!confirm('Tornar esta versão a base atual do app ('+OBRA_N[obra]+')? Os usuários recebem a nova base ao abrir o app.'))return;
@@ -448,12 +457,12 @@ function bindVersoes(B,root){
   B.querySelectorAll('[data-vadd]').forEach(b=>b.onclick=async()=>{const o=b.dataset.vadd,f=$('vFile'+o).files[0],rev=$('vRev'+o).value.trim(),corte=$('vCorte'+o).value;
     if(!f||!rev||!corte){msgA('Informe o arquivo, a revisão e a data de corte.','bad');return}
     try{b.disabled=true;const txt=await f.text(),d=checkVersao(txt,o);const id=vId(o==='B4'?'B4':'277',rev),bt=writeBatch(db);
-      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:f.name,rev,corte,atual:false,rows:d.rows.length,...(d.src&&d.src.panos?{panos:d.src.panos.length}:{}),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
+      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:f.name,rev,corte,atual:false,rows:d.rows.length,panos:contaPanos(d),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
       await bt.commit();if($('vAtual'+o).checked)await setAtual(id,o);msgA('Versão cadastrada.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad');b.disabled=false}});
   B.querySelectorAll('[data-vcur]').forEach(b=>b.onclick=async()=>{const o=b.dataset.vcur;const corte=prompt('Data de corte da base atual (AAAA-MM-DD):','');if(!corte)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(corte)){msgA('Data no formato AAAA-MM-DD.','bad');return}
     const rev=prompt('Revisão da base atual (ex.: R01):','')||'atual';
     try{const s=await getDoc(doc(db,'base',o==='B4'?'b4':'r08'));if(!s.exists())throw new Error('Sem base atual no servidor.');const txt=s.data().json,d=JSON.parse(txt);const id=vId(o==='B4'?'B4':'277',rev),bt=writeBatch(db);
-      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:(o==='B4'?'base-BR373-B4':'data')+'.json (base atual de '+(s.data().version||'')+')',rev,corte,atual:true,rows:d.rows.length,...(d.src&&d.src.panos?{panos:d.src.panos.length}:{}),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
+      bt.set(doc(db,'base_versoes_dados',id),{json:txt});bt.set(doc(db,'base_versoes',id),{id,obra:o,arquivo:(o==='B4'?'base-BR373-B4':'data')+'.json (base atual de '+(s.data().version||'')+')',rev,corte,atual:true,rows:d.rows.length,panos:contaPanos(d),carregado:new Date().toLocaleString('pt-BR'),por:auth.currentUser.email});
       await bt.commit();msgA('Base atual cadastrada como versão.','ok');baseTab(B,root)}catch(x){msgA(errTxt(x),'bad')}})}
 async function baseTab(B,root){const info={};
   for(const id of ['r08','b4']){try{const s=await getDoc(doc(db,'base',id));if(s.exists()){const d=s.data();info[id]=`Versão carregada em ${esc(d.version)} · ${esc(d.rows||'')} estacas${d.panos?` · ${esc(d.panos)} panos`:''} · por ${esc(d.by||'')}`}}catch(e){info[id]=esc(errTxt(e))}}
