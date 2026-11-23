@@ -99,6 +99,7 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   const np=await p.$$eval('#rmDlg [data-th="patologia"] .rm-img',a=>a.length);ok(await p.evaluate(()=>location.hash)==='#rmp'&&np===2,'RMP: foto da câmera volta com marca-d\'água para o RMP ('+np+')');
   p.once('dialog',dg=>dg.accept());await p.click('#rmDlg [data-th="patologia"] [data-rmx] >> nth=0');await W(400);ok((await p.$$eval('#rmDlg [data-th="patologia"] .rm-img',a=>a.length))===1,'RMP: excluir foto');await p.click('#rmDS');await W(600);
   ok(await p.inputValue('#rmSit')==='all','RMP: padrão mostra todos (pendentes e completos)');
+  await p.selectOption('#rmSit','pend');await p.fill('#rmQ','zzz');await W(500);await p.click('#rmClr');await W(300);ok(await p.inputValue('#rmSit')==='all'&&await p.inputValue('#rmQ')==='','RMP: botão Limpar filtros');
   await p.selectOption('#rmList select[data-rcf="sit"]','Completo');await W(400);const nc=await p.$$eval('#rmList tbody tr',a=>a.length);await p.click('#rmList [data-rsort="data"]');await W(300);
   ok(nc>=1&&(await p.$$eval('#rmList tbody tr',a=>a.length))===nc&&/Data ▲/.test(await p.textContent('#rmList thead')),'RMP: filtro e ordenação nas colunas');await p.click('#rmList [data-rclr]');await W(300);
   await p.selectOption('#rmSit','ok');await W(400);ok((await p.$$eval('#rmList tbody tr',a=>a.length))>=1,'filtro de completos');

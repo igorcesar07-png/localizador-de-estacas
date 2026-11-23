@@ -37,7 +37,14 @@ await p.selectOption('#lpFFaixa','F2');await wait(200);ok((await p.$$('#lpItems 
 ok(/Faixa 2/.test(await p.textContent('#lpItems'))&&/Panela/.test(await p.textContent('#lpItems')),'item mostra pista, faixa e patologia');
 await p.screenshot({path:D+'lp_lista.png'});
 // complementar: corrigir faixa e observação
-await p.click('#lpItems [data-ed]');await wait(300);await p.selectOption('#lpEdFaixa','F1');await p.fill('#lpEdObs','panela de 40 cm');await p.click('#lpEdSave');await wait(300);
+await p.click('#lpItems [data-ed]');await wait(300);
+// câmera da Foto georreferenciada a partir do registro
+{await p.click('#lpEdCam');await wait(1200);const h1=await p.evaluate(()=>[location.hash,document.getElementById('lpEd').hidden,!!document.getElementById('fAlvo')&&!document.getElementById('fAlvo').hidden]);
+ const big=Buffer.from(await p.evaluate(async()=>{const c=document.createElement('canvas');c.width=640;c.height=480;c.getContext('2d').fillRect(0,0,640,480);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',0.9));return Array.from(new Uint8Array(await b.arrayBuffer()))}));
+ await p.setInputFiles('#fFile',{name:'c.jpg',mimeType:'image/jpeg',buffer:big});for(let i=0;i<20&&(await p.evaluate(()=>location.hash))==='#foto';i++)await wait(500);await wait(800);
+ const h2=await p.evaluate(()=>[location.hash,document.getElementById('lpEd').hidden,document.getElementById('lpEdMsg').textContent]);console.log('cam',h1,h2);
+ ok(h1[0]==='#foto'&&h1[1]&&h1[2]&&h2[0]==='#levpat'&&!h2[1]&&/câmera adicionada/.test(h2[2]),'levantamento de patologias: câmera pela Foto georreferenciada')}
+await p.selectOption('#lpEdFaixa','F1');await p.fill('#lpEdObs','panela de 40 cm');await p.click('#lpEdSave');await wait(300);
 R=await p.evaluate(()=>window.__LEVPAT.rec());const c=R.find(x=>x.obs==='panela de 40 cm');ok(c&&c.corrigido_de&&/\/F[12]$/.test(c.corrigido_de),'complemento grava observação e a correção ('+(c&&c.corrigido_de)+')');
 // CSV
 const [dl]=await Promise.all([p.waitForEvent('download'),p.click('#lpCsv')]);const txt=fs.readFileSync(await dl.path(),'utf8');const h=txt.split('\r\n')[0];

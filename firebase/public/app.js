@@ -2538,9 +2538,13 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     finally{busy=false;$('fBusy').hidden=true}}
   function fotoAlvoUi(){let el=$('fAlvo');const A=window.__fotoAlvo;if(!A){if(el)el.hidden=true;return}
     if(!el){el=document.createElement('div');el.id='fAlvo';el.className='falvo';$('fStage').parentElement.appendChild(el)}
-    el.innerHTML=`<b>Foto para o RMP</b><span>${A.rotulo}. Toque na imagem para fotografar.</span><button type="button" id="fAlvoX">Voltar ao RMP</button>`;el.hidden=false;
+    el.innerHTML=`<b>Foto para o registro</b><span>${A.rotulo}. Toque na imagem para fotografar.</span><button type="button" id="fAlvoX">Voltar sem foto</button>`;el.hidden=false;
     $('fAlvoX').onclick=()=>{const a=window.__fotoAlvo;window.__fotoAlvo=null;fotoAlvoUi();a&&a.cancel&&a.cancel()}}
-  on('page',p=>{if(p==='foto')setTimeout(fotoAlvoUi,50);else if(window.__fotoAlvo&&p!=='foto'){window.__fotoAlvo=null}});
+  on('page',p=>{if(p==='foto')setTimeout(fotoAlvoUi,50);else if(window.__fotoAlvo&&p!=='foto'){const a=window.__fotoAlvo;window.__fotoAlvo=null;a.abort&&a.abort()}});
+  // API única: qualquer página que precise de foto (Controle de RMPs, Levantamentos de bota-espera e de patologias) usa esta tela,
+  // com o mesmo GPS, estaca, layout e marcas-d'água; o que mudar aqui vale para todas
+  window.FotoGeo={tirar:({rotulo,voltar,esconder})=>new Promise((res,rej)=>{const hid=esconder&&!esconder.hidden?esconder:null;if(hid)hid.hidden=true;const show=()=>{if(hid)setTimeout(()=>{hid.hidden=false},350)};
+    window.__fotoAlvo={rotulo:rotulo||'Foto',cb:async b=>{location.hash=voltar;show();res(b)},cancel:()=>{location.hash=voltar;show();rej(new Error('cancelado'))},abort:()=>{show();rej(new Error('cancelado'))}};location.hash='#foto'})};
   function shoot(){if(!can('foto','create')&&!window.__fotoAlvo){msg('warn','Sem permissão.',' Seu usuário pode ver a câmera, mas não gravar fotos.');return}const now=Date.now();if(busy||now-lastShot<700||!video.videoWidth||!stream)return;lastShot=now;
     const date=new Date(),W=video.videoWidth,H=video.videoHeight;const frame=document.createElement('canvas');frame.width=W;frame.height=H;frame.getContext('2d').drawImage(video,0,0,W,H);
     const fl=$('fFlash');fl.classList.add('go');requestAnimationFrame(()=>requestAnimationFrame(()=>fl.classList.remove('go')));
@@ -3748,6 +3752,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
       return out}finally{URL.revokeObjectURL(u)}}
   async function addMedia(tipo,mime,data){if(data.length>950000)throw new Error('arquivo grande demais');const m={id:uuid(),reg:ED.id,tipo,mime,data,bytes:Math.round(data.length*0.75),criado_em:Date.now(),criado_por:me().email};
     const p=DB.saveMedia(m);if(p&&p.catch)p.catch(e=>toast('Não foi possível gravar o arquivo no servidor.','bad'));MEDIA.set(m.id,m);(tipo==='foto'?ED.fotos:ED.audios).push(m.id);edMedia();return m}
+  $('lvEdCam').onclick=()=>window.FotoGeo&&FotoGeo.tirar({rotulo:'Foto do registro de bota-espera',voltar:'#levbe',esconder:$('lvEd')}).then(async b=>{try{$('lvEdMsg').textContent='Comprimindo foto…';await addMedia('foto','image/jpeg',await comprImg(b));$('lvEdMsg').textContent='Foto da câmera adicionada. Toque em Salvar.'}catch(x){$('lvEdMsg').textContent='Não foi possível usar a foto: '+(x.message||x)}}).catch(()=>{});
   $('lvEdFile').onchange=async e=>{const fs=[...(e.target.files||[])];e.target.value='';for(const f of fs){try{$('lvEdMsg').textContent='Comprimindo foto…';await addMedia('foto','image/jpeg',await comprImg(f));$('lvEdMsg').textContent='Foto adicionada. Toque em Salvar.'}catch(x){$('lvEdMsg').textContent='Não foi possível usar a foto: '+(x.message||x)}}};
   $('lvEdRec').onclick=async()=>{if(REC){REC.stop();return}try{const st=await navigator.mediaDevices.getUserMedia({audio:true});
       const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
@@ -4052,6 +4057,7 @@ function utmToLL(E,N,zone,south){const a=6378137,f=1/298.257222101,k0=0.9996,e2=
       return out}finally{URL.revokeObjectURL(u)}}
   async function addMedia(tipo,mime,data){if(data.length>950000)throw new Error('arquivo grande demais');const m={id:uuid(),reg:ED.id,tipo,mime,data,bytes:Math.round(data.length*0.75),criado_em:Date.now(),criado_por:me().email};
     const p=DB.saveMedia(m);if(p&&p.catch)p.catch(e=>toast('Não foi possível gravar o arquivo no servidor.','bad'));MEDIA.set(m.id,m);(tipo==='foto'?ED.fotos:ED.audios).push(m.id);edMedia();return m}
+  $('lpEdCam').onclick=()=>window.FotoGeo&&FotoGeo.tirar({rotulo:'Foto da ocorrência de patologia',voltar:'#levpat',esconder:$('lpEd')}).then(async b=>{try{$('lpEdMsg').textContent='Comprimindo foto…';await addMedia('foto','image/jpeg',await comprImg(b));$('lpEdMsg').textContent='Foto da câmera adicionada. Toque em Salvar.'}catch(x){$('lpEdMsg').textContent='Não foi possível usar a foto: '+(x.message||x)}}).catch(()=>{});
   $('lpEdFile').onchange=async e=>{const fs=[...(e.target.files||[])];e.target.value='';for(const f of fs){try{$('lpEdMsg').textContent='Comprimindo foto…';await addMedia('foto','image/jpeg',await comprImg(f));$('lpEdMsg').textContent='Foto adicionada. Toque em Salvar.'}catch(x){$('lpEdMsg').textContent='Não foi possível usar a foto: '+(x.message||x)}}};
   $('lpEdRec').onclick=async()=>{if(REC){REC.stop();return}try{const st=await navigator.mediaDevices.getUserMedia({audio:true});
       const mt=['audio/mp4','audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||'';
@@ -5229,7 +5235,7 @@ const PROD=(function(){
       ${c.atualizado_em?`<p class="pd-note">Último registro: ${esc(dt(c.atualizado_em))}${c.atualizado_por?' · '+esc(c.atualizado_por):''}</p>`:''}
       <fieldset class="fld pd-mots" id="rmMot"><legend>Motivo do RMP (um ou mais)</legend>${[...MOTIVOS,...(n0.motivos||[]).filter(m=>!MOTIVOS.includes(m))].map(m=>`<label><input type="checkbox" value="${esc(m)}"${(n0.motivos||[]).includes(m)?' checked':''}${w?'':' disabled'}> ${esc(m)}</label>`).join('')}</fieldset>
       <div class="fld"><label for="rmObs">Observação</label><textarea id="rmObs" rows="2" maxlength="600"${w?'':' disabled'}>${esc(n0.txt||'')}</textarea></div>
-      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="rm-fb"><button type="button" class="pd-b rm-add" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada">📷 Câmera</button><label class="pd-b rm-add">🖼 Galeria<input type="file" accept="image/*" data-cat="${k}" hidden multiple></label></span>`:''}</div>
+      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="ph-btns"><button type="button" class="ph-btn" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-1.8A1.5 1.5 0 0 1 9.75 3.5h4.5a1.5 1.5 0 0 1 1.25.7L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span>Câmera</span></button><label class="ph-btn" title="Escolher uma foto já salva no aparelho"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.5 1.5 0 0 0-2.1 0L6 19.5"/></svg><span>Galeria</span><input type="file" accept="image/*" data-cat="${k}" hidden multiple></label></span>`:''}</div>
         ${k==='patologia'?`<div class="rm-pats">${PATS.map(p=>`<label><input type="checkbox" value="${esc(p)}"${D.patologias.includes(p)?' checked':''}${w?'':' disabled'}> ${esc(p)}</label>`).join('')}</div>`:''}<div class="rm-th" data-th="${k}"></div></div>`).join('')}
       <p class="pd-note" id="rmDE" aria-live="polite"></p>
       <div class="pd-acts"><button type="button" class="pd-b" id="rmDC">${w?'Cancelar':'Fechar'}</button>${w?'<button type="button" class="pd-b pri" id="rmDS">Salvar</button>':''}</div></div>`;
@@ -5247,12 +5253,10 @@ const PROD=(function(){
     if(DR){$('rmMot').querySelectorAll('input').forEach(x=>x.checked=DR.mot.includes(x.value));$('rmObs').value=DR.txt;$('rmDE').textContent=DR.msg||''}
     d.onclick=async e=>{if(e.target===d){close();return}
       const x=e.target.closest('[data-rmx]');if(x){if(!confirm('Excluir esta foto do RMP?'))return;const k=x.dataset.rmk;D.fotos[k]=D.fotos[k].filter(i=>i!==x.dataset.rmx);$('rmDE').textContent='Foto excluída. Toque em Salvar.';thumbs();return}
-      const cam=e.target.closest('[data-cam]');if(cam){const k=cam.dataset.cam;keep();
-        window.__fotoAlvo={rotulo:RFOTO.find(f=>f[0]===k)[1],cb:async blob=>{const data=await comprFoto(blob);if(data.length>950000)throw new Error('foto grande demais');
-          const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now()};await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);
-          const dr=RMDRAFT[id]||{D,mot:[],txt:''};dr.D.fotos[k].push(m.id);dr.msg='Foto da câmera adicionada. Toque em Salvar.';RMDRAFT[id]=dr;location.hash='#rmp';setTimeout(()=>rmDlg(id),400)},
-          cancel:()=>{location.hash='#rmp';setTimeout(()=>rmDlg(id),400)}};
-        d.hidden=true;location.hash='#foto';return}};
+      const cam=e.target.closest('[data-cam]');if(cam){const k=cam.dataset.cam;
+        window.FotoGeo.tirar({rotulo:RFOTO.find(f=>f[0]===k)[1],voltar:'#rmp',esconder:d}).then(async blob=>{try{$('rmDE').textContent='Comprimindo foto…';const data=await comprFoto(blob);if(data.length>950000)throw new Error('foto grande demais');
+          const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now()};await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);D.fotos[k].push(m.id);$('rmDE').textContent='Foto da câmera adicionada. Toque em Salvar.';thumbs()}
+          catch(x){$('rmDE').textContent='Não foi possível adicionar a foto: '+(x.message||x)}}).catch(()=>{});return}};
     d.addEventListener('click',async e=>{const b=e.target.closest('[data-big]');if(!b)return;const m=await rmMedia(b.dataset.big);if(!m)return;
       let v=$('rmView');if(!v){v=document.createElement('div');v.id='rmView';v.className='pd-dlg rm-view';document.body.appendChild(v)}v.innerHTML=`<img src="${m.data}" alt="Foto do RMP"><button type="button" class="pd-b" id="rmVC">Fechar</button>`;v.hidden=false;v.onclick=()=>v.hidden=true});
     if(w)$('rmDS').onclick=async()=>{const mot=[...$('rmMot').querySelectorAll('input:checked')].map(x=>x.value),txt=$('rmObs').value.trim();D.patologias=[...d.querySelectorAll('.rm-pats input:checked')].map(x=>x.value);
@@ -5283,6 +5287,7 @@ const PROD=(function(){
       if(e.target.closest('[data-rclr]')){RCF.f={};saveRCF();rmRender()}};
     $('rmList').addEventListener('change',e=>{const t=e.target.closest('[data-rcf]');if(!t||t.tagName!=='SELECT')return;RCF.f[t.dataset.rcf]=t.value;saveRCF();rmRender()});
     let rq;$('rmList').addEventListener('input',e=>{const t=e.target.closest('input[data-rcf]');if(!t)return;clearTimeout(rq);rq=setTimeout(()=>{RCF.f[t.dataset.rcf]=t.value;saveRCF();const k=t.dataset.rcf,pos=t.selectionStart;rmRender();const n=$('rmList').querySelector(`input[data-rcf="${k}"]`);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}},350)});$('rmXls').onclick=rmXls;
+    $('rmClr').onclick=()=>{Object.assign(RMF,{blk:'ALL',sit:'all',falta:'',q:''});saveRMF();RCF.f={};RCF.s=null;saveRCF();$('rmBlk').value='ALL';$('rmSit').value='all';$('rmFalta').value='';$('rmQ').value='';rmRender()};
     $('rmTxt').onclick=async()=>{const t=rmResumo();try{if(navigator.share&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){await navigator.share({title:'RMPs pendentes',text:t});return}await navigator.clipboard.writeText(t);$('rmMsg').textContent='Resumo copiado. Cole no e-mail ou no WhatsApp.'}catch(e){$('rmMsg').textContent='Não foi possível copiar o resumo.'}}}
   Router.onInit('rmp',rmInit);on('page',p=>{if(p==='rmp')rmRender()});on('prod',()=>rmRender());
   function info(r){const [q,u]=qtOf(r);const pj=x=>x?`${x.code}${x.esp!=null?' · '+fmt(x.esp,x.esp%1?1:0)+' cm':''}`:'—';const c=RMPC.get(r.id)||{},nf=Object.values(c.fotos||{}).reduce((s,a)=>s+(a||[]).length,0);
@@ -5305,7 +5310,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 11:26';
+  const CUR_VER='23/11/2026 11:50';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
