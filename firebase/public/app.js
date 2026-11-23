@@ -4233,12 +4233,28 @@ const PROD=(function(){
     return {err:r.err}}
   const ST_MAN=['Projeto','TRO','Monitoramento','Retrabalho'];
   // um único registro por segmento (vale o último salvo). Registros antigos em lista são reduzidos ao estado final.
-  function notaUm(v){if(!v)return [];if(!Array.isArray(v))return [v];if(!v.length)return [];const o=Object.assign({},v[v.length-1]);
-    const st=v.slice().reverse().find(n=>n.st),mt=v.slice().reverse().find(n=>n.motivo||n.txt);o.st=st?st.st:'';o.motivo=mt?mt.motivo||'':'';o.txt=mt?mt.txt||'':'';return [o]}
+  // um registro por segmento: status (st), equipe (eq), motivos (lista) e observação (txt)
+  function notaFix(o){o=Object.assign({},o);if(!Array.isArray(o.motivos))o.motivos=o.motivo?[o.motivo]:[];delete o.motivo;return o}
+  function notaUm(v){if(!v)return [];if(!Array.isArray(v))return [notaFix(v)];if(!v.length)return [];const o=Object.assign({},v[v.length-1]);
+    const st=v.slice().reverse().find(n=>n.st),mt=v.slice().reverse().find(n=>n.motivo||n.txt);o.st=st?st.st:'';o.motivo=mt?mt.motivo||'':'';o.txt=mt?mt.txt||'':'';return [notaFix(o)]}
+  // equipe executora: ligação pela coluna Equipe da planilha (confirmada em 22/11/2026); pode ser trocada por segmento
+  const EQUIPES=['Equipe de Dreno Sandro','Equipe Pavimentação Johonatan','Equipe Pavimentação Raimundo'];
+  const eqPlan=e=>{const n=norm(e);return /drenag/.test(n)?EQUIPES[0]:/paviment\w* ?1$/.test(n)?EQUIPES[1]:/paviment\w* ?2$/.test(n)?EQUIPES[2]:''};
+  const EQ_CURTO=e=>String(e).replace(/^Equipe de Dreno /,'Dreno ').replace(/^Equipe Pavimentação /,'Pav. ');
+  const eqOf=r=>(r.notas&&r.notas[0]&&r.notas[0].eq)||eqPlan(r.equipe)||r.equipe||'—';
   function resolve(){if(RES)return RES;const out={B23:[],B4:[],all:[]};
     for(const k of ['B23','B4']){const S=SEG[k];if(!S)continue;const src=srcOf(k);
       for(const s of S.segs){const r=Object.assign({},s,{k,iss:(s.is||[]).map(x=>({sev:x[0],cod:x[1],msg:x[2]})),ap:false,L:-1,a:null,b:null,blk:k==='B4'?'B4':null,motivo:'',rmp:[],kmRef:null,proj:null,notas:notaUm(NOTAS[s.id])});
         const add=(sev,cod,msg)=>r.iss.push({sev,cod,msg});
+        // solução executada pela espessura/profundidade (regras de 22/11/2026; valem também para o RMP)
+        r.famLanc=r.fam;
+        if(['FF','FE','FS'].includes(r.fam)&&r.esp>0){const cm=Math.round(r.esp*1000)/10,nf=cm<6?'FS':cm<8?'FF':'FE';
+          if(nf!==r.fam){r.fam=nf;add('info','reclass',`Lançado como ${r.famLanc}; pela espessura (${fmt(cm,1)} cm) é ${nf} (FS abaixo de 6 cm, FF de 6 a 7,9 cm, FE a partir de 8 cm).`)}}
+        if((r.fam==='DR'||r.fam==='DP')&&r.esp>0){const cm=Math.round(r.esp*1000)/10;
+          if(cm<=7){r.fam='DRCB';add('info','dreno_cbuq',`Dreno de ${fmt(cm,1)} cm: é o CBUQ sobre o dreno, já incluído na composição. Não conta como dreno executado.`)}
+          else if(cm<=60){if(r.fam!=='DR')add('info','reclass',`Lançado como ${r.famLanc}; pela profundidade (${fmt(cm,1)} cm) é DR (até 60 cm).`);r.fam='DR'}
+          else if(cm>=140){if(r.fam!=='DP')add('info','reclass',`Lançado como ${r.famLanc}; pela profundidade (${fmt(cm,1)} cm) é DP (a partir de 140 cm).`);r.fam='DP'}
+          else{r.fam='DRN?';add('atencao','dreno_prof',`Profundidade de ${fmt(cm,1)} cm, entre 60 e 140 cm: sem regra para DR ou DP. Não classificado.`)}}
         // classificação: extra-projeto (TRO, ramos/alças, marginais) e retrabalho
         const txt=norm([r.serial,r.obs,r.faixa,r.local].join(' '));
         // monitoramento: "MON"/"MON-nn"/"monitoramento" no Serial ou na OBS (a planilha ainda não marca nenhum lançamento assim)
@@ -4253,7 +4269,7 @@ const PROD=(function(){
           // aviso só enquanto o app e a planilha base divergem; some quando a planilha for corrigida
           if(ms.st!==r.stAuto){r.stDiv=true;add('atencao','st_divergente',`Status alterado no app para ${ms.st}; na planilha base está como ${r.stAuto}. Corrigir na planilha base.`)}}}
         if(r.extra)add('info','extra',`Execução extra-projeto (${r.extra}): fora do quantitativo e do status do projeto.`);
-        const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.extra?'extra-projeto ('+r.extra+')':r.pontual?'item pontual de drenagem':r.fam==='SAIDA'?'saída de dreno':'';
+        const semStatus=r.fam==='SH'?'sinalização (sem segmento no projeto)':r.fam==='DRCB'?'CBUQ sobre o dreno (não conta como dreno)':r.fam==='DRN?'?'dreno sem classificação (60 a 140 cm)':r.extra?'extra-projeto ('+r.extra+')':r.pontual?'item pontual de drenagem':r.fam==='SAIDA'?'saída de dreno':'';
         if(!src){add('erro','base','Base da BR-373 B4 não carregada neste aparelho: não foi possível localizar as estacas.')}
         else if(r.kmIni!=null&&r.kmFim!=null&&r.fam!=='SH'){
           const A=posOf(k,r.kmIni,r.data,src),B=posOf(k,r.kmFim,r.data,src);
@@ -4309,9 +4325,16 @@ const PROD=(function(){
     const byL=new Map();for(const r of out.all){if(!r.ap)continue;const key=r.k+'|'+r.L;(byL.get(key)||byL.set(key,[]).get(key)).push(r)}
     for(const arr of byL.values()){arr.sort((x,y)=>x.a-y.a);for(let i=0;i<arr.length;i++)for(let j=i+1;j<arr.length&&arr[j].a<arr[i].b-1;j++){const x=arr[i],y=arr[j];if(Math.min(x.b,y.b)-y.a<=1)continue;
       if(x.fam===y.fam&&x.data===y.data&&x.equipe===y.equipe)continue;
-      const rt=x.retrab||y.retrab?' (retrabalho)':'';
-      x.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${y.lin.join(', ')} (${brD(y.data)}, ${y.fam})${rt}.`});
-      y.iss.push({sev:'atencao',cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${x.lin.join(', ')} (${brD(x.data)}, ${x.fam})${rt}.`})}}
+      const rt=x.retrab||y.retrab?' (retrabalho)':'';const sv=x.retrab||y.retrab?'info':'atencao';
+      x.iss.push({sev:sv,cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${y.lin.join(', ')} (${brD(y.data)}, ${y.fam})${rt}.`});
+      y.iss.push({sev:sv,cod:'sobreposicao',msg:`Sobrepõe o lançamento das linhas ${x.lin.join(', ')} (${brD(x.data)}, ${x.fam})${rt}.`})}}
+    // retrabalho: trabalho sobre segmento já executado; guarda a 1ª execução (data e solução) da mesma faixa e estacas
+    for(const arr of byL.values())for(const r of arr){if(!r.retrab)continue;
+      const prev=arr.filter(x=>x!==r&&!x.retrab&&(!x.data||!r.data||x.data<=r.data)&&Math.min(x.b,r.b)-Math.max(x.a,r.a)>1).sort((x,y)=>String(x.data).localeCompare(String(y.data)));
+      if(prev.length){const x=prev[0];r.prim={data:x.data,fam:x.fam,esp:x.esp,lin:x.lin,ini:x.kmIni,fim:x.kmFim};
+        r.iss.push({sev:'info',cod:'retrab_1a',msg:`Retrabalho sobre a execução de ${brD(x.data)} (linhas ${x.lin.join(', ')}): ${x.fam}${x.esp?' '+fmt(x.esp*100,1)+' cm':''}, ${est(x.kmIni)} → ${est(x.kmFim)}.`})}
+      else r.iss.push({sev:'atencao',cod:'retrab_sem_1a',msg:'Retrabalho sem execução anterior encontrada na mesma faixa e estacas.'})}
+    for(const r of out.all)if(r.retrab&&!r.ap&&!r.prim)r.iss.push({sev:'atencao',cod:'retrab_sem_1a',msg:'Retrabalho sem execução anterior encontrada na mesma faixa e estacas.'});
     RES=out;return out}
   // registros de execução no formato da página Relatórios (só os segmentos aplicados)
   function execRecs(rod){const R0=resolve()[rod==='B4'?'B4':'B23'];return R0.filter(r=>r.ap&&r.cls!=='extra').map(r=>({L:r.L,a:r.a,b:r.b,st:'exec',dateExec:r.data,dateProg:null,
@@ -4413,6 +4436,39 @@ const PROD=(function(){
     for(const r of list){if(r.ap)o.ap++;if(r.ap&&r.a!=null){o.len[r.fam]=(o.len[r.fam]||0)+(r.b-r.a)}o.t[r.cls]+=tOf(r);if(r.fam==='SAIDA'&&r.q&&r.q.un)o.un+=r.q.un;
       const pd=pendOf(r);if(pd.some(x=>x.sev==='erro'))o.err++;else if(pd.length)o.att++;if(r.rmp.length)o.rmp++;if(r.iss.some(x=>x.sev==='alerta'&&RMPCOD.has(x.cod)))o.al++;
       if(r.data){if(!o.d0||r.data<o.d0)o.d0=r.data;if(!o.d1||r.data>o.d1)o.d1=r.data}}return o}
+  /* ---------- resumo por contrato (B2 + B3 e B4) ---------- */
+  // km-faixa: só a parte executada dentro das estacas previstas no projeto (cobertura dos panos);
+  // toneladas e metros executados: tudo o que foi lançado na planilha (consome saldo de contrato), qualquer classificação.
+  const FAM_RES=['FE','FF','FS','REC','RP','DR','DP'];
+  const famRes=c=>/^DR/.test(c)?'DR':/^DP/.test(c)?'DP':famPav(c);
+  function contratoSum(k){const src=srcOf(k),R0=resolve()[k];if(!src)return null;const RK=k==='B4'?'B4':'277';
+    const c=store.get('calc',null)||{};const num=v=>{if(v===''||v==null)return null;const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:null};
+    const W={F1:num((c.w||{}).F1)??3.6,F23:num((c.w||{}).F23)??3.6,AC:num((c.w||{}).AC)??2.5},E=Object.assign({FF:6,FE:10,FS:3},c.esp||{}),dens=num(c.dens)??2.528,rw=((c.bySrc&&c.bySrc[RK])||(RK==='277'?c:{})).rowW||{};
+    const by=new Map();for(const r of execRecs(k)){(by.get(r.L)||by.set(r.L,[]).get(r.L)).push([r.a,r.b])}const U=new Map([...by].map(([L,v])=>[L,unite(v)]));
+    const f={};for(const x of FAM_RES)f[x]={n:0,nEx:0,len:0,ex:0,t:0,tEx:0,tEst:0,mEx:0};
+    for(const p of src.PANOS){const code=projCode(p,k),fm=famRes(code);if(!fm||!f[fm])continue;const o=f[fm];const pa=src.ODO[p.i0],pb=src.ODO[p.i1]+20,len=pb-pa;
+      const ex=U.has(p.L)?clip(U.get(p.L),pa,pb):0;o.n++;if(ex>=len-0.5)o.nEx++;o.len+=len;o.ex+=ex;
+      if(['FE','FF','FS'].includes(fm)){const L0=src.LANES[p.L];const us=k==='B4'&&p.src?p.src:null;
+        const w=num(rw[p.tag])??(us&&us.largura_media_m>0?us.largura_media_m:W[L0.grp]);const e=(us&&window.__B4_CBUQ_CM?window.__B4_CBUQ_CM(us):null)??num(E[code])??num(E[fm]);
+        if(w>0&&e>0){const t=len*w*e/100*dens;o.t+=t;o.tEst+=t*ex/len}}}
+    for(const r of R0){const fm=r.fam==='GAP'?'FS':r.fam;if(!f[fm])continue;if(['FE','FF','FS'].includes(fm))f[fm].tEx+=r.q&&r.q.t||0;else if(fm==='DR'||fm==='DP')f[fm].mEx+=r.q&&r.q.m!=null?r.q.m:extOf(r)}
+    const tot=x=>FAM_RES.reduce((s,k2)=>s+f[k2][x],0);
+    const rmpL=R0.filter(r=>r.rmp.length&&r.cls==='projeto');
+    return {f,nPrev:tot('n'),nEx:tot('nEx'),nLanc:R0.length,rmp:rmpL.length,rmpPend:rmpL.filter(r=>!notaTxt(r)).length,retrab:R0.filter(r=>r.cls==='retrabalho').length,
+      troMon:R0.filter(r=>r.extra==='TRO'||r.extra==='Monitoramento').length,erro:R0.filter(r=>hasSev(r,'erro')).length,att:R0.filter(r=>!hasSev(r,'erro')&&pendOf(r).length).length,
+      d0:R0.reduce((m,r)=>r.data&&(!m||r.data<m)?r.data:m,null),d1:R0.reduce((m,r)=>r.data&&(!m||r.data>m)?r.data:m,null)}}
+  const pct=(a,b)=>b>0?fmt(a/b*100,1)+'%':'—';
+  function contratoHtml(k,t){const s=contratoSum(k);if(!s)return `<div class="pd-blk"><h3>${t}</h3><small>Base do projeto não carregada neste aparelho.</small></div>`;const f=s.f;
+    const row=(fm,u)=>{const o=f[fm];if(!o.n&&!o.tEx&&!o.mEx)return '';
+      const km=`<td class="n">${fmt(o.len/1000,3)}</td><td class="n">${fmt(o.ex/1000,3)}</td><td class="n"><b>${pct(o.ex,o.len)}</b></td>`;
+      const q=u==='t'?`<td class="n">${fmt(o.t,1)}</td><td class="n">${fmt(o.tEx,1)}</td><td class="n"><b>${pct(o.tEx,o.t)}</b></td>`:u==='m'?`<td class="n">${fmt(o.len,1)}</td><td class="n">${fmt(o.mEx,1)}</td><td class="n"><b>${pct(o.mEx,o.len)}</b></td>`:'<td class="n">—</td><td class="n">—</td><td class="n">—</td>';
+      return `<tr><th>${fm}<small>${esc(FAMN[fm]||(fm==='REC'?'Reciclagem':fm==='RP'?'Reciclagem profunda':''))}</small></th><td class="n">${o.n}</td><td class="n">${o.nEx}</td>${km}${q}</tr>`};
+    return `<div class="pd-blk pd-ctr"><h3>${t}</h3>
+      <div class="pd-n"><div><b>${fmt(s.nPrev)}</b><span>segmentos previstos (panos)</span></div><div><b>${fmt(s.nEx)}</b><span>segmentos executados</span></div><div><b class="${s.rmpPend?'warn':''}">${s.rmpPend}</b><span>RMPs pendentes de motivo${s.rmp?` (de ${s.rmp})`:''}</span></div><div><b>${s.retrab}</b><span>retrabalho</span></div><div><b>${s.troMon}</b><span>TRO ou monitoramento</span></div><div><b class="${s.erro?'bad':''}">${s.erro}</b><span>com erro</span></div></div>
+      <div class="tscroll"><table class="pd-t pd-ct"><thead><tr><th rowspan="2">Solução</th><th colspan="2">Segmentos</th><th colspan="3">km-faixa (nas estacas do projeto)</th><th colspan="3">Quantidade (consumo de contrato)</th></tr>
+        <tr><th>prev.</th><th>exec.</th><th>prev.</th><th>exec.</th><th>%</th><th>prev.</th><th>exec.</th><th>%</th></tr></thead>
+        <tbody>${['FE','FF','FS'].map(x=>row(x,'t')).join('')}${['REC','RP'].map(x=>row(x,'')).join('')}${['DR','DP'].map(x=>row(x,'m')).join('')}</tbody></table></div>
+      <small>Fresagens em toneladas de CBUQ; drenos em metros. km-faixa executado: só a parte executada dentro dos panos previstos. Quantidade executada: tudo o que foi lançado (inclui outra solução, RMP, retrabalho, TRO e monitoramento), por isso os dois percentuais podem ser diferentes. ${s.d0?`Lançamentos de ${brD(s.d0)} a ${brD(s.d1)}.`:''}</small></div>`}
   function statusBox(){const st=W.dir||W.state!=='off'?W:null;const sh=STAT||{};
     const chk=Math.max(W.checkedAt||0,sh.at||0);const state=st?W.state:(sh.state||'off');const msg=st?W.msg:(sh.msg||'');
     const lab={off:'Monitoramento automático desligado neste aparelho',ok:W.dir||!st?'Monitorando':'Importação concluída',wait:'Aguardando gravação',import:'Importando',erro:'Atenção',perm:'Monitoramento pausado'}[state]||state;
@@ -4429,21 +4485,24 @@ const PROD=(function(){
   const ST_ED='Editados no app',ST_DIV='Diferentes da planilha base';
   // motivo: TRO, monitoramento, retrabalho e projeto com RMP (ou quando já existe um motivo salvo)
   const podeMotivo=r=>['TRO','Monitoramento','Retrabalho'].includes(stOf(r))||r.rmp.length>0;
-  const notaTxt=r=>(r.notas||[]).filter(n=>n.motivo||n.txt).map(n=>(n.motivo?n.motivo+(n.txt?': ':''):'')+(n.txt||'')).join(' | ');
+  const notaTxt=r=>(r.notas||[]).filter(n=>(n.motivos&&n.motivos.length)||n.txt).map(n=>((n.motivos||[]).join(', ')+((n.motivos||[]).length&&n.txt?': ':''))+(n.txt||'')).join(' | ');
   const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
   // tabela de segmentos no mesmo formato da "Relação dos panos" (Relatórios): data primeiro, colunas separadas, filtro e ordenação por coluna
   const CF=Object.assign({sort:{k:'data',d:1},f:{}},store.get('pdCols',{}));const saveCF=()=>store.set('pdCols',{sort:CF.sort,f:CF.f});
-  const FXN=r=>r.fam==='DR'||r.fam==='DP'||r.fam==='SAIDA'?'Dreno':/^(fx|faixa) ?1$/.test(norm(r.faixa))?'Faixa 1':/^(fx|faixa) ?(2|3)$/.test(norm(r.faixa))?'Faixa 2/3':/acost/.test(norm(r.faixa))?'Acostamento':(r.faixa||'—');
+  const FXN=r=>/^(fx|faixa) ?1$/.test(norm(r.faixa))?'Faixa 1':/^(fx|faixa) ?(2|3)$/.test(norm(r.faixa))?'Faixa 2/3':/acost/.test(norm(r.faixa))?'Acostamento':(r.faixa||'—');
   // status: tudo na planilha foi executado; a coluna diz a que se refere a execução
   const stOf=r=>r.extra?r.extra:r.retrab?'Retrabalho':'Projeto';
   const ST_C={'Projeto':'#1E7A4C','TRO':'#5B3FB0','Monitoramento':'#0E7C86','Retrabalho':'#9A4A00','Ramo/alça':'#7A5AC8','Marginal':'#7A5AC8'};
   const extOf=r=>r.pontual?(r.comp||0):r.kmIni!=null&&r.kmFim!=null?Math.abs(r.kmFim-r.kmIni):0;
-  const solProj=r=>r.proj?`${r.proj.code}${r.proj.esp!=null?' · '+fmt(r.proj.esp,r.proj.esp%1?1:0)+' cm':''}`:'—';
-  const solExec=r=>`${r.fam||'?'}${r.esp?' · '+fmt(r.esp*100,r.esp*1000%10?1:0)+' cm':''}`;
+  const solProj=r=>r.prim?`1ª exec. ${r.prim.fam}${r.prim.esp?' · '+fmt(r.prim.esp*100,1)+' cm':''} (${brD(r.prim.data)})`:r.proj?`${r.proj.code}${r.proj.esp!=null?' · '+fmt(r.proj.esp,r.proj.esp%1?1:0)+' cm':''}`:'—';
+  const FAMX={DRCB:'CBUQ do dreno','DRN?':'Dreno s/ classif.'};
+  const solExec=r=>`${FAMX[r.fam]||r.fam||'?'}${r.esp?' · '+fmt(r.esp*100,1)+' cm':''}`;
+  // quantidade: fresagem = CBUQ (ton); dreno longitudinal = comprimento (m); saída de dreno = 1 (und)
+  const qtOf=r=>['FF','FE','FS','GAP'].includes(r.fam)?[r.q&&r.q.t||0,'ton']:r.fam==='DR'||r.fam==='DP'?[r.q&&r.q.m!=null?r.q.m:extOf(r),'m']:r.fam==='SAIDA'?[r.q&&r.q.un||1,'und']:r.fam==='DRCB'?[0,'—']:[r.q&&r.q.t||r.q&&r.q.m||0,r.q&&r.q.t?'ton':r.q&&r.q.m?'m':'—'];
   const rmpTxt=r=>r.rmp.map(x=>RMPN[x]).join('; ');
-  const TCOL=[['data','Data','d'],['blk','Bloco','c'],['st','Status','c'],['rmp','RMP','c'],['pista','Pista','c'],['faixa','Faixa','c'],['sp','Solução de projeto','c'],['se','Solução executada','c'],['ini','Est. inicial','t'],['fim','Est. final','t'],['ext','Extensão (m)','n'],['larg','Largura (m)','n'],['t','CBUQ (t)','n'],['cls','Classificação','c'],['pend','Pendências','t']];
+  const TCOL=[['data','Data','d'],['blk','Bloco','c'],['st','Classificação','c'],['rmp','RMP','c'],['eq','Equipe','c'],['pista','Pista','c'],['faixa','Faixa','c'],['sp','Solução de projeto','c'],['se','Solução executada','c'],['ini','Est. inicial','t'],['fim','Est. final','t'],['ext','Extensão (m)','n'],['larg','Largura (m)','n'],['qt','Quantidade','n'],['un','Unidade','c'],['pend','Pendências','t']];
   const val=(r,k)=>k==='data'?r.data||'':k==='blk'?(r.k==='B4'?'B4':r.blk||'B2/B3'):k==='st'?stOf(r):k==='rmp'?(r.cls!=='projeto'?'Não se aplica':r.rmp.length?'Sim':'Não'):k==='pista'?(r.side==='C'?'Crescente':r.side==='D'?'Decrescente':'—'):k==='faixa'?FXN(r):k==='sp'?solProj(r):k==='se'?solExec(r):
-    k==='ini'?(r.kmIni!=null?est(r.kmIni):''):k==='fim'?(r.kmFim!=null?est(r.kmFim):''):k==='ext'?extOf(r):k==='larg'?(r.larg||0):k==='t'?(r.q&&r.q.t||0):k==='cls'?CLS[r.cls]+(r.extra?' ('+r.extra+')':''):k==='pend'?pendOf(r).map(x=>x.msg).join(' '):'';
+    k==='ini'?(r.kmIni!=null?est(r.kmIni):''):k==='fim'?(r.kmFim!=null?est(r.kmFim):''):k==='ext'?extOf(r):k==='larg'?(r.larg||0):k==='t'?(r.q&&r.q.t||0):k==='qt'?qtOf(r)[0]:k==='un'?qtOf(r)[1]:k==='eq'?eqOf(r):k==='cls'?CLS[r.cls]+(r.extra?' ('+r.extra+')':''):k==='pend'?pendOf(r).map(x=>x.msg).join(' '):'';
   function colFilter(list){const fs=Object.entries(CF.f).filter(([,v])=>v!==''&&v!=null);if(!fs.length)return list;
     return list.filter(r=>fs.every(([k,v])=>{const c=TCOL.find(x=>x[0]===k);if(!c)return true;if(k==='st'&&v===ST_ED)return !!r.stMan;if(k==='st'&&v===ST_DIV)return !!r.stDiv;const x=val(r,k);return c[2]==='c'?String(x)===v:c[2]==='d'?brD(x).includes(v)||x.includes(v):norm(String(x)).includes(norm(v))}))}
   function sortList(list){const {k,d}=CF.sort;const c=TCOL.find(x=>x[0]===k);if(!c)return list;return list.slice().sort((a,b)=>{const x=val(a,k),y=val(b,k);return (c[2]==='n'?(x-y):String(x).localeCompare(String(y),'pt',{numeric:true}))*d||(a.kmIni||0)-(b.kmIni||0)})}
@@ -4454,9 +4513,9 @@ const PROD=(function(){
       return `<tr class="${hasSev(r,'erro')?'erro':''}"><td class="n">${brD(r.data)}</td><td>${r.k==='B4'?'B4':esc(r.blk||'B2/B3')}</td><td>${canNote()?`<select class="pd-st2 pd-sts" data-st="${esc(r.id)}" style="background-color:${ST_C[st]}" aria-label="Status da execução" title="${r.stDiv?'Alterado no app; na planilha base: '+esc(r.stAuto):'Alterar status'}">${ST_MAN.map(o=>`<option value="${o}"${st===o?' selected':''}>${o}${r.stDiv&&st===o?' ✎':''}</option>`).join('')}${ST_MAN.includes(st)?'':`<option value="" selected>${esc(st)}</option>`}</select>`:`<span class="pd-st2" style="background:${ST_C[st]}">${st}${r.stDiv?' ✎':''}</span>`}</td>
         <td><span class="pd-rc">${(()=>{const mt=notaTxt(r),tt=mt?' title="Motivo: '+esc(mt)+'"':'';
             return r.cls!=='projeto'?`<span class="pd-mod"${tt}>não se aplica</span>`:r.rmp.length?`<button type="button" class="pd-rmp${forte?' forte':''}" data-rmp="${esc(r.id)}" aria-haspopup="dialog"${mt?tt:' title="Ver o que mudou"'}>Sim</button>`:`<span class="pd-rmp nao"${tt}>Não</span>`})()}${canNote()&&(podeMotivo(r)||notaTxt(r))?`<button type="button" class="pd-pen ${notaTxt(r)?'ok':'falta'}" data-nota="${esc(r.id)}" aria-label="${notaTxt(r)?'Editar o motivo':'Informar o motivo'}" title="${notaTxt(r)?'Motivo: '+esc(notaTxt(r)):'Sem motivo: clique para informar'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>`:''}</span></td>
-        <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td>
-        <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),extOf(r)%1?1:0)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${r.q&&r.q.t?fmt(r.q.t,1):'—'}</td>
-        <td>${esc(val(r,'cls'))}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}</td></tr>`}).join('');
+        <td>${canNote()?`<select class="pd-eqs" data-eq="${esc(r.id)}" aria-label="Equipe executora" title="${esc(eqOf(r))}">${EQUIPES.includes(eqOf(r))?'':`<option value="" selected>${esc(eqOf(r))}</option>`}${EQUIPES.map(o=>`<option value="${o}"${eqOf(r)===o?' selected':''}>${EQ_CURTO(o)}</option>`).join('')}</select>`:esc(EQ_CURTO(eqOf(r)))}</td>
+        <td>${val(r,'pista')}</td><td>${esc(val(r,'faixa'))}</td><td${r.prim?' class="pd-prim" title="Retrabalho: solução da primeira execução"':''}>${esc(solProj(r))}</td><td${r.famLanc&&r.famLanc!==r.fam?` title="Lançado na planilha como ${esc(r.famLanc)}"`:''}>${esc(solExec(r))}</td>
+        <td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}${r.iss.some(x=>x.cod==='equivalencia')?`<small class="pd-mod">= ${esc(posTxt(r).split(' → ')[1]||'')}</small>`:''}</td><td class="n">${fmt(extOf(r),1)}</td><td class="n">${r.larg?fmt(r.larg,2):'—'}</td><td class="n">${(()=>{const [q,u]=qtOf(r);return u==='—'?'—':fmt(q,u==='und'?0:u==='ton'?1:1)})()}</td><td>${qtOf(r)[1]}</td><td class="pd-is">${pend.length?`<details><summary>${pend.length} pendência${pend.length>1?'s':''}</summary>${pend.map(x=>`<span class="pd-${x.sev}">${esc(x.msg)}</span>`).join('')}</details>`:''}</td></tr>`}).join('');
     return `<table class="pd-t pd-tab"><thead><tr>${head}</tr><tr class="pd-fr">${fil}</tr></thead><tbody>${rows}</tbody></table>`}
   // Excel com os segmentos que têm pendências ou motivos, para análise caso a caso e correção na planilha base
   async function exportPend(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const R0=resolve().all;
@@ -4481,11 +4540,7 @@ const PROD=(function(){
     $('pdActs').innerHTML=canImport()?(fsOk()?(W.dir?(W.state==='perm'?`<button type="button" class="pd-b pri" id="pdResume">Retomar monitoramento</button>`:`<button type="button" class="pd-b" id="pdCheck"${W.busy?' disabled':''}>Verificar agora</button>`)+`<button type="button" class="pd-b" id="pdUnlink">Parar monitoramento</button>`
         :`<button type="button" class="pd-b pri" id="pdLink">Vincular pasta da planilha (monitorar)</button>`):`<span class="pd-note">Este navegador não permite monitorar a pasta. Use o Chrome ou o Edge no computador com a pasta sincronizada, ou importe o arquivo manualmente.</span>`)
         +`<label class="pd-b"><input type="file" id="pdFile" accept=".xlsb,.xlsx" hidden>Importar arquivo manualmente</label>`:'';
-    $('pdBlocks').innerHTML=blks.map(([b,t,l])=>{const s=blockSum(l);const lens=Object.entries(s.len).map(([f,v])=>`<span>${esc(FAMN[f]||f)}: <b>${fmt(v/1000,3)} km</b></span>`).join('');const tt=s.t.projeto+s.t.retrabalho+s.t.extra;
-      return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${s.n}</b><span>segmentos</span></div><div><b>${s.ap}</b><span>no status do projeto</span></div><div><b class="${s.err?'bad':''}">${s.err}</b><span>com erro</span></div><div><b class="${s.al?'bad':''}">${s.al}</b><span>RMP com alerta</span></div><div><b class="${s.rmp?'warn':''}">${s.rmp}</b><span>precisam de RMP</span></div><div><b class="${s.att?'warn':''}">${s.att}</b><span>com atenção</span></div></div>
-        ${tt?`<div class="pd-tt"><span>CBUQ/GAP do projeto <b>${fmt(s.t.projeto+s.t.retrabalho,1)} t</b>${s.t.retrabalho?` (retrabalho ${fmt(s.t.retrabalho,1)} t)`:''}</span><span>Extra-projeto <b>${fmt(s.t.extra,1)} t</b></span><span>Total <b>${fmt(tt,1)} t</b></span></div>`:''}
-        <div class="pd-l">${lens||'<span>sem trechos aplicados</span>'}${s.un?`<span>Saídas de dreno: <b>${fmt(s.un)} un</b></span>`:''}</div>
-        <small>${s.d0?`Lançamentos de ${brD(s.d0)} a ${brD(s.d1)}`:'Sem lançamentos'}</small></div>`}).join('')+(semBl.length?`<div class="pd-blk"><h3>BR-277 sem bloco identificado</h3><div class="pd-n"><div><b>${semBl.length}</b><span>segmentos</span></div></div><small>Estacas sem correspondência na base: veja as pendências.</small></div>`:'');
+    $('pdBlocks').innerHTML=contratoHtml('B23','Contrato B2 + B3 (BR-277)')+contratoHtml('B4','Contrato B4 (BR-373)')+(semBl.length?`<div class="pd-blk"><h3>BR-277 sem bloco identificado</h3><div class="pd-n"><div><b>${semBl.length}</b><span>segmentos</span></div></div><small>Estacas sem correspondência na base: veja as pendências.</small></div>`:'');
     const sheetIss=[];for(const k of ['B23','B4']){const S=SEG[k];if(S&&S.sheetIssues)for(const x of S.sheetIssues)sheetIss.push({k,...x})}
     const all=R0.all.filter(r=>F.blk==='ALL'||(F.blk==='B4'?r.k==='B4':r.blk===F.blk));
     const qs=norm(F.q).split(' ').filter(Boolean);
@@ -4512,18 +4567,19 @@ const PROD=(function(){
     el.hidden=false;const rc=btn.getBoundingClientRect(),w=Math.min(360,innerWidth-16);el.style.width=w+'px';el.style.left=Math.max(8,Math.min(rc.left,innerWidth-w-8))+'px';
     const h=el.offsetHeight;el.style.top=(rc.bottom+6+h>innerHeight?Math.max(8,rc.top-h-6):rc.bottom+6)+'px'}
   /* ---------- motivo / observação de um segmento (histórico: nada é apagado) ---------- */
-  const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Condição identificada na fresagem','Retrabalho','Sola','Outra necessidade técnica'];
+  const MOTIVOS=['Solo ou material inadequado','Segregação','Patologia estrutural','Patologia precoce','Condição identificada na fresagem','Retrabalho','Sola','Chuva','Escorregamento','Reprovação de IRI','Reprovação de vazios','Outra necessidade técnica'];
   function notaDlg(id,foco){const r=resolve().all.find(x=>x.id===id);if(!r)return;let d=$('pdNotaDlg');if(!d){d=document.createElement('div');d.id='pdNotaDlg';d.className='pd-dlg';document.body.appendChild(d)}
     d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="pdNT"><h3 id="pdNT">Motivo / observação</h3><p class="pd-note">Linhas ${r.lin.join(', ')} · ${brD(r.data)} · ${esc(r.faixa)} · ${r.kmIni!=null?est(r.kmIni)+' → '+est(r.kmFim):''} · ${esc(r.fam||'')}</p>
       ${r.notas[0]?`<p class="pd-note">Último registro: ${esc(dt(r.notas[0].at))}${r.notas[0].por?' · '+esc(r.notas[0].por):''}</p>`:''}
-      <div class="fld"><label for="pdNM">Motivo</label><select id="pdNM"><option value="">—</option>${[...MOTIVOS,...(r.notas[0]&&r.notas[0].motivo&&!MOTIVOS.includes(r.notas[0].motivo)?[r.notas[0].motivo]:[])].map(m=>`<option${r.notas[0]&&r.notas[0].motivo===m?' selected':''}>${esc(m)}</option>`).join('')}</select></div>
+      <fieldset class="fld pd-mots" id="pdNM"><legend>${r.cls==='retrabalho'?'Motivo do retrabalho':'Motivos'} (um ou mais)</legend>${(()=>{const sel=(r.notas[0]&&r.notas[0].motivos)||[];return [...MOTIVOS,...sel.filter(m=>!MOTIVOS.includes(m))].map((m,i)=>`<label><input type="checkbox" value="${esc(m)}"${sel.includes(m)?' checked':''}> ${esc(m)}</label>`).join('')})()}</fieldset>
       <div class="fld"><label for="pdNX">Observação</label><textarea id="pdNX" rows="3" maxlength="600">${esc(r.notas[0]&&r.notas[0].txt||'')}</textarea></div><p class="pd-note" id="pdNE"></p>
       <div class="pd-acts"><button type="button" class="pd-b" id="pdNC">Cancelar</button><button type="button" class="pd-b pri" id="pdNS">Salvar</button></div></div>`;
     d.hidden=false;$('pdNC').onclick=()=>d.hidden=true;d.onclick=e=>{if(e.target===d)d.hidden=true};
-    $('pdNS').onclick=async()=>{const n0=r.notas[0]||{};try{await salvaNota(id,{st:n0.st||'',motivo:$('pdNM').value,txt:$('pdNX').value.trim()});d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível salvar: '+(e.message||e)}}}
+    $('pdNS').onclick=async()=>{try{await salvaNota(id,{motivos:[...$('pdNM').querySelectorAll('input:checked')].map(x=>x.value),txt:$('pdNX').value.trim()});d.hidden=true;render()}catch(e){$('pdNE').textContent='Não foi possível salvar: '+(e.message||e)}}}
   // salva só o estado atual do segmento (sem histórico): status diferente da planilha, motivo e observação
-  async function salvaNota(id,{st,motivo,txt}){const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u)all[k]=u}
-    if(st||motivo||txt)all[id]={at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||'',st:st||'',motivo:motivo||'',txt:txt||''};else delete all[id];
+  async function salvaNota(id,patch){const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u)all[k]=u}
+    const o=Object.assign({st:'',eq:'',motivos:[],txt:''},all[id]||{},patch,{at:Date.now(),por:(window.ACL&&ACL.user&&ACL.user.email)||''});
+    if(o.st||o.eq||o.motivos.length||o.txt)all[id]=o;else delete all[id];
     if(!window.ProdDB||!window.ProdDB.saveNotas)throw new Error('sem conexão com o servidor do app');await window.ProdDB.saveNotas(all);NOTAS=all;RES=null}
 
   /* ---------- relatórios: CBUQ por km, histórico de execuções e RMP (filtros, campos, Excel e PDF) ---------- */
@@ -4575,8 +4631,10 @@ const PROD=(function(){
   function init(){const root=$('pdRoot');if(!root)return;
     $('pdBlk').onchange=e=>{F.blk=e.target.value;F.lim=150;render()};$('pdSev').onchange=e=>{F.sev=e.target.value;F.lim=150;render()};$('pdQ').oninput=e=>{F.q=e.target.value;F.lim=150;render()};
     $('pdList').addEventListener('click',e=>{const b=e.target.closest('[data-nota]');if(b)return notaDlg(b.dataset.nota);const rb=e.target.closest('[data-rmp]');if(rb)return rmpPop(rb);const so=e.target.closest('[data-sort]');if(so){const k=so.dataset.sort;CF.sort=CF.sort.k===k?{k,d:-CF.sort.d}:{k,d:1};saveCF();render()}});
-    $('pdList').addEventListener('change',async e=>{const ss=e.target.closest('select[data-st]');if(ss){const r=resolve().all.find(x=>x.id===ss.dataset.st);if(!r||!ss.value)return;const n0=r.notas[0]||{};ss.disabled=true;
-        try{await salvaNota(r.id,{st:ss.value!==r.stAuto?ss.value:'',motivo:n0.motivo,txt:n0.txt})}catch(err){toast('Não foi possível alterar o status: '+(err.message||err))}render();return}
+    $('pdList').addEventListener('change',async e=>{const ss=e.target.closest('select[data-st]');if(ss){const r=resolve().all.find(x=>x.id===ss.dataset.st);if(!r||!ss.value)return;ss.disabled=true;
+        try{await salvaNota(r.id,{st:ss.value!==r.stAuto?ss.value:''})}catch(err){toast('Não foi possível alterar o status: '+(err.message||err))}render();return}
+      const es=e.target.closest('select[data-eq]');if(es){const r=resolve().all.find(x=>x.id===es.dataset.eq);if(!r||!es.value)return;es.disabled=true;
+        try{await salvaNota(r.id,{eq:es.value!==eqPlan(r.equipe)?es.value:''})}catch(err){toast('Não foi possível alterar a equipe: '+(err.message||err))}render();return}
       const c=e.target.closest('select[data-cf]');if(c){CF.f[c.dataset.cf]=c.value;F.lim=150;saveCF();render()}});
     let cfT;$('pdList').addEventListener('input',e=>{const c=e.target.closest('input[data-cf]');if(!c)return;clearTimeout(cfT);cfT=setTimeout(()=>{CF.f[c.dataset.cf]=c.value;F.lim=150;saveCF();const pos=c.selectionStart,k=c.dataset.cf;render();const n=$('pdList').querySelector(`input[data-cf="${k}"]`);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}},350)});
     $('pdPX').onclick=exportPend;$('pdCClr').onclick=()=>{CF.f={};saveCF();render()};
@@ -4600,7 +4658,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='22/11/2026 21:23';
+  const CUR_VER='22/11/2026 23:10';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';
