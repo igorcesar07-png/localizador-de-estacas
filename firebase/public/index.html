@@ -1326,6 +1326,10 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .cm-xx{display:block;font-size:11.5px;color:#7A4A00;margin-top:3px}.cm-sr{display:flex;align-items:center}.cm-ok{min-height:36px;padding:4px 12px;font-size:13px;white-space:nowrap}.cm-ok.on{background:#1E7A4C;color:#fff;border-color:#1E7A4C}
 @media(max-width:640px){.cm-seg{grid-template-columns:auto 1fr;gap:8px;padding:8px}.cm-sr{grid-column:1/-1}.cm-ok{width:100%}.cm-in input{width:96px}.cm-btv{flex-direction:column}}
 .rd-if{width:100%;height:70vh;min-height:480px;border:1px solid var(--line);border-radius:12px;background:#fff}.pd-erro{color:#B42318;font-weight:600}.pd-org{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#1A56DB;color:#fff;font:700 10.5px var(--body);vertical-align:middle}.pd-org.ok{background:#E3F1E8;color:#1E7A4C}.cm-prog{display:flex;flex-direction:column;background:#EEF4FF;border-left:4px solid #1A56DB;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13px}.cm-prog span{font-size:12px;color:#334}.rd-v{min-height:30px;padding:3px 10px;font-size:12.5px;margin-left:4px}.rd-segs>td{background:#FAFAF7;padding:6px 8px}.rm-sit.bad{background:#FDE8E8;color:#8A1C1C}.falvo{position:absolute;left:50%;transform:translateX(-50%);bottom:110px;z-index:30;display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(26,86,219,.94);color:#fff;border-radius:14px;padding:10px 16px;font:13px var(--body);text-align:center;max-width:92%}.falvo b{font-size:14px}.falvo button{margin-top:4px;background:#fff;color:#1A56DB;border:0;border-radius:9px;padding:6px 12px;font:700 13px var(--body)}.rm-fb{display:inline-flex;gap:6px;flex-wrap:wrap}.rm-iw{position:relative;display:inline-block}.rm-x{position:absolute;top:-6px;right:-6px;width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:2px solid #fff;background:#C62828;color:#fff;font:800 15px/1 var(--body);cursor:pointer}.rm-sort{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;min-height:0}.rm-t .pd-fr th{padding:3px 4px}.rm-t .pd-fr select,.rm-t .pd-fr input{width:100%;min-width:74px;min-height:0;height:28px;font-size:12px;padding:2px 4px}.ph-btns{display:inline-flex;gap:6px;flex-wrap:nowrap}.ph-btn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:5px 12px;border:1px solid var(--line,#d5d8d2);border-radius:999px;background:var(--surface,#fff);color:var(--ink,#111);font:700 13px var(--body);cursor:pointer;white-space:nowrap}
+.rm-pk{max-width:720px}.rm-pkg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;max-height:52vh;overflow:auto;padding:2px}
+.rm-pki{display:grid;gap:4px;padding:4px;border:2px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 11px/1.3 var(--body);text-align:left;cursor:pointer}
+.rm-pki img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:7px;background:var(--surface-2,#eee)}.rm-pki[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+#rmPick{z-index:4100}
 .ph-btn:hover{border-color:var(--ink,#111)}.ph-btn:focus-visible{outline:2px solid var(--ink,#111);outline-offset:2px}.ph-btn .ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .ph-btn[data-cam],#lvEdCam,#lpEdCam{background:var(--ink,#141715);color:var(--surface,#fff);border-color:var(--ink,#141715)}
 .rm-fh{flex-wrap:wrap}
@@ -1826,7 +1830,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO de massa<small>Envio dos apontamentos do dia</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 23/11/2026 12:10 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 23/11/2026 12:13 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2530,10 +2534,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261123151056";</script>
-<script src="native.js?v=20261123151056"></script>
-<script src="firebase-config.js?v=20261123151056"></script>
-<script src="auth.js?v=20261123151056"></script>
+<script>window.APP_BUILD="20261123151348";</script>
+<script src="native.js?v=20261123151348"></script>
+<script src="firebase-config.js?v=20261123151348"></script>
+<script src="auth.js?v=20261123151348"></script>
 
 </body>
 </html>

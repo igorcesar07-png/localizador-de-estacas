@@ -2557,6 +2557,8 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const DB=(()=>{let dbp=null;const open=()=>dbp||(dbp=new Promise((res,rej)=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
     const tx=async(mode,fn)=>{const db=await open();return new Promise((res,rej)=>{const x=db.transaction('fotos',mode);const st=x.objectStore('fotos');const out=fn(st);x.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);x.onerror=()=>rej(x.error)})};
     return {add:o=>tx('readwrite',s=>s.add(o)),all:()=>tx('readonly',s=>s.getAll()),put:o=>tx('readwrite',s=>s.put(o)),del:id=>tx('readwrite',s=>s.delete(id))}})();
+  // outras páginas (Controle de RMPs) podem buscar as fotos já salvas no app
+  window.FotoGeo.listar=async()=>{try{return (await DB.all()).sort((a,b)=>(b.t||0)-(a.t||0))}catch(e){return []}};
   async function galCount(){try{const a=await DB.all();$('fGalN').textContent=a.length;return a}catch(e){$('fGalN').textContent='–';return []}}
   galCount();
   /* ---------- galeria "Fotos": seleção, exclusão e exportação ---------- */
@@ -5227,6 +5229,24 @@ const PROD=(function(){
       return out}finally{URL.revokeObjectURL(u)}}
   const newId=()=>{try{if(crypto.randomUUID)return crypto.randomUUID()}catch(e){}return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,10)};
   const RMDRAFT={};
+  // seletor de fotos salvas na página Foto georreferenciada (IndexedDB do aparelho), com busca por estaca, data ou observação
+  async function rmPickApp(rot,done){let v=$('rmPick');if(!v){v=document.createElement('div');v.id='rmPick';v.className='pd-dlg';document.body.appendChild(v)}
+    const all=window.FotoGeo&&FotoGeo.listar?await FotoGeo.listar():[];const sel=new Set();const urls=[];let q='';
+    const lbl=f=>`${f.stake||'sem estaca'}${f.rod?' · '+f.rod:''} · ${new Date(f.t).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}`;
+    v.innerHTML=`<div class="pd-dbox rm-pk" role="dialog" aria-modal="true" aria-labelledby="rmPkT"><h3 id="rmPkT">Fotos do app · ${esc(rot)}</h3>
+      <p class="pd-note">Fotos salvas neste aparelho pela página Foto georreferenciada (${all.length}). Toque para selecionar.</p>
+      <div class="fld"><label for="rmPkQ">Buscar</label><input id="rmPkQ" type="search" placeholder="Estaca, data ou observação" autocomplete="off"></div>
+      <div class="rm-pkg" id="rmPkG"></div><p class="pd-note" id="rmPkM" aria-live="polite"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="rmPkC">Cancelar</button><button type="button" class="pd-b pri" id="rmPkOk" disabled>Adicionar</button></div></div>`;
+    const close=()=>{v.hidden=true;urls.forEach(u=>URL.revokeObjectURL(u));urls.length=0};
+    const draw=()=>{const qq=q.trim().toLowerCase();const l=all.filter(f=>!qq||[f.stake,f.rod,f.note,lbl(f)].join(' ').toLowerCase().includes(qq));
+      $('rmPkG').innerHTML=l.length?l.map(f=>{const u=URL.createObjectURL(f.blob);urls.push(u);return `<button type="button" class="rm-pki" data-pk="${f.id}" aria-pressed="${sel.has(f.id)}"><img src="${u}" alt="" loading="lazy"><span>${esc(lbl(f))}</span></button>`}).join('')
+        :`<p class="pd-note">${all.length?'Nenhuma foto para essa busca.':'Nenhuma foto salva na Foto georreferenciada deste aparelho.'}</p>`;
+      $('rmPkOk').disabled=!sel.size;$('rmPkOk').textContent=sel.size?`Adicionar ${sel.size}`:'Adicionar'};
+    draw();v.hidden=false;$('rmPkQ').oninput=e=>{q=e.target.value;urls.forEach(u=>URL.revokeObjectURL(u));urls.length=0;draw()};
+    $('rmPkG').onclick=e=>{const b=e.target.closest('[data-pk]');if(!b)return;const i=+b.dataset.pk;sel.has(i)?sel.delete(i):sel.add(i);b.setAttribute('aria-pressed',sel.has(i));$('rmPkOk').disabled=!sel.size;$('rmPkOk').textContent=sel.size?`Adicionar ${sel.size}`:'Adicionar'};
+    $('rmPkC').onclick=close;v.onclick=e=>{if(e.target===v)close()};
+    $('rmPkOk').onclick=()=>{const l=all.filter(f=>sel.has(f.id));close();done(l)}}
   function rmDlg(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};const w=canRmp();const DR=RMDRAFT[id];delete RMDRAFT[id];
     const D=DR?DR.D:{fotos:{assinado:[...((c.fotos||{}).assinado||[])],patologia:[...((c.fotos||{}).patologia||[])],espessura:[...((c.fotos||{}).espessura||[])]},patologias:[...(c.patologias||[])]};const n0=r.notas[0]||{};
     let d=$('rmDlg');if(!d){d=document.createElement('div');d.id='rmDlg';d.className='pd-dlg';document.body.appendChild(d)}
@@ -5235,7 +5255,7 @@ const PROD=(function(){
       ${c.atualizado_em?`<p class="pd-note">Último registro: ${esc(dt(c.atualizado_em))}${c.atualizado_por?' · '+esc(c.atualizado_por):''}</p>`:''}
       <fieldset class="fld pd-mots" id="rmMot"><legend>Motivo do RMP (um ou mais)</legend>${[...MOTIVOS,...(n0.motivos||[]).filter(m=>!MOTIVOS.includes(m))].map(m=>`<label><input type="checkbox" value="${esc(m)}"${(n0.motivos||[]).includes(m)?' checked':''}${w?'':' disabled'}> ${esc(m)}</label>`).join('')}</fieldset>
       <div class="fld"><label for="rmObs">Observação</label><textarea id="rmObs" rows="2" maxlength="600"${w?'':' disabled'}>${esc(n0.txt||'')}</textarea></div>
-      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="ph-btns"><button type="button" class="ph-btn" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-1.8A1.5 1.5 0 0 1 9.75 3.5h4.5a1.5 1.5 0 0 1 1.25.7L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span>Câmera</span></button><label class="ph-btn" title="Escolher uma foto já salva no aparelho"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.5 1.5 0 0 0-2.1 0L6 19.5"/></svg><span>Galeria</span><input type="file" accept="image/*" data-cat="${k}" hidden multiple></label></span>`:''}</div>
+      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="ph-btns"><button type="button" class="ph-btn" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-1.8A1.5 1.5 0 0 1 9.75 3.5h4.5a1.5 1.5 0 0 1 1.25.7L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span>Câmera</span></button><label class="ph-btn" title="Escolher uma foto já salva no aparelho"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.5 1.5 0 0 0-2.1 0L6 19.5"/></svg><span>Galeria</span><input type="file" accept="image/*" data-cat="${k}" hidden multiple></label><button type="button" class="ph-btn" data-app="${k}" title="Buscar fotos já salvas na Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M12 8.6a3.2 3.2 0 0 0-3.2 3.2c0 2.3 3.2 4.6 3.2 4.6s3.2-2.3 3.2-4.6A3.2 3.2 0 0 0 12 8.6z"/><circle cx="12" cy="11.8" r="1"/></svg><span>Fotos do app</span></button></span>`:''}</div>
         ${k==='patologia'?`<div class="rm-pats">${PATS.map(p=>`<label><input type="checkbox" value="${esc(p)}"${D.patologias.includes(p)?' checked':''}${w?'':' disabled'}> ${esc(p)}</label>`).join('')}</div>`:''}<div class="rm-th" data-th="${k}"></div></div>`).join('')}
       <p class="pd-note" id="rmDE" aria-live="polite"></p>
       <div class="pd-acts"><button type="button" class="pd-b" id="rmDC">${w?'Cancelar':'Fechar'}</button>${w?'<button type="button" class="pd-b pri" id="rmDS">Salvar</button>':''}</div></div>`;
@@ -5253,6 +5273,11 @@ const PROD=(function(){
     if(DR){$('rmMot').querySelectorAll('input').forEach(x=>x.checked=DR.mot.includes(x.value));$('rmObs').value=DR.txt;$('rmDE').textContent=DR.msg||''}
     d.onclick=async e=>{if(e.target===d){close();return}
       const x=e.target.closest('[data-rmx]');if(x){if(!confirm('Excluir esta foto do RMP?'))return;const k=x.dataset.rmk;D.fotos[k]=D.fotos[k].filter(i=>i!==x.dataset.rmx);$('rmDE').textContent='Foto excluída. Toque em Salvar.';thumbs();return}
+      const ap=e.target.closest('[data-app]');if(ap){const k=ap.dataset.app;rmPickApp(RFOTO.find(f=>f[0]===k)[1],async list=>{let n=0;
+          for(const f of list){try{$('rmDE').textContent='Comprimindo foto…';const data=await comprFoto(f.blob);if(data.length>950000)throw new Error('foto grande demais');
+            const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now(),origem:'foto-geo',foto_t:f.t||null,foto_estaca:f.stake||null};
+            await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);D.fotos[k].push(m.id);n++}catch(x){$('rmDE').textContent='Não foi possível adicionar a foto: '+(x.message||x)}}
+          if(n)$('rmDE').textContent=`${n} foto(s) da Foto georreferenciada adicionada(s). Toque em Salvar.`;thumbs()});return}
       const cam=e.target.closest('[data-cam]');if(cam){const k=cam.dataset.cam;
         window.FotoGeo.tirar({rotulo:RFOTO.find(f=>f[0]===k)[1],voltar:'#rmp',esconder:d}).then(async blob=>{try{$('rmDE').textContent='Comprimindo foto…';const data=await comprFoto(blob);if(data.length>950000)throw new Error('foto grande demais');
           const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now()};await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);D.fotos[k].push(m.id);$('rmDE').textContent='Foto da câmera adicionada. Toque em Salvar.';thumbs()}
@@ -5310,7 +5335,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 12:10';
+  const CUR_VER='23/11/2026 12:13';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

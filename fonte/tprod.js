@@ -98,6 +98,12 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.setInputFiles('#fFile',{name:'cam.jpg',mimeType:'image/jpeg',buffer:big});await W(3500);
   const np=await p.$$eval('#rmDlg [data-th="patologia"] .rm-img',a=>a.length);ok(await p.evaluate(()=>location.hash)==='#rmp'&&np===2,'RMP: foto da câmera volta com marca-d\'água para o RMP ('+np+')');
   p.once('dialog',dg=>dg.accept());await p.click('#rmDlg [data-th="patologia"] [data-rmx] >> nth=0');await W(400);ok((await p.$$eval('#rmDlg [data-th="patologia"] .rm-img',a=>a.length))===1,'RMP: excluir foto');await p.click('#rmDS');await W(600);
+  // buscar fotos já salvas na Foto georreferenciada
+  await p.evaluate(async()=>{const c=document.createElement('canvas');c.width=400;c.height=300;c.getContext('2d').fillRect(0,0,400,300);const b=await new Promise(r=>c.toBlob(r,'image/jpeg',0.8));
+    await new Promise((res,rej)=>{const r=indexedDB.open('br277fotos',1);r.onupgradeneeded=()=>r.result.createObjectStore('fotos',{keyPath:'id',autoIncrement:true});r.onsuccess=()=>{const x=r.result.transaction('fotos','readwrite');x.objectStore('fotos').add({name:'t.jpg',blob:b,t:Date.now(),stake:'Estaca 999',note:'teste app'});x.oncomplete=res;x.onerror=rej}})});
+  await p.click(`#rmList [data-rm="${rid}"]`);await W(400);const ne0=await p.$$eval('#rmDlg [data-th="espessura"] .rm-img',a=>a.length);await p.click('#rmDlg [data-app="espessura"]');await W(600);
+  await p.fill('#rmPkQ','999');await W(200);const npk=await p.$$eval('#rmPkG [data-pk]',a=>a.length);await p.click('#rmPkG [data-pk] >> nth=0');await p.click('#rmPkOk');await W(1500);
+  const ne1=await p.$$eval('#rmDlg [data-th="espessura"] .rm-img',a=>a.length);ok(npk>=1&&ne1===ne0+1,'RMP: busca e adiciona foto salva na Foto georreferenciada ('+npk+' encontrada, '+ne0+'→'+ne1+')');await p.click('#rmDS');await W(600);
   ok(await p.inputValue('#rmSit')==='all','RMP: padrão mostra todos (pendentes e completos)');
   await p.selectOption('#rmSit','pend');await p.fill('#rmQ','zzz');await W(500);await p.click('#rmClr');await W(300);ok(await p.inputValue('#rmSit')==='all'&&await p.inputValue('#rmQ')==='','RMP: botão Limpar filtros');
   await p.selectOption('#rmList select[data-rcf="sit"]','Completo');await W(400);const nc=await p.$$eval('#rmList tbody tr',a=>a.length);await p.click('#rmList [data-rsort="data"]');await W(300);
