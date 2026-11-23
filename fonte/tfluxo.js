@@ -3,7 +3,7 @@ const res=[];const ok=(c,n)=>{res.push(!!c);console.log((c?'OK  ':'FALHOU ')+n)}
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1280,height:900}});
 await ctx.addInitScript(()=>{const rd=JSON.parse(localStorage.getItem('__rdo2')||'{}'),subs=[];const keep=()=>localStorage.setItem('__rdo2',JSON.stringify(rd));const fire=()=>setTimeout(()=>subs.forEach(cb=>cb(Object.values(rd))),10);
   window.RdoDB={subscribe:cb=>{subs.push(cb);setTimeout(()=>cb(Object.values(rd)),50);return()=>{}},save:async s=>{rd[s.id]=Object.assign({},s,{status:'aguardando',enviado_por:'apontador@x',enviado_em:Date.now()});keep();fire()},
-    validate:async(id,st,obs)=>{Object.assign(rd[id],{status:st,validado_por:'fiscal@x',validado_em:Date.now(),validacao_obs:obs||''});keep();fire()},excl:async(id,list,hist)=>{Object.assign(rd[id],{excl:list,excl_hist:hist});keep();fire()},delSeg:async(id,o)=>{Object.assign(rd[id],o);keep();fire()},exists:async id=>!!rd[id],cfg:async()=>({}),setCfg:async()=>{},can:true,val:true,admin:false}});
+    validate:async(id,st,obs)=>{Object.assign(rd[id],{status:st,validado_por:'fiscal@x',validado_em:Date.now(),validacao_obs:obs||''});keep();fire()},excl:async(id,list,hist)=>{Object.assign(rd[id],{excl:list,excl_hist:hist});keep();fire()},delSeg:async(id,o)=>{Object.assign(rd[id],o);keep();fire()},delEnvio:async id=>{delete rd[id];keep();fire()},exists:async id=>!!rd[id],cfg:async()=>({}),setCfg:async()=>{},can:true,val:true,admin:false}});
 const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>{errs.push(e.message);console.log('ERR',e.message,(e.stack||'').split('\n')[1])});p.on('dialog',d=>d.accept(''));await p.route(/(openstreetmap|arcgisonline)/,r=>r.abort());
 await p.goto('http://localhost:8772/#calculadora');await W(2500);await p.evaluate(()=>{['br277.histProgs','br277.massa.dia','__rdo2'].forEach(k=>localStorage.removeItem(k))});await p.reload();await W(2500);
 await p.selectOption('#rfObra','Restauração BR-277 – Blocos 02 e 03');await W(300);await p.selectOption('#rfEquipe','Pavimentação Johonatan');await W(200);await p.fill('#rfData','2026-11-24');await p.dispatchEvent('#rfData','change');
@@ -31,18 +31,22 @@ const R=await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').map(
 ok(R.length===tags.length&&R.every(r=>r.ap)&&R.some(r=>r.larg===3.76)&&R.some(r=>r.rmp>0),'7) validado → Produção executada (com RMP; motivo vai no Controle de RMPs)');
 ok(/Validado/.test(await p.textContent('#cmRoot')),'   RDO do aparelho mostra "Validado"');
 await p.evaluate(()=>location.hash='#producao');await W(1500);await p.selectOption('#pdSev','all').catch(()=>{});await W(400);ok((await p.$$('#pdList .pd-org')).length>=1,'   linhas com selo RDO na Produção executada');
+const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#pdBX')]);ok(dx&&/planilha-base-RDO/.test(dx.suggestedFilename()),'8) Excel "RDO validado" para a planilha base');
+
 {const nR=()=>p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').length);ok(!/RDO ✓/.test(await p.textContent('#pdList')),'   sem selo "RDO ✓" nas linhas da planilha');
   await p.click('#pdList [data-rdx] >> nth=0');await W(800);const n1=await nR();ok(n1===tags.length-1,'11) excluir definitivamente na Produção executada ('+n1+')');
   await p.evaluate(()=>location.hash='#rdo');await W(1200);if(await p.$eval('#rdList [data-rdsegs]',e=>e.hidden)){await p.click('#rdList tr[data-rdrow] td:nth-child(3)');await W(300)}
   const nseg=await p.$$eval('#rdList [data-rdsegs] tbody tr',a=>a.length);ok(nseg===tags.length-1&&!(await p.$('#rdList [data-rdrest]')),'   some também da aba RDO, sem "Restaurar" ('+nseg+')');
   const cm=await p.evaluate(()=>window.__CM.get().fres.filter(f=>!f.envio).length);ok(cm===1,'   no RDO do aparelho o segmento fica livre para ser lançado de novo');
   await p.click('#rdList [data-rdxs] >> nth=0');await W(800);ok(await nR()===tags.length-2,'12) excluir definitivamente na aba RDO tira da Produção executada')}
-await p.evaluate(()=>document.documentElement.setAttribute('data-theme','dark'));await W(200);await (await p.$('#rdList')).screenshot({path:'/tmp/claude-0/rd_dark.png'});await p.evaluate(()=>document.documentElement.setAttribute('data-theme','light'));await (await p.$('#rdList')).screenshot({path:'/tmp/claude-0/rd_light.png'});
-await p.evaluate(()=>location.hash='#producao');await W(1500);
-const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#pdBX')]);ok(dx&&/planilha-base-RDO/.test(dx.suggestedFilename()),'8) Excel "RDO validado" para a planilha base');
 await p.evaluate(()=>location.hash='#calculadora');await W(1500);await p.click('#cForm button[type=submit]');await W(1200);
-await p.screenshot({path:'/tmp/claude-0/fl_calc.png'});const fl=await p.$$eval('#cOut table.q tbody tr[data-tag]',a=>a.map(t=>[t.dataset.tag,(t.querySelector('.flw')||{}).textContent||'',!!t.querySelector('.rprog')]));console.log(JSON.stringify(fl));
-ok(fl.filter(x=>x[1]==='Validado'&&!x[2]).length===tags.length-2,'9) Calculadora: os executados aparecem "Validado" e não podem ser programados');
+const fl9=await p.$$eval('#cOut table.q tbody tr[data-tag]',a=>a.map(t=>[t.dataset.tag,(t.querySelector('.flw')||{}).textContent||'',!!t.querySelector('.rprog')]));ok(fl9.filter(x=>x[1]==='Validado'&&!x[2]).length===tags.length-2,'9) Calculadora: só os validados que restaram aparecem "Validado"');
+
+await p.evaluate(()=>location.hash='#producao');await W(1500);
+
 
 await p.evaluate(()=>location.hash='#mapa');await W(2500);const ne=await p.evaluate(()=>window.__mxB23&&window.__mxB23.n());ok(ne>0,'10) mapa B2/B3 com os executados ('+ne+')');
+await p.evaluate(()=>location.hash='#rdo');await W(1200);await p.click('#rdList [data-rdxall]');await W(900);
+ok((await p.evaluate(()=>PROD.resolve().all.filter(r=>r.origem==='RDO').length))===0&&!(await p.$('#rdList tr[data-rdrow]')),'13) excluir o RDO validado inteiro tira tudo da produção e da lista');
+ok(await p.evaluate(()=>window.__CM.get().fres.every(f=>!f.envio)),'   no RDO do aparelho todos os segmentos ficam livres para novo envio');
 ok(!errs.length,'sem erros JS');console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

@@ -1,8 +1,8 @@
 // App sem internet: na instalação o aparelho guarda o app inteiro (páginas, código, bibliotecas e fontes).
 // Abre do aparelho na hora; com internet, a página principal é conferida no servidor (versão nova entra no próximo acesso).
 // Login e banco de dados nunca passam por aqui (o banco tem a própria fila offline).
-const C='estacas-app-20261123183949';
-const CORE=["./", "index.html", "app.js?v=20261123183949", "auth.js?v=20261123183949", "native.js?v=20261123183949", "firebase-config.js?v=20261123183949", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "logo_neovia.png", "logo_via.png"];
+const C='estacas-app-20261123185718';
+const CORE=["./", "index.html", "app.js?v=20261123185718", "auth.js?v=20261123185718", "native.js?v=20261123185718", "firebase-config.js?v=20261123185718", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", "logo_neovia.png", "logo_via.png"];
 const LIBS=["lib/barlow-condensed-latin-500-normal.woff2", "lib/barlow-condensed-latin-600-normal.woff2", "lib/barlow-condensed-latin-700-normal.woff2", "lib/barlow-latin-400-normal.woff2", "lib/barlow-latin-500-normal.woff2", "lib/barlow-latin-600-normal.woff2", "lib/barlow-latin-700-normal.woff2", "lib/fonts.css", "lib/jspdf.plugin.autotable.min.js", "lib/jspdf.umd.min.js", "lib/leaflet-rotate-src.js", "lib/leaflet.js", "lib/pdf.min.js", "lib/pdf.worker.min.js", "lib/xlsx-prod.min.js", "lib/xlsx.full.min.js"];
 const TILE=/tile\.openstreetmap|arcgisonline/;
 const EXT=/cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|fonts\.(googleapis|gstatic)\.com/;
@@ -17,6 +17,6 @@ self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;c
   if(same&&(u.pathname.startsWith('/__/')||u.pathname.startsWith('/app-bundle/')))return; // login do Firebase e pacote do app Android: sempre na rede
   if(!same&&!EXT.test(u.host))return;              // Firestore, Auth etc.: direto na rede
   const page=same&&(r.mode==='navigate'||u.pathname==='/'||u.pathname.endsWith('/index.html'));
-  if(page){e.respondWith(timeout(fetch(u.href,{cache:'no-store',credentials:'same-origin'}),4000).then(x=>put(new Request('index.html'),x)).catch(()=>caches.match('index.html').then(x=>x||caches.match('./'))));return}
+  if(page){e.respondWith(timeout(fetch(u.href,{cache:'no-store',credentials:'same-origin'}),9000).then(x=>put(new Request('index.html'),x)).catch(()=>caches.match('index.html').then(x=>x||caches.match('./'))));return}
   // demais arquivos: do aparelho; se faltar, busca e guarda
   e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(x=>put(r,x)).catch(()=>same?new Response('',{status:504}):undefined)))});

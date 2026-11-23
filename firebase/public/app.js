@@ -4642,7 +4642,7 @@ const PROD=(function(){
     catch(e){W.state='erro';W.msg=classify(e)}finally{W.busy=false;W.checkedAt=Date.now();pushStatus(true);render()}}
 
   /* ---------- página ---------- */
-  const F={blk:'ALL',sev:'pend',q:'',lim:150};
+  const F={blk:'ALL',sev:'all',q:'',lim:150};
   const CLS={projeto:'Projeto',retrabalho:'Retrabalho',extra:'Extra-projeto'};
   const RMPN={comprimento:'RMP de extensão (além dos limites do projeto)',aumento:'RMP de espessura (aumento)',reducao:'RMP de espessura (redução)',troca:'Alteração de solução',troca_menor:'Troca por solução de menor intervenção'};
   const tOf=r=>r.q&&r.q.t?r.q.t:0;
@@ -4705,7 +4705,8 @@ const PROD=(function(){
   const notaTxt=r=>(r.notas||[]).filter(n=>(n.motivos&&n.motivos.length)||n.txt).map(n=>((n.motivos||[]).join(', ')+((n.motivos||[]).length&&n.txt?': ':''))+(n.txt||'')).join(' | ');
   const prevTxt=r=>r.extra?'Não (extra-projeto)':!r.proj?'Não':r.proj.list.length&&(famPav(r.proj.code)===(r.fam==='GAP'?'G':r.fam)||r.proj.code===r.fam)?'Sim':'Outra solução';
   // tabela de segmentos no mesmo formato da "Relação dos panos" (Relatórios): data primeiro, colunas separadas, filtro e ordenação por coluna
-  const CF=Object.assign({sort:{k:'data',d:1},f:{}},store.get('pdCols',{}));const saveCF=()=>store.set('pdCols',{sort:CF.sort,f:CF.f});
+  // ao abrir o app: todos os segmentos, sem filtros de coluna, do mais recente para o mais antigo
+  const CF={sort:{k:'data',d:-1},f:{}};const saveCF=()=>store.set('pdCols',{sort:CF.sort,f:CF.f});
   const FXN=r=>/^(fx|faixa) ?1$/.test(norm(r.faixa))?'Faixa 1':/^(fx|faixa) ?(2|3)$/.test(norm(r.faixa))?'Faixa 2/3':/acost/.test(norm(r.faixa))?'Acostamento':(r.faixa||'—');
   // status: tudo na planilha foi executado; a coluna diz a que se refere a execução
   const stOf=r=>r.extra?r.extra:r.retrab?'Retrabalho':'Projeto';
@@ -4879,12 +4880,12 @@ const PROD=(function(){
 
 
   /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
-  const RDOPEN=new Set();let RDOS=[];if(window.RdoDB)window.RdoDB.subscribe(l=>{if(!l)return;RDOS=l;window.__RDOS=l;
+  const RDOPEN=new Set(),RDSEEN=new Set();let RDOS=[];if(window.RdoDB)window.RdoDB.subscribe(l=>{if(!l)return;RDOS=l;window.__RDOS=l;
     // situação dos segmentos enviados (aguardando, validado ou devolvido) volta para o RDO do aparelho
-    try{let ch=false;for(const f of CM.fres){if(!f.envio)continue;const e=l.find(x=>x.id===f.envio.id);if(!e)continue;const st=e.status||'aguardando';
+    try{let ch=false;for(const f of CM.fres){if(!f.envio)continue;const e=l.find(x=>x.id===f.envio.id);if(!e){if(RDSEEN.has(f.envio.id)){f.devolvido='RDO excluído pelo validador: lance de novo se foi executado';f.envio=null;ch=true}continue}const st=e.status||'aguardando';
       if(Array.isArray(e.segs)&&!e.segs.some(x=>x.sid===String(f.id))){f.devolvido='excluído do RDO enviado: lance de novo se foi executado';f.envio=null;ch=true;continue}
         if(st==='devolvido'){f.devolvido=e.validacao_obs||'devolvido para correção';f.envio=null;f.campo=true;ch=true}else if(f.envio.st!==st){f.envio.st=st;ch=true}}if(ch)store.set(CMK,CM)}catch(e){}
-    RES=null;rdRender();render();cmRender();emit('prod',1)});
+    l.forEach(x=>RDSEEN.add(x.id));RES=null;rdRender();render();cmRender();emit('prod',1)});
   const canRdo=()=>!!(window.RdoDB&&window.RdoDB.can);
   // Produção executada: exclui um segmento que veio do RDO validado (os da planilha Excel não têm essa opção). O envio original não muda: o segmento fica marcado como excluído.
   async function rdoExcl(rid){const r=resolve().all.find(x=>x.id===rid);if(!r||r.origem!=='RDO'||!r.rdoInfo)return;return rdoExclSeg(r.rdoInfo.envio,r.rdoInfo.sid)}
@@ -4894,14 +4895,27 @@ const PROD=(function(){
     const fim=(()=>{try{const src=srcOf(e.obra==='BR-373'?'B4':'B23');const A=src.Data.parseKm(String(g.ini).replace(',','.'));return src.Data.nameAt(g.side==='D'?A.s-g.len:A.s+g.len)}catch(x){return ''}})();const seg=`${g.ini}${fim?' → '+fim:''}`;
     const rid='RDO-'+String(e.id).slice(-12)+'-'+sid,reg=RMPC.get(rid),mids=reg?Object.values(reg.fotos||{}).flat().filter(Boolean):[],temNota=!!NOTAS[rid];
     if(!confirm(`Excluir DEFINITIVAMENTE o segmento ${seg} (${fmt(g.len,1)} m, ${fmt(g.t,2)} t) do RDO de ${brD(e.data)}?\n\nEle sai do RDO, da Produção executada, da Calculadora, do mapa${reg||temNota?' e do Controle de RMPs (motivo'+(mids.length?' e '+mids.length+' foto(s)':'')+')':' e do Controle de RMPs'}. Não dá para desfazer: para voltar, o segmento tem de ser lançado de novo no RDO.`))return;
+    if((e.segs||[]).length===1&&window.RdoDB.delEnvio){const i=RDOS.indexOf(e);if(i>=0)RDOS.splice(i,1);window.__RDOS=RDOS;RES=null;render();rdRender();emit('prod',1);
+      try{await window.RdoDB.delEnvio(e.id)}catch(x){if(i>=0)RDOS.splice(i,0,e);RES=null;render();rdRender();alert('Não foi possível excluir: '+(x.message||x));return}
+      await rdoLimpa([rid]);RES=null;render();rdRender();rmRender();return}
     const old={segs:e.segs,t:e.t,excl:e.excl,excl_hist:e.excl_hist};const segs=(e.segs||[]).filter(x=>x.sid!==sid),t=Math.round(segs.reduce((a,x)=>a+(+x.t||0),0)*100)/100;
     const hist=[...(e.excl_hist||[]),{sid,acao:'excluir_definitivo',em:Date.now(),seg,len:g.len,t:g.t}],excl=(e.excl||[]).filter(x=>x!==sid);
     Object.assign(e,{segs,t,excl,excl_hist:hist});RES=null;render();rdRender();emit('prod',1);
     try{await window.RdoDB.delSeg(e.id,{segs,t,excl,excl_hist:hist})}catch(x){Object.assign(e,old);RES=null;render();rdRender();alert('Não foi possível excluir: '+(x.message||x));return}
-    // Controle de RMPs e motivo da Produção executada ligados a este segmento
-    try{if(reg&&window.RmpDB&&window.RmpDB.delReg){await window.RmpDB.delReg(rid,mids);RMPC.delete(rid);mids.forEach(m=>RMEDIA.delete(m))}}catch(x){alert('O segmento foi excluído, mas o registro no Controle de RMPs não pôde ser apagado: '+(x.message||x))}
-    try{if(temNota)await salvaNota(rid,{st:'',eq:'',motivos:[],txt:''})}catch(x){}
-    RES=null;render();rdRender();rmRender()}
+    await rdoLimpa([rid]);RES=null;render();rdRender();rmRender()}
+  // Controle de RMPs (registro, motivo e fotos) e motivo da Produção executada dos segmentos apagados
+  async function rdoLimpa(rids){const err=[];
+    for(const rid of rids){const reg=RMPC.get(rid);if(!reg||!window.RmpDB||!window.RmpDB.delReg)continue;const mids=Object.values(reg.fotos||{}).flat().filter(Boolean);
+      try{await window.RmpDB.delReg(rid,mids);RMPC.delete(rid);mids.forEach(m=>RMEDIA.delete(m))}catch(x){err.push(x.message||x)}}
+    const nt=rids.filter(r=>NOTAS[r]);if(nt.length)try{const all={};for(const [k,v] of Object.entries(NOTAS)){const u=notaUm(v)[0];if(u&&!nt.includes(k))all[k]=u}await window.ProdDB.saveNotas(all);NOTAS=all}catch(x){err.push(x.message||x)}
+    if(err.length)alert('Os segmentos foram excluídos, mas parte do Controle de RMPs/motivos não pôde ser apagada: '+err[0])}
+  // exclusão DEFINITIVA do RDO inteiro (envio + arquivo original): todos os segmentos saem da produção, da Calculadora, do mapa e do Controle de RMPs
+  async function rdoDelEnvio(eid){const e=(window.__RDOS||[]).find(x=>x.id===eid);if(!e||!window.RdoDB||!window.RdoDB.delEnvio)return;const sg=e.segs||[];
+    const rids=sg.map(g=>'RDO-'+String(e.id).slice(-12)+'-'+g.sid),nReg=rids.filter(r=>RMPC.has(r)).length;
+    if(!confirm(`Excluir DEFINITIVAMENTE o RDO de ${brD(e.data)} · ${e.obra} · ${EQ_CURTO(e.equipe||'')} (${e.status||'aguardando'})?\n\n${sg.length} segmento(s), ${fmt(e.t||0,1)} t. Todos saem da Produção executada, da Calculadora, do mapa${nReg?` e do Controle de RMPs (${nReg} registro(s) com motivo/fotos)`:' e do Controle de RMPs'}. Não dá para desfazer: para voltar, o RDO tem de ser lançado e enviado de novo.`))return;
+    const i=RDOS.indexOf(e);if(i>=0)RDOS.splice(i,1);window.__RDOS=RDOS;RES=null;render();rdRender();emit('prod',1);
+    try{await window.RdoDB.delEnvio(e.id)}catch(x){if(i>=0)RDOS.splice(i,0,e);RES=null;render();rdRender();alert('Não foi possível excluir o RDO: '+(x.message||x));return}
+    await rdoLimpa(rids);RES=null;render();rdRender();rmRender()}
   // estaca do RDO ("236+300") → posição (m) na base da obra; fim pelo comprimento no sentido
   function rdoSegs(d){const out=[],rdo=d.rdo||{};const KEYS=['start','direction','lane','length','width','thickness'];
     for(const f of [...(d.fres||[]),...(d.extras||[]).map(x=>Object.assign({},x,{__extra:1}))]){const o=Object.assign({},f,(rdo[f.id]&&rdo[f.id].over)||{});
@@ -4928,7 +4942,7 @@ const PROD=(function(){
         return `<tr class="rd-row${RDOPEN.has(e.id)?' open':''}" data-rdrow="${esc(e.id)}" title="Toque para ver os segmentos"><td><span class="rm-sit ${S0[1]}">${S0[0]}</span>${e.validado_por?`<small>${esc(e.validado_por)}${e.validado_em?' · '+esc(dt(e.validado_em)):''}${e.validacao_obs?' · '+esc(e.validacao_obs):''}</small>`:''}</td><td class="n">${brD(e.data)}</td><td>${esc(e.obra)}</td><td>${esc(EQ_CURTO(e.equipe||''))}</td><td class="n">${(e.segs||[]).length}${nr?`<small>${nr} com RMP</small>`:''}</td><td class="n">${fmt(e.t,1)}</td>
         <td>${nl===m.length?'<span class="rm-sit ok">✓ todos lançados</span>':`<span class="rm-sit pend">${m.length-nl} não lançado(s)</span>`}</td>
         <td><small>${esc(dt(e.enviado_em))}<br>${esc(e.enviado_por||'')}${e.__pend?' · <b>pendente de envio</b>':''}</small></td>
-        <td><button type="button" class="cm-mini rd-det" data-rddet="${esc(e.id)}" aria-label="Ver segmentos" title="Ver segmentos">▾</button>${V&&st==='aguardando'?`<button type="button" class="pd-b pri rd-v" data-rdval="${esc(e.id)}">Validar</button><button type="button" class="pd-b rd-v" data-rddev="${esc(e.id)}">Devolver</button>`:''}</td></tr>
+        <td><button type="button" class="cm-mini rd-det" data-rddet="${esc(e.id)}" aria-label="Ver segmentos" title="Ver segmentos">▾</button>${V&&st==='aguardando'?`<button type="button" class="pd-b pri rd-v" data-rdval="${esc(e.id)}">Validar</button><button type="button" class="pd-b rd-v" data-rddev="${esc(e.id)}">Devolver</button>`:''}${V&&window.RdoDB.delEnvio?`<button type="button" class="pd-rdx rd-xall" data-rdxall="${esc(e.id)}" aria-label="Excluir o RDO inteiro" title="Excluir definitivamente o RDO inteiro (todos os segmentos)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`:''}</td></tr>
         <tr class="rd-segs" data-rdsegs="${esc(e.id)}"${RDOPEN.has(e.id)?'':' hidden'}><td colspan="9"><table class="cm-t"><thead><tr><th>Pano</th><th>Estaca</th><th>Sentido · faixa</th><th>Programado</th><th>Executado</th><th>Diferença</th><th>RMP</th>${V?'<th></th>':''}</tr></thead><tbody>
           ${(e.segs||[]).map(g=>{const P=g.prog;const d=P?[g.len-P.len,g.w-P.w,(g.e-P.e)*100]:null;const xc=(e.excl||[]).includes(g.sid);return `<tr${xc?' class="rd-xc" title="Excluído da Produção executada"':''}><td>${esc(g.tag||'—')}${xc?' <small class="pd-erro">excluído</small>':''}</td><td>${esc(g.ini)}</td><td>${g.side==='D'?'↓':'↑'} ${g.lane===1?'Faixa 1':g.lane===2?'Faixa 2/3':'Acostamento'}</td>
             <td>${P?`${fmt(P.len,2)} m × ${fmt(P.w,2)} m × ${fmt(P.e*100,1)} cm`:'—'}</td><td><b>${fmt(g.len,2)} m × ${fmt(g.w,2)} m × ${fmt(g.e*100,1)} cm</b> · ${fmt(g.t,2)} t</td>
@@ -5225,7 +5239,7 @@ const PROD=(function(){
       if(!b){const row=e.target.closest('tr[data-rdrow]');if(!row||e.target.closest('a,input,select,label'))return;const id=row.dataset.rdrow,tr=$('rdList').querySelector(`[data-rdsegs="${CSS.escape(id)}"]`);
         if(tr){tr.hidden=!tr.hidden;tr.hidden?RDOPEN.delete(id):RDOPEN.add(id);row.classList.toggle('open',!tr.hidden)}return}
       if(b.dataset.rddet){const tr=$('rdList').querySelector(`[data-rdsegs="${CSS.escape(b.dataset.rddet)}"]`);if(tr){tr.hidden=!tr.hidden;tr.hidden?RDOPEN.delete(b.dataset.rddet):RDOPEN.add(b.dataset.rddet);const row=b.closest('tr[data-rdrow]');if(row)row.classList.toggle('open',!tr.hidden)}return}
-      if(b.dataset.rdxs)return rdoExclSeg(b.dataset.rdxs,b.dataset.sid);
+      if(b.dataset.rdxs)return rdoExclSeg(b.dataset.rdxs,b.dataset.sid);if(b.dataset.rdxall)return rdoDelEnvio(b.dataset.rdxall);
       const id=b.dataset.rdval||b.dataset.rddev;if(!id)return;const ok=!!b.dataset.rdval;const env=RDOS.find(x=>x.id===id);if(!env)return;
       const obs=ok?'':prompt('Motivo da devolução (o apontador corrige e envia de novo):','');if(!ok&&obs===null)return;
       if(ok&&!confirm(`Validar o RDO de ${brD(env.data)} – ${env.equipe}? Os ${(env.segs||[]).length} segmento(s) passam a contar como produção executada.`))return;
@@ -5396,7 +5410,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='23/11/2026 15:39';
+  const CUR_VER='23/11/2026 15:57';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

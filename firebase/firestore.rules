@@ -178,13 +178,16 @@ service cloud.firestore {
                     && request.resource.data.segs is list && request.resource.data.segs.size() < resource.data.segs.size()
                     && request.resource.data.excl_hist is list && request.resource.data.excl_hist.size() <= 4000
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['segs', 't', 'excl', 'excl_hist']);
-      allow delete: if false;
+      // exclusão definitiva do RDO inteiro, por quem valida RDO
+      allow delete: if canDo('rdo', 'edit');
     }
     match /rdo_envios_arq/{id} {
       allow read: if rdoRead();
       allow create: if canDo('rdo', 'create') && request.resource.data.id == id && request.resource.data.json is string && request.resource.data.json.size() < 1000000
                     && request.resource.data.enviado_por == request.auth.token.email;
-      allow update, delete: if false;
+      allow update: if false;
+      // apagado junto com o envio na exclusão definitiva do RDO
+      allow delete: if canDo('rdo', 'edit');
     }
     match /rdo_config/{id} {
       allow read: if rdoRead();

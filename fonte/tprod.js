@@ -118,7 +118,7 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   ok(nc>=1&&(await p.$$eval('#rmList tbody tr',a=>a.length))===nc&&/Data ▲/.test(await p.textContent('#rmList thead')),'RMP: filtro e ordenação nas colunas');await p.click('#rmList [data-rclr]');await W(300);
   await p.selectOption('#rmSit','ok');await W(400);ok((await p.$$eval('#rmList tbody tr',a=>a.length))>=1,'filtro de completos');
   const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#rmXls')]);ok(!!dx,'relatório de pendências de RMP em Excel');
-  await p.goto(`http://localhost:${PORT}/#producao`);await W(1500);await p.selectOption('#pdSev','all');await W(500);await p.fill('#pdList input[data-cf="ini"]','');
+  await p.goto(`http://localhost:${PORT}/#producao`);await p.reload();await W(2500);{const sv=await p.$eval('#pdSev',e=>e.value);const ds=await p.$$eval('#pdList tbody tr td.n:first-child',a=>a.slice(0,40).map(x=>x.textContent.slice(0,10).split('/').reverse().join('-')));ok(sv==='all'&&ds.length>1&&ds.every((d,i)=>!i||ds[i-1]>=d),'ao abrir: Mostrar = Todos e do mais recente para o mais antigo ('+ds[0]+' → '+ds[ds.length-1]+')')}await p.selectOption('#pdSev','all');await W(500);await p.fill('#pdList input[data-cf="ini"]','');
   const okMark=await p.evaluate(id=>{const t=[...document.querySelectorAll('#pdList [data-rmp]')].find(b=>b.dataset.rmp===id);return t?!!t.parentElement.querySelector('.rm-ok'):null},rid);
   const pend=await p.$$('#pdList .rm-pd');ok(okMark!==false&&pend.length>0,'Produção executada: ✓ verde no RMP completo e "!" nos pendentes')}
 // 5c) versões: RMP pela revisão válida na data; mapa com execução e comparação de revisões
