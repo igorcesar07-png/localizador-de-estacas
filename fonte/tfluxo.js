@@ -15,11 +15,11 @@ await p.click('#rvClose').catch(()=>{});
 await p.evaluate(()=>location.hash='#histprog');await W(900);ok(await p.$('.hpcard [data-rdo]'),'2) Histórico tem "Exportar para o RDO"');
 await p.click('.hpcard [data-rdo]');await W(1500);ok(await p.evaluate(()=>location.hash)==='#rdo','   e leva para a página RDO de Massa');
 const cm=await p.evaluate(()=>window.__CM.get());ok(cm.fres.length===tags.length&&cm.fres.every(f=>f.prog&&f.tag)&&/Johonatan/.test(cm.equipe),'3) segmentos programados com o programado guardado como referência ('+cm.fres.length+')');
-ok(/Valores programados/.test(await p.textContent('#cmRoot'))&&(await p.$$('#cmRoot .cm-in.req')).length>0,'   status Programado e campos a preencher destacados');
+ok(/Segmento programado/.test(await p.textContent('#cmRoot'))&&(await p.$$('#cmRoot .cm-in.req')).length>0,'   status Programado e campos a preencher destacados');
 // largura real 3,76 no 1º; espessura 10 cm no 2º (sola) → RMP
 await p.fill('#cmRoot [data-fi="0"][data-fk="width"]','3.76');await p.press('#cmRoot [data-fi="0"][data-fk="width"]','Tab');await W(500);
 await p.fill('#cmRoot [data-fi="1"][data-fk="thickness"]','13');await p.press('#cmRoot [data-fi="1"][data-fk="thickness"]','Tab');await W(600);
-const t2=await p.textContent('#cmRoot');ok(/RMP de espessura \(13,0 × 10,0 cm\)/.test(t2)&&/\+0,16/.test(t2)&&/entra no Controle de RMPs como pendência/.test(t2),'4) largura 3,76 (▲ +0,16) e espessura 13 cm (projeto 10) com RMP');
+const t2=await p.textContent('#cmRoot');ok(/RMP de espessura \(13,0 × 10,0 cm\)/.test(t2)&&/\+0,16/.test(t2)&&!!(await p.$('#cmRoot .cm-rmp a.cm-rmpb[href="#rmp"]'))&&!/Programado: /.test(t2),'4) largura 3,76 (▲ +0,16) e espessura 13 cm (projeto 10) com RMP');
 await p.screenshot({path:'/tmp/claude-0/fl_rdo.png'});await p.setViewportSize({width:390,height:844});await W(300);await p.screenshot({path:'/tmp/claude-0/fl_rdo_m.png'});await p.setViewportSize({width:1280,height:900});await p.click('[data-cmtab="fres"]');await W(200);
 await p.click('#cmRoot [data-cm="send"]');await W(900);ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'5) RDO enviado para validação ('+(await p.textContent('#cmMsg')).slice(0,80)+')');
 ok(/Aguardando validação/.test(await p.textContent('#cmRoot')),'   segmentos ficam "Aguardando validação"');

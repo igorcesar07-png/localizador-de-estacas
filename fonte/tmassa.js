@@ -27,10 +27,12 @@ const a2=await p.textContent('#cmRoot');ok(/Falta: 14,60 t/.test(a2)&&/Aplicados
 await p.click('#cmRoot [data-cm="xadd"]');await W(200);await p.fill('#cfIni','237+000');await p.fill('#cfLen','10');await p.fill('#cfW','3');await p.fill('#cfE','5');await p.click('#cmDlg button[type=submit]');await W(300);ok(/extra/.test(await p.textContent('#cmRoot')),'+ Extra');
 await p.screenshot({path:'/tmp/claude-0/cm_aco.png'});
 // envio
-await p.click('[data-cmtab="fres"]');await W(200);ok(!(await p.$('#cmRoot [data-cm="camp"]'))&&!(await p.$('#cmRoot [data-fmot]')),'sem "Marcar executado" e sem motivo no RDO (vai para o Controle de RMPs)');
-{const st0=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-sh b').textContent.replace('↳ ','')));const c=await p.$('#cmRoot .cm-seg[data-i="0"] .cm-sh>span:last-child');const bb=await c.boundingBox();const b1=await (await p.$('#cmRoot .cm-seg[data-i="1"]')).boundingBox();
-  await p.mouse.move(bb.x+5,bb.y+5);await p.mouse.down();await W(600);ok(await p.$('#cmRoot .cm-seg.cm-drag'),'tocar e segurar destaca o segmento');for(let k=1;k<=10;k++){await p.mouse.move(bb.x+5,bb.y+5+(b1.y+b1.height-bb.y)*k/10);await W(20)}await p.mouse.up();await W(400);
-  const st1=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-sh b').textContent.replace('↳ ','')));ok(st1[1]===st0[0]&&st1[0]===st0[1],'arrastar para baixo muda a posição na sequência')}
+await p.click('[data-cmtab="fres"]');await W(200);{const v=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>[x.querySelector('.cm-mass').textContent,x.querySelector('.cm-acc').textContent,x.querySelectorAll('.cm-kv dd').length]));const num=t=>+t.replace(' t','').replace(/\./g,'').replace(',','.');
+  let ac=0,okA=true;for(const [m,a] of v){ac+=num(m);if(Math.abs(ac-num(a))>0.02)okA=false}ok(okA&&v.every(x=>x[2]===6),'toneladas do segmento e acumuladas na sequência + 6 campos (estacas, sentido, faixa, solução, serial) '+JSON.stringify(v.slice(-1)))}
+ok(!(await p.$('#cmRoot [data-cm="camp"]'))&&!(await p.$('#cmRoot [data-fmot]')),'sem "Marcar executado" e sem motivo no RDO (vai para o Controle de RMPs)');
+{const st0=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-kv dd').textContent));const c=await p.$('#cmRoot .cm-seg[data-i="0"] .cm-sh>span:last-child');const bb=await c.boundingBox();const b1=await (await p.$('#cmRoot .cm-seg[data-i="1"]')).boundingBox();
+  await W(800);await p.mouse.move(bb.x+5,bb.y+5);await p.mouse.down();await W(600);ok(await p.$('#cmRoot .cm-seg.cm-drag'),'tocar e segurar destaca o segmento');for(let k=1;k<=10;k++){await p.mouse.move(bb.x+5,bb.y+5+(b1.y+b1.height*0.6-bb.y)*k/10);await W(20)}await p.mouse.up();await W(800);
+  const st1=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-kv dd').textContent));ok(st1[1]===st0[0]&&st1[0]===st0[1],'arrastar para baixo muda a posição na sequência')}
 await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
 ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'RDO do dia enviado para validação');ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
 await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
