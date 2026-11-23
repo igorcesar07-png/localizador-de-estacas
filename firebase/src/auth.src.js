@@ -73,7 +73,7 @@ const CSS=`
 `;
 function injectCss(){if($('authCss'))return;const s=document.createElement('style');s.id='authCss';s.textContent=CSS;document.head.appendChild(s)}
 function gate(html){injectCss();let g=$('gate');if(!g){g=document.createElement('div');g.id='gate';document.body.appendChild(g)}g.hidden=false;
-  g.innerHTML=`<div class="gbox"><div class="glogo"><img src="logo_neovia.png" alt="Neovia"><img src="logo_via.png" alt="Via Araucária"></div><h1>Localizador de Estacas</h1><p class="gsub">BR-277/PR · Blocos 2 e 3</p>${html}</div>`;return g}
+  g.innerHTML=`<div class="gbox"><div class="glogo"><img src="logo_neovia.png" alt="Neovia"><img src="logo_via.png" alt="Via Araucária"></div><h1>Localizador de Estacas</h1><p class="gsub">Neovia Restauração - Irati-PR</p>${html}</div>`;return g}
 const closeGate=()=>{const g=$('gate');if(g)g.remove()};
 const errTxt=e=>{const c=e&&e.code||'';return ({
   'auth/invalid-credential':'E-mail ou senha incorretos.','auth/wrong-password':'E-mail ou senha incorretos.','auth/user-not-found':'E-mail ou senha incorretos.',
