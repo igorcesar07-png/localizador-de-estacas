@@ -223,6 +223,10 @@ await t('RDO: quem só envia não valida',()=>assertFails(updateDoc(doc(lp('rdoc
 await t('RDO: quem valida exclui segmento validado (só excl/histórico)',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{excl:[1],excl_hist:[{sid:1,acao:'excluir',em:1,por:'rdoval@x.com'}]})));
 await t('RDO: exclusão não altera os dados enviados',()=>assertFails(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{excl:[],excl_hist:[],t:0})));
 await t('RDO: quem só envia não exclui segmento',()=>assertFails(updateDoc(doc(lp('rdoc'),'rdo_envios','r1'),{excl:[2],excl_hist:[]})));
+await t('RDO: quem só envia não apaga segmento',()=>assertFails(updateDoc(doc(lp('rdoc'),'rdo_envios','r1'),{segs:[],t:0,excl:[],excl_hist:[]})));
+await t('RDO: quem valida apaga segmento definitivamente (lista diminui)',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{segs:[],t:0,excl:[],excl_hist:[{sid:1,acao:'excluir_definitivo',em:1,por:'rdoval@x.com'}]})));
+await t('RDO: apagar segmento não muda outros dados do envio',()=>assertFails(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{segs:[],data:'2000-01-01'})));
+await t('RMP: quem valida RDO só apaga registro de segmento do RDO',()=>assertFails(deleteDoc(doc(lp('rdoval'),'rmp_controle','B23-123'))));
 await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','app'),{url:'https://x'})));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;

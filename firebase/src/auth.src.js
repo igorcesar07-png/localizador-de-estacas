@@ -311,6 +311,8 @@ onAuthStateChanged(auth,async user=>{
         save:r=>track(setDoc(doc(db,C,r.id),{...r,atualizado_por:user.email,atualizado_em:Date.now()})),
         saveMedia:m=>track(setDoc(doc(db,CM,m.id),{...m,criado_por:user.email})),
         getMedia:async id=>{const s=await getDoc(doc(db,CM,id));return s.exists()?s.data():null},
+        // apaga o registro (e as fotos) de um segmento do RDO excluído definitivamente
+        delReg:(id,mids)=>{const b=writeBatch(db);b.delete(doc(db,C,id));for(const m of (mids||[]))b.delete(doc(db,CM,m));return track(b.commit())},
         // data de corte do controle de pendências: todos leem, só o administrador altera
         cfg:async()=>{try{const s=await getDoc(doc(db,'rmp_config','app'));return s.exists()?s.data():{}}catch(e){return {}}},
         setCfg:c=>isAdm?track(setDoc(doc(db,'rmp_config','app'),{corte:String(c.corte||''),by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
@@ -326,6 +328,8 @@ onAuthStateChanged(auth,async user=>{
         validate:(id,st,obs)=>track(updateDoc(doc(db,'rdo_envios',id),{status:st,validado_por:user.email,validado_em:Date.now(),validacao_obs:String(obs||'').slice(0,300)})),
         // exclui (ou restaura) segmentos de um RDO validado da Produção executada; guarda quem e quando
         excl:(id,list,hist)=>track(updateDoc(doc(db,'rdo_envios',id),{excl:list,excl_hist:hist.map(h=>({...h,por:h.por||user.email}))})),
+        // exclusão definitiva: o segmento sai da lista do envio (fica só o registro de quem excluiu)
+        delSeg:(id,o)=>track(updateDoc(doc(db,'rdo_envios',id),{segs:o.segs,t:o.t,excl:o.excl||[],excl_hist:(o.excl_hist||[]).map(h=>({...h,por:h.por||user.email}))})),
         can:isAdm||!!prd.create,val:isAdm||!!prd.edit,admin:isAdm}}
     // versões do projeto (unifilares) com data de corte: lista leve (metadados) + dados lidos só quando usados
     {const VC=new Map();

@@ -142,7 +142,8 @@ service cloud.firestore {
     match /rmp_controle/{id} {
       allow read: if rmpRead();
       allow create, update: if canDo('rmp', 'create') && rmpOk(request.resource.data, id);
-      allow delete: if false;
+      // só o registro de um segmento do RDO excluído definitivamente (id "RDO-…"), por quem valida RDO
+      allow delete: if canDo('rdo', 'edit') && id.matches('^RDO-.*');
     }
     // data de corte do controle de pendências de RMP: leitura para quem vê o controle; só o administrador altera
     match /rmp_config/{id} {
@@ -155,7 +156,8 @@ service cloud.firestore {
       allow create: if canDo('rmp', 'create') && request.resource.data.id == id && request.resource.data.tipo == 'foto'
                     && request.resource.data.data is string && request.resource.data.data.size() < 1000000
                     && request.resource.data.reg is string && request.resource.data.criado_por == request.auth.token.email;
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if canDo('rdo', 'edit') && resource.data.reg.matches('^RDO-.*');
     }
     // RDO de massa: cada envio é imutável (correção = novo envio); o arquivo original fica guardado para rastreabilidade
     match /rdo_envios/{id} {
@@ -171,6 +173,11 @@ service cloud.firestore {
                     && request.resource.data.excl is list && request.resource.data.excl.size() <= 2000
                     && request.resource.data.excl_hist is list && request.resource.data.excl_hist.size() <= 4000
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['excl', 'excl_hist']);
+      // exclusão definitiva de segmento: a lista só diminui; o resto do envio não muda
+      allow update: if canDo('rdo', 'edit')
+                    && request.resource.data.segs is list && request.resource.data.segs.size() < resource.data.segs.size()
+                    && request.resource.data.excl_hist is list && request.resource.data.excl_hist.size() <= 4000
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['segs', 't', 'excl', 'excl_hist']);
       allow delete: if false;
     }
     match /rdo_envios_arq/{id} {
