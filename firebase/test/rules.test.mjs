@@ -214,6 +214,10 @@ const RDO=(id,by)=>({id,data:'2026-11-22',obra:'BR-277',equipe:'Equipe Pavimenta
 await t('RDO: quem tem "criar" envia o RDO do dia',()=>assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_envios','r1'),RDO('r1','rdoc@x.com'))));
 await t('RDO: envio não pode ser alterado depois',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_envios','r1'),RDO('r1','rdoc@x.com'))));
 await t('RDO: só "ver" não envia, mas lê',async()=>{await assertFails(setDoc(doc(lp('rdov'),'rdo_envios','r2'),RDO('r2','rdov@x.com')));await assertSucceeds(getDoc(doc(lp('rdov'),'rdo_envios','r1')))});
+await env.withSecurityRulesDisabled(async c=>{await setDoc(doc(c.firestore(),'users','rdoval'),{email:'rdoval@x.com',name:'v',profile:null,custom:true,perms:{rdo:{view:true,edit:true}},active:true,invited:true})});
+await t('RDO: quem valida muda só a situação',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoval@x.com',validado_em:1,validacao_obs:''})));
+await t('RDO: validação não altera os segmentos enviados',()=>assertFails(updateDoc(doc(lp('rdoval'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoval@x.com',validado_em:2,t:1})));
+await t('RDO: quem só envia não valida',()=>assertFails(updateDoc(doc(lp('rdoc'),'rdo_envios','r1'),{status:'validado',validado_por:'rdoc@x.com',validado_em:3,validacao_obs:''})));
 await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','app'),{url:'https://x'})));
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;

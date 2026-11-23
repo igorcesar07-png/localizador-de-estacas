@@ -108,7 +108,7 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
 {await p.goto(`http://localhost:${PORT}/#rdo`);await W(1500);const buf=await p.evaluate(async()=>Array.from(new Uint8Array(await (await fetch('rdo_test.json')).arrayBuffer())));
   await p.setInputFiles('#rdFile',{name:'apontamento-massa-BR277.json',mimeType:'application/json',buffer:Buffer.from(buf)});await W(800);
   ok(/segmentos/.test(await p.textContent('#rdPrev'))&&!!(await p.$('#rdSend')),'RDO: arquivo conferido e resumo exibido');
-  await p.selectOption('#rdEq','Equipe Pavimentação Johonatan');await p.click('#rdSend');await W(800);const nr=await p.$$eval('#rdList tbody tr',a=>a.length);ok(nr===1&&/enviado/.test(await p.textContent('#rdPrev')),'RDO enviado e listado com a conferência da planilha');
+  await p.selectOption('#rdEq','Equipe Pavimentação Johonatan');await p.click('#rdSend');await W(800);const nr=await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length);ok(nr===1&&/enviado/.test(await p.textContent('#rdPrev')),'RDO enviado e listado com a conferência da planilha');
   await p.setInputFiles('#rdFile',{name:'apontamento-massa-BR277.json',mimeType:'application/json',buffer:Buffer.from(buf)});await W(800);ok(/já foi enviado/.test(await p.textContent('#rdPrev')),'RDO: o mesmo arquivo não é enviado duas vezes');
   const [dx]=await Promise.all([p.waitForEvent('download',{timeout:30000}).catch(()=>null),p.click('#rdXls')]);ok(!!dx,'RDO: planilha em Excel')}
 // 6) Relatórios (BR-277) e Painel (B4) usam os dados

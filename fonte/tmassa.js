@@ -6,9 +6,9 @@ const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>{errs.push(e.messa
 await p.goto('http://localhost:8772/#rdo');await W(2000);ok(await p.$('#cmRoot .cm-tabs'),'Controle de massa aparece na página RDO');
 await p.fill('#cmUsi','60');await p.dispatchEvent('#cmUsi','change');await W(200);
 const add=async(ini,len,e)=>{await p.click('#cmRoot [data-cm="add"] >> nth=0');await W(200);await p.fill('#cfIni',ini);await p.fill('#cfLen',String(len));await p.fill('#cfW','3.6');await p.fill('#cfE',String(e));await p.click('#cfBus');await W(100);await p.click('#cmDlg button[type=submit]');await W(300)};
-await add('236300',200,6);await add('236,5',100,6);const n=await p.$$eval('#cmRoot .cm-t tbody tr:not(.cm-x)',a=>a.length);ok(n===2,'2 panos adicionados (estaca 236300 e 236,5)');
+await add('236300',200,6);await add('236,5',100,6);const n=await p.$$eval('#cmRoot .cm-seg',a=>a.length);ok(n===2,'2 panos adicionados (estaca 236300 e 236,5)');
 const t1=await p.textContent('#cmRoot');ok(/236\+300/.test(t1)&&/236\+500/.test(t1)&&/236\+600/.test(t1),'estacas inicial e final calculadas');
-ok(/Esp\. projeto/.test(t1),'esp. projeto exibida');
+ok((await p.$$('#cmRoot .cm-in input')).length>=6,'campos de campo por segmento');
 // dividir: 130/6 + 20/7.5 + 65/6 = 215 (acréscimo de 15 no final)
 await p.click('#cmRoot [data-cm="cut"][data-i="0"]');await W(300);await p.fill('#ctE','6');await p.dispatchEvent('#ctE','change');await W(100);
 const setSeg=async(k,len,e)=>{await p.fill(`[data-sk="length"][data-k="${k}"]`,String(len));await p.dispatchEvent(`[data-sk="length"][data-k="${k}"]`,'change');await W(80);await p.fill(`[data-sk="thickness"][data-k="${k}"]`,String(e));await p.dispatchEvent(`[data-sk="thickness"][data-k="${k}"]`,'change');await W(80)};
@@ -27,8 +27,8 @@ const a2=await p.textContent('#cmRoot');ok(/Falta: 14,60 t/.test(a2)&&/Aplicados
 await p.click('#cmRoot [data-cm="xadd"]');await W(200);await p.fill('#cfIni','237+000');await p.fill('#cfLen','10');await p.fill('#cfW','3');await p.fill('#cfE','5');await p.click('#cmDlg button[type=submit]');await W(300);ok(/extra/.test(await p.textContent('#cmRoot')),'+ Extra');
 await p.screenshot({path:'/tmp/claude-0/cm_aco.png'});
 // envio
-await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
-ok(/enviado/.test(await p.textContent('#cmMsg')),'RDO do dia enviado pelo app');ok((await p.$$eval('#rdList tbody tr',a=>a.length))===1,'envio aparece na lista de conferência');
+await p.click('[data-cmtab="fres"]');await W(200);for(let i=0;i<4;i++){await p.click(`#cmRoot [data-cm="camp"][data-i="${i}"]`);await W(150)}for(const s of await p.$$('#cmRoot [data-fmot]'))await s.selectOption('Chuva');await W(100);await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
+ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'RDO do dia enviado para validação');ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
 await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
 const pm=await b.newPage({viewport:{width:390,height:800}});await pm.goto('http://localhost:8772/#rdo');await W(1500);await pm.screenshot({path:'/tmp/claude-0/cm_mob.png'});
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

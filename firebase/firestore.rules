@@ -156,7 +156,11 @@ service cloud.firestore {
       allow read: if rdoRead();
       allow create: if canDo('rdo', 'create') && request.resource.data.id == id && request.resource.data.data is string
                     && request.resource.data.segs is list && request.resource.data.segs.size() <= 2000 && request.resource.data.enviado_por == request.auth.token.email;
-      allow update, delete: if false;
+      // validação: só muda a situação (validado ou devolvido), quem validou, quando e a observação; os dados enviados não mudam
+      allow update: if canDo('rdo', 'edit') && request.resource.data.status in ['validado', 'devolvido']
+                    && request.resource.data.validado_por == request.auth.token.email
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'validado_por', 'validado_em', 'validacao_obs']);
+      allow delete: if false;
     }
     match /rdo_envios_arq/{id} {
       allow read: if rdoRead();
