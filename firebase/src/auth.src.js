@@ -136,7 +136,7 @@ function fresh(ref,label,sig,ms=5000){return new Promise((res,rej)=>{let done=fa
         else if(!navigator.onLine){clearTimeout(wait);clearTimeout(dead);done=true;const e=new Error('offline sem cache');e.code='offline-nocache';rej(e)}
         return}
       if(s.metadata.hasPendingWrites){used=sig(s);return}   // alteração feita neste aparelho: já está aplicada
-      if(!s.metadata.fromCache&&label&&sig(s)!==used){NEWDATA.set(label,true);syncUi()}},
+      if(!s.metadata.fromCache&&label&&sig(s)!==used){NEWDATA.set(label,true);SYNC.msg='';syncUi()}}  // aviso de dados novos substitui a mensagem da última sincronização,
     e=>{clearTimeout(wait);clearTimeout(dead);if(!done){done=true;rej(e)}});
   LIVE.push(un)})}
 const sigBase=s=>s.exists()?String(s.data().version||''):'-';
