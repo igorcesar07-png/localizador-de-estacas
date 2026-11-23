@@ -803,7 +803,12 @@ button{font-family:inherit}
 .dtheme{margin:12px 0 0;flex:none;display:grid;gap:6px}.dtheme>span{font:700 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--plate-muted)}
 .dtheme .seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--plate-2);border:1px solid var(--plate-line);border-radius:12px;padding:3px}
 .dtheme button{min-height:40px;border:0;border-radius:9px;background:transparent;color:var(--plate-ink);font:700 13px var(--body);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.dtheme button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}.dtheme small{color:var(--plate-muted);font-size:11.5px;line-height:1.35}
+.dtheme button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.dtheme .thi{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+/* menu lateral acompanha o tema: claro no diurno, escuro no noturno */
+#drawer{--plate:#FFFFFF;--plate-2:#F1F3F0;--plate-ink:#141715;--plate-muted:#5F6A64;--plate-line:#D9DED9}
+:root[data-theme="dark"] #drawer{--plate:#050706;--plate-2:#161B18;--plate-ink:#FFFFFF;--plate-muted:#A9B3AD;--plate-line:#2D3430}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #drawer{--plate:#050706;--plate-2:#161B18;--plate-ink:#FFFFFF;--plate-muted:#A9B3AD;--plate-line:#2D3430}}.dtheme small{color:var(--plate-muted);font-size:11.5px;line-height:1.35}
 @media (orientation:landscape) and (max-height:500px){
   .locMain{flex-direction:row;flex-wrap:wrap;gap:0 24px}.lbl{width:100%}.track{width:100%;max-width:640px;margin-top:6px}
   .st{font-size:min(17vw,34vh)}.plus{font-size:min(9vw,20vh)}
@@ -1803,7 +1808,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 <nav id="drawer" aria-label="Menu" aria-hidden="true">
   <div class="dh"><div><b>Localizador de Estacas</b><small>BR-277/PR · Lotes 02 e 03 · BR-373/PR · Lote 04</small></div>
     <button class="menuBtn" type="button" data-close aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
-  <div class="dtheme" role="group" aria-labelledby="dThemeL"><span id="dThemeL">Aparência</span><div class="seg"><button type="button" data-theme-set="auto" aria-pressed="true">Automático</button><button type="button" data-theme-set="light" aria-pressed="false">☀ Diurno</button><button type="button" data-theme-set="dark" aria-pressed="false">☾ Noturno</button></div><small id="dThemeHint"></small></div>
+  <div class="dtheme" role="group" aria-labelledby="dThemeL"><span id="dThemeL">Aparência</span><div class="seg"><button type="button" data-theme-set="auto" aria-pressed="true"><svg class="thi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17A8.5 8.5 0 0 0 12 3.5z" fill="currentColor" stroke="none"/></svg><span>Automático</span></button><button type="button" data-theme-set="light" aria-pressed="false"><svg class="thi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><span>Diurno</span></button><button type="button" data-theme-set="dark" aria-pressed="false"><svg class="thi" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg><span>Noturno</span></button></div><small id="dThemeHint"></small></div>
   <div class="nav">
     <a href="#localizacao" data-page="localizacao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>Localização estaca<small>Estaca atual pelo GPS</small></span></a>
     <a href="#mapa" data-page="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg><span>Estacas BR-277 B2+B3<small>Mapa, soluções e filtros</small></span></a>
@@ -1821,7 +1826,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO de massa<small>Envio dos apontamentos do dia</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 23/11/2026 11:50 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 23/11/2026 12:02 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2525,10 +2530,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261123145033";</script>
-<script src="native.js?v=20261123145033"></script>
-<script src="firebase-config.js?v=20261123145033"></script>
-<script src="auth.js?v=20261123145033"></script>
+<script>window.APP_BUILD="20261123150256";</script>
+<script src="native.js?v=20261123150256"></script>
+<script src="firebase-config.js?v=20261123150256"></script>
+<script src="auth.js?v=20261123150256"></script>
 
 </body>
 </html>

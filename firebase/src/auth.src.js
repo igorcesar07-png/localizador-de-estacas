@@ -148,11 +148,11 @@ function track(p){SYNC.pend++;syncUi();Promise.resolve(p).then(()=>{SYNC.last=Da
 const soft=p=>{track(p);return Promise.race([p,new Promise(r=>setTimeout(r,1500))])};
 function watchPending(){SYNC.queued=true;syncUi();waitForPendingWrites(db).then(()=>{SYNC.queued=false;SYNC.last=Date.now();syncUi()},()=>{SYNC.queued=false;syncUi()})}
 const hhmm=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-const SYNC_CSS=`.dsync{margin:10px 0 0;padding:10px 0 0;border-top:1px solid var(--line,#ddd);display:grid;gap:8px;font-size:13px}
+const SYNC_CSS=`.dsync{margin:12px 0 0;padding:10px;border:1px solid var(--plate-line,#ddd);border-radius:12px;background:var(--plate-2,transparent);color:var(--plate-ink,inherit);display:grid;gap:8px;font-size:13px;flex:none}
 .dsync .dsst{display:flex;align-items:center;gap:8px;line-height:1.35}.dsync .dsst i{flex:none;width:10px;height:10px;border-radius:50%;background:#1E8E4E}
 .dsync.off .dsst i{background:#9AA39D}.dsync.pend .dsst i{background:#E3A008}.dsync.new .dsst i{background:#1A73E8}.dsync.err .dsst i{background:#C0392B}
-.dsync button{min-height:44px;border-radius:10px;border:0;background:var(--ink,#161A18);color:var(--surface,#fff);font:700 14px var(--body);cursor:pointer}.dsync button:disabled{opacity:.6;cursor:default}
-.dsync small{color:var(--muted,#56605A);font-size:12px;line-height:1.35}
+.dsync button{min-height:44px;border-radius:10px;border:0;background:var(--accent,#161A18);color:var(--accent-ink,#fff);font:700 14px var(--body);cursor:pointer}.dsync button:disabled{opacity:.6;cursor:default}
+.dsync small{color:var(--plate-muted,#56605A);font-size:12px;line-height:1.35}
 html.sync-off [data-menu],html.sync-pend [data-menu],html.sync-new [data-menu]{position:relative}
 html.sync-off [data-menu]::after,html.sync-pend [data-menu]::after,html.sync-new [data-menu]::after{content:'';position:absolute;top:5px;right:5px;width:11px;height:11px;border-radius:50%;border:2px solid #111;background:#9AA39D}
 html.sync-pend [data-menu]::after{background:#E3A008}html.sync-new [data-menu]::after{background:#1A73E8}
@@ -185,7 +185,8 @@ async function doSync(){if(SYNC.busy)return;SYNC.msg='';SYNC.err='';
   catch(e){SYNC.busy=false;SYNC.msg='Não foi possível sincronizar: '+errTxt(e);syncUi()}}
 function syncPanel(d){syncCss();if($('dsync'))return;const b=document.createElement('div');b.id='dsync';b.className='dsync';
   b.innerHTML='<div class="dsst"><i aria-hidden="true"></i><span id="dsTxt" aria-live="polite"></span></div><button type="button" id="dsBtn">Sincronizar agora</button><small>O app funciona sem internet. Registros e alterações ficam guardados no aparelho e são enviados quando houver conexão.</small>';
-  d.appendChild(b);$('dsBtn').onclick=doSync;syncUi()}
+  // fica no topo do menu, logo abaixo do cabeçalho
+  const hd=d.querySelector('.dh');if(hd)hd.after(b);else d.prepend(b);$('dsBtn').onclick=doSync;syncUi()}
 window.addEventListener('online',()=>{SYNC.msg='';enableNetwork(db).catch(()=>{});syncUi();if(!window.__appStarted)return;
   toast('Conexão restabelecida: sincronizando…');watchPending();
   waitForPendingWrites(db).then(()=>{SYNC.last=Date.now();syncUi();if(NEWDATA.size)toast('Dados novos do servidor recebidos.','Atualizar agora',applyNew,0);else toast('Sincronizado.')}).catch(()=>{})});
