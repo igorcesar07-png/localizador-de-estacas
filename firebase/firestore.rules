@@ -226,7 +226,8 @@ service cloud.firestore {
       allow update: if canDo('rdo', 'edit') && request.resource.data.id == id && pesOk(request.resource.data);
       allow update: if canDo('rdo', 'create') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['docs'])
                     && request.resource.data.docs is list && request.resource.data.docs.size() <= 3000 && request.resource.data.docs.hasAll(resource.data.docs);
-      allow update: if resource.data.ativo == true && pesOk(request.resource.data)
+      // (só pela página pública, que não usa login: usuários do app não mexem no cadastro dos outros)
+      allow update: if request.auth == null && resource.data.ativo == true && pesOk(request.resource.data)
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'funcao', 'assinatura', 'perfil_em'])
                     && request.resource.data.get('assinatura', '').matches('data:image/png;base64,.+') && request.resource.data.perfil_em is int;
       allow delete: if canDo('rdo', 'edit');
