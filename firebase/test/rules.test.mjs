@@ -244,7 +244,25 @@ await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(d
   await t('Assinatura RDO: engenheiro assina pelo link',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TE),SIG('Eng'))));
   await t('Assinatura RDO: o mesmo link não assina de novo',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TE),SIG('Outro'))));
   await t('Assinatura RDO: depois do engenheiro, o encarregado assina',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TC),SIG('Enc'))));
-  await t('Assinatura RDO: PDF não é alterado pelo link',()=>assertFails(setDoc(doc(anon,'rdo_pdf',TP),{pdf:'x'})))}
+  await t('Assinatura RDO: PDF não é alterado pelo link',()=>assertFails(setDoc(doc(anon,'rdo_pdf',TP),{pdf:'x'})));
+  // responsáveis cadastrados: página pessoal de assinaturas
+  const PID='a'.repeat(32),TF='f'.repeat(32);
+  const P0={id:PID,nome:'Bruno',funcao:'Encarregado',papel:'enc',ativo:true,docs:[],criado_por:'rdoval@x.com',criado_em:1};
+  await t('Responsáveis: quem só envia RDO não cadastra',()=>assertFails(setDoc(doc(lp('rdoc'),'assinantes',PID),P0)));
+  await t('Responsáveis: quem valida RDO cadastra',()=>assertSucceeds(setDoc(doc(lp('rdoval'),'assinantes',PID),P0)));
+  await t('Responsáveis: o endereço abre sem login',()=>assertSucceeds(getDoc(doc(anon,'assinantes',PID))));
+  await t('Responsáveis: sem login não lista o cadastro',()=>assertFails(getDocs(collection(anon,'assinantes'))));
+  await t('Responsáveis: a pessoa completa nome, função e assinatura padrão',()=>assertSucceeds(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno Carvalho Lima',funcao:'Encarregado de obras',assinatura:PNG,perfil_em:3})));
+  await t('Responsáveis: a pessoa não mexe na caixa de documentos',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{docs:['x'.repeat(32)]})));
+  await t('Responsáveis: a pessoa não muda o papel nem reativa',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{papel:'eng'})));
+  await t('Responsáveis: quem envia RDO acrescenta o documento na caixa',()=>assertSucceeds(updateDoc(doc(lp('rdoc'),'assinantes',PID),{docs:[TF]})));
+  await t('Responsáveis: quem envia RDO não tira documentos da caixa',()=>assertFails(updateDoc(doc(lp('rdoc'),'assinantes',PID),{docs:[]})));
+  await t('Responsáveis: quem envia RDO não altera o cadastro',()=>assertFails(updateDoc(doc(lp('rdoc'),'assinantes',PID),{nome:'Outro Nome'})));
+  await t('Responsáveis: RDO ligado à pessoa e assinado com a função',async()=>{await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TF),{...A(TF,'fis',TE),pessoa:PID,tipo:'RDO'}));
+    await assertSucceeds(updateDoc(doc(anon,'rdo_assin',TF),{...SIG('Bruno Carvalho Lima'),assinado_funcao:'Encarregado de obras'}))});
+  await t('Responsáveis: quem valida desativa',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',PID),{ativo:false})));
+  await t('Responsáveis: desativado não altera o próprio cadastro',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno C. Lima',funcao:'x1',assinatura:PNG,perfil_em:4})));
+  await t('Responsáveis: quem valida exclui',()=>assertSucceeds(deleteDoc(doc(lp('rdoval'),'assinantes',PID))))}
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
 const txt=`Regras do Firestore: ${ok}/${results.length} testes OK\n\n`+results.map(r=>r.join('  ')).join('\n')+'\n';

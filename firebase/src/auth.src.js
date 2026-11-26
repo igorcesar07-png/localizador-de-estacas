@@ -5,7 +5,7 @@ import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWith
   createUserWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,signOut,connectAuthEmulator,updateProfile,
   setPersistence,indexedDBLocalPersistence,browserLocalPersistence} from 'firebase/auth';
 import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memoryLocalCache,doc,getDoc,getDocFromServer,setDoc,collection,getDocs,
-  updateDoc,deleteDoc,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork,setLogLevel} from 'firebase/firestore';
+  updateDoc,deleteDoc,arrayUnion,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork,setLogLevel} from 'firebase/firestore';
 
 const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
@@ -345,7 +345,14 @@ onAuthStateChanged(auth,async user=>{
         // assinaturas do RDO por link (engenheiro → encarregado e fiscal) e PDF para conferência
         assSubscribe:cb=>onSnapshot(collection(db,'rdo_assin'),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
         assCreate:(docs,pdf)=>{const b=writeBatch(db);for(const o of docs)b.set(doc(db,'rdo_assin',o.tok),{...o,status:'pendente',criado_por:user.email,criado_em:Date.now()});
+          // o documento entra na caixa de assinaturas da pessoa cadastrada (página pessoal de assinaturas)
+          for(const o of docs)if(o.pessoa)b.update(doc(db,'assinantes',o.pessoa),{docs:arrayUnion(o.tok)});
           if(pdf)b.set(doc(db,'rdo_pdf',pdf.tok),{pdf:pdf.data,envio:pdf.envio,criado_por:user.email,criado_em:Date.now()});return track(b.commit())},
+        // responsáveis pelas assinaturas (cadastro): cada pessoa tem um endereço próprio com as assinaturas pendentes
+        pesSubscribe:cb=>onSnapshot(collection(db,'assinantes'),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        pesCreate:p=>track(setDoc(doc(db,'assinantes',p.id),{id:p.id,nome:String(p.nome||'').slice(0,120),funcao:String(p.funcao||'').slice(0,80),papel:p.papel,ativo:true,docs:[],criado_por:user.email,criado_em:Date.now()})),
+        pesUpd:(id,o)=>track(updateDoc(doc(db,'assinantes',id),o)),
+        pesDel:id=>track(deleteDoc(doc(db,'assinantes',id))),
         assReset:tok=>track(updateDoc(doc(db,'rdo_assin',tok),{status:'pendente',assinado_nome:null,assinado_em:null,assinatura:null,ua:null})),
         assDel:(toks,pdf)=>{const b=writeBatch(db);for(const t of toks)b.delete(doc(db,'rdo_assin',t));if(pdf)b.delete(doc(db,'rdo_pdf',pdf));return track(b.commit())},
         can:isAdm||!!prd.create,val:isAdm||!!prd.edit,admin:isAdm}}

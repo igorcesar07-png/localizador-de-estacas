@@ -53,6 +53,11 @@ service cloud.firestore {
           && d.atualizado_por == request.auth.token.email && d.atualizado_em is int;
     }
     function rdoRead() { return isAdmin() || (hasMe() && me().active == true && (canView(permsOf(me()), 'rdo') || canView(permsOf(me()), 'producao'))); }
+    function pesOk(d) {
+      return d.nome is string && d.nome.size() > 1 && d.nome.size() <= 120 && d.funcao is string && d.funcao.size() <= 80
+          && d.papel in ['eng', 'enc', 'fis', 'outro'] && d.ativo is bool && d.docs is list
+          && (d.get('assinatura', '') == '' || (d.assinatura is string && d.assinatura.size() < 200000));
+    }
     function levRead() { return isAdmin() || (hasMe() && me().active == true && canView(permsOf(me()), 'levbe')); }
     function anyView(p) {
       return canView(p, 'localizacao') || canView(p, 'mapa') || canView(p, 'mapab4') || canView(p, 'calculadora')
@@ -202,13 +207,29 @@ service cloud.firestore {
       allow create: if canDo('rdo', 'create') && request.resource.data.status == 'pendente' && request.resource.data.tok == tok
                     && request.resource.data.papel in ['eng', 'enc', 'fis'] && request.resource.data.envio is string && tok.size() >= 24;
       allow update: if resource.data.status == 'pendente' && request.resource.data.status == 'assinado'
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_em', 'assinatura', 'ua'])
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_funcao', 'assinado_em', 'assinatura', 'ua'])
                     && request.resource.data.assinado_nome is string && request.resource.data.assinado_nome.size() > 1 && request.resource.data.assinado_nome.size() <= 120
                     && request.resource.data.assinatura is string && request.resource.data.assinatura.size() < 200000
                     && request.resource.data.assinatura.matches('data:image/png;base64,.+')
                     && (resource.data.dep == null || get(/databases/$(database)/documents/rdo_assin/$(resource.data.dep)).data.status == 'assinado');
       // quem valida RDO pode refazer (voltar para pendente) ou apagar junto com o RDO
       allow update, delete: if canDo('rdo', 'edit');
+    }
+    // Responsáveis pelas assinaturas: cadastro feito por quem valida RDO; o id (aleatório, ≥ 24 caracteres) é o endereço pessoal
+    // da página de assinaturas. A pessoa, pelo próprio endereço, completa nome, função e assinatura padrão.
+    // "docs" = tokens dos documentos enviados para ela assinar (RDO, RMP…): quem envia RDO só acrescenta.
+    match /assinantes/{id} {
+      allow get: if true;
+      allow list: if rdoRead();
+      allow create: if canDo('rdo', 'edit') && id.size() >= 24 && request.resource.data.id == id && pesOk(request.resource.data)
+                    && request.resource.data.docs.size() == 0 && request.resource.data.ativo == true;
+      allow update: if canDo('rdo', 'edit') && request.resource.data.id == id && pesOk(request.resource.data);
+      allow update: if canDo('rdo', 'create') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['docs'])
+                    && request.resource.data.docs is list && request.resource.data.docs.size() <= 3000 && request.resource.data.docs.hasAll(resource.data.docs);
+      allow update: if resource.data.ativo == true && pesOk(request.resource.data)
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'funcao', 'assinatura', 'perfil_em'])
+                    && request.resource.data.get('assinatura', '').matches('data:image/png;base64,.+') && request.resource.data.perfil_em is int;
+      allow delete: if canDo('rdo', 'edit');
     }
     // PDF do RDO gerado (para conferência no link de assinatura): lido por token, gravado por quem envia o RDO
     match /rdo_pdf/{tok} {

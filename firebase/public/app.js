@@ -4925,13 +4925,16 @@ const PROD=(function(){
 
   /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
   const RDOPEN=new Set(),RDSEEN=new Set();let RDOS=[];
-  if(window.RdoDB){window.RdoDB.subscribe(l=>{if(!l)return;RDRAW=l;rdOnList()});if(window.RdoDB.assSubscribe)window.RdoDB.assSubscribe(l=>{if(!l)return;ASS=assGroup(l);rdOnList()})}
+  if(window.RdoDB){window.RdoDB.subscribe(l=>{if(!l)return;RDRAW=l;rdOnList()});if(window.RdoDB.assSubscribe)window.RdoDB.assSubscribe(l=>{if(!l)return;ASSL=l;ASS=assGroup(l);rdOnList()});
+    if(window.RdoDB.pesSubscribe)window.RdoDB.pesSubscribe(l=>{if(!l)return;PES=l;pesRender();cmRenderKeep()})}
   function rdOnList(){const l=rdoEff(RDRAW);RDOS=l;window.__RDOS=l;
     // situação dos segmentos enviados (aguardando, validado ou devolvido) volta para o RDO do aparelho
     try{let ch=false;for(const f of CM.fres){if(!f.envio)continue;const e=l.find(x=>x.id===f.envio.id);if(!e){if(RDSEEN.has(f.envio.id)){f.devolvido='RDO excluído pelo validador: lance de novo se foi executado';f.envio=null;ch=true}continue}const st=e.status||'aguardando';
       if(Array.isArray(e.segs)&&!e.segs.some(x=>x.sid===String(f.id))){f.devolvido='excluído do RDO enviado: lance de novo se foi executado';f.envio=null;ch=true;continue}
         if(st==='devolvido'){f.devolvido=e.validacao_obs||'devolvido para correção';f.envio=null;f.campo=true;ch=true}else if(f.envio.st!==st){f.envio.st=st;ch=true}}if(ch)store.set(CMK,CM)}catch(e){}
-    l.forEach(x=>RDSEEN.add(x.id));RES=null;rdRender();render();cmRender();rdcRender();emit('prod',1)}
+    l.forEach(x=>RDSEEN.add(x.id));RES=null;rdRender();render();cmRender();rdcRender();pesRender();emit('prod',1)}
+  // atualiza o formulário do RDO quando o cadastro de responsáveis muda, sem perder o foco de quem está digitando
+  function cmRenderKeep(){const a=document.activeElement;if(a&&$('cmRoot')&&$('cmRoot').contains(a)&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;try{cmRender()}catch(e){}}
   const canRdo=()=>!!(window.RdoDB&&window.RdoDB.can);
   // Produção executada: exclui um segmento que veio do RDO validado (os da planilha Excel não têm essa opção). O envio original não muda: o segmento fica marcado como excluído.
   document.addEventListener('click',e=>{const b=e.target.closest('[data-rdlk]');if(b){const u=assUrl(b.dataset.rdlk);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link de assinatura copiado.'),()=>prompt('Copie o link de assinatura:',u));return}
@@ -5191,7 +5194,7 @@ const PROD=(function(){
   const REL_ATV=[['mont','Montagem sinalização'],['fres','Fresagem do pavimento'],['lig','Pintura de ligação'],['cbuq','Aplicação de CBUQ'],['rol','Rolagem/ Compactação'],['pint','Pintura de faixas/ Tachas'],['desm','Desmontagem sinalização']];
   const PAPEL={eng:'Engenheiro de Produção',enc:'Encarregado',fis:'Fiscal'};
   const relNew=()=>({numero:'',encarregado:'',chuva:[],neb:[],hor:{},massa:'',usina:'Nova Serrinha - Balsa Nova/PR',projeto:'v1.1 - Neovia',bota:'',obs:'',fres_cam:'',dest:[{l:'',c:''},{l:'',c:''},{l:'',c:''}],eng:'',fis:''});
-  function REL(){if(!CM.rel){const m=store.get('rdoResp',{});CM.rel=Object.assign(relNew(),{eng:m.eng||'',fis:m.fis||'',usina:m.usina||relNew().usina,projeto:m.projeto||relNew().projeto,massa:m.massa||''})}
+  function REL(){if(!CM.rel){const m=store.get('rdoResp',{});CM.rel=Object.assign(relNew(),{eng:m.eng||'',fis:m.fis||'',engP:m.engP||'',fisP:m.fisP||'',usina:m.usina||relNew().usina,projeto:m.projeto||relNew().projeto,massa:m.massa||''})}
     const r=CM.rel;if(!Array.isArray(r.dest)||r.dest.length<3)r.dest=[0,1,2].map(i=>(r.dest||[])[i]||{l:'',c:''});if(!r.hor)r.hor={};if(!Array.isArray(r.chuva))r.chuva=[];if(!Array.isArray(r.neb))r.neb=[];
     if(!r.encarregado&&CM.equipe)r.encarregado=String(CM.equipe).replace(/^Equipe\s+(de\s+)?(Pavimentação|Dreno)\s+/i,'');return r}
   const relNum=()=>{let m=0;for(const e of RDOS){const v=parseInt(e.rel&&e.rel.numero,10);if(v>m)m=v}return m?String(m+1):''};
@@ -5225,9 +5228,13 @@ const PROD=(function(){
       <div class="cm-g2"><div class="fld"><label>Caminhões usados na fresagem<input data-rel="fres_cam" type="number" min="0" step="1" value="${esc(r.fres_cam||'')}"></label></div></div>
       <div class="rel-dest">${r.dest.map((d,i)=>`<div class="fld"><label>Destino ${i+1} do fresado<input data-rel="dest.${i}.l" value="${esc(d.l||'')}" maxlength="80" placeholder="local"></label></div><div class="fld"><label>Caminhões (destino ${i+1})<input data-rel="dest.${i}.c" type="number" min="0" step="1" value="${esc(d.c||'')}"></label></div>`).join('')}</div>
       <h4 class="rel-h">Responsáveis pela assinatura</h4>
-      <div class="cm-g2">${inp('eng',r.eng,'Engenheiro de Produção *',' maxlength="120"')}<div class="fld"><label>Encarregado<input value="${esc(r.encarregado||'')}" disabled></label></div>${inp('fis',r.fis,'Fiscal (Via Araucária)',' maxlength="120"')}</div>
+      ${pesAt().length?`<div class="cm-g2">${pesSel('eng','Engenheiro de Produção *')}${pesSel('enc','Encarregado')}${pesSel('fis','Fiscal (Via Araucária)')}</div><p class="pd-note">Cada um recebe o RDO na sua página de assinaturas (cadastro em <b>Responsáveis pelas assinaturas</b>, mais abaixo).</p>`
+        :`<div class="cm-g2">${inp('eng',r.eng,'Engenheiro de Produção *',' maxlength="120"')}<div class="fld"><label>Encarregado<input value="${esc(r.encarregado||'')}" disabled></label></div>${inp('fis',r.fis,'Fiscal (Via Araucária)',' maxlength="120"')}</div>${window.RdoDB&&window.RdoDB.pesSubscribe?'<p class="pd-note">Cadastre os responsáveis em <b>Responsáveis pelas assinaturas</b> (mais abaixo) para que cada um receba os RDOs na sua página de assinaturas.</p>':''}`}
       <div class="fld"><label>Observações<textarea data-rel="obs" rows="3" maxlength="900">${esc(r.obs||'')}</textarea></label></div>
       <div class="pd-acts"><button type="button" class="pd-b" data-cm="relprev">Prévia do PDF</button><button type="button" class="pd-b pri" data-cm="send"${canRdo()?'':' disabled'}>Gerar RDO e enviar para assinatura</button><span class="pd-note" id="cmMsg" aria-live="polite"></span></div></div>`}
+  function pesSel(p,lab){const r=REL(),cur=r[p+'P']||'',L=pesAt(),a=L.filter(x=>x.papel===p),o=L.filter(x=>x.papel!==p);
+    const opt=x=>`<option value="${esc(x.id)}"${x.id===cur?' selected':''}>${esc(x.nome)}${x.funcao?' · '+esc(x.funcao):''}</option>`;
+    return `<div class="fld"><label>${lab}<select data-relp="${p}"><option value="">${p==='eng'?'Selecione…':'— sem assinatura —'}</option>${a.length?`<optgroup label="${esc(PAPEL_P[p])}">${a.map(opt).join('')}</optgroup>`:''}${o.length?`<optgroup label="Outros cadastrados">${o.map(opt).join('')}</optgroup>`:''}</select></label></div>`}
   function relSet(path,v){const r=REL();const k=path.split('.');let o=r;for(let i=0;i<k.length-1;i++){const x=k[i];if(o[x]==null||typeof o[x]!=='object')o[x]=/^\d+$/.test(k[i+1])?[]:{};o=o[x]}o[k[k.length-1]]=v;if(path==='encarregado'){const d=$('cmRoot').querySelector('.rel input[disabled]');if(d)d.value=v}store.set(CMK,CM)}
   function relUpd(){const a=$('relApl'),s=$('relSob');if(!a)return;const apl=relApl(),us=+CM.usinado||0;a.textContent=fmt(apl,2)+' t';s.textContent=fmt(us-apl,2)+' t';s.className=us-apl<0?'pd-erro':''}
   // ----- PDF (jsPDF, A4 paisagem) no layout do RDO VIAR-GDA -----
@@ -5286,12 +5293,13 @@ const PROD=(function(){
       const dest=(r.dest||[]).filter(d=>d&&String(d.l||'').trim());T(`Caminhões na fresagem: ${r.fres_cam===''||r.fres_cam==null?'-':r.fres_cam}`,80,by+12,{s:7});
       dest.forEach((d,i)=>T(`Fresado - ${d.l}: ${d.c||0} caminhão(ões)`,80,by+15.5+i*3.3,{s:6.5,w:62}));
       [['eng','Engenheiro de Produção','Neovia Restauração'],['enc','Encarregado de obras','Neovia Restauração'],['fis','Fiscalização','Via Araucária']].forEach(([p,t,em],i)=>{const sx=148+i*48,sy=by+6,a=A0[p];
-        if(a&&a.status==='assinado'){if(a.assinatura)try{doc.addImage(a.assinatura,'PNG',sx+4,sy-9,32,10.5)}catch(x){}T(`${a.assinado_nome} · ${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}`,sx+20,sy+6.6,{s:4.8,a:'center',w:46})}
+        if(a&&a.status==='assinado'){if(a.assinatura)try{doc.addImage(a.assinatura,'PNG',sx+4,sy-9,32,10.5)}catch(x){}T(`${a.assinado_nome}${a.assinado_funcao?' ('+a.assinado_funcao+')':''} · ${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}`,sx+20,sy+6.6,{s:4.8,a:'center',w:46})}
         doc.line(sx,sy+1,sx+40,sy+1);T(a&&a.status==='assinado'?a.assinado_nome:(r[p==='enc'?'encarregado':p]||''),sx+20,sy+3.6,{s:5.6,a:'center',w:42});T(t,sx+20,sy+9.3,{s:5.6,a:'center'});T(em,sx+20,sy+11.8,{s:5.6,a:'center'})});
       T('As dimensões apresentadas neste documento poderão sofrer alterações após conferência pela fiscalização.',290,206,{s:6,a:'right'});
       T(`Rev16 - Elaborada em 18/09/2026 · gerado pelo Localizador de Estacas${pages>1?` · página ${pg+1}/${pages}`:''}`,290,209,{s:5,a:'right',c:110})}
     return doc}
   const tokNew=()=>{const a=new Uint8Array(16);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
+  const pesUrl=id=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?p='+id;
   const assUrl=t=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?t='+t;
   async function relPrev(){try{const e=relEnvio(null);const d=await rdoPdf(e,{});d.save(`RDO_${e.rel.numero||'previa'}_${e.data}.pdf`)}catch(x){toast('Não foi possível gerar o PDF: '+(x.message||x))}}
   // envio-like do RDO atual do aparelho (para a prévia e para o PDF do envio)
@@ -5305,7 +5313,36 @@ const PROD=(function(){
     fres_cam:r.fres_cam===''||r.fres_cam==null?'':+r.fres_cam,dest:(r.dest||[]).filter(d=>String(d.l||'').trim()).map(d=>({l:String(d.l).slice(0,80),c:d.c===''?0:+d.c||0})),
     eng:String(r.eng||'').slice(0,120),fis:String(r.fis||'').slice(0,120),usinado:us,aplicado:apl,sobra:Math.round((us-apl)*100)/100}}
   // ----- central de acompanhamento -----
-  let RDRAW=[],ASS={};
+  let RDRAW=[],ASS={},ASSL=[],PES=[];
+  const PAPEL_P={eng:'Engenheiro de Produção',enc:'Encarregado',fis:'Fiscal',outro:'Outro'};
+  const pesAt=()=>PES.filter(x=>x.ativo!==false).sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR'));
+  const pesById=id=>PES.find(x=>x.id===id&&x.ativo!==false)||null;
+  // ----- cadastro dos responsáveis pelas assinaturas -----
+  function pesRender(){const card=$('rdPesCard'),box=$('rdPes');if(!card||!box)return;const D=window.RdoDB;if(!D||!D.pesSubscribe){card.hidden=true;return}card.hidden=false;const val=!!D.val;
+    const libA=a=>!a.dep||(ASSL.find(x=>x.tok===a.dep)||{}).status==='assinado';
+    const pend=id=>{const l=ASSL.filter(a=>a.pessoa===id&&a.status==='pendente'),n=l.filter(libA).length,w=l.length-n;return n||w?`<b>${n}</b>${w?` <small>(+${w} aguardando o engenheiro)</small>`:''}`:'0'};
+    const form=val?`<div class="pd-fl rdp-f"><div class="fld"><label for="rpNome">Nome</label><input id="rpNome" maxlength="120" placeholder="a pessoa confirma o nome completo no 1º acesso"></div>
+      <div class="fld"><label for="rpFun">Função</label><input id="rpFun" maxlength="80" placeholder="ex.: Engenheiro de Produção"></div>
+      <div class="fld"><label for="rpPap">Assina no RDO como</label><select id="rpPap">${Object.entries(PAPEL_P).map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</select></div>
+      <div class="fld"><label>&nbsp;</label><button type="button" class="pd-b pri" id="rpAdd">Cadastrar responsável</button></div></div><p class="pd-note" id="rpMsg" aria-live="polite"></p>`:'';
+    const l=PES.slice().sort((a,b)=>(a.ativo===false)-(b.ativo===false)||String(a.nome).localeCompare(String(b.nome),'pt-BR'));
+    // o formulário é montado uma vez (não perde o que está sendo digitado quando o cadastro muda); a lista é refeita
+    if(!!$('rpAdd')!==val||!$('rdPesL')){box.innerHTML=form+'<div id="rdPesL"></div>';bindAdd()}
+    $('rdPesL').innerHTML=(l.length?`<div class="tscroll"><table class="cm-t rdp"><thead><tr><th>Nome</th><th>Função</th><th>Assina como</th><th>Cadastro da pessoa</th><th>Pendentes</th><th>Página de assinaturas</th>${val?'<th></th>':''}</tr></thead><tbody>${l.map(x=>{const n=pend(x.id),off=x.ativo===false;
+      return `<tr${off?' class="rdp-off"':''}><td><b>${esc(x.nome)}</b></td><td>${esc(x.funcao||'—')}</td><td>${esc(PAPEL_P[x.papel]||x.papel)}</td>
+        <td>${off?'desativado':x.assinatura&&x.perfil_em?`<span class="rdc-ck ok">✓</span> completo${x.assinatura?`<img class="rdp-sig" src="${esc(x.assinatura)}" alt="assinatura padrão">`:''}`:'<span class="rdc-ck pd">○</span> aguarda a pessoa'}</td>
+        <td>${n}</td>
+        <td>${off?'—':`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-pslk="${esc(x.id)}">Copiar endereço</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`${x.nome}, esta é a sua página de assinaturas da obra (RDO e outros documentos): ${pesUrl(x.id)}`)}">WhatsApp</a></span>`}</td>
+        ${val?`<td><span class="rdc-ln"><button type="button" class="pd-b rd-v" data-psoff="${esc(x.id)}">${off?'Reativar':'Desativar'}</button>${(x.docs||[]).length?'':`<button type="button" class="pd-b rd-v" data-psdel="${esc(x.id)}">Excluir</button>`}</span></td>`:''}</tr>`}).join('')}</tbody></table></div>`
+      :'<p class="pd-note">Nenhum responsável cadastrado ainda.</p>');
+    function bindAdd(){if($('rpAdd'))$('rpAdd').onclick=async()=>{const nm=$('rpNome').value.trim(),fn=$('rpFun').value.trim(),pp=$('rpPap').value,m=$('rpMsg');
+      if(nm.length<3){m.textContent='Informe o nome.';return}if(PES.some(x=>x.ativo!==false&&String(x.nome).toLowerCase()===nm.toLowerCase())){m.textContent='Já existe um responsável ativo com este nome.';return}
+      const id=tokNew();try{await D.pesCreate({id,nome:nm,funcao:fn||PAPEL_P[pp],papel:pp});m.innerHTML=`${esc(nm)} cadastrado. Envie o endereço da página de assinaturas: <button type="button" class="pd-b rd-v" data-pslk="${id}">Copiar endereço</button>`;$('rpNome').value='';$('rpFun').value=''}catch(e){m.textContent='Não foi possível cadastrar: '+(e.message||e)}}}}
+  document.addEventListener('click',async e=>{const D=window.RdoDB;let b=e.target.closest('[data-pslk]');if(b){const u=pesUrl(b.dataset.pslk);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Endereço da página de assinaturas copiado.'),()=>prompt('Copie o endereço da página de assinaturas:',u));return}
+    if(!D||!D.val)return;b=e.target.closest('[data-psoff]');if(b){const x=PES.find(y=>y.id===b.dataset.psoff);if(!x)return;const on=x.ativo===false;
+      if(!on&&!confirm(`Desativar ${x.nome}? O endereço dele deixa de abrir as assinaturas e ele some da escolha no RDO.`))return;
+      try{await D.pesUpd(x.id,{ativo:on})}catch(er){toast('Não foi possível alterar: '+(er.message||er))}return}
+    b=e.target.closest('[data-psdel]');if(b){const x=PES.find(y=>y.id===b.dataset.psdel);if(!x||!confirm(`Excluir o cadastro de ${x.nome}? O endereço deixa de existir.`))return;try{await D.pesDel(x.id)}catch(er){toast('Não foi possível excluir: '+(er.message||er))}}});
   const assGroup=l=>{const m={};for(const a of l){(m[a.envio]||(m[a.envio]={}))[a.papel]=a}return m};
   // assinatura do Engenheiro de Produção = RDO validado (a produção entra no banco geral), mesmo sem as outras assinaturas
   const rdoEff=l=>l.map(e=>{const a=ASS[e.id];if(!a||!a.eng||a.eng.status!=='assinado'||e.status==='validado'||e.status==='devolvido')return e;
@@ -5317,7 +5354,8 @@ const PROD=(function(){
     const cel=(e,p)=>{const a=(ASS[e.id]||{})[p],eng=(ASS[e.id]||{}).eng,ok=a&&a.status==='assinado',lib=p==='eng'||(eng&&eng.status==='assinado');
       if(!a)return `<td>${ck(false,'sem link')}<small>sem link</small></td>`;
       if(ok)return `<td>${ck(true,'assinado')}<small>${esc(a.assinado_nome||'')}<br>${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small></td>`;
-      return `<td>${ck(false,'pendente')}<small>${esc(a.nome||PAPEL[p])}${lib?'':' · aguarda o engenheiro'}</small>${can&&lib?`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-rdlk="${esc(a.tok)}" data-p="${p}" data-e="${esc(e.id)}">Copiar link</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`RDO ${e.rel&&e.rel.numero||''} de ${brD(e.data)} (${e.equipe}) – assinatura do ${PAPEL[p]}: ${assUrl(a.tok)}`)}">WhatsApp</a></span>`:''}</td>`};
+      return `<td>${ck(false,'pendente')}<small>${esc(a.nome||PAPEL[p])}${lib?'':' · aguarda o engenheiro'}</small>${can&&lib?(a.pessoa&&pesById(a.pessoa)?`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-pslk="${esc(a.pessoa)}" data-rdlk-p="${p}">Copiar endereço</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`RDO ${e.rel&&e.rel.numero||''} de ${brD(e.data)} (${e.equipe}) aguardando a sua assinatura (${PAPEL[p]}): ${pesUrl(a.pessoa)}`)}">WhatsApp</a></span>`
+        :`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-rdlk="${esc(a.tok)}" data-p="${p}" data-e="${esc(e.id)}">Copiar link</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`RDO ${e.rel&&e.rel.numero||''} de ${brD(e.data)} (${e.equipe}) – assinatura do ${PAPEL[p]}: ${assUrl(a.tok)}`)}">WhatsApp</a></span>`):''}</td>`};
     let last='';box.innerHTML=`<table class="cm-t rdc"><thead><tr><th>Data</th><th>Equipe</th><th>Nº</th><th>Gerado</th><th>Engenheiro</th><th>Encarregado</th><th>Fiscal</th><th>Produção</th><th></th></tr></thead><tbody>${l.map(e=>{const a=ASS[e.id]||{},eng=a.eng&&a.eng.status==='assinado';
       const d=e.data!==last?`<td rowspan="${l.filter(x=>x.data===e.data).length}"><b>${brD(e.data)}</b></td>`:'';last=e.data;
       return `<tr>${d}<td>${esc(EQ_CURTO(e.equipe||''))}<small>${esc(e.obra||'')}</small></td><td>${esc(e.rel&&e.rel.numero||'—')}</td><td>${ck(true,'gerado')}<small>${new Date(e.enviado_em||Date.now()).toLocaleDateString('pt-BR')}</small></td>${cel(e,'eng')}${cel(e,'enc')}${cel(e,'fis')}
@@ -5325,6 +5363,8 @@ const PROD=(function(){
   async function rdcPdf(id){const e=RDOS.find(x=>x.id===id);if(!e)return;try{const d=await rdoPdf(e,ASS[id]||{});d.save(`RDO_${e.rel&&e.rel.numero||''}_${e.data}_${EQ_CURTO(e.equipe||'').replace(/\W+/g,'_')}.pdf`)}catch(x){toast('Não foi possível gerar o PDF: '+(x.message||x))}}
   async function cmSend(){const msg=$('cmMsg');if(!canRdo())return;CM.date=$('cmDt').value;CM.job=$('cmJob').value;CM.equipe=$('cmEq').value;CM.resp=$('cmResp').value.trim();store.set(CMK,CM);
     if(!CM.equipe){msg.textContent='Escolha a equipe.';return}cmRmp();const RL=REL();if(!RL.numero)RL.numero=relNum();
+    if(pesAt().length){for(const p of ['eng','enc','fis']){const x=pesById(RL[p+'P']);if(RL[p+'P']&&!x)RL[p+'P']='';if(x)RL[p==='enc'?'encarregado':p]=x.nome}
+      if(!RL.engP){msg.textContent='Escolha o Engenheiro de Produção (primeira assinatura).';return}}
     if(!String(RL.numero||'').trim()){msg.textContent='Informe o Nº do RDO.';return}if(!String(RL.eng||'').trim()){msg.textContent='Informe o Engenheiro de Produção (primeira assinatura).';return}
     const ex=CM.fres.filter(f=>!f.envio);if(!ex.length){msg.textContent='Nenhum segmento a enviar.';return}
     const D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))});const err=rdoCheck(D0);if(err.length){msg.textContent='Não dá para enviar: '+err.join('; ')+'.';return}
@@ -5339,13 +5379,16 @@ const PROD=(function(){
     msg.textContent='Gerando o PDF…';let pdf;try{pdf=(await rdoPdf(sum,{})).output('datauristring')}catch(e){msg.textContent='Não foi possível gerar o PDF: '+(e.message||e);return}
     const resumo={numero:sum.rel.numero,data:sum.data,obra:sum.obra,equipe:sum.equipe,n:segs.length,usinado:sum.rel.usinado,aplicado:sum.rel.aplicado,sobra:sum.rel.sobra};
     try{await window.RdoDB.save(sum,raw);
-      if(window.RdoDB.assCreate)await window.RdoDB.assCreate([{tok:tk.eng,papel:'eng',nome:sum.rel.eng,dep:null},{tok:tk.enc,papel:'enc',nome:sum.rel.encarregado,dep:tk.eng},{tok:tk.fis,papel:'fis',nome:sum.rel.fis,dep:tk.eng}].map(o=>({...o,envio:id,pdf:tp,resumo})),{tok:tp,data:pdf,envio:id});
-      store.set('rdoResp',{eng:RL.eng,fis:RL.fis,usina:RL.usina,projeto:RL.projeto,massa:RL.massa});
-      for(const f of ex)f.envio={id,st:'aguardando'};CM.rel=Object.assign(relNew(),{eng:RL.eng,fis:RL.fis,usina:RL.usina,projeto:RL.projeto,massa:RL.massa});store.set(CMK,CM);cmRender();
-      const url=assUrl(tk.eng);setTimeout(()=>{const m=$('cmMsg');if(m)m.innerHTML=`RDO nº ${esc(sum.rel.numero)} de ${brD(CM.date)} gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Envie o link ao Engenheiro de Produção: <button type="button" class="pd-b rd-v" data-rdlk="${tk.eng}" data-p="eng" data-e="${esc(id)}">Copiar link</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO '+sum.rel.numero+' de '+brD(CM.date)+' – assinatura do Engenheiro de Produção: '+url)}">WhatsApp</a>. Acompanhe na Central de RDOs. Sem internet, sobe quando houver conexão.`},30)}
+      if(window.RdoDB.assCreate)await window.RdoDB.assCreate([{tok:tk.eng,papel:'eng',nome:sum.rel.eng,dep:null},{tok:tk.enc,papel:'enc',nome:sum.rel.encarregado,dep:tk.eng},{tok:tk.fis,papel:'fis',nome:sum.rel.fis,dep:tk.eng}]
+        .map(o=>{const x=pesById(RL[o.papel+'P']);return {...o,...(x?{pessoa:x.id,nome:x.nome}:{}),tipo:'RDO',envio:id,pdf:tp,resumo}}),{tok:tp,data:pdf,envio:id});
+      store.set('rdoResp',{eng:RL.eng,fis:RL.fis,engP:RL.engP||'',fisP:RL.fisP||'',usina:RL.usina,projeto:RL.projeto,massa:RL.massa});
+      for(const f of ex)f.envio={id,st:'aguardando'};CM.rel=Object.assign(relNew(),{eng:RL.eng,fis:RL.fis,engP:RL.engP||'',fisP:RL.fisP||'',usina:RL.usina,projeto:RL.projeto,massa:RL.massa});store.set(CMK,CM);cmRender();
+      const pe=pesById(RL.engP),url=pe?pesUrl(pe.id):assUrl(tk.eng);setTimeout(()=>{const m=$('cmMsg');if(!m)return;if(pe){m.innerHTML=`RDO nº ${esc(sum.rel.numero)} de ${brD(CM.date)} gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Já está pendente na página de assinaturas de <b>${esc(pe.nome)}</b> (Engenheiro de Produção)${RL.encP||RL.fisP?'; encarregado e fiscal recebem na página deles quando ele assinar':''}. <button type="button" class="pd-b rd-v" data-pslk="${esc(pe.id)}">Copiar endereço dele</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO '+sum.rel.numero+' de '+brD(CM.date)+' aguardando a sua assinatura: '+url)}">Avisar no WhatsApp</a>. Acompanhe na Central de RDOs.`;return}
+        m.innerHTML=`RDO nº ${esc(sum.rel.numero)} de ${brD(CM.date)} gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Envie o link ao Engenheiro de Produção: <button type="button" class="pd-b rd-v" data-rdlk="${tk.eng}" data-p="eng" data-e="${esc(id)}">Copiar link</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO '+sum.rel.numero+' de '+brD(CM.date)+' – assinatura do Engenheiro de Produção: '+url)}">WhatsApp</a>. Acompanhe na Central de RDOs. Sem internet, sobe quando houver conexão.`},30)}
     catch(e){msg.textContent='Não foi possível enviar: '+(e.message||e)}}
   function cmBind(){const root=$('cmRoot');if(!root||root.__b)return;root.__b=1;
-    const relIn=e=>{const t=e.target;if(t.dataset&&t.dataset.rel!=null){relSet(t.dataset.rel,t.value);return true}if(t.dataset&&t.dataset.relcm){const v=t.value===''?0:parseFloat(t.value);CM[t.dataset.relcm]=isFinite(v)?v:0;store.set(CMK,CM);relUpd();return true}return false};
+    const relIn=e=>{const t=e.target;if(t.dataset&&t.dataset.relp){const p=t.dataset.relp,x=pesById(t.value),r=REL();r[p+'P']=x?x.id:'';const nk=p==='enc'?'encarregado':p;if(x||p!=='enc')r[nk]=x?x.nome:'';store.set(CMK,CM);return true}
+      if(t.dataset&&t.dataset.rel!=null){relSet(t.dataset.rel,t.value);return true}if(t.dataset&&t.dataset.relcm){const v=t.value===''?0:parseFloat(t.value);CM[t.dataset.relcm]=isFinite(v)?v:0;store.set(CMK,CM);relUpd();return true}return false};
     root.addEventListener('input',e=>{relIn(e)},true);
     root.addEventListener('click',e=>{const b=e.target.closest('[data-clh]');if(!b)return;e.stopPropagation();const r=REL(),k=b.dataset.clh,h=+b.dataset.h,i=r[k].indexOf(h);if(i>=0)r[k].splice(i,1);else r[k].push(h);store.set(CMK,CM);b.setAttribute('aria-pressed',i<0);b.textContent=i<0?'X':''},true);
     root.addEventListener('click',e=>{const t=e.target.closest('[data-cmtab]');if(t){CMTAB=t.dataset.cmtab;store.set('massa.tab',CMTAB);cmRender();return}
@@ -5693,7 +5736,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='26/11/2026 16:20';
+  const CUR_VER='26/11/2026 16:35';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

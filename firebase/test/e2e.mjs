@@ -153,6 +153,15 @@ try{
     await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TE}&emu=1`);await s.waitForSelector('#sig');ok(/Assinado como/.test(await s.textContent('#sig'))&&!(await s.$('#go')),'o mesmo link não assina de novo');
     await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TC}&emu=1`);await s.waitForSelector('#go');await draw();await s.check('#ok');await s.click('#go');await s.waitForSelector('#sig .am.ok',{timeout:15000});await s.shot('8-enc-assinou');
     const dc=await (await fetch(`${FS}/rdo_assin/${TC}`,{headers:{'Authorization':'Bearer owner'}})).json();ok(dc.fields.status.stringValue==='assinado','depois do engenheiro, o encarregado assina pelo link');
+    // página pessoal do responsável cadastrado: 1º acesso (cadastro) e assinatura com a assinatura padrão
+    {const PID='b7'.repeat(16),TF='d9'.repeat(16);
+      await W('rdo_assin',TF,{tok:S(TF),papel:S('fis'),nome:S('Fiscal Teste'),dep:S(TE),envio:S('r-e2e'),pdf:S(TP),resumo:RS,status:S('pendente'),tipo:S('RDO'),pessoa:S(PID)});
+      await W('assinantes',PID,{id:S(PID),nome:S('Fiscal'),funcao:S('Fiscal'),papel:S('fis'),ativo:{booleanValue:true},docs:{arrayValue:{values:[S(TF)]}}});
+      await s.goto(`http://127.0.0.1:5000/assinar.html?p=${PID}&emu=1`);await s.waitForSelector('#sv');
+      await s.fill('#nm','Fiscal Teste Silva');await s.fill('#fn','Fiscal da Via Araucária');await draw();await s.click('#sv');await s.waitForSelector('#lp [data-open]',{timeout:15000});
+      const dp=await (await fetch(`${FS}/assinantes/${PID}`,{headers:{'Authorization':'Bearer owner'}})).json();ok(dp.fields.nome.stringValue==='Fiscal Teste Silva'&&/^data:image\/png/.test(dp.fields.assinatura.stringValue),'página pessoal: a pessoa grava nome completo, função e assinatura padrão sem login');
+      await s.click('#lp [data-open]');await s.waitForSelector('#go');await s.check('#ok');await s.click('#go');await s.waitForSelector('#sig .am.ok',{timeout:15000});await s.shot('8-fis-pagina-pessoal');
+      const df=await (await fetch(`${FS}/rdo_assin/${TF}`,{headers:{'Authorization':'Bearer owner'}})).json();ok(df.fields.status.stringValue==='assinado'&&df.fields.assinado_funcao.stringValue==='Fiscal da Via Araucária','página pessoal: RDO pendente assinado com a assinatura padrão e a função')}
     if(s.errs.length)ok(false,'erros de JavaScript na assinatura: '+s.errs.join(' | '))}
 }catch(e){ok(false,'erro no teste: '+(e.stack||e))}
 await browser.close();
