@@ -20,6 +20,9 @@ ok(/Ana Maria Souza/.test(await p.textContent('#rdPes'))&&(await p.$$('#rdPes .r
 // RDO com os responsáveis cadastrados
 await p.fill('#cmUsi','30');await p.dispatchEvent('#cmUsi','change');await W(150);
 await p.click('#cmRoot [data-cm="add"] >> nth=0');await W(200);await p.fill('#cfIni','236+300');await p.fill('#cfLen','100');await p.fill('#cfW','3.6');await p.fill('#cfE','5');await p.click('#cfBus');await W(100);await p.click('#cmDlg button[type=submit]');await W(300);
+await p.click('#cmRoot [data-cm="add"] >> nth=0');await W(200);await p.fill('#cfIni','2341042');await p.fill('#cfLen','20');await p.fill('#cfW','3.6');await p.fill('#cfE','5');await p.click('#cmDlg button[type=submit]');await W(300);
+{const t=await p.textContent('#cmRoot');ok((await p.$$('#cmRoot .cm-seg')).length===2&&/234\+1042/.test(t)&&/235\+0[56]2/.test(t),'estaca com mais de 1000 m aceita (234+1042 → final no km 235)')}
+const fillHor=async()=>{for(const el of await p.$$('#cmRoot input[type=time]'))await el.fill('07:00');await W(150)};await fillHor();
 ok(!!(await p.$('#cmRoot select[data-relp="eng"]')),'RDO: responsáveis escolhidos entre os cadastrados');
 await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(200);await p.fill('#cmRoot [data-rel="numero"]','501');
 await p.click('#cmRoot [data-cm="send"]');await W(800);ok(/Escolha o Engenheiro/.test(await p.textContent('#cmMsg')),'sem engenheiro escolhido o RDO não é enviado');
@@ -31,6 +34,11 @@ const A=await p.evaluate(()=>Object.values(window.__AS).map(a=>[a.papel,!!a.pess
 const D=await p.evaluate(()=>Object.values(window.__PS).map(y=>y.docs.length));ok(D.every(n=>n===1),'cada pessoa recebeu o RDO na sua caixa de assinaturas');
 await W(300);ok(/aguardando o engenheiro/.test(await p.textContent("#rdPes"))&&(await p.$$('#rdCentral [data-pslk]')).length===1,'pendentes por pessoa e endereço pessoal na Central de RDOs');
 await p.$eval('#rdPesCard',e=>e.scrollIntoView());await p.screenshot({path:'/tmp/claude-0/rdo_pes.png'});
+// devolução para correção pelo engenheiro: RDO devolvido, segmentos voltam para o apontador
+await p.evaluate(()=>{const a=Object.values(window.__AS).find(x=>x.papel==='eng');Object.assign(a,{status:'devolvido',devolvido_nome:'Ana Maria Souza',devolvido_em:Date.now(),devolvido_motivo:'Horário da fresagem errado'});for(const cb of [])cb()});
+await p.evaluate(()=>window.RdoDB.assCreate([]));await W(1200);
+ok(/devolvido/.test(await p.textContent('#rdCentral'))&&/Horário da fresagem errado/.test(await p.textContent('#rdCentral')),'Central mostra a devolução com o motivo');
+ok((await p.$$('#cmRoot .cm-dev')).length===2&&/Horário da fresagem errado/.test(await p.textContent('#cmRoot .cm-dev')),'segmentos voltam para o RDO do apontador com o motivo da devolução');
 // desativar
 await p.click(`#rdPes [data-psoff="${await pid('Carla')}"]`);await W(400);ok(/desativado/.test(await p.textContent('#rdPes'))&&!(await p.$$eval('#cmRoot select[data-relp="fis"] option',a=>a.map(o=>o.textContent))).some(t=>/Carla/.test(t)),'desativado some da escolha no RDO');
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

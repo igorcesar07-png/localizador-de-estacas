@@ -207,10 +207,17 @@ service cloud.firestore {
       allow create: if canDo('rdo', 'create') && request.resource.data.status == 'pendente' && request.resource.data.tok == tok
                     && request.resource.data.papel in ['eng', 'enc', 'fis'] && request.resource.data.envio is string && tok.size() >= 24;
       allow update: if resource.data.status == 'pendente' && request.resource.data.status == 'assinado'
-                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_funcao', 'assinado_em', 'assinatura', 'ua'])
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_funcao', 'assinado_em', 'assinatura', 'ua', 'obs'])
+                    && (request.resource.data.get('obs', '') is string && request.resource.data.get('obs', '').size() <= 600)
                     && request.resource.data.assinado_nome is string && request.resource.data.assinado_nome.size() > 1 && request.resource.data.assinado_nome.size() <= 120
                     && request.resource.data.assinatura is string && request.resource.data.assinatura.size() < 200000
                     && request.resource.data.assinatura.matches('data:image/png;base64,.+')
+                    && (resource.data.dep == null || get(/databases/$(database)/documents/rdo_assin/$(resource.data.dep)).data.status == 'assinado');
+      // devolver para correção (em qualquer etapa liberada), com o motivo; uma única vez
+      allow update: if resource.data.status == 'pendente' && request.resource.data.status == 'devolvido'
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'devolvido_nome', 'devolvido_funcao', 'devolvido_em', 'devolvido_motivo', 'ua'])
+                    && request.resource.data.devolvido_nome is string && request.resource.data.devolvido_nome.size() > 1 && request.resource.data.devolvido_nome.size() <= 120
+                    && request.resource.data.devolvido_motivo is string && request.resource.data.devolvido_motivo.size() >= 3 && request.resource.data.devolvido_motivo.size() <= 600
                     && (resource.data.dep == null || get(/databases/$(database)/documents/rdo_assin/$(resource.data.dep)).data.status == 'assinado');
       // quem valida RDO pode refazer (voltar para pendente) ou apagar junto com o RDO
       allow update, delete: if canDo('rdo', 'edit');

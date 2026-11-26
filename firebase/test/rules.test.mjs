@@ -260,6 +260,13 @@ await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(d
   await t('Responsáveis: quem envia RDO não altera o cadastro',()=>assertFails(updateDoc(doc(lp('rdoc'),'assinantes',PID),{nome:'Outro Nome'})));
   await t('Responsáveis: RDO ligado à pessoa e assinado com a função',async()=>{await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TF),{...A(TF,'fis',TE),pessoa:PID,tipo:'RDO'}));
     await assertSucceeds(updateDoc(doc(anon,'rdo_assin',TF),{...SIG('Bruno Carvalho Lima'),assinado_funcao:'Encarregado de obras'}))});
+  {const TD='d'.repeat(32),TX='9'.repeat(32);
+    await t('Assinatura RDO: assina com observação',async()=>{await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TX),A(TX,'fis',TE)));await assertSucceeds(updateDoc(doc(anon,'rdo_assin',TX),{...SIG('Fis'),obs:'Conferir a espessura no km 236.'}))});
+    await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TD),A(TD,'eng',null)));
+    await t('Assinatura RDO: devolver exige o motivo',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TD),{status:'devolvido',devolvido_nome:'Eng',devolvido_em:3,devolvido_motivo:''})));
+    await t('Assinatura RDO: devolver não muda outros dados',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TD),{status:'devolvido',devolvido_nome:'Eng',devolvido_em:3,devolvido_motivo:'Horários errados',papel:'fis'})));
+    await t('Assinatura RDO: devolve para correção pelo link',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TD),{status:'devolvido',devolvido_nome:'Eng',devolvido_em:3,devolvido_motivo:'Horários errados'})));
+    await t('Assinatura RDO: devolvido não é assinado depois',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TD),SIG('Eng'))))}
   await t('Responsáveis: quem valida desativa',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',PID),{ativo:false})));
   await t('Responsáveis: desativado não altera o próprio cadastro',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno C. Lima',funcao:'x1',assinatura:PNG,perfil_em:4})));
   await t('Responsáveis: quem valida exclui',()=>assertSucceeds(deleteDoc(doc(lp('rdoval'),'assinantes',PID))))}

@@ -673,6 +673,9 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .cmp-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.cmp-t th{text-align:left}.cmp-t td small{color:var(--muted)}
 @media(max-width:700px){.cmp-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .rdp-sig{display:block;height:26px;max-width:110px;margin-top:3px;background:#fff;border-radius:4px}.rdp-off td{opacity:.55}.rdp-f{align-items:end}
+.cm-dev{margin:6px 0 0;padding:6px 10px;border-radius:8px;background:#FDE8E6;color:#7A1A12;font-size:13px;font-weight:600}
+.rel-auto th,.rel-auto td{color:var(--muted,#5F6A64);font-size:11px;text-align:center}.rel-auto small{font-weight:400}
+.rel input.rel-miss{border-color:#B42318!important;background:#FDE8E6!important}.rdc-ck.dv{color:#B42318}
 .rel .rel-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.rel .rel-h small{text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
 .rel-cl{border-collapse:collapse;font-size:11px}.rel-cl th{font-weight:600;color:var(--muted);padding:2px 3px;white-space:nowrap}.rel-cl tbody th{text-align:left;padding-right:8px}.rel-cl td{padding:1px}
 .rel-x{width:26px;height:28px;min-height:0;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:800 13px var(--body);cursor:pointer}.rel-x[aria-pressed="true"]{background:color-mix(in srgb,#1A73E8 18%,var(--surface));border-color:#1A73E8}
@@ -1922,7 +1925,8 @@ const Data=(function(){
     const f=KM_FIRST.get(km),l=KM_LAST.get(km);if(f==null)return {err:`O km ${km} não está no trecho (164+700 a 303+800).`};
     const fo=splitName(R[f][0])[1],lo=splitName(R[l][0])[1]+20;if(o==null)o=fo;
     if(o<fo)return {err:`O km ${km} começa em ${km}+${String(fo).padStart(3,'0')} neste trecho.`};
-    if(o>lo)return {err:`O km ${km} vai até ${km}+${String(lo).padStart(3,'0')} (${lo} m neste marco).`};
+    // estaca além do fim do km (ex.: 234+1042): conta a partir do início do km e cai no km seguinte (234+1042 = 235+042 quando o km tem 1000 m)
+    if(o>lo){const s2=R[f][3]+(o-fo);if(s2>ODO_END+0.01)return {err:`${km}+${Math.round(o)} passa do fim do trecho.`};return {s:s2,name:nameAt(s2),carry:true}}
     return {s:R[f][3]+(o-fo),name:`${km}+${String(Math.round(o)).padStart(3,'0')}`}}
   return {CODES,R,N,FAM,FAM_ORDER,LANES,SIDE,GRP,PANOS,PANO_AT,NAME_IDX,KM_FIRST,info,codeAt,saidaAt,splitName,fmtName,endName,nameAt,parseKm,famCount,inkOn,ODO0,ODO_END};
 })();
@@ -6309,6 +6313,7 @@ const PROD=(function(){
     if((m=t.match(/^(\d+)\+(\d{1,4}(?:[.,]\d+)?)$/)))return m[1]+'+'+m[2].replace('.',',').replace(/^(\d{1,2})(?=$|,)/,x=>x.padStart(3,'0'));
     if((m=t.match(/^(\d+)[.,](\d{1,3})$/)))return m[1]+'+'+m[2].padEnd(3,'0');
     if((m=t.match(/^(\d{1,3})$/)))return m[1]+'+000';
+    if((m=t.match(/^(\d{3})(\d{4})$/)))return m[1]+'+'+m[2]; // 2341042 → 234+1042
     if((m=t.match(/^(\d+)(\d{3})$/)))return m[1]+'+'+m[2];return null}
   function cmPos(st){const src=srcOf(cmK());if(!src||!st)return null;const r=src.Data.parseKm(String(st).replace(',','.'));return r.err?null:r.s}
   function cmEnd(f){const src=srcOf(cmK()),s=cmPos(f.start);if(src&&s!=null&&f.length>0)return src.Data.nameAt(f.direction==='Decrescente'?s-f.length:s+f.length);return ''}
@@ -6352,6 +6357,7 @@ const PROD=(function(){
           <div class="cm-hd"><span class="cm-grip" title="Toque e segure o cartão para mudar a posição">${IC.grip}</span><b class="cm-n">${i+1}</b>
             <div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span></div>
             ${lock?'':`<div class="cm-act"><button type="button" data-cm="ed" data-i="${i}" aria-label="Editar o pano ${i+1}" title="Editar">${IC.ed}</button><button type="button" data-cm="cut" data-i="${i}" aria-label="Dividir / RMP" title="Dividir / RMP">${IC.cut}</button><button type="button" class="cm-x" data-cm="del" data-i="${i}" aria-label="Excluir o pano ${i+1}" title="Excluir">${IC.x}</button></div>`}</div>
+          ${f.devolvido&&!f.envio?`<p class="cm-dev" role="status">↩ ${esc(f.devolvido)}</p>`:''}
           <dl class="cm-kv"><div><dt>Estaca inicial</dt><dd>${esc(f.start)}</dd></div><div><dt>Estaca final</dt><dd>${esc(cmEnd(f))}</dd></div><div><dt>Sentido</dt><dd>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'}</dd></div><div><dt>Faixa</dt><dd>${esc(String(LANE_N[f.lane]||f.lane||'—').replace(/^Faixa\s*/,''))}</dd></div><div><dt>Solução de projeto</dt><dd>${esc(f.solucao||'—')}</dd></div><div><dt>Serial Kartado</dt><dd title="${esc(f.tag?'Pano '+f.tag:'')}">${esc(serOf(f)||'—')}</dd></div></dl>
           <div class="cm-ins">${inp('length',f.length,'0.01','Comprimento','m',dfx(P&&P.length,f.length,2))}${inp('width',f.width,'0.01','Largura','m',dfx(P&&P.width,f.width,2))}${inp('thickness',f.thickness!=null?Math.round(f.thickness*1000)/10:null,'0.1','Espessura','cm',dfx(P&&P.thickness*100,f.thickness*100,1))}</div>
           <div class="cm-ft">${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:'',lock?FST[st][0]:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}<span class="cm-ton"><span><small>Segmento</small><b class="cm-mass">${fmt(mas(f),2)} t</b></span><span><small>Acumulado</small><b class="cm-acc">${fmt(acc,2)} t</b></span></span></div>
@@ -6450,9 +6456,12 @@ const PROD=(function(){
      (a produção passa a valer como validada em todas as páginas) → liberam os links do Encarregado e da Fiscalização. */
   const REL_ATV=[['mont','Montagem sinalização'],['fres','Fresagem do pavimento'],['lig','Pintura de ligação'],['cbuq','Aplicação de CBUQ'],['rol','Rolagem/ Compactação'],['pint','Pintura de faixas/ Tachas'],['desm','Desmontagem sinalização']];
   const PAPEL={eng:'Engenheiro de Produção',enc:'Encarregado',fis:'Fiscal'};
-  const relNew=()=>({numero:'',encarregado:'',chuva:[],neb:[],hor:{},massa:'',usina:'Nova Serrinha - Balsa Nova/PR',projeto:'v1.1 - Neovia',bota:'',obs:'',fres_cam:'',dest:[{l:'',c:''},{l:'',c:''},{l:'',c:''}],eng:'',fis:''});
+  // nº do projeto no RDO por obra (o apontador pode alterar)
+  const PROJ_JOB={BR277:'VIAR-GDA-430/2026',BR373:'VIAR-GDA-470/2026'},projDef=j=>PROJ_JOB[j]||PROJ_JOB.BR277; // mesmos códigos do contrato usados nos outros relatórios
+  const relNew=()=>({numero:'',encarregado:'',chuva:[],neb:[],hor:{},massa:'',usina:'Nova Serrinha - Balsa Nova/PR',projeto:'',bota:'',obs:'',fres_cam:'',dest:[{l:'',c:''},{l:'',c:''},{l:'',c:''}],eng:'',fis:''});
   function REL(){if(!CM.rel){const m=store.get('rdoResp',{});CM.rel=Object.assign(relNew(),{eng:m.eng||'',fis:m.fis||'',engP:m.engP||'',fisP:m.fisP||'',usina:m.usina||relNew().usina,projeto:m.projeto||relNew().projeto,massa:m.massa||''})}
     const r=CM.rel;if(!Array.isArray(r.dest)||r.dest.length<3)r.dest=[0,1,2].map(i=>(r.dest||[])[i]||{l:'',c:''});if(!r.hor)r.hor={};if(!Array.isArray(r.chuva))r.chuva=[];if(!Array.isArray(r.neb))r.neb=[];
+    {const D=[...Object.values(PROJ_JOB),'GDA430/2026','470/2026'];if(!r.projeto||r.projeto==='v1.1 - Neovia'||(D.includes(r.projeto)&&r.projeto!==projDef(CM.job)))r.projeto=projDef(CM.job)}
     if(!r.encarregado&&CM.equipe)r.encarregado=String(CM.equipe).replace(/^Equipe\s+(de\s+)?(Pavimentação|Dreno)\s+/i,'');return r}
   const relNum=()=>{let m=0;for(const e of RDOS){const v=parseInt(e.rel&&e.rel.numero,10);if(v>m)m=v}return m?String(m+1):''};
   const userName=()=>{const A=window.ACL;return (A&&A.user&&(A.user.name||A.user.email))||''};
@@ -6471,18 +6480,18 @@ const PROD=(function(){
         <div class="fld"><label for="cmResp">Elaborado por (apontador)</label><input id="cmResp" value="${esc(CM.resp||'')}" maxlength="80"></div></div>
       <h4 class="rel-h">Condições climáticas <small>toque nas horas com chuva ou neblina</small></h4>
       <div class="tscroll"><table class="rel-cl"><thead><tr><th></th>${hs.map(h=>`<th>${String(h).padStart(2,'0')}h</th>`).join('')}</tr></thead><tbody>
-        ${[['chuva','Garoa/ Chuva'],['neb','Com neblina']].map(([k,t])=>`<tr><th>${t}</th>${hs.map(h=>`<td><button type="button" class="rel-x" data-clh="${k}" data-h="${h}" aria-pressed="${r[k].includes(h)}" aria-label="${t} às ${h}h">${r[k].includes(h)?'X':''}</button></td>`).join('')}</tr>`).join('')}</tbody></table></div>
-      <h4 class="rel-h">Gestão de horários dos serviços</h4>
+        ${[['chuva','Garoa/ Chuva','Sem chuva'],['neb','Com neblina','Sem nevoeiro']].map(([k,t,t0])=>`<tr class="rel-auto"><th>${t0} <small>auto</small></th>${hs.map(h=>`<td data-cla="${k}" data-h="${h}">${r[k].includes(h)?'':'X'}</td>`).join('')}</tr><tr><th>${t}</th>${hs.map(h=>`<td><button type="button" class="rel-x" data-clh="${k}" data-h="${h}" aria-pressed="${r[k].includes(h)}" aria-label="${t} às ${h}h">${r[k].includes(h)?'X':''}</button></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <p class="pd-note">As horas sem marcação de chuva ou neblina entram automaticamente como <b>sem chuva</b> e <b>sem nevoeiro</b>.</p>
+      <h4 class="rel-h">Gestão de horários dos serviços <small>obrigatório: início e término de todas as atividades</small></h4>
       <div class="tscroll"><table class="cm-t rel-hr"><thead><tr><th>Serviço</th><th>Hr. início</th><th>Hr. término</th><th>Obs.</th></tr></thead><tbody>
         ${REL_ATV.map(([k,t])=>{const o=r.hor[k]||{};return `<tr><td>${t}</td><td><input type="time" data-rel="hor.${k}.i" value="${esc(o.i||'')}"></td><td><input type="time" data-rel="hor.${k}.f" value="${esc(o.f||'')}"></td><td><input data-rel="hor.${k}.o" value="${esc(o.o||'')}" maxlength="80"></td></tr>`}).join('')}</tbody></table></div>
       <h4 class="rel-h">Massa e produção</h4>
       <div class="cm-g2">${inp('massa',r.massa,'Tipo da massa',' list="relMassas" placeholder="ex.: CBUQ Faixa C"')}<datalist id="relMassas"><option>CBUQ Faixa C</option><option>CBUQ Faixa B</option><option>Gap Graded</option><option>SMA</option></datalist>
         <div class="fld"><label>Densidade da massa (t/m³)<input data-relcm="density" type="number" step="0.001" value="${esc(CM.density??'')}"></label></div>
-        ${inp('usina',r.usina,'Usina')}${inp('projeto',r.projeto,'Projeto')}${inp('bota',r.bota,'Bota-espera')}</div>
+        ${inp('usina',r.usina,'Usina')}${inp('projeto',r.projeto,'Projeto')}${inp('bota',r.bota,'Bota-espera')}<div class="fld"><label>Caminhões de fresado<input data-rel="fres_cam" type="number" min="0" step="1" value="${esc(r.fres_cam??'')}"></label></div></div>
       <div class="rel-prod"><div class="fld"><label>Usinado (t)<input data-relcm="usinado" type="number" step="0.01" value="${esc(CM.usinado||'')}"></label></div>
         <div><span>Aplicado (segmentos do RDO)</span><b id="relApl">${fmt(apl,2)} t</b></div><div><span>Sobra = usinado − aplicado</span><b id="relSob" class="${us-apl<0?'pd-erro':''}">${fmt(us-apl,2)} t</b></div></div>
       <h4 class="rel-h">Material fresado</h4>
-      <div class="cm-g2"><div class="fld"><label>Caminhões usados na fresagem<input data-rel="fres_cam" type="number" min="0" step="1" value="${esc(r.fres_cam||'')}"></label></div></div>
       <div class="rel-dest">${r.dest.map((d,i)=>`<div class="fld"><label>Destino ${i+1} do fresado<input data-rel="dest.${i}.l" value="${esc(d.l||'')}" maxlength="80" placeholder="local"></label></div><div class="fld"><label>Caminhões (destino ${i+1})<input data-rel="dest.${i}.c" type="number" min="0" step="1" value="${esc(d.c||'')}"></label></div>`).join('')}</div>
       <h4 class="rel-h">Responsáveis pela assinatura</h4>
       ${pesAt().length?`<div class="cm-g2">${pesSel('eng','Engenheiro de Produção *')}${pesSel('enc','Encarregado')}${pesSel('fis','Fiscal (Via Araucária)')}</div><p class="pd-note">Cada um recebe o RDO na sua página de assinaturas (cadastro em <b>Responsáveis pelas assinaturas</b>, mais abaixo).</p>`
@@ -6492,7 +6501,9 @@ const PROD=(function(){
   function pesSel(p,lab){const r=REL(),cur=r[p+'P']||'',L=pesAt(),a=L.filter(x=>x.papel===p),o=L.filter(x=>x.papel!==p);
     const opt=x=>`<option value="${esc(x.id)}"${x.id===cur?' selected':''}>${esc(x.nome)}${x.funcao?' · '+esc(x.funcao):''}</option>`;
     return `<div class="fld"><label>${lab}<select data-relp="${p}"><option value="">${p==='eng'?'Selecione…':'— sem assinatura —'}</option>${a.length?`<optgroup label="${esc(PAPEL_P[p])}">${a.map(opt).join('')}</optgroup>`:''}${o.length?`<optgroup label="Outros cadastrados">${o.map(opt).join('')}</optgroup>`:''}</select></label></div>`}
-  function relSet(path,v){const r=REL();const k=path.split('.');let o=r;for(let i=0;i<k.length-1;i++){const x=k[i];if(o[x]==null||typeof o[x]!=='object')o[x]=/^\d+$/.test(k[i+1])?[]:{};o=o[x]}o[k[k.length-1]]=v;if(path==='encarregado'){const d=$('cmRoot').querySelector('.rel input[disabled]');if(d)d.value=v}store.set(CMK,CM)}
+  function relSet(path,v){const r=REL();const k=path.split('.');let o=r;for(let i=0;i<k.length-1;i++){const x=k[i];if(o[x]==null||typeof o[x]!=='object')o[x]=/^\d+$/.test(k[i+1])?[]:{};o=o[x]}o[k[k.length-1]]=v;if(/^hor\./.test(path)&&v){const el=$('cmRoot')&&$('cmRoot').querySelector(`[data-rel="${path}"]`);if(el)el.classList.remove('rel-miss')}if(path==='encarregado'){const d=$('cmRoot').querySelector('.rel input[disabled]');if(d)d.value=v}store.set(CMK,CM)}
+  function relHorFalta(r){const out=[];for(const [k,t] of REL_ATV){const o=(r.hor||{})[k]||{},f=[!o.i?'início':'',!o.f?'término':''].filter(Boolean);if(f.length)out.push(`${t} (${f.join(' e ')})`)}return out}
+  function relHorMarca(r){const root=$('cmRoot');if(!root)return;let first=null;for(const [k] of REL_ATV)for(const x of ['i','f']){const el=root.querySelector(`[data-rel="hor.${k}.${x}"]`);if(!el)continue;const miss=!((r.hor||{})[k]||{})[x];el.classList.toggle('rel-miss',miss);if(miss&&!first)first=el}if(first)first.scrollIntoView({block:'center',behavior:'smooth'})}
   function relUpd(){const a=$('relApl'),s=$('relSob');if(!a)return;const apl=relApl(),us=+CM.usinado||0;a.textContent=fmt(apl,2)+' t';s.textContent=fmt(us-apl,2)+' t';s.className=us-apl<0?'pd-erro':''}
   // ----- PDF (jsPDF, A4 paisagem) no layout do RDO VIAR-GDA -----
   let JSPDF=null;const loadScr=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('não foi possível carregar '+src));document.head.appendChild(s)});
@@ -6519,7 +6530,8 @@ const PROD=(function(){
       // clima: marcação por hora (estável/sem nevoeiro só nas horas de serviço)
       const cx=46,cw=4.1,cy=8.5;T('Clima',cx+11,cy+2.7,{s:6,a:'center'});box(cx,cy,22,3.5);
       for(let h=0;h<24;h++){box(cx+22+h*cw,cy,cw,3.5,[235,235,235]);T(String(h).padStart(2,'0')+':00',cx+22+h*cw+cw/2,cy+2.5,{s:3.6,a:'center'})}
-      const rows=[['Tempo estável',h=>inT(h)&&!(r.chuva||[]).includes(h)],['Garoa/ Chuva',h=>(r.chuva||[]).includes(h)],['Sem nevoeiro',h=>inT(h)&&!(r.neb||[]).includes(h)],['Com nevoeiro',h=>(r.neb||[]).includes(h)]];
+      // horas não marcadas com chuva/neblina = sem chuva / sem nevoeiro (todas as 24 h)
+      const rows=[['Sem chuva',h=>!(r.chuva||[]).includes(h)],['Garoa/ Chuva',h=>(r.chuva||[]).includes(h)],['Sem nevoeiro',h=>!(r.neb||[]).includes(h)],['Com nevoeiro',h=>(r.neb||[]).includes(h)]];
       rows.forEach(([t,f],k)=>{const y=cy+3.5+k*3.5;box(cx,y,22,3.5);T(t,cx+1,y+2.6,{s:5.5,i:true});for(let h=0;h<24;h++){box(cx+22+h*cw,y,cw,3.5);if(f(h))T('X',cx+22+h*cw+cw/2,y+2.7,{s:6,b:true,a:'center'})}});
       // tabela de segmentos
       const x0=6,y0=31,rh=4.55,hh=8;let x=x0;
@@ -6542,13 +6554,15 @@ const PROD=(function(){
         box(gx,y+2*rh,gw/2,rh);box(gx+gw/2,y+2*rh,gw/2,rh);T(o.i||':',gx+gw/4,y+2*rh+3.3,{s:7,b:!!o.i,a:'center',c:o.i?20:150});T(o.f||':',gx+gw*3/4,y+2*rh+3.3,{s:7,b:!!o.f,a:'center',c:o.f?20:150});
         box(gx,y+3*rh,gw,rh);T('Obs.: '+(o.o||''),gx+1,y+3*rh+3.2,{s:5.5,w:gw-2})});
       // observações
-      const oy=y0+hh+28*rh+1.5;box(6,oy,285,11);T('Observações:',7,oy+3,{s:6});T(r.obs||'',8,oy+6.5,{s:6.5,w:281});
+      const oy=y0+hh+28*rh+1.5;box(6,oy,285,11);T('Observações:',7,oy+3,{s:6});
+      {const ob=[String(r.obs||'').trim()];for(const p of ['eng','enc','fis']){const a=A0[p];if(!a)continue;if(a.status==='assinado'&&String(a.obs||'').trim())ob.push(`${PAPEL[p]} (${a.assinado_nome}): ${String(a.obs).trim()}`);if(a.status==='devolvido')ob.push(`DEVOLVIDO PARA CORREÇÃO por ${PAPEL[p]} (${a.devolvido_nome}): ${String(a.devolvido_motivo||'').trim()}`)}
+        const txt=ob.filter(Boolean).join(' | ');let sz=6.5;for(const z of [6.5,5.8,5.2,4.6,4]){doc.setFontSize(z);sz=z;if(doc.splitTextToSize(txt,281).length*z*0.3528*1.15<=8)break}T(txt,8,oy+5.6,{s:sz,w:281})}
       // rodapé: usina, massa, produção, fresado, assinaturas
       const by=oy+15;T(`Usina: ${r.usina||''}`,10,by,{s:7.2});T(`Projeto: ${r.projeto||''}`,10,by+4,{s:7.2});T(`Densidade: ${n2(e.densidade,3)} t/m3`,10,by+8,{s:7.2});
-      T(`Tipo da massa: ${r.massa||''}`,10,by+12,{s:7.2});T(`Bota Espera: ${r.bota||''}`,10,by+16,{s:7.2,w:66});T(`Elaborado por: ${r.elaborado_por||e.resp||''}`,10,by+20,{s:7.2,b:true,w:70});
+      T(`Tipo da massa: ${r.massa||''}`,10,by+12,{s:7.2});T(`Bota Espera: ${r.bota||''}`,10,by+16,{s:7.2,w:66});T(`Caminhões de fresado: ${r.fres_cam===''||r.fres_cam==null?'-':r.fres_cam}`,10,by+20,{s:7.2});T(`Elaborado por: ${r.elaborado_por||e.resp||''}`,10,by+24,{s:7.2,b:true,w:70});
       T(`Qtd. usinada: ${n2(us,2)} t`,80,by,{s:7.2});T(`Qtd. aplicada: ${n2(apl,2)} t`,80,by+4,{s:7.2});T(`Qtd. sobra: ${n2(us-apl,2)} t`,80,by+8,{s:7.2,b:true});
-      const dest=(r.dest||[]).filter(d=>d&&String(d.l||'').trim());T(`Caminhões na fresagem: ${r.fres_cam===''||r.fres_cam==null?'-':r.fres_cam}`,80,by+12,{s:7});
-      dest.forEach((d,i)=>T(`Fresado - ${d.l}: ${d.c||0} caminhão(ões)`,80,by+15.5+i*3.3,{s:6.5,w:62}));
+      const dest=(r.dest||[]).filter(d=>d&&String(d.l||'').trim());
+      dest.forEach((d,i)=>T(`Fresado - ${d.l}: ${d.c||0} caminhão(ões)`,80,by+12+i*3.3,{s:6.5,w:62}));
       [['eng','Engenheiro de Produção','Neovia Restauração'],['enc','Encarregado de obras','Neovia Restauração'],['fis','Fiscalização','Via Araucária']].forEach(([p,t,em],i)=>{const sx=148+i*48,sy=by+6,a=A0[p];
         if(a&&a.status==='assinado'){if(a.assinatura)try{doc.addImage(a.assinatura,'PNG',sx+4,sy-9,32,10.5)}catch(x){}T(`${a.assinado_nome}${a.assinado_funcao?' ('+a.assinado_funcao+')':''} · ${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}`,sx+20,sy+6.6,{s:4.8,a:'center',w:46})}
         doc.line(sx,sy+1,sx+40,sy+1);T(a&&a.status==='assinado'?a.assinado_nome:(r[p==='enc'?'encarregado':p]||''),sx+20,sy+3.6,{s:5.6,a:'center',w:42});T(t,sx+20,sy+9.3,{s:5.6,a:'center'});T(em,sx+20,sy+11.8,{s:5.6,a:'center'})});
@@ -6602,7 +6616,10 @@ const PROD=(function(){
     b=e.target.closest('[data-psdel]');if(b){const x=PES.find(y=>y.id===b.dataset.psdel);if(!x||!confirm(`Excluir o cadastro de ${x.nome}? O endereço deixa de existir.`))return;try{await D.pesDel(x.id)}catch(er){toast('Não foi possível excluir: '+(er.message||er))}}});
   const assGroup=l=>{const m={};for(const a of l){(m[a.envio]||(m[a.envio]={}))[a.papel]=a}return m};
   // assinatura do Engenheiro de Produção = RDO validado (a produção entra no banco geral), mesmo sem as outras assinaturas
-  const rdoEff=l=>l.map(e=>{const a=ASS[e.id];if(!a||!a.eng||a.eng.status!=='assinado'||e.status==='validado'||e.status==='devolvido')return e;
+  const rdoEff=l=>l.map(e=>{const a=ASS[e.id];
+    const dv=a&&['eng','enc','fis'].map(p=>a[p]).find(x=>x&&x.status==='devolvido');
+    if(dv&&e.status!=='devolvido')return Object.assign({},e,{status:'devolvido',validado_por:`${PAPEL[dv.papel]||dv.papel}: ${dv.devolvido_nome||''}`,validado_em:dv.devolvido_em,validacao_obs:`Devolvido para correção por ${PAPEL[dv.papel]||dv.papel} ${dv.devolvido_nome||''}: ${dv.devolvido_motivo||''}`,assDev:true});
+    if(!a||!a.eng||a.eng.status!=='assinado'||e.status==='validado'||e.status==='devolvido')return e;
     return Object.assign({},e,{status:'validado',validado_por:'assinatura do engenheiro: '+(a.eng.assinado_nome||''),validado_em:a.eng.assinado_em,assEng:true})});
   function rdcRender(){const box=$('rdCentral');if(!box)return;const can=canRdo()||!!(window.RdoDB&&window.RdoDB.val);
     const l=RDOS.filter(e=>e.ass&&(e.segs||[]).length).sort((a,b)=>String(b.data).localeCompare(String(a.data))||String(a.equipe).localeCompare(String(b.equipe)));
@@ -6610,6 +6627,7 @@ const PROD=(function(){
     const ck=(ok,t)=>`<span class="rdc-ck ${ok?'ok':'pd'}" title="${esc(t)}">${ok?'✓':'○'}</span>`;
     const cel=(e,p)=>{const a=(ASS[e.id]||{})[p],eng=(ASS[e.id]||{}).eng,ok=a&&a.status==='assinado',lib=p==='eng'||(eng&&eng.status==='assinado');
       if(!a)return `<td>${ck(false,'sem link')}<small>sem link</small></td>`;
+      if(a.status==='devolvido')return `<td><span class="rdc-ck dv" title="devolvido para correção">↩</span><small><b>devolvido</b> por ${esc(a.devolvido_nome||'')}<br>${esc(a.devolvido_motivo||'')}</small></td>`;
       if(ok)return `<td>${ck(true,'assinado')}<small>${esc(a.assinado_nome||'')}<br>${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</small></td>`;
       return `<td>${ck(false,'pendente')}<small>${esc(a.nome||PAPEL[p])}${lib?'':' · aguarda o engenheiro'}</small>${can&&lib?(a.pessoa&&pesById(a.pessoa)?`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-pslk="${esc(a.pessoa)}" data-rdlk-p="${p}">Copiar endereço</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`RDO ${e.rel&&e.rel.numero||''} de ${brD(e.data)} (${e.equipe}) aguardando a sua assinatura (${PAPEL[p]}): ${pesUrl(a.pessoa)}`)}">WhatsApp</a></span>`
         :`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-rdlk="${esc(a.tok)}" data-p="${p}" data-e="${esc(e.id)}">Copiar link</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`RDO ${e.rel&&e.rel.numero||''} de ${brD(e.data)} (${e.equipe}) – assinatura do ${PAPEL[p]}: ${assUrl(a.tok)}`)}">WhatsApp</a></span>`):''}</td>`};
@@ -6622,7 +6640,8 @@ const PROD=(function(){
     if(!CM.equipe){msg.textContent='Escolha a equipe.';return}cmRmp();const RL=REL();if(!RL.numero)RL.numero=relNum();
     if(pesAt().length){for(const p of ['eng','enc','fis']){const x=pesById(RL[p+'P']);if(RL[p+'P']&&!x)RL[p+'P']='';if(x)RL[p==='enc'?'encarregado':p]=x.nome}
       if(!RL.engP){msg.textContent='Escolha o Engenheiro de Produção (primeira assinatura).';return}}
-    if(!String(RL.numero||'').trim()){msg.textContent='Informe o Nº do RDO.';return}if(!String(RL.eng||'').trim()){msg.textContent='Informe o Engenheiro de Produção (primeira assinatura).';return}
+    if(!String(RL.numero||'').trim()){msg.textContent='Informe o Nº do RDO.';return}
+    {const fx=relHorFalta(RL);if(fx.length){msg.innerHTML=`Preencha os horários de início e de término de todas as atividades antes de enviar para assinatura. Faltam: <b>${fx.map(esc).join('; ')}</b>.`;relHorMarca(RL);return}}if(!String(RL.eng||'').trim()){msg.textContent='Informe o Engenheiro de Produção (primeira assinatura).';return}
     const ex=CM.fres.filter(f=>!f.envio);if(!ex.length){msg.textContent='Nenhum segmento a enviar.';return}
     const D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))});const err=rdoCheck(D0);if(err.length){msg.textContent='Não dá para enviar: '+err.join('; ')+'.';return}
     const raw=JSON.stringify(D0);const id='rdo-'+CM.date+'-'+hashStr(raw);if(await window.RdoDB.exists(id)){msg.textContent='Este RDO já foi enviado (sem alterações desde o envio).';return}
@@ -6647,7 +6666,7 @@ const PROD=(function(){
     const relIn=e=>{const t=e.target;if(t.dataset&&t.dataset.relp){const p=t.dataset.relp,x=pesById(t.value),r=REL();r[p+'P']=x?x.id:'';const nk=p==='enc'?'encarregado':p;if(x||p!=='enc')r[nk]=x?x.nome:'';store.set(CMK,CM);return true}
       if(t.dataset&&t.dataset.rel!=null){relSet(t.dataset.rel,t.value);return true}if(t.dataset&&t.dataset.relcm){const v=t.value===''?0:parseFloat(t.value);CM[t.dataset.relcm]=isFinite(v)?v:0;store.set(CMK,CM);relUpd();return true}return false};
     root.addEventListener('input',e=>{relIn(e)},true);
-    root.addEventListener('click',e=>{const b=e.target.closest('[data-clh]');if(!b)return;e.stopPropagation();const r=REL(),k=b.dataset.clh,h=+b.dataset.h,i=r[k].indexOf(h);if(i>=0)r[k].splice(i,1);else r[k].push(h);store.set(CMK,CM);b.setAttribute('aria-pressed',i<0);b.textContent=i<0?'X':''},true);
+    root.addEventListener('click',e=>{const b=e.target.closest('[data-clh]');if(!b)return;e.stopPropagation();const r=REL(),k=b.dataset.clh,h=+b.dataset.h,i=r[k].indexOf(h);if(i>=0)r[k].splice(i,1);else r[k].push(h);store.set(CMK,CM);b.setAttribute('aria-pressed',i<0);b.textContent=i<0?'X':'';const au=root.querySelector(`[data-cla="${k}"][data-h="${h}"]`);if(au)au.textContent=i<0?'':'X'},true);
     root.addEventListener('click',e=>{const t=e.target.closest('[data-cmtab]');if(t){CMTAB=t.dataset.cmtab;store.set('massa.tab',CMTAB);cmRender();return}
       const b=e.target.closest('[data-cm]');if(!b)return;const a=b.dataset.cm,i=+b.dataset.i;const mn=root.querySelector('.cm-menu');if(mn)mn.open=false;
       if(a==='add')cmDlg('Novo segmento',{lane:1,direction:'Crescente',width:n(CM.planWidth)||3.5,thickness:n(CM.planThickness)||0.05},'pano',x=>{const pos=x.__pos-1;delete x.__pos;x.id=cmId();if(x.espProjeto==null)x.espProjeto=x.thickness;CM.fres.splice(Math.min(pos,CM.fres.length),0,x);cmSeqFix();cmSave()});

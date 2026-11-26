@@ -21,7 +21,7 @@ await ctx.route(/firestore\.googleapis\.com/,async r=>{const u=r.request().url()
       DB[k]=Object.assign({},cur,f)}
     return r.fulfill({contentType:'application/json',body:JSON.stringify({writeResults:(body.writes||[]).map(()=>({updateTime:T})),commitTime:T})})}
   return r.fulfill({status:404,body:'{}'})});
-const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('dialog',d=>d.accept());
 const draw=async()=>{const c=await p.$('#cv');const bb=await c.boundingBox();await p.mouse.move(bb.x+30,bb.y+40);await p.mouse.down();for(let i=1;i<12;i++)await p.mouse.move(bb.x+30+i*20,bb.y+40+(i%2)*30);await p.mouse.up()};
 // 1º acesso pela página pessoal: cadastro
 await p.goto(`http://localhost:8772/assinar.html?p=${PID}`);await p.waitForSelector('#sv',{timeout:15000});ok(/Cadastro para assinaturas/.test(await p.textContent('h1')),'1º acesso pede o cadastro (nome completo, função, assinatura padrão)');
@@ -41,7 +41,16 @@ const C=DB['rdo_assin/'+TC];ok(C.status==='assinado'&&C.assinado_nome==='Bruno C
 await p.click('#bk2');await p.waitForSelector('#ls ul',{timeout:10000});ok(/RDO 501/.test(await p.textContent('#ls'))&&/Nenhuma assinatura pendente/.test(await p.textContent('#lp')),'volta para a página: RDO em "Assinados"');
 // link direto antigo continua funcionando
 put('rdo_assin',TF,{tok:TF,papel:'fis',nome:'Carla',status:'pendente',dep:TE,envio:'r1',resumo:RS});
-await p.goto(`http://localhost:8772/assinar.html?t=${TF}`);await p.waitForSelector('#go',{timeout:10000});await p.fill('#nm','Carla Fiscal');await draw();await p.check('#ok');await p.click('#go');await p.waitForSelector('#sig .am.ok',{timeout:10000});
-ok(DB['rdo_assin/'+TF].status==='assinado','link direto (?t=) continua assinando como antes');
+await p.goto(`http://localhost:8772/assinar.html?t=${TF}`);await p.waitForSelector('#go',{timeout:10000});await p.fill('#nm','Carla Fiscal');await draw();await p.fill('#ob','Conferir a espessura no km 236.');await p.check('#ok');await p.click('#go');await p.waitForSelector('#sig .am.ok',{timeout:10000});
+ok(DB['rdo_assin/'+TF].status==='assinado'&&DB['rdo_assin/'+TF].obs==='Conferir a espessura no km 236.','link direto (?t=) assina com observação');
+// devolver para correção
+const TD='d'.repeat(32);put('rdo_assin',TD,{tok:TD,papel:'eng',nome:'Ana',status:'pendente',dep:null,envio:'r2',tipo:'RDO',resumo:RS});
+await p.goto(`http://localhost:8772/assinar.html?t=${TD}`);await p.waitForSelector('#dv',{timeout:10000});await p.fill('#nm','Ana Maria Souza');await p.click('#dv');await W(200);
+ok(/o que precisa ser corrigido/.test(await p.textContent('#em'))&&DB['rdo_assin/'+TD].status==='pendente','devolver exige o motivo na observação');
+await p.fill('#ob','Horário de término da fresagem errado.');await p.click('#dv');await p.waitForSelector('#sig .am.bad',{timeout:10000});
+const Dv=DB['rdo_assin/'+TD];ok(Dv.status==='devolvido'&&Dv.devolvido_motivo==='Horário de término da fresagem errado.'&&Dv.devolvido_nome==='Ana Maria Souza','devolvido para correção com o motivo');
+await p.screenshot({path:'/tmp/claude-0/ass_devolvido.png',fullPage:true});
+const TG='9'.repeat(32);put('rdo_assin',TG,{tok:TG,papel:'enc',nome:'Bruno',status:'pendente',dep:TD,envio:'r2',tipo:'RDO',resumo:RS});
+await p.goto(`http://localhost:8772/assinar.html?t=${TG}`);await p.waitForSelector('#sig h2',{timeout:10000});await W(300);ok(/devolveu este documento/.test(await p.textContent('#sig'))&&!(await p.$('#go')),'encarregado vê que o engenheiro devolveu (não assina)');
 await p.goto(`http://localhost:8772/assinar.html?p=${'0'.repeat(32)}`);await W(1500);ok(/não existe/.test(await p.textContent('#as')),'endereço inexistente avisa');
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

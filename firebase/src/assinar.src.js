@@ -44,17 +44,18 @@ async function portal(){msg('Carregando as suas assinaturas…');
     <div class="ar" style="justify-content:flex-start"><button type="button" class="ab sec" id="edp">Editar meu cadastro e assinatura padrão</button></div>
     <section class="ac"><h2>Para assinar</h2><div id="lp"><p class="as-sub">Carregando…</p></div></section>
     <section class="ac"><h2>Aguardando outra assinatura</h2><div id="la"></div></section>
-    <section class="ac"><h2>Assinados</h2><div id="ls"></div></section>`;
+    <section class="ac"><h2>Assinados e devolvidos</h2><div id="ls"></div></section>`;
   $('edp').onclick=()=>perfil(P,false);
   const toks=[...new Set(P.docs||[])].reverse().slice(0,300);
   const L=(await Promise.all(toks.map(t=>get('rdo_assin',t).then(a=>a&&Object.assign(a,{__t:t})).catch(()=>null)))).filter(Boolean);
   const deps=new Map();await Promise.all([...new Set(L.map(a=>a.dep).filter(Boolean))].map(d=>get('rdo_assin',d).then(x=>deps.set(d,x)).catch(()=>{})));
   const lib=a=>!a.dep||(deps.get(a.dep)||{}).status==='assinado';
-  const it=(a,btn)=>{const R=a.resumo||{};return `<li class="ai"><div><b>${titulo(a)}</b><span>${esc([R.obra,R.equipe].filter(Boolean).join(' · '))} · como <b>${esc(PAPEL[a.papel]||a.papel)}</b>${a.status==='assinado'?` · assinado em ${quando(a.assinado_em)}`:''}</span></div><button type="button" class="ab ${btn?'':'sec'}" data-open="${esc(a.__t)}">${btn?'Abrir e assinar':'Abrir'}</button></li>`};
-  const pend=L.filter(a=>a.status==='pendente'&&lib(a)),ag=L.filter(a=>a.status==='pendente'&&!lib(a)),fe=L.filter(a=>a.status==='assinado').sort((x,y)=>(y.assinado_em||0)-(x.assinado_em||0)).slice(0,50);
+  const it=(a,btn)=>{const R=a.resumo||{};return `<li class="ai"><div><b>${titulo(a)}</b><span>${esc([R.obra,R.equipe].filter(Boolean).join(' · '))} · como <b>${esc(PAPEL[a.papel]||a.papel)}</b>${a.status==='assinado'?` · assinado em ${quando(a.assinado_em)}`:a.status==='devolvido'?` · <b class="dv">devolvido para correção</b> em ${quando(a.devolvido_em)}`:depDv(a)?' · <b class="dv">devolvido pelo engenheiro</b>':''}</span></div><button type="button" class="ab ${btn?'':'sec'}" data-open="${esc(a.__t)}">${btn?'Abrir e assinar':'Abrir'}</button></li>`};
+  const depDv=a=>!!a.dep&&(deps.get(a.dep)||{}).status==='devolvido';
+  const pend=L.filter(a=>a.status==='pendente'&&lib(a)),ag=L.filter(a=>a.status==='pendente'&&!lib(a)&&!depDv(a)),fe=L.filter(a=>a.status==='assinado'||a.status==='devolvido'||(a.status==='pendente'&&depDv(a))).sort((x,y)=>(y.assinado_em||y.devolvido_em||0)-(x.assinado_em||x.devolvido_em||0)).slice(0,50);
   $('lp').innerHTML=pend.length?`<ul class="al">${pend.map(a=>it(a,true)).join('')}</ul>`:'<p class="am ok">Nenhuma assinatura pendente para você.</p>';
   $('la').innerHTML=ag.length?`<ul class="al">${ag.map(a=>it(a,false)).join('')}</ul><p class="as-sub">Liberam depois da assinatura do Engenheiro de Produção.</p>`:'<p class="as-sub">Nada aguardando.</p>';
-  $('ls').innerHTML=fe.length?`<ul class="al">${fe.map(a=>it(a,false)).join('')}</ul>`:'<p class="as-sub">Nenhum documento assinado ainda.</p>';
+  $('ls').innerHTML=fe.length?`<ul class="al">${fe.map(a=>it(a,false)).join('')}</ul>`:'<p class="as-sub">Nenhum documento assinado ou devolvido ainda.</p>';
   box.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>openDoc(b.dataset.open,P))}
 
 // cadastro da própria pessoa: nome completo, função e assinatura padrão
@@ -79,7 +80,8 @@ async function openDoc(t,P){msg('Carregando o documento…');window.scrollTo(0,0
   catch(e){return msg('Não foi possível abrir o documento: '+esc(e.message||e),'bad')}
   let dep=null;if(A.dep){try{dep=await get('rdo_assin',A.dep)}catch(e){}}
   const R=A.resumo||{},rdo=tipoOf(A)==='RDO';
-  const assLin=p=>p===A.papel?(A.status==='assinado'?`assinado por ${esc(A.assinado_nome)} em ${quando(A.assinado_em)}`:'você — pendente'):p==='eng'&&dep?(dep.status==='assinado'?`assinado por ${esc(dep.assinado_nome)} em ${quando(dep.assinado_em)}`:'pendente'):'—';
+  const sit=x=>x.status==='assinado'?`assinado por ${esc(x.assinado_nome)} em ${quando(x.assinado_em)}${x.obs?`<br><i>Obs.: ${esc(x.obs)}</i>`:''}`:x.status==='devolvido'?`<b class="dv">devolvido para correção</b> por ${esc(x.devolvido_nome)} em ${quando(x.devolvido_em)}<br><i>${esc(x.devolvido_motivo||'')}</i>`:'';
+  const assLin=p=>p===A.papel?(A.status==='pendente'?'você — pendente':sit(A)):p==='eng'&&dep?(sit(dep)||'pendente'):'—';
   box.innerHTML=`${HEAD}${P?'<p><button type="button" class="ab sec" id="bk">← Minhas assinaturas</button></p>':''}
     <h1>${titulo(A)}</h1>
     <p class="as-sub">${esc([R.obra,R.equipe].filter(Boolean).join(' · '))}</p>
@@ -90,29 +92,42 @@ async function openDoc(t,P){msg('Carregando o documento…');window.scrollTo(0,0
   if($('bk'))$('bk').onclick=portal;
   loadPdf(A.pdf);
   const S=$('sig'),papel=esc(PAPEL[A.papel]||A.papel);
-  if(A.status==='assinado'){S.innerHTML=`<h2>Sua assinatura</h2><p class="am ok">Assinado como <b>${papel}</b> por ${esc(A.assinado_nome)} em ${quando(A.assinado_em)}.</p>${A.assinatura?`<img class="asig" src="${A.assinatura}" alt="Assinatura">`:''}`;return}
+  if(A.status==='assinado'){S.innerHTML=`<h2>Sua assinatura</h2><p class="am ok">Assinado como <b>${papel}</b> por ${esc(A.assinado_nome)} em ${quando(A.assinado_em)}.${A.obs?`<br>Observação: ${esc(A.obs)}`:''}</p>${A.assinatura?`<img class="asig" src="${A.assinatura}" alt="Assinatura">`:''}`;return}
+  if(A.status==='devolvido'){S.innerHTML=`<h2>Devolvido para correção</h2><p class="am bad">Devolvido por ${esc(A.devolvido_nome)} em ${quando(A.devolvido_em)}: ${esc(A.devolvido_motivo||'')}<br>O apontador corrige e envia um novo documento.</p>`;return}
+  if(dep&&dep.status==='devolvido'){S.innerHTML=`<h2>Assinatura · ${papel}</h2><p class="am bad">O Engenheiro de Produção devolveu este documento para correção: ${esc(dep.devolvido_motivo||'')}<br>Não é preciso assinar: um novo documento será enviado depois da correção.</p>`;return}
   if(A.dep&&(!dep||dep.status!=='assinado')){S.innerHTML=`<h2>Assinatura · ${papel}</h2><p class="am">Este documento ainda aguarda a assinatura do <b>Engenheiro de Produção</b>. ${P?'Ele aparece em "Para assinar" assim que for liberado.':'O link continua valendo: abra de novo depois que ele assinar.'}</p>`;return}
   // pela página pessoal: assinatura padrão (pode trocar só neste documento)
   const useP=!!(P&&P.assinatura);
   S.innerHTML=`<h2>Assinatura · ${papel}</h2>
     ${useP?`<p>Assinar como <b>${esc(P.nome)}</b> · ${esc(P.funcao||'')}</p><div id="sd"><img class="asig" src="${P.assinatura}" alt="Sua assinatura padrão"><div class="ar" style="justify-content:flex-start"><button type="button" class="ab sec" id="outra">Usar outra assinatura neste documento</button></div></div>`
       :`<label class="af">Nome completo<input id="nm" value="${esc(A.nome||'')}" maxlength="120" autocomplete="name"></label><p class="as-sub">Assine no quadro abaixo (dedo ou mouse).</p><div id="sd"></div>`}
+    <label class="af">Observação <small>(opcional ao assinar; obrigatória para devolver) — vai para o campo Observações do RDO</small><textarea id="ob" rows="3" maxlength="600"></textarea></label>
     <label class="ack"><input type="checkbox" id="ok"> Li o documento e confirmo o seu conteúdo.</label>
-    <button type="button" class="ab" id="go">${useP?'Assinar com a minha assinatura':'Assinar'}</button><p id="em" class="am bad" hidden></p>
+    <div class="abr"><button type="button" class="ab" id="go">${useP?'Assinar com a minha assinatura':'Assinar'}</button><button type="button" class="ab dvb" id="dv">Devolver para correção</button></div><p id="em" class="am bad" hidden></p>
     ${!P&&A.pessoa?`<p class="as-sub">Você também encontra este e os próximos documentos na sua página de assinaturas: <a href="?p=${esc(A.pessoa)}">abrir minhas assinaturas</a>.</p>`:''}`;
-  let Pd=useP?null:pad($('sd'));
+  let Pd=useP?null:pad($('sd'));bindDev(t,A,P,useP);
   if($('outra'))$('outra').onclick=()=>{Pd=pad($('sd'))};
   $('go').onclick=async()=>{const em=$('em');em.hidden=true;const nm=useP?P.nome:$('nm').value.trim();
     if(nm.length<3){em.textContent='Informe o nome completo.';em.hidden=false;return}
     if(Pd&&!Pd.drew){em.textContent='Faça a assinatura no quadro.';em.hidden=false;return}
     if(!$('ok').checked){em.textContent='Confirme que leu o documento.';em.hidden=false;return}
-    const png=Pd?Pd.png():P.assinatura;
+    const png=Pd?Pd.png():P.assinatura,ob=$('ob').value.trim().slice(0,600);
     $('go').disabled=true;$('go').textContent='Enviando…';
-    try{const at=Date.now();await updateDoc(doc(db,'rdo_assin',t),{status:'assinado',assinado_nome:nm,...(useP&&P.funcao?{assinado_funcao:String(P.funcao).slice(0,80)}:{}),assinado_em:at,assinatura:png,ua:String(navigator.userAgent||'').slice(0,200)});
-      S.innerHTML=`<h2>Assinatura registrada</h2><p class="am ok">Obrigado, ${esc(nm)}. O documento foi assinado como <b>${papel}</b> em ${quando(at)}.${rdo&&A.papel==='eng'?' A produção deste RDO já entra na base do aplicativo, e as assinaturas do encarregado e da fiscalização foram liberadas.':''}</p><img class="asig" src="${png}" alt="Assinatura">${P?'<p><button type="button" class="ab sec" id="bk2">← Minhas assinaturas</button></p>':''}`;
+    try{const at=Date.now();await updateDoc(doc(db,'rdo_assin',t),{status:'assinado',assinado_nome:nm,...(useP&&P.funcao?{assinado_funcao:String(P.funcao).slice(0,80)}:{}),...(ob?{obs:ob}:{}),assinado_em:at,assinatura:png,ua:String(navigator.userAgent||'').slice(0,200)});
+      S.innerHTML=`<h2>Assinatura registrada</h2><p class="am ok">Obrigado, ${esc(nm)}. O documento foi assinado como <b>${papel}</b> em ${quando(at)}.${ob?`<br>Observação: ${esc(ob)}`:''}${rdo&&A.papel==='eng'?' A produção deste RDO já entra na base do aplicativo, e as assinaturas do encarregado e da fiscalização foram liberadas.':''}</p><img class="asig" src="${png}" alt="Assinatura">${P?'<p><button type="button" class="ab sec" id="bk2">← Minhas assinaturas</button></p>':''}`;
       if($('bk2'))$('bk2').onclick=portal;
       const li=$('st-'+A.papel);if(li)li.querySelector('span').textContent=`assinado por ${nm} em ${quando(at)}`}
     catch(e){$('go').disabled=false;$('go').textContent='Assinar';em.textContent='Não foi possível registrar a assinatura: '+(e.code==='permission-denied'?'o documento já foi assinado ou ainda aguarda o engenheiro.':(e.message||e));em.hidden=false}}}
+
+// devolver para correção: o motivo (observação) é obrigatório; o RDO volta para o apontador corrigir e enviar de novo
+function bindDev(t,A,P,useP){const b=$('dv');if(!b)return;b.onclick=async()=>{const em=$('em');em.hidden=true;const nm=useP?P.nome:($('nm')?$('nm').value.trim():'');const ob=$('ob').value.trim();
+    if(nm.length<3){em.textContent='Informe o nome completo.';em.hidden=false;return}
+    if(ob.length<5){em.textContent='Para devolver, escreva na observação o que precisa ser corrigido.';em.hidden=false;$('ob').focus();return}
+    if(!confirm('Devolver este documento para correção? Ele não poderá mais ser assinado; o apontador corrige e envia um novo.'))return;
+    b.disabled=true;b.textContent='Enviando…';
+    try{const at=Date.now();await updateDoc(doc(db,'rdo_assin',t),{status:'devolvido',devolvido_nome:nm,...(useP&&P.funcao?{devolvido_funcao:String(P.funcao).slice(0,80)}:{}),devolvido_em:at,devolvido_motivo:ob.slice(0,600),ua:String(navigator.userAgent||'').slice(0,200)});
+      $('sig').innerHTML=`<h2>Devolvido para correção</h2><p class="am bad">Você devolveu o documento em ${quando(at)}: ${esc(ob)}<br>O apontador recebe o aviso no aplicativo, corrige e envia um novo documento.</p>${P?'<p><button type="button" class="ab sec" id="bk2">← Minhas assinaturas</button></p>':''}`;if($('bk2'))$('bk2').onclick=portal}
+    catch(e){b.disabled=false;b.textContent='Devolver para correção';em.textContent='Não foi possível devolver: '+(e.code==='permission-denied'?'o documento já foi assinado ou devolvido.':(e.message||e));em.hidden=false}}}
 
 async function loadPdf(id){const v=$('pdfv');if(!id){v.innerHTML='<p class="as-sub">PDF não anexado.</p>';return}
   try{const s=await getDoc(doc(db,'rdo_pdf',id));if(!s.exists()){v.innerHTML='<p class="as-sub">PDF não encontrado.</p>';return}

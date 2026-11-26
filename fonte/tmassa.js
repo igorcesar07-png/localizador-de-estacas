@@ -36,7 +36,10 @@ ok(!(await p.$('#cmRoot [data-cm="camp"]'))&&!(await p.$('#cmRoot [data-fmot]'))
 // serial do Kartado: editável no pano e levado ao RDO assinado
 await p.click('#cmRoot [data-cm="ed"][data-i="0"]');await W(250);await p.fill('#cfSer','KT-2026-0451');await p.click('#cmDlg button[type=submit]');await W(300);
 ok(/KT-2026-0451/.test(await p.textContent('#cmRoot .cm-seg[data-i="0"]')),'serial Kartado informado no pano aparece no cartão');
-await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(300);await p.fill('#cmRoot [data-rel="numero"]','12');await p.fill('#cmRoot [data-rel="eng"]','Eng. Teste');await p.click('#cmRoot [data-cm="send"]');await W(2500);
+await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(300);await p.fill('#cmRoot [data-rel="numero"]','12');await p.fill('#cmRoot [data-rel="eng"]','Eng. Teste');const fillHor=async()=>{for(const el of await p.$$('#cmRoot input[type=time]'))await el.fill('07:00');await W(150)};
+await p.click('#cmRoot [data-cm="send"]');await W(700);ok(/Preencha os horários/.test(await p.textContent('#cmMsg'))&&(await p.$$('#cmRoot input.rel-miss')).length===14,'RDO não vai para assinatura sem os horários de início e término de todas as atividades');
+await fillHor();ok((await p.$$('#cmRoot input.rel-miss')).length===0,'marca some ao preencher os horários');
+await p.click('#cmRoot [data-cm="send"]');await W(2500);
 ok(/RDO nº 12 .* gerado/.test(await p.textContent('#cmMsg')),'RDO do dia gerado e enviado para assinatura');{const sg=await p.evaluate(()=>{const r=Object.values(window.__RD||{})[0];return r&&r.segs||null});if(sg)ok(sg.some(x=>x.ser==='KT-2026-0451'),'serial Kartado gravado no RDO enviado (vai para a coluna "Serial Kartado" do PDF)')}
 ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
 await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
