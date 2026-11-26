@@ -9,10 +9,16 @@ import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memo
 
 const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
+// funcionalidades dentro das páginas (2ª camada de permissões): marcadas por padrão; desmarcada = oculta para o perfil/usuário
+const MAPFEATS=[{k:'exec',t:'Camada de executados (produção)'},{k:'rev',t:'Revisões do projeto (camada e "o que mudou")'},
+  {g:'Janela do segmento executado (ao tocar no mapa)'},
+  {k:'pf_cls',t:'Classificação'},{k:'pf_data',t:'Executado em (data)'},{k:'pf_loc',t:'Pista, faixa e estacas'},{k:'pf_exec',t:'Solução executada'},
+  {k:'pf_proj',t:'Solução de projeto e revisão'},{k:'pf_dim',t:'Dimensões'},{k:'pf_qtd',t:'Quantidade'},{k:'pf_eq',t:'Equipe'},
+  {k:'pf_rmp',t:'RMP'},{k:'pf_mot',t:'Motivo'},{k:'pf_prim',t:'1ª execução'},{k:'pf_fotos',t:'Fotos do RMP e link do Controle de RMPs'}];
 export const PAGES=[
   {k:'localizacao',t:'Localização estaca',acts:['view'],help:{view:'Ver a estaca atual pelo GPS'}},
-  {k:'mapa',t:'Estacas BR-277 B2+B3 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros'}},
-  {k:'mapab4',t:'Estacas BR-373 B4 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros da BR-373 B4'}},
+  {k:'mapa',t:'Estacas BR-277 B2+B3 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros'},feats:MAPFEATS},
+  {k:'mapab4',t:'Estacas BR-373 B4 (mapa)',acts:['view'],help:{view:'Ver mapa, soluções e filtros da BR-373 B4'},feats:MAPFEATS},
   {k:'calculadora',t:'Calculadora de programação',acts:['view','create','edit'],help:{view:'Calcular trechos',create:'Emitir o relatório da programação',edit:'Alterar larguras, espessuras e densidade'}},
   {k:'histprog',t:'Histórico de programações',acts:['view','create','edit','delete'],help:{view:'Consultar, abrir e emitir de novo o relatório das programações salvas (precisa também da Calculadora)',create:'Salvar programações validadas no histórico (e alterar as próprias)',edit:'Alterar programações salvas por qualquer usuário',delete:'Excluir programações do histórico (exclusão lógica)'}},
   {k:'analise',t:'Análise por km',acts:['view'],help:{view:'Ver o painel por km, simular a programação e exportar'}},
@@ -20,7 +26,8 @@ export const PAGES=[
   {k:'levbe',t:'Levantamento de Bota-Espera',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de registros e exportar Excel/CSV',create:'Registrar bota-esperas (e complementar ou desfazer os próprios registros)',edit:'Corrigir e complementar registros de qualquer usuário',delete:'Excluir registros de qualquer usuário (exclusão lógica)'}},
   {k:'levpat',t:'Levantamento de Patologias',acts:['view','create','edit','delete'],help:{view:'Ver a página, a lista de ocorrências e exportar Excel/CSV',create:'Registrar panelas (e complementar ou desfazer as próprias ocorrências)',edit:'Corrigir e complementar ocorrências de qualquer usuário',delete:'Excluir ocorrências de qualquer usuário (exclusão lógica)'}},
   {k:'foto',t:'Foto georreferenciada',acts:['view','create','delete'],help:{view:'Abrir a câmera e a galeria',create:'Tirar e gravar fotos',delete:'Excluir fotos'}},
-  {k:'producao',t:'Produção executada',acts:['view','create'],help:{view:'Ver os segmentos executados importados da planilha de produção, as pendências e o histórico de importações',create:'Vincular a pasta da planilha (monitoramento automático) e importar o arquivo manualmente'}},
+  {k:'producao',t:'Produção executada',acts:['view','create'],help:{view:'Ver os segmentos executados importados da planilha de produção, as pendências e o histórico de importações',create:'Vincular a pasta da planilha (monitoramento automático) e importar o arquivo manualmente'},
+    feats:[{k:'mapalink',t:'Botão "ver no mapa" em cada segmento'}]},
   {k:'rmp',t:'Controle de RMPs',acts:['view','create'],help:{view:'Ver os RMPs da produção executada, o que falta em cada um e exportar o relatório de pendências',create:'Registrar o motivo e as fotos dos RMPs (RMP assinado, patologia e espessura)'}},
   {k:'rdo',t:'RDO de massa',acts:['view','create','edit'],help:{view:'Abrir o RDO de massa, ver os envios, conferir com a planilha de produção e exportar a planilha',create:'Apontar e enviar o RDO do dia para validação',edit:'Validar ou devolver os RDOs enviados (validado = produção executada)'}},
   {k:'relatorios',t:'Relatórios',acts:['view','create','edit','delete'],help:{view:'Ver e exportar PDF/Excel',create:'Importar planilha e concluir programações',edit:'Reabrir programações',delete:'Remover dados importados e registros'}}];
@@ -66,6 +73,9 @@ const CSS=`
 .adm-mx{width:100%;border-collapse:collapse;font-size:14px}.adm-mx th{font:700 12px var(--body);color:var(--muted);text-align:center;padding:6px 4px;border-bottom:1px solid var(--line)}.adm-mx th:first-child{text-align:left}
 .adm-mx td{border-bottom:1px solid var(--line);padding:8px 4px;text-align:center}.adm-mx td:first-child{text-align:left;font-weight:600}.adm-mx td small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}
 .adm-mx input{width:24px;height:24px;accent-color:#1E7A4C}.adm-mx .na{color:var(--muted);font-size:12px}
+.adm-mx tr.adm-fr td{text-align:left;padding:0 4px 8px 14px;font-weight:500;border-top:0}.adm-fr summary{cursor:pointer;font:600 12.5px var(--body);color:var(--muted);padding:2px 0}
+.adm-feats{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 14px;padding:6px 0 2px}.adm-feats label{display:flex;align-items:center;gap:8px;font:500 13px var(--body)}.adm-feats input{width:20px;height:20px}
+.adm-fg{grid-column:1/-1;font:700 12px var(--body);color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.06em}
 .adm-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.adm-note{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.4}
 .adm-msg{margin:8px 0;padding:10px 12px;border-radius:10px;font-size:14px;background:var(--surface-2)}.adm-msg.ok{background:#E2F4EA;color:#14532D}.adm-msg.bad{background:#FDE8E6;color:#7A1A12}
 .adm-toggle{display:flex;align-items:center;gap:8px;font:600 14px var(--body);margin:6px 0}.adm-toggle input{width:22px;height:22px}
@@ -362,11 +372,17 @@ function stOf(u){if(u.kind==='invite')return ['st-inv','Convite pendente'];if(u.
 const profName=id=>{const p=ADM.profiles.find(x=>x.id===id);return p?p.name:''};
 function permsSummary(p){const n=PAGES.filter(pg=>p&&p[pg.k]&&p[pg.k].view).length;return n?`${n} de ${PAGES.length} páginas`:'sem páginas'}
 function matrix(perms,editable){return `<table class="adm-mx"><thead><tr><th>Página</th>${Object.values(ACTS).map(a=>`<th>${a}</th>`).join('')}</tr></thead><tbody>
-  ${PAGES.map(pg=>`<tr><td>${pg.t}<small>${Object.entries(pg.help).map(([a,t])=>`${ACTS[a]}: ${t}`).join(' · ')}</small></td>${Object.keys(ACTS).map(a=>pg.acts.includes(a)?`<td><input type="checkbox" data-pg="${pg.k}" data-a="${a}" ${perms&&perms[pg.k]&&perms[pg.k][a]?'checked':''} ${editable?'':'disabled'} aria-label="${ACTS[a]} — ${pg.t}"></td>`:'<td class="na">—</td>').join('')}</tr>`).join('')}</tbody></table>`}
-function readMatrix(root){const p={};root.querySelectorAll('.adm-mx input[data-pg]').forEach(c=>{const pg=c.dataset.pg,a=c.dataset.a;if(!p[pg])p[pg]={};p[pg][a]=c.checked});
-  for(const k in p){if(!p[k].view)for(const a in p[k])p[k][a]=false}return p} // sem visualizar, nenhuma ação
-function bindMatrix(root){root.querySelectorAll('.adm-mx input[data-pg]').forEach(c=>c.addEventListener('change',()=>{const row=c.closest('tr');
-  if(c.dataset.a==='view'&&!c.checked)row.querySelectorAll('input').forEach(x=>x.checked=false);if(c.dataset.a!=='view'&&c.checked)row.querySelector('input[data-a="view"]').checked=true}))}
+  ${PAGES.map(pg=>`<tr><td>${pg.t}<small>${Object.entries(pg.help).map(([a,t])=>`${ACTS[a]}: ${t}`).join(' · ')}</small></td>${Object.keys(ACTS).map(a=>pg.acts.includes(a)?`<td><input type="checkbox" data-pg="${pg.k}" data-a="${a}" ${perms&&perms[pg.k]&&perms[pg.k][a]?'checked':''} ${editable?'':'disabled'} aria-label="${ACTS[a]} — ${pg.t}"></td>`:'<td class="na">—</td>').join('')}</tr>`
+    +(pg.feats?`<tr class="adm-fr" data-fpg="${pg.k}"><td colspan="${1+Object.keys(ACTS).length}"><details><summary>Funcionalidades da página (${pg.feats.filter(f=>f.k).length})</summary><div class="adm-feats">${pg.feats.map(f=>f.g?`<b class="adm-fg">${esc(f.g)}</b>`
+      :`<label><input type="checkbox" data-pg="${pg.k}" data-f="${f.k}" ${perms&&perms[pg.k]&&perms[pg.k].view&&((perms[pg.k].f||{})[f.k]!==false)?'checked':''} ${editable?'':'disabled'}> ${esc(f.t)}</label>`).join('')}</div></details></td></tr>`:'')).join('')}</tbody></table>`}
+function readMatrix(root){const p={};root.querySelectorAll('.adm-mx input[data-pg][data-a]').forEach(c=>{const pg=c.dataset.pg,a=c.dataset.a;if(!p[pg])p[pg]={};p[pg][a]=c.checked});
+  root.querySelectorAll('.adm-mx input[data-pg][data-f]').forEach(c=>{const o=p[c.dataset.pg]||(p[c.dataset.pg]={});(o.f||(o.f={}))[c.dataset.f]=c.checked});
+  for(const k in p){if(!p[k].view)for(const a in p[k]){if(a==='f')for(const f in p[k].f)p[k].f[f]=false;else p[k][a]=false}}return p} // sem visualizar, nenhuma ação nem funcionalidade
+function bindMatrix(root){root.querySelectorAll('.adm-mx input[data-pg]').forEach(c=>c.addEventListener('change',()=>{const pg=c.dataset.pg,mx=c.closest('.adm-mx');
+  const all=mx.querySelectorAll(`input[data-pg="${pg}"]`),view=mx.querySelector(`input[data-pg="${pg}"][data-a="view"]`);
+  if(c.dataset.a==='view'&&!c.checked)all.forEach(x=>x.checked=false);
+  else if(c.dataset.a==='view'&&c.checked)mx.querySelectorAll(`input[data-pg="${pg}"][data-f]`).forEach(x=>x.checked=true);
+  else if(c.checked&&view)view.checked=true}))}
 function msgA(t,k){const m=$('admMsg');if(!m)return;m.className='adm-msg '+(k||'');m.textContent=t;m.hidden=false;clearTimeout(msgA.h);msgA.h=setTimeout(()=>m.hidden=true,6000)}
 
 async function renderAdmin(root){if(!window.ACL||!window.ACL.admin){root.innerHTML='<p>Acesso restrito ao administrador principal.</p>';return}

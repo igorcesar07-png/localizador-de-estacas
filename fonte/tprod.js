@@ -127,6 +127,16 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.goto(`http://localhost:${PORT}/#mapab4`);await W(3000);const ne=await p.evaluate(()=>window.__mxB4&&window.__mxB4.n());ok(ne>0,'mapa B4: panos executados desenhados ('+ne+')');
   await p.evaluate(()=>window.__mxB4.setRev('B4-r03'));await W(2500);const nd=await p.evaluate(()=>[window.__mxB4.difs(),window.__mxB4.rev()]);console.log('difs',nd);ok(nd[1]>0,'mapa B4: revisão R03 REV1 exibida e diferenças listadas ('+nd[0]+')');
   await p.screenshot({path:'/tmp/claude-0/mapa_rev.png'});
+  // Produção executada → "ver no mapa" (rodovia certa, local destacado e janela com "Executado em:")
+  await p.goto(`http://localhost:${PORT}/#producao`);await W(2000);await p.selectOption('#pdBlk','B4');await W(800);
+  const bm=await p.$('#pdList [data-pdmap][title*="BR-373"]');ok(!!bm,'Produção executada: botão "ver no mapa" nas linhas');
+  if(bm){await bm.click();await W(2500);const h=await p.evaluate(()=>location.hash);const pop=await p.$eval('.leaflet-popup-content .mx-pop',e=>e.textContent).catch(()=>'');
+    ok(h==='#mapab4'&&/Executado em: \d\d\/\d\d\/\d{4}/.test(pop),'ver no mapa abre o mapa da BR-373 B4 no local, com "Executado em:" ('+h+')');await p.screenshot({path:'/tmp/claude-0/vernomapa.png'});
+    // 2ª camada de permissões: campos da janela ocultos por perfil
+    const id=await p.evaluate(()=>PROD.resolve().B4.find(r=>r.a!=null).id);
+    const sem=await p.evaluate(async id=>{const A0=window.ACL;window.ACL={admin:false,perms:{mapab4:{view:true,f:{pf_eq:false,pf_qtd:false,pf_data:false}},producao:{view:true}}};
+      window.__mxB4.focus(id);await new Promise(r=>setTimeout(r,900));const t=document.querySelector('.leaflet-popup-content .mx-pop').innerHTML;window.ACL=A0;return t},id);
+    ok(!/Equipe/.test(sem)&&!/Quantidade/.test(sem)&&!/Executado em/.test(sem)&&/Dimensões/.test(sem),'funcionalidades desmarcadas somem da janela do executado')}
   await p.goto(`http://localhost:${PORT}/#mapa`);await W(3000);const n2=await p.evaluate(()=>window.__mxB23&&window.__mxB23.n());ok(n2>0,'mapa BR-277: panos executados desenhados ('+n2+')')}
 // 5d) RDO de massa: envio do arquivo, conferência com a planilha e Excel
 {await p.goto(`http://localhost:${PORT}/#rdo`);await W(1500);const buf=await p.evaluate(async()=>Array.from(new Uint8Array(await (await fetch('rdo_test.json')).arrayBuffer())));
