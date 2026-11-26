@@ -2,7 +2,7 @@
   "name": "localizador-estacas-firebase",
   "private": true,
   "scripts": {
-    "bundle": "esbuild src/auth.src.js --bundle --minify --format=iife --target=es2019 --legal-comments=none --outfile=public/auth.js",
+    "bundle": "esbuild src/auth.src.js --bundle --minify --format=iife --target=es2019 --legal-comments=none --outfile=public/auth.js && esbuild src/assinar.src.js --bundle --minify --format=iife --target=es2019 --legal-comments=none --outfile=public/assinar.js",
     "test:rules": "firebase emulators:exec --only firestore,auth --project demo-estacas \"node test/rules.test.mjs\""
   },
   "dependencies": {

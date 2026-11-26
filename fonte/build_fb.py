@@ -68,10 +68,10 @@ const timeout=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(ne
 self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);
   if(TILE.test(u.host)){e.respondWith(caches.open('tiles277').then(async c=>{const hit=await c.match(r);if(hit)return hit;try{const x=await fetch(r);if(x.ok||x.type==='opaque')c.put(r,x.clone());return x}catch(_){return new Response('',{status:504})}}));return}
   const same=u.origin===self.location.origin;
-  if(same&&(u.pathname.startsWith('/__/')||u.pathname.startsWith('/app-bundle/')))return; // login do Firebase e pacote do app Android: sempre na rede
+  if(same&&(u.pathname.startsWith('/__/')||u.pathname.startsWith('/app-bundle/')||/^\/assinar(\.html|\.js)?$/.test(u.pathname)))return; // página pública de assinatura do RDO: sempre na rede, fora do cache do app // login do Firebase e pacote do app Android: sempre na rede
   if(!same&&!EXT.test(u.host))return;              // Firestore, Auth etc.: direto na rede
   const page=same&&(r.mode==='navigate'||u.pathname==='/'||u.pathname.endsWith('/index.html'));
-  if(page){e.respondWith(timeout(fetch(u.href,{cache:'no-store',credentials:'same-origin'}),4000).then(x=>put(new Request('index.html'),x)).catch(()=>caches.match('index.html').then(x=>x||caches.match('./'))));return}
+  if(page){e.respondWith(timeout(fetch(u.href,{cache:'no-store',credentials:'same-origin'}),9000).then(x=>put(new Request('index.html'),x)).catch(()=>caches.match('index.html').then(x=>x||caches.match('./'))));return}
   // demais arquivos: do aparelho; se faltar, busca e guarda
   e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(x=>put(r,x)).catch(()=>same?new Response('',{status:504}):undefined)))});
 ''' % (BUILD,json.dumps(CORE),json.dumps(['lib/'+f for f in VEND])))

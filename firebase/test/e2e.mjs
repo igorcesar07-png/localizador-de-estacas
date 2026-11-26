@@ -137,6 +137,23 @@ try{
   ok(await c.evaluate(()=>getComputedStyle(document.getElementById('cRep')).display==='none'),'sem "Criar" na Calculadora, botão de emitir programação fica oculto');
   await c.shot('7-convidado');
   for(const p of [u,a,c])if(p.errs.length)ok(false,'erros de JavaScript: '+p.errs.join(' | '));
+  // 8. assinatura do RDO por link, sem login: engenheiro primeiro, depois encarregado
+  {const TE='a1'.repeat(16),TC='c3'.repeat(16),TP='f5'.repeat(16);const W=(col,id,f)=>fetch(`${FS}/${col}/${id}`,{method:'PATCH',headers:{'Authorization':'Bearer owner','Content-Type':'application/json'},body:JSON.stringify({fields:f})});
+    const S=v=>({stringValue:v}),RS={mapValue:{fields:{numero:S('470'),data:S('2026-11-25'),obra:S('BR-373'),equipe:S('Equipe Pavimentação Johonatan'),n:{integerValue:'2'},usinado:{doubleValue:90.63},aplicado:{doubleValue:79.38},sobra:{doubleValue:11.25}}}};
+    const PDF='data:application/pdf;base64,'+Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 300 200]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF').toString('base64');
+    await W('rdo_pdf',TP,{pdf:S(PDF),envio:S('r-e2e')});
+    await W('rdo_assin',TE,{tok:S(TE),papel:S('eng'),nome:S('Eng. Teste'),dep:{nullValue:null},envio:S('r-e2e'),pdf:S(TP),resumo:RS,status:S('pendente')});
+    await W('rdo_assin',TC,{tok:S(TC),papel:S('enc'),nome:S('Encarregado Teste'),dep:S(TE),envio:S('r-e2e'),pdf:S(TP),resumo:RS,status:S('pendente')});
+    const s=await session('assinatura');const draw=async()=>{const b=await s.$('#cv').then(x=>x.boundingBox());await s.mouse.move(b.x+20,b.y+30);await s.mouse.down();await s.mouse.move(b.x+120,b.y+60,{steps:8});await s.mouse.move(b.x+220,b.y+25,{steps:8});await s.mouse.up()};
+    await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TC}&emu=1`);await s.waitForSelector('#sig');await sleep(800);
+    ok(/aguarda a assinatura do Engenheiro/i.test(await s.textContent('#sig'))&&!(await s.$('#go')),'link do encarregado bloqueado até o engenheiro assinar');
+    await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TE}&emu=1`);await s.waitForSelector('#go');ok(/RDO 470/.test(await s.textContent('h1')),'link do engenheiro abre o RDO sem login');
+    await draw();await s.check('#ok');await s.click('#go');await s.waitForSelector('#sig .am.ok',{timeout:15000});await s.shot('8-eng-assinou');
+    const de=await (await fetch(`${FS}/rdo_assin/${TE}`,{headers:{'Authorization':'Bearer owner'}})).json();ok(de.fields.status.stringValue==='assinado'&&/^data:image\/png/.test(de.fields.assinatura.stringValue),'assinatura do engenheiro gravada');
+    await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TE}&emu=1`);await s.waitForSelector('#sig');ok(/Assinado como/.test(await s.textContent('#sig'))&&!(await s.$('#go')),'o mesmo link não assina de novo');
+    await s.goto(`http://127.0.0.1:5000/assinar.html?t=${TC}&emu=1`);await s.waitForSelector('#go');await draw();await s.check('#ok');await s.click('#go');await s.waitForSelector('#sig .am.ok',{timeout:15000});await s.shot('8-enc-assinou');
+    const dc=await (await fetch(`${FS}/rdo_assin/${TC}`,{headers:{'Authorization':'Bearer owner'}})).json();ok(dc.fields.status.stringValue==='assinado','depois do engenheiro, o encarregado assina pelo link');
+    if(s.errs.length)ok(false,'erros de JavaScript na assinatura: '+s.errs.join(' | '))}
 }catch(e){ok(false,'erro no teste: '+(e.stack||e))}
 await browser.close();
 const n=results.filter(r=>r[0]==='OK').length;

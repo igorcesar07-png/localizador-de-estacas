@@ -33,8 +33,8 @@ ok(!(await p.$('#cmRoot [data-cm="camp"]'))&&!(await p.$('#cmRoot [data-fmot]'))
 {const st0=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-kv dd').textContent));const c=await p.$('#cmRoot .cm-seg[data-i="0"] .cm-sh>span:last-child');const bb=await c.boundingBox();const b1=await (await p.$('#cmRoot .cm-seg[data-i="1"]')).boundingBox();
   await W(800);await p.mouse.move(bb.x+5,bb.y+5);await p.mouse.down();await W(600);ok(await p.$('#cmRoot .cm-seg.cm-drag'),'tocar e segurar destaca o segmento');for(let k=1;k<=10;k++){await p.mouse.move(bb.x+5,bb.y+5+(b1.y+b1.height*0.6-bb.y)*k/10);await W(20)}await p.mouse.up();await W(800);
   const st1=await p.$$eval('#cmRoot .cm-seg',a=>a.map(x=>x.querySelector('.cm-kv dd').textContent));ok(st1[1]===st0[0]&&st1[0]===st0[1],'arrastar para baixo muda a posição na sequência')}
-await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await p.click('#cmRoot [data-cm="send"]');await W(600);
-ok(/enviado para validação/.test(await p.textContent('#cmMsg')),'RDO do dia enviado para validação');ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
+await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(300);await p.fill('#cmRoot [data-rel="numero"]','12');await p.fill('#cmRoot [data-rel="eng"]','Eng. Teste');await p.click('#cmRoot [data-cm="send"]');await W(2500);
+ok(/RDO nº 12 .* gerado/.test(await p.textContent('#cmMsg')),'RDO do dia gerado e enviado para assinatura');ok((await p.$$eval('#rdList > table > tbody > tr:not(.rd-segs)',a=>a.length))===1,'envio aparece na lista de conferência');
 await p.click('[data-cmtab="fres"]');await W(200);await p.screenshot({path:'/tmp/claude-0/cm_fres.png'});
 const pm=await b.newPage({viewport:{width:390,height:800}});await pm.goto('http://localhost:8772/#rdo');await W(1500);await pm.screenshot({path:'/tmp/claude-0/cm_mob.png'});
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

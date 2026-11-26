@@ -342,6 +342,12 @@ onAuthStateChanged(auth,async user=>{
         delEnvio:id=>{const b=writeBatch(db);b.delete(doc(db,'rdo_envios',id));b.delete(doc(db,'rdo_envios_arq',id));return track(b.commit())},
         // exclusão definitiva: o segmento sai da lista do envio (fica só o registro de quem excluiu)
         delSeg:(id,o)=>track(updateDoc(doc(db,'rdo_envios',id),{segs:o.segs,t:o.t,excl:o.excl||[],excl_hist:(o.excl_hist||[]).map(h=>({...h,por:h.por||user.email}))})),
+        // assinaturas do RDO por link (engenheiro → encarregado e fiscal) e PDF para conferência
+        assSubscribe:cb=>onSnapshot(collection(db,'rdo_assin'),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        assCreate:(docs,pdf)=>{const b=writeBatch(db);for(const o of docs)b.set(doc(db,'rdo_assin',o.tok),{...o,status:'pendente',criado_por:user.email,criado_em:Date.now()});
+          if(pdf)b.set(doc(db,'rdo_pdf',pdf.tok),{pdf:pdf.data,envio:pdf.envio,criado_por:user.email,criado_em:Date.now()});return track(b.commit())},
+        assReset:tok=>track(updateDoc(doc(db,'rdo_assin',tok),{status:'pendente',assinado_nome:null,assinado_em:null,assinatura:null,ua:null})),
+        assDel:(toks,pdf)=>{const b=writeBatch(db);for(const t of toks)b.delete(doc(db,'rdo_assin',t));if(pdf)b.delete(doc(db,'rdo_pdf',pdf));return track(b.commit())},
         can:isAdm||!!prd.create,val:isAdm||!!prd.edit,admin:isAdm}}
     // versões do projeto (unifilares) com data de corte: lista leve (metadados) + dados lidos só quando usados
     {const VC=new Map();

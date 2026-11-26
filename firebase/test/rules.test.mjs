@@ -230,6 +230,21 @@ await t('RDO: quem só envia não exclui o RDO inteiro',()=>assertFails(deleteDo
 await t('RDO: quem valida exclui o RDO inteiro (envio e arquivo)',async()=>{await assertSucceeds(deleteDoc(doc(lp('rdoval'),'rdo_envios','r1')));await assertSucceeds(deleteDoc(doc(lp('rdoval'),'rdo_envios_arq','r1')))});
 await t('RMP: quem valida RDO só apaga registro de segmento do RDO',()=>assertFails(deleteDoc(doc(lp('rdoval'),'rmp_controle','B23-123'))));
 await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','app'),{url:'https://x'})));
+// assinatura do RDO por link (sem login): engenheiro primeiro; encarregado e fiscal depois
+{const TE='e'.repeat(32),TC='c'.repeat(32),TP='p'.repeat(32),PNG='data:image/png;base64,iVBORw0KGgo=';
+  const A=(tok,papel,dep)=>({tok,papel,dep,envio:'r9',nome:'N',pdf:TP,resumo:{numero:'1'},status:'pendente',criado_por:'rdoc@x.com',criado_em:1});
+  const SIG=n=>({status:'assinado',assinado_nome:n,assinado_em:2,assinatura:PNG,ua:'t'});
+  await t('Assinatura RDO: quem envia o RDO cria os links e o PDF',async()=>{await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TE),A(TE,'eng',null)));await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_assin',TC),A(TC,'enc',TE)));
+    await assertSucceeds(setDoc(doc(lp('rdoc'),'rdo_pdf',TP),{pdf:'data:application/pdf;base64,AAAA',envio:'r9',criado_por:'rdoc@x.com',criado_em:1}))});
+  await t('Assinatura RDO: só "ver" não cria link',()=>assertFails(setDoc(doc(lp('rdov'),'rdo_assin','x'.repeat(32)),A('x'.repeat(32),'eng',null))));
+  await t('Assinatura RDO: o link abre sem login (documento e PDF)',async()=>{await assertSucceeds(getDoc(doc(anon,'rdo_assin',TE)));await assertSucceeds(getDoc(doc(anon,'rdo_pdf',TP)))});
+  await t('Assinatura RDO: sem login não lista os links',()=>assertFails(getDocs(collection(anon,'rdo_assin'))));
+  await t('Assinatura RDO: encarregado não assina antes do engenheiro',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TC),SIG('Enc'))));
+  await t('Assinatura RDO: assinatura não muda os outros dados',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TE),{...SIG('Eng'),papel:'fis'})));
+  await t('Assinatura RDO: engenheiro assina pelo link',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TE),SIG('Eng'))));
+  await t('Assinatura RDO: o mesmo link não assina de novo',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TE),SIG('Outro'))));
+  await t('Assinatura RDO: depois do engenheiro, o encarregado assina',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TC),SIG('Enc'))));
+  await t('Assinatura RDO: PDF não é alterado pelo link',()=>assertFails(setDoc(doc(anon,'rdo_pdf',TP),{pdf:'x'})))}
 await env.cleanup();
 const ok=results.filter(r=>r[0]==='OK').length;
 const txt=`Regras do Firestore: ${ok}/${results.length} testes OK\n\n`+results.map(r=>r.join('  ')).join('\n')+'\n';

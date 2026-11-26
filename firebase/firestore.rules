@@ -193,6 +193,31 @@ service cloud.firestore {
       allow read: if rdoRead();
       allow write: if isAdmin();
     }
+    // Assinatura do RDO por link: cada responsável (engenheiro, encarregado, fiscal) recebe um token aleatório (id do documento).
+    // Quem tem o link lê o seu documento e assina uma única vez, sem login; encarregado e fiscal só depois do engenheiro.
+    // A lista completa só é lida por quem vê o RDO no app.
+    match /rdo_assin/{tok} {
+      allow get: if true;
+      allow list: if rdoRead();
+      allow create: if canDo('rdo', 'create') && request.resource.data.status == 'pendente' && request.resource.data.tok == tok
+                    && request.resource.data.papel in ['eng', 'enc', 'fis'] && request.resource.data.envio is string && tok.size() >= 24;
+      allow update: if resource.data.status == 'pendente' && request.resource.data.status == 'assinado'
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_em', 'assinatura', 'ua'])
+                    && request.resource.data.assinado_nome is string && request.resource.data.assinado_nome.size() > 1 && request.resource.data.assinado_nome.size() <= 120
+                    && request.resource.data.assinatura is string && request.resource.data.assinatura.size() < 200000
+                    && request.resource.data.assinatura.matches('data:image/png;base64,.+')
+                    && (resource.data.dep == null || get(/databases/$(database)/documents/rdo_assin/$(resource.data.dep)).data.status == 'assinado');
+      // quem valida RDO pode refazer (voltar para pendente) ou apagar junto com o RDO
+      allow update, delete: if canDo('rdo', 'edit');
+    }
+    // PDF do RDO gerado (para conferência no link de assinatura): lido por token, gravado por quem envia o RDO
+    match /rdo_pdf/{tok} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if canDo('rdo', 'create') && request.resource.data.pdf is string && request.resource.data.pdf.size() < 1000000 && tok.size() >= 24;
+      allow update: if false;
+      allow delete: if canDo('rdo', 'edit');
+    }
     // Histórico de programações: resumo (lista) e dados completos. Cria em nome próprio; o autor altera a própria;
     // "editar" altera a de qualquer usuário; "excluir" só marca a exclusão. Nada é apagado do servidor.
     match /programacoes/{id} {
