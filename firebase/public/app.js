@@ -1564,7 +1564,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       const ow=S.rowW[p.tag],wBase=uw!=null?uw:num(S.w[L0.grp]),wCustom=ow!=null&&ow!=='';
       // espessura de projeto (unifilar na BR-373; cadastro na BR-277) e, se o usuário alterou, a espessura da programação
       const eProj=ue!=null?ue:num(S.esp[p.code]),oe=S.rowE[p.tag],eCustom=oe!=null&&oe!==''&&num(oe)>0&&num(oe)!==eProj;
-      const fl=window.__flowStatus?window.__flowStatus(SRCK,p.tag,p.L,a,b):null,lock=!!(fl&&fl.lock);
+      const fl=window.__flowStatus?window.__flowStatus(SRCK,p.tag,p.L,a,b):null,lock=!!(fl&&fl.lock);if(fl&&fl.gaps&&fl.gaps.length&&!ed){a=fl.gaps[0][0];b=fl.gaps[fl.gaps.length-1][1]}
       const len=b-a,w=wCustom?num(ow):wBase,excl=!!S.excl[p.code],e=excl?null:(eCustom?num(oe):eProj),off=lock||S.rowOff[p.tag]===true;
       const miss=[];if(!excl){if(!(w>0))miss.push('largura');if(!(e>0))miss.push('espessura')}
       const area=w>0?len*w:null,vol=(!excl&&area!=null&&e>0)?area*e/100:null,t=(vol!=null&&dens>0)?vol*dens:null;
@@ -1582,7 +1582,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     if(S.pista==='ALL'||/^DRN/.test(S.pista))for(const p of PANOS){const L0=LANES[p.L];if(L0.grp!=='DRN')continue;if(S.pista==='DRN_DR'&&p.code!=='DR'||S.pista==='DRN_DP'&&p.code!=='DP')continue;if(S.sent!=='ALL'&&L0.side!==S.sent)continue;
       const pa=ODO[p.i0],pb=ODO[p.i1]+20;let a=Math.max(pa,sA),b=Math.min(pb,sB);if(b-a<=1e-6)continue;if(S.show[p.code]===false){hidden.set(p.code,(hidden.get(p.code)||0)+1);continue}const a0=a,b0=b,ed=segOf(p,pa,pb);if(ed){a=ed.a;b=ed.b}const dec=L0.side==='D';
       const sai=[];for(let i=p.i0;i<=p.i1;i++)if(Data.saidaAt(L0.side,i)&&ODO[i]>=a-1e-6&&ODO[i]<b-1e-6)sai.push(i);if(dec)sai.reverse();
-      const fl=window.__flowStatus?window.__flowStatus(SRCK,p.tag,p.L,a,b):null,lock=!!(fl&&fl.lock);
+      const fl=window.__flowStatus?window.__flowStatus(SRCK,p.tag,p.L,a,b):null,lock=!!(fl&&fl.lock);if(fl&&fl.gaps&&fl.gaps.length&&!ed){a=fl.gaps[0][0];b=fl.gaps[fl.gaps.length-1][1]}
       drows.push({p,L0,a,b,a0,b0,ed:!!ed,len:b-a,partial:a>pa+1e-6||b<pb-1e-6,off:lock||S.rowOff[p.tag]===true,flow:fl,lock,obs:(S.obs[p.tag]||'').trim(),ini:dec?b:a,fim:dec?a:b,sai:sai.map(i=>R[i][0]),saiL:sai.map(()=>SAIDA_M),drn:true,
         pIni:dec?Data.endName(p.i1):R[p.i0][0],pFim:dec?R[p.i0][0]:Data.endName(p.i1)})}
     // drenos incluídos à mão (fora do projeto): mesmo critério do filtro de drenagem; medidos em metros; saídas opcionais (espaçamento e comprimento informados)
@@ -2704,9 +2704,13 @@ const __S277={Data,R,LANES,SIDE,PANOS,ODO};
   // união de intervalos e interseção
   function unite(iv){iv=iv.filter(x=>x[1]-x[0]>1e-6).sort((x,y)=>x[0]-y[0]);const out=[];for(const x of iv){const l=out[out.length-1];if(l&&x[0]<=l[1]+1e-6)l[1]=Math.max(l[1],x[1]);else out.push([x[0],x[1]])}return out}
   const clipLen=(iv,a,b)=>iv.reduce((s,x)=>s+Math.max(0,Math.min(b,x[1])-Math.max(a,x[0])),0);
+  // base única: executado = Produção executada (planilha + RDO validado, no servidor); programado = Histórico de programações (servidor).
+  // Os registros antigos guardados só neste aparelho (planilha de execução e "concluir programação") não entram mais no status.
   function indexRecords(){const byL=Array.from({length:8},()=>({ex:[],pr:[],an:[]}));
-    for(const r of Rec.execs().filter(r=>(r.rk||'277')===RK).concat(window.PROD?window.PROD.execRecs(RK):[])){const o=byL[r.L];if(!o)continue;(r.st==='and'?o.an:r.st==='prog'?o.pr:o.ex).push(r)}
-    if(RK==='277')for(const p of Rec.progs()){if(p.concluded)continue;for(const it of p.items){const o=byL[it.L];if(o)o.pr.push({L:it.L,a:it.a,b:it.b,dateProg:p.data,src:'prog',obs:'',progId:p.id,equipe:p.equipe})}}
+    for(const r of (window.PROD?window.PROD.execRecs(RK):[])){const o=byL[r.L];if(o)o.ex.push(r)}
+    const S0=RK==='B4'?window.__SRC_B4:__SRC277,H=window.HistStore?window.HistStore.all():[];
+    if(S0){const tags=new Set();for(const h of H){if(h.excluido)continue;const t=String(h.busca||'');if((/373/.test(t))!==(RK==='B4'))continue;for(const m of t.matchAll(/\b\d{3}-(?:ac|f23|f1|dr)-[cd]-\d{2}\b/g))tags.add(m[0])}
+      for(const p of S0.PANOS){if(!tags.has(String(p.tag).toLowerCase()))continue;const o=byL[p.L];if(o)o.pr.push({L:p.L,a:S0.ODO[p.i0],b:S0.ODO[p.i1]+20,src:'hist',obs:''})}}
     return byL}
   window.ExecIdx=()=>{const idx=indexRecords();return (L,a,b)=>{const o=idx[L];if(!o)return {st:'nao',exLen:0,prLen:0,anLen:0};const hit=r=>Math.min(b,r.b)-Math.max(a,r.a)>1e-6;
     const exU=unite(o.ex.filter(hit).map(r=>[r.a,r.b])),exLen=clipLen(exU,a,b),anLen=clipLen(unite(o.an.filter(hit).map(r=>[r.a,r.b])),a,b);let prLen=0;
@@ -5249,14 +5253,16 @@ const PROD=(function(){
     for(const e of (window.__RDOS||[])){if((e.status||'aguardando')!=='aguardando')continue;const k=e.obra==='BR-373'?'B4':'B23',src=srcOf(k);if(!src)continue;
       const EXg=new Set(e.excl||[]);for(const g of e.segs||[]){if(EXg.has(g.sid))continue;const A=src.Data.parseKm(String(g.ini).replace(',','.'));if(A.err)continue;const a=g.side==='D'?A.s-g.len:A.s,grp=g.lane===1?'F1':g.lane===2?'F23':'AC',L=src.LANES.findIndex(l=>l.grp===grp&&l.side===g.side);(ag[k].get(L)||ag[k].set(L,[]).get(L)).push([a,a+g.len])}}
     for(const k of ['B23','B4'])ag[k]=U(ag[k]);FLC={res:R0,nR,ix,ag};return FLC}
+  // pedaços do pano ainda sem execução (planilha + RDO validado); sobras menores que TOL_LEN (5 m) são acerto de estaqueamento, não saldo
+  function gapsOf(F,k,L,a,b){const u=unite([...((F.ix[k].pl.get(L))||[]),...((F.ix[k].rv.get(L))||[])]);const g=[];let x=a;
+    for(const [p,q] of u){if(q<=a||p>=b)continue;if(p>x)g.push([x,Math.min(p,b)]);x=Math.max(x,q)}if(x<b)g.push([x,b]);return g.filter(([p,q])=>q-p>=TOL_LEN)}
   window.__flowStatus=(srck,tag,L,a,b)=>{try{const k=srck==='B4'?'B4':'B23',F=flowIdx(),len=b-a;if(!(len>0))return null;const cov=m=>m&&m.has(L)?clip(m.get(L),a,b):0;
-    const pl=cov(F.ix[k].pl),rv=cov(F.ix[k].rv);
-    if(pl>=len-0.5)return {st:'Executado',c:'exe',lock:true,t:'Executado (planilha de produção): não pode ser programado de novo'};
-    if(pl+rv>=len-0.5)return {st:'Validado',c:'val',lock:true,t:'Executado no RDO validado: não pode ser programado de novo'};
+    const pl=cov(F.ix[k].pl),rv=cov(F.ix[k].rv),gp=gapsOf(F,k,L,a,b);
+    if(pl+rv>0.5&&!gp.length)return pl>=rv?{st:'Executado',c:'exe',lock:true,t:'Executado (planilha de produção): não pode ser programado de novo'}:{st:'Validado',c:'val',lock:true,t:'Executado no RDO validado: não pode ser programado de novo'};
     const ag=cov(F.ag[k]);if(ag>=len*0.5)return {st:'Aguardando validação',c:'env',t:'Enviado no RDO, aguardando validação'};
     if(CM.fres.some(f=>f.tag===tag&&!f.envio))return {st:'Em execução',c:'run',t:'No RDO do dia'};
     const H=window.HistStore?window.HistStore.all():[];const tl=String(tag||'').toLowerCase();if(tl&&H.some(h=>!h.excluido&&String(h.busca||'').includes(tl)))return {st:'Programado',c:'prog',t:'Já está numa programação do histórico'};
-    if(pl+rv>0.5)return {st:`Parcial ${Math.round((pl+rv)/len*100)}%`,c:'par',t:`Executado em ${fmt(pl+rv,1)} de ${fmt(len,1)} m`};return null}catch(e){return null}};
+    if(pl+rv>0.5){const sd=gp.reduce((s,[p,q])=>s+q-p,0);return {st:`Parcial · saldo ${fmt(sd,0)} m`,c:'par',gaps:gp,t:`Executado em ${fmt(pl+rv,1)} de ${fmt(len,1)} m; a programação oferece só o que falta executar`}}return null}catch(e){return null}};
   window.__cmFromHist=function(sum,data){const k=sum.srck==='B4'?'B4':'B23',src=srcOf(k);if(!src)return 'Base do projeto não carregada neste aparelho.';
     const LN={F1:1,F23:2,AC:3},rows=(data.rows||[]).filter(r=>r.k==='pav'&&r.len>0&&r.w>0&&r.e>0);if(!rows.length)return 'Esta programação não tem panos de pavimentação com largura e espessura.';
     if(CM.fres.length&&CM.fres.some(f=>f.mexeu&&!f.envio)&&!confirm('O RDO deste aparelho tem segmentos executados ainda não enviados. Substituir pela programação escolhida?'))return 'cancelado';
@@ -5447,7 +5453,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='26/11/2026 15:05';
+  const CUR_VER='26/11/2026 15:28';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

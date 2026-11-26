@@ -121,6 +121,11 @@ await p.screenshot({path:'/tmp/claude-0/prod_status.png'});
   await p.goto(`http://localhost:${PORT}/#producao`);await p.reload();await W(2500);{const sv=await p.$eval('#pdSev',e=>e.value);const ds=await p.$$eval('#pdList tbody tr td.n:first-child',a=>a.slice(0,40).map(x=>x.textContent.slice(0,10).split('/').reverse().join('-')));ok(sv==='all'&&ds.length>1&&ds.every((d,i)=>!i||ds[i-1]>=d),'ao abrir: Mostrar = Todos e do mais recente para o mais antigo ('+ds[0]+' → '+ds[ds.length-1]+')')}await p.selectOption('#pdSev','all');await W(500);await p.fill('#pdList input[data-cf="ini"]','');
   const okMark=await p.evaluate(id=>{const t=[...document.querySelectorAll('#pdList [data-rmp]')].find(b=>b.dataset.rmp===id);return t?!!t.parentElement.querySelector('.rm-ok'):null},rid);
   const pend=await p.$$('#pdList .rm-pd');ok(okMark!==false&&pend.length>0,'Produção executada: ✓ verde no RMP completo e "!" nos pendentes')}
+// Calculadora: pano parcialmente executado entra só com o saldo; executado (com sobra < 5 m) fica bloqueado
+{await p.goto(`http://localhost:${PORT}/#calculadora`);await W(2500);await p.click('#cRep').catch(()=>{});await W(300);await p.selectOption('#rfObra','Restauração BR-373 – Bloco 04');await W(600);await p.keyboard.press('Escape');
+ await p.fill('#cKmA','237+000');await p.fill('#cKmB','238+000');await p.selectOption('#cPista','F1').catch(()=>{});await p.selectOption('#cSent','C').catch(()=>{});await p.click('#cForm button[type=submit]');await W(1500);
+ const t=await p.$eval('#cOut table.q tbody tr[data-tag="237-F1-C-01"]',tr=>tr.innerText.replace(/\s+/g,' ')).catch(()=>'');
+ ok(/saldo 20 m/.test(t)&&/237\+000 237\+020 20,0/.test(t),'Calculadora: pano parcialmente executado só com o saldo (237+000 a 237+020)')}
 // 5c) versões: RMP pela revisão válida na data; mapa com execução e comparação de revisões
 {await p.goto(`http://localhost:${PORT}/#producao`);await W(2500);const vr=await p.evaluate(()=>{const R=PROD.resolve().B4;return [R.filter(r=>r.iss.some(x=>x.cod==='revisao')).length,R.filter(r=>r.iss.some(x=>x.cod==='revisao_pend')).length,R.length]});
   console.log('versões B4',vr);ok(vr[0]>0&&vr[1]===0,'B4: lançamentos antes do corte comparados com a revisão R03 REV1');

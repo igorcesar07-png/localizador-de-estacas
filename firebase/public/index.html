@@ -1852,7 +1852,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO<small>Massa aplicada e envio dos apontamentos do dia</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 26/11/2026 15:05 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 26/11/2026 15:28 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2329,7 +2329,8 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
         </div>
       </div>
       <details class="card" id="rExec"><summary><span>Execução · programações e planilha</span><span class="flag" id="rExecSum" style="color:var(--muted)"></span></summary>
-        <div class="rexe">
+        <p class="note">O status de execução de todas as páginas vem de uma base única no servidor: <b>executado</b> = Produção executada (planilha de produção + RDO validado) e <b>programado</b> = Histórico de programações. A planilha de execução e o "concluir programação" desta página guardavam dados só neste aparelho e foram desativados.</p>
+        <div class="rexe" hidden>
           <div><h3>Programações registradas</h3><p class="note" style="margin:0 0 8px">Cada programação emitida na Calculadora fica registrada como <b>programado</b>. Toque em <b>Concluir</b> para marcar os panos executados, com a data de execução.</p><div id="rProgs"></div></div>
           <div><h3>Planilha de execução</h3><p class="note" style="margin:0 0 8px">Baixe a planilha padrão com os panos do filtro atual, preencha Status, datas e observações e importe de volta.</p>
             <div class="ract"><button type="button" class="secondary" id="rTpl">Baixar planilha padrão</button><button type="button" class="primary" id="rImpBtn" data-acl="relatorios:create">Importar planilha</button><input type="file" id="rImpFile" accept=".xlsx,.xls,.csv" hidden></div>
@@ -2557,10 +2558,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261126180510";</script>
-<script src="native.js?v=20261126180510"></script>
-<script src="firebase-config.js?v=20261126180510"></script>
-<script src="auth.js?v=20261126180510"></script>
+<script>window.APP_BUILD="20261126182855";</script>
+<script src="native.js?v=20261126182855"></script>
+<script src="firebase-config.js?v=20261126182855"></script>
+<script src="auth.js?v=20261126182855"></script>
 
 </body>
 </html>
