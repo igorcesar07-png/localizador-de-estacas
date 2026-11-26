@@ -1347,6 +1347,8 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .pd-rdx{display:inline-grid;place-items:center;width:24px;height:24px;min-height:0;margin-left:4px;padding:0;vertical-align:middle;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}.pd-rdx:hover,.pd-rdx:focus-visible{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}.rd-xc td{text-decoration:line-through;opacity:.65}.rd-xc td small{text-decoration:none}.pd-org{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#1A56DB;color:#fff;font:700 10.5px var(--body);vertical-align:middle}.pd-org.ok{background:#E3F1E8;color:#1E7A4C}.cm-prog{display:flex;flex-direction:column;background:#EEF4FF;border-left:4px solid #1A56DB;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13px}.cm-prog span{font-size:12px;color:#334}.rd-v{min-height:30px;padding:3px 10px;font-size:12.5px;margin-left:4px}.cmp-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0 12px}.cmp-kpi>div{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface)}.cmp-kpi span{display:block;font-size:12px;color:var(--muted)}.cmp-kpi b{display:block;font:800 22px var(--body)}.cmp-kpi b.ok{color:#1E7A4C}.cmp-kpi b.warn,.cmp-t .warn{color:#B45309}.cmp-kpi small{color:var(--muted);font-size:12px}
 .cmp-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.cmp-t th{text-align:left}.cmp-t td small{color:var(--muted)}
 @media(max-width:700px){.cmp-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rm-add{display:inline-flex;align-items:center;margin:4px 4px 0 0;padding:3px 9px;border:1px solid var(--line,#D9DED9);border-radius:999px;background:var(--surface,#fff);font:600 12px var(--body,system-ui);cursor:pointer;white-space:nowrap}.rm-add:not(.ed){border-color:#E0A800;background:#FFF6D6}
+.rm-asc div{white-space:nowrap;font-size:12px}.rm-asc small{display:block;white-space:normal;max-width:220px}.rm-warn{background:#FFF6D6;padding:6px 10px;border-radius:8px}.rm-ck{display:flex;gap:8px;align-items:center;font-weight:600;margin:6px 0}.rm-mcf{margin-top:8px}.rm-mcf summary{cursor:pointer;font-weight:600}
 .rdp-sig{display:block;height:26px;max-width:110px;margin-top:3px;background:#fff;border-radius:4px}.rdp-off td{opacity:.55}.rdp-f{align-items:end}
 .cm-dev{margin:6px 0 0;padding:6px 10px;border-radius:8px;background:#FDE8E6;color:#7A1A12;font-size:13px;font-weight:600}
 .rel-auto th,.rel-auto td{color:var(--muted,#5F6A64);font-size:11px;text-align:center}.rel-auto small{font-weight:400}
@@ -1868,7 +1870,7 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
     <a href="#rdo" data-page="rdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h3l2-6h6l2 6h3"/><path d="M8 12V6h8v6"/><path d="M12 3v3"/></svg><span>RDO<small>Massa aplicada e envio dos apontamentos do dia</small></span></a>
     <a href="#admin" data-page="admin" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 7l1.5 1.5L21 6"/></svg><span>Administração<small>Usuários, perfis e permissões</small></span></a>
   </div>
-  <div class="dfoot">Versão 26/11/2026 17:02 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
+  <div class="dfoot">Versão 26/11/2026 17:43 · 6.961 estacas de 20 m, de 164+700 a 303+800. Fonte: R08 Unifilar de Soluções e KMZ de estacas.</div>
 </nav>
 <template id="menuIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></template>
 
@@ -2229,15 +2231,22 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
   <div class="topbar"><button class="menuBtn" type="button" data-menu aria-label="Abrir menu"></button><h1>Controle de RMPs</h1></div>
   <div class="cscroll"><div class="cwrap" id="rmRoot">
     <div class="card pd-c"><h2>RMPs da produção executada</h2>
-      <p class="pd-note">Lista os segmentos de projeto com RMP = Sim na página Produção executada. O RMP fica <b>completo</b> quando tem motivo, foto do RMP assinado, foto da patologia e foto da linha com a espessura. Completo aparece com ✓ verde na Produção executada; os demais seguem pendentes.</p>
+      <p class="pd-note">Lista os segmentos de projeto com RMP = Sim na Produção executada (e os panos executados fora do projeto). Cada etapa tem o seu botão na própria coluna: <b>tipo e patologia</b>, <b>foto da patologia</b>, <b>foto da espessura</b> e <b>arquivo do RMP</b> (dados automáticos do RDO do dia + motivação), que vai para assinatura do <b>solicitante</b> e depois do <b>fiscal</b> na página de assinaturas. Completo = todas as etapas e as duas assinaturas (ou o RMP assinado em papel).</p>
       <div class="rm-corte" id="rmCorte"></div>
       <div class="pd-blocks" id="rmCards"></div>
       <div class="pd-fl"><div class="fld"><label for="rmBlk">Bloco</label><select id="rmBlk"><option value="ALL">Todos</option><option value="B2">Bloco 02</option><option value="B3">Bloco 03</option><option value="B4">Bloco 04</option></select></div>
         <div class="fld"><label for="rmSit">Situação</label><select id="rmSit"><option value="all">Todos</option><option value="pend">Pendentes</option><option value="ok">Completos</option><option value="pre">Antes do corte</option></select></div>
-        <div class="fld"><label for="rmFalta">Faltando</label><select id="rmFalta"><option value="">Qualquer item</option><option value="motivo">Motivo</option><option value="assinado">RMP assinado</option><option value="patologia">Foto da patologia</option><option value="espessura">Foto da espessura</option></select></div>
+        <div class="fld"><label for="rmFalta">Faltando</label><select id="rmFalta"><option value="">Qualquer item</option><option value="tipo">Tipo e patologia</option><option value="patologia">Foto da patologia</option><option value="espessura">Foto da espessura</option><option value="arquivo">Arquivo do RMP</option><option value="assinado">Assinaturas</option></select></div>
         <div class="fld"><label for="rmQ">Buscar</label><input id="rmQ" type="search" placeholder="estaca, data, solução, equipe…" autocomplete="off"></div></div>
       <div class="pd-acts"><button type="button" class="pd-b pri" id="rmXls">Relatório de pendências (Excel)</button><button type="button" class="pd-b" id="rmTxt">Copiar resumo para enviar</button><button type="button" class="pd-b" id="rmClr">Limpar filtros</button><span class="pd-note" id="rmMsg" aria-live="polite"></span></div>
       <div class="tscroll" id="rmList"></div></div>
+    <div class="card pd-c"><h2>Exportar e enviar RMPs</h2>
+      <p class="pd-note"><b>ZIP</b>: uma pasta por semana, dentro dela uma por dia e, em cada dia, uma por RMP com o PDF (modelo Via Araucária, com as assinaturas), as fotos renomeadas e um resumo em texto. <b>E-mail</b>: um e-mail por RMP para a Via Araucária, com o PDF e as fotos anexados.</p>
+      <div class="pd-fl"><div class="fld"><label for="rmZde">De</label><input id="rmZde" type="date"></div><div class="fld"><label for="rmZate">Até</label><input id="rmZate" type="date"></div>
+        <div class="fld"><label for="rmZmod">Pastas</label><select id="rmZmod"><option value="semana">Semana › dia › RMP</option><option value="dia">Dia › RMP</option></select></div>
+        <label class="rm-ck"><input type="checkbox" id="rmZok" checked> Só RMPs concluídos</label></div>
+      <div class="pd-acts"><button type="button" class="pd-b pri" id="rmZip">Baixar ZIP do período</button><button type="button" class="pd-b" id="rmZmail">Enviar por e-mail os concluídos do período</button><span class="pd-note" id="rmZmsg" aria-live="polite"></span></div>
+      <div id="rmMail"></div></div>
   </div></div>
 </section>
 <section class="page" id="pProd" data-page="producao" hidden>
@@ -2585,10 +2594,10 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
 
 <script src="lib/leaflet.js"></script>
 <script src="lib/leaflet-rotate-src.js"></script>
-<script>window.APP_BUILD="20261126200240";</script>
-<script src="native.js?v=20261126200240"></script>
-<script src="firebase-config.js?v=20261126200240"></script>
-<script src="auth.js?v=20261126200240"></script>
+<script>window.APP_BUILD="20261126204323";</script>
+<script src="native.js?v=20261126204323"></script>
+<script src="firebase-config.js?v=20261126204323"></script>
+<script src="auth.js?v=20261126204323"></script>
 
 </body>
 </html>

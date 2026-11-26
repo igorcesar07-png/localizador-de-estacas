@@ -5,7 +5,7 @@ import {getAuth,onAuthStateChanged,GoogleAuthProvider,signInWithPopup,signInWith
   createUserWithEmailAndPassword,sendPasswordResetEmail,sendEmailVerification,signOut,connectAuthEmulator,updateProfile,
   setPersistence,indexedDBLocalPersistence,browserLocalPersistence} from 'firebase/auth';
 import {initializeFirestore,persistentLocalCache,persistentSingleTabManager,memoryLocalCache,doc,getDoc,getDocFromServer,setDoc,collection,getDocs,
-  updateDoc,deleteDoc,arrayUnion,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork,setLogLevel} from 'firebase/firestore';
+  updateDoc,deleteDoc,arrayUnion,runTransaction,serverTimestamp,connectFirestoreEmulator,onSnapshot,writeBatch,waitForPendingWrites,enableNetwork,setLogLevel} from 'firebase/firestore';
 
 const doSignOut=()=>{try{window.NATIVE&&NATIVE.googleSignOut&&NATIVE.googleSignOut()}catch(e){}return signOut(auth)};
 const ADMIN='igordalmolin.eng@gmail.com';
@@ -326,6 +326,20 @@ onAuthStateChanged(auth,async user=>{
         // data de corte do controle de pendências: todos leem, só o administrador altera
         cfg:async()=>{try{const s=await getDoc(doc(db,'rmp_config','app'));return s.exists()?s.data():{}}catch(e){return {}}},
         setCfg:c=>isAdm?track(setDoc(doc(db,'rmp_config','app'),{corte:String(c.corte||''),by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
+        // e-mail dos RMPs (script do Gmail do administrador): endereço, chave e destinatários
+        mailCfg:async()=>{try{const s=await getDoc(doc(db,'rmp_config','email'));return s.exists()?s.data():null}catch(e){return null}},
+        setMailCfg:c=>isAdm?track(setDoc(doc(db,'rmp_config','email'),{url:String(c.url||'').slice(0,300),chave:String(c.chave||'').slice(0,120),para:(c.para||[]).slice(0,10),auto:!!c.auto,desde:c.auto?(+c.desde||Date.now()):null,by:user.email,em:Date.now()})):Promise.reject(new Error('só o administrador')),
+        // reserva o envio do e-mail de um RMP (evita dois aparelhos enviarem o mesmo): só reserva se ainda não foi enviado nem está sendo enviado há menos de 10 min
+        claimMail:id=>runTransaction(db,async tx=>{const r=doc(db,C,id),s=await tx.get(r);if(!s.exists())return false;const d=s.data(),m=d.email||{};
+          if(m.st==='enviado'||(m.st==='enviando'&&Date.now()-(m.em||0)<600000))return false;
+          tx.set(r,{...d,email:{st:'enviando',por:user.email,em:Date.now()},atualizado_por:user.email,atualizado_em:Date.now()});return true}),
+        // assinaturas do RMP (solicitante → fiscal) na mesma página de assinaturas do RDO
+        assSubscribe:cb=>onSnapshot(collection(db,'rdo_assin'),{includeMetadataChanges:true},s=>cb(s.docs.map(d=>({...d.data(),id:d.id,__pend:d.metadata.hasPendingWrites}))),e=>cb(null,e)),
+        assCreate:(docs,pdf)=>{const b=writeBatch(db);for(const o of docs)b.set(doc(db,'rdo_assin',o.tok),{...o,status:'pendente',criado_por:user.email,criado_em:Date.now()});
+          for(const o of docs)if(o.pessoa)b.update(doc(db,'assinantes',o.pessoa),{docs:arrayUnion(o.tok)});
+          if(pdf)b.set(doc(db,'rdo_pdf',pdf.tok),{pdf:pdf.data,envio:pdf.envio,criado_por:user.email,criado_em:Date.now()});return track(b.commit())},
+        assDel:(toks,pdf)=>{const b=writeBatch(db);for(const t of toks)b.delete(doc(db,'rdo_assin',t));if(pdf)b.delete(doc(db,'rdo_pdf',pdf));return track(b.commit())},
+        pesSubscribe:cb=>onSnapshot(collection(db,'assinantes'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),
         can:isAdm||!!prm.create,admin:isAdm}}
     // RDO de massa: envios do fim do dia (resumo + segmentos compactos) e o arquivo original, separados; nada é alterado depois de enviado
     const prd=window.ACL.perms.rdo||{};

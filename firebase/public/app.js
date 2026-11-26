@@ -1779,6 +1779,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
   const TKEYS=['sCafe','sDds','sSai','eCafe','eDds','eSai'],UKEYS=['uPrep','uIni'];
   const HV={uPrep:DEF_H.uPrep,uIni:DEF_H.uIni};[LASTP,store.get('progHours',{})||{}].forEach(src=>UKEYS.forEach(k=>{const m=toMin(src[k]);if(m!=null)HV[k]=fmtHM(m)}));
   const saveH=()=>store.set('progHours',{uPrep:HV.uPrep,uIni:HV.uIni});saveH();
+  // horários da usina são os mesmos para as três equipes e para todos os aparelhos: quem altera, atualiza todos (registro comum no servidor)
+  const USI_EQ='Usina (comum a todas as equipes)';
+  function saveUsiSrv(){const at=Date.now();store.set('progHoursAt',at);try{window.EquipeHorasDB&&window.EquipeHorasDB.save(USI_EQ,{uPrep:HV.uPrep,uIni:HV.uIni},at)}catch(e){}}
   // último horário de cada equipe: salvo no aparelho (funciona sem internet) e sincronizado com o servidor; vale o registro mais recente
   const teamH=()=>store.get('teamHours',null);
   (function seedTeam(){if(teamH())return;const T={};const H=hist();const all=Object.values(H).concat(LASTP&&LASTP.equipe?[LASTP]:[]);
@@ -1787,19 +1790,20 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     store.set('teamHours',T)})();
   let TDIRTY=false;
   function teamHint(){const eq=RFF.equipe.value,t=(teamH()||{})[eq];
-    $('rfHrHint').innerHTML=!eq?'Escolha a equipe: os horários de sinalização e da equipe vêm do último registro dela. A usina é a mesma para todas as equipes.':
-      t?`Horários de sinalização e da equipe: último registro de <b>${escH(eq)}</b> (${new Date(t.at).toLocaleDateString('pt-BR')}). Ao emitir com outro horário, ele passa a ser o padrão da equipe. Usina: igual para todas.`:
-      `<b>${escH(eq)}</b> ainda não tem horário registrado: preencha os horários de sinalização e da equipe. Usina: igual para todas.`}
+    $('rfHrHint').innerHTML=!eq?'Escolha a equipe: os horários de sinalização e da equipe vêm do último registro dela. A usina é a mesma para as três equipes: alterar aqui atualiza todas.':
+      t?`Horários de sinalização e da equipe: último registro de <b>${escH(eq)}</b> (${new Date(t.at).toLocaleDateString('pt-BR')}). Ao emitir com outro horário, ele passa a ser o padrão da equipe. Usina: igual para as três equipes (alterar aqui atualiza todas).`:
+      `<b>${escH(eq)}</b> ainda não tem horário registrado: preencha os horários de sinalização e da equipe. Usina: igual para as três equipes (alterar aqui atualiza todas).`}
   function loadTeam(eq){const t=(teamH()||{})[eq];TKEYS.forEach(k=>{const v=t&&t.h&&t.h[k]?t.h[k]:'';HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid')});TDIRTY=false;teamHint()}
   function saveTeam(eq,info){if(!eq)return;const h={};TKEYS.forEach(k=>h[k]=info[k]);const T=teamH()||{};const rec={h,at:Date.now(),src:'local'};T[eq]=rec;store.set('teamHours',T);
     try{window.EquipeHorasDB&&window.EquipeHorasDB.save(eq,h,rec.at)}catch(e){}teamHint()}
   // servidor: junta com o aparelho pelo mais recente (offline o Firestore entrega o que estiver em cache e envia depois)
   if(window.EquipeHorasDB)try{window.EquipeHorasDB.subscribe(list=>{if(!list)return;const T=teamH()||{};let chg=false;
-      for(const r of list){if(!r||!r.equipe||!r.h)continue;const l=T[r.equipe];if(!l||(r.at||0)>(l.at||0)){T[r.equipe]={h:r.h,at:r.at||0,src:'servidor'};chg=true}}
+      {const u=list.find(x=>x&&x.equipe===USI_EQ&&x.h);if(u&&(u.at||0)>(store.get('progHoursAt',0)||0)){store.set('progHoursAt',u.at||0);for(const k of UKEYS){const m=toMin(u.h[k]);if(m==null)continue;HV[k]=fmtHM(m);if(document.activeElement!==RFF[k])RFF[k].value=HV[k]}saveH()}}
+      for(const r of list){if(!r||!r.equipe||!r.h||r.equipe===USI_EQ)continue;const l=T[r.equipe];if(!l||(r.at||0)>(l.at||0)){T[r.equipe]={h:r.h,at:r.at||0,src:'servidor'};chg=true}}
       for(const [eq,l] of Object.entries(T)){const r=list.find(x=>x.equipe===eq);if(l.src==='local'&&(!r||(r.at||0)<(l.at||0)))try{window.EquipeHorasDB.save(eq,l.h,l.at)}catch(e){}}
       if(chg){store.set('teamHours',T);if(!TDIRTY&&RFF.equipe.value)loadTeam(RFF.equipe.value);else teamHint()}})}catch(e){}
   const isT=k=>TKEYS.includes(k);
-  function setH(k,v){HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid');if(isT(k))TDIRTY=true;else saveH()}
+  function setH(k,v){HV[k]=v;RFF[k].value=v;RFF[k].removeAttribute('aria-invalid');if(isT(k))TDIRTY=true;else{saveH();saveUsiSrv()}}
   // valor apagado: na equipe fica vazio (a preencher); inválido volta ao último válido; na usina sempre volta ao último válido
   function commitH(k){const el=RFF[k],raw=el.value.trim(),m=toMin(raw);if(isT(k)&&raw===''){HV[k]='';return}
     if(m==null){el.value=HV[k]||'';el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),900)}else if(fmtHM(m)!==HV[k]||el.value!==fmtHM(m))setH(k,fmtHM(m))}
@@ -4928,7 +4932,7 @@ const PROD=(function(){
   /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
   const RDOPEN=new Set(),RDSEEN=new Set();let RDOS=[];
   if(window.RdoDB){window.RdoDB.subscribe(l=>{if(!l)return;RDRAW=l;rdOnList()});if(window.RdoDB.assSubscribe)window.RdoDB.assSubscribe(l=>{if(!l)return;ASSL=l;ASS=assGroup(l);rdOnList()});
-    if(window.RdoDB.pesSubscribe)window.RdoDB.pesSubscribe(l=>{if(!l)return;PES=l;pesRender();cmRenderKeep()})}
+    if(window.RdoDB.pesSubscribe)window.RdoDB.pesSubscribe(l=>{if(!l)return;PES=l;pesRender();cmRenderKeep();try{rmRender()}catch(e){}})}
   function rdOnList(){const l=rdoEff(RDRAW);RDOS=l;window.__RDOS=l;
     // situação dos segmentos enviados (aguardando, validado ou devolvido) volta para o RDO do aparelho
     try{let ch=false;for(const f of CM.fres){if(!f.envio)continue;const e=l.find(x=>x.id===f.envio.id);if(!e){if(RDSEEN.has(f.envio.id)){f.devolvido='RDO excluído pelo validador: lance de novo se foi executado';f.envio=null;ch=true}continue}const st=e.status||'aguardando';
@@ -5509,12 +5513,26 @@ const PROD=(function(){
   Router.onInit('rdo',rdInit);on('page',p=>{if(p==='rdo'){rdRender();cmRender()}});on('prod',()=>rdRender());
   /* ---------- controle de RMPs (página própria, ligada à produção executada) ---------- */
   let RMPC=new Map();const RMEDIA=new Map();
-  const RFOTO=[['assinado','RMP assinado pelo fiscal ou responsável'],['patologia','Foto da patologia'],['espessura','Foto da linha mostrando a espessura']];
-  const FALTA_N={motivo:'Motivo',assinado:'RMP assinado',patologia:'Foto da patologia',espessura:'Foto da espessura'};
+  const RFOTO=[['patologia','Foto da patologia'],['espessura','Foto da linha mostrando a espessura'],['assinado','RMP assinado em papel (opcional: substitui as assinaturas pelo app)']];
+  const FALTA_N={tipo:'Tipo e patologia',patologia:'Foto da patologia',espessura:'Foto da espessura',arquivo:'Arquivo do RMP',assinado:'Assinaturas'};
   const PATS=['Sola','Segregação','Trincas','Vertente de água','Desagregação por umidade'];
-  const rmpList=()=>resolve().all.filter(r=>r.rmp.length&&r.cls==='projeto');
-  function rmpFalta(r){const c=RMPC.get(r.id)||{},f=c.fotos||{},n=r.notas&&r.notas[0],o=[];if(!(n&&n.motivos&&n.motivos.length))o.push('motivo');for(const [k] of RFOTO)if(!(f[k]||[]).length)o.push(k);return o}
+  const RTIPO={espessura:'Espessura',extensao:'Extensão',pano_novo:'Pano novo fora de projeto'};
+  const PAV_F=['FF','FE','FS','GAP'];
+  // pano de pavimento executado onde o projeto não tem solução na faixa = RMP de pano novo fora de projeto
+  const semProj=r=>!!(r.iss&&r.iss.some(x=>x.cod==='sem_projeto')&&PAV_F.includes(r.fam));
+  const rmpList=()=>resolve().all.filter(r=>r.cls==='projeto'&&(r.rmp.length||semProj(r)));
+  const tipoSug=r=>{const o=[];if(r.rmp.some(x=>x==='aumento'||x==='reducao'))o.push('espessura');if(r.rmp.includes('comprimento'))o.push('extensao');if(semProj(r))o.push('pano_novo');return o};
+  // assinaturas do arquivo do RMP (solicitante → fiscal), pela mesma página de assinaturas do RDO
+  const rmAss=c=>{const e=c&&c.arq&&c.arq.env;return e?(ASS[e]||{}):{}};
+  const rmAssOk=c=>{const a=rmAss(c);return !!(a.sol&&a.sol.status==='assinado'&&a.fis&&a.fis.status==='assinado')};
+  function rmpFalta(r){const c=RMPC.get(r.id)||{},f=c.fotos||{},o=[];
+    if(!((c.tipos||[]).length&&(c.patologias||[]).length))o.push('tipo');
+    for(const k of ['patologia','espessura'])if(!(f[k]||[]).length)o.push(k);
+    const papel=(f.assinado||[]).length>0;
+    if(!papel&&!(c.arq&&String(c.arq.motivacao||'').trim()&&c.arq.env))o.push('arquivo');
+    if(!papel&&!rmAssOk(c))o.push('assinado');return o}
   const rmpOk=r=>!rmpFalta(r).length;
+  let RMMAIL=null,RMAUTO=false;
   // data de corte: RMPs executados antes dela ficam fora do controle de pendências (definida pelo administrador; vazia = controla todos)
   let RMCORTE=store.get('rmCorte','');
   const preCorte=r=>!!(RMCORTE&&r.data&&String(r.data)<RMCORTE);
@@ -5522,7 +5540,7 @@ const PROD=(function(){
   const corteTit=()=>`RMP anterior à data de corte do controle (${brD(RMCORTE)}): fora das pendências`;
   function rmCorteLoad(){if(window.RmpDB&&window.RmpDB.cfg)window.RmpDB.cfg().then(c=>{const v=c&&typeof c.corte==='string'?c.corte:'';if(v!==RMCORTE){RMCORTE=v;store.set('rmCorte',v);render();rmRender()}}).catch(()=>{})}
   rmCorteLoad();
-  if(window.RmpDB)window.RmpDB.subscribe(l=>{if(!l)return;RMPC=new Map(l.map(x=>[x.id,x]));render();rmRender()});
+  if(window.RmpDB)window.RmpDB.subscribe(l=>{if(!l)return;RMPC=new Map(l.map(x=>[x.id,x]));render();rmRender();setTimeout(()=>{try{rmAuto()}catch(e){}},100)});
   const canRmp=()=>!!(window.RmpDB&&window.RmpDB.can);
   const RMF=Object.assign({blk:'ALL',sit:'all',falta:'',q:''},store.get('rmF2',{}));const saveRMF=()=>store.set('rmF2',RMF);
   const RCF=store.get('rmCF',{f:{},s:null});const saveRCF=()=>store.set('rmCF',RCF);
@@ -5537,26 +5555,46 @@ const PROD=(function(){
     if(!adm)return;const sv=async v=>{try{$('rmCorteS').disabled=true;await window.RmpDB.setCfg({corte:v});RMCORTE=v;store.set('rmCorte',v);render();rmRender();$('rmCorteM')&&($('rmCorteM').textContent='Data de corte salva.')}catch(x){$('rmCorteM').textContent='Não foi possível salvar: '+(x.message||x);$('rmCorteS').disabled=false}};
     $('rmCorteS').onclick=()=>{const v=$('rmCorteD').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){$('rmCorteM').textContent='Escolha uma data.';return}sv(v)};
     if($('rmCorteX'))$('rmCorteX').onclick=()=>{if(confirm('Remover a data de corte? Todos os RMPs voltam ao controle de pendências.'))sv('')}}
-  function rmRender(){const root=$('rmRoot');if(!root||Router.cur()!=='rmp')return;const all=rmpList();rmCorteUi();
+  const rmAssSt=c=>{const a=rmAss(c);if(!c||!c.arq||!c.arq.env)return 'Sem envio';if(a.sol&&a.sol.status==='devolvido'||a.fis&&a.fis.status==='devolvido')return 'Devolvido';return rmAssOk(c)?'Assinado':'Aguardando'};
+  const rmMailSt=c=>c&&c.email&&c.email.st==='enviado'?'Enviado':c&&c.email&&c.email.st==='erro'?'Erro':'Não enviado';
+  function rmRender(){const root=$('rmRoot');if(!root||Router.cur()!=='rmp')return;const all=rmpList();rmCorteUi();rmMailUi();
     const by=k=>all.filter(r=>k==='B4'?r.k==='B4':r.blk===k);
     $('rmCards').innerHTML=[['Todos',all],['Bloco 02',by('B2')],['Bloco 03',by('B3')],['Bloco 04',by('B4')]].map(([t,l])=>{const ok=l.filter(rmpOk).length,pe=l.filter(rmpPendR).length,pc=l.length-ok-pe;const f={};for(const r of l)if(rmpPendR(r))for(const x of rmpFalta(r))f[x]=(f[x]||0)+1;
       return `<div class="pd-blk"><h3>${t}</h3><div class="pd-n"><div><b>${l.length}</b><span>RMPs</span></div><div><b class="${pe?'warn':''}">${pe}</b><span>pendentes</span></div><div><b style="color:#1E7A4C">${ok}</b><span>completos</span></div>${RMCORTE?`<div><b style="color:#56605A">${pc}</b><span>antes do corte</span></div>`:''}</div>
         <small>${Object.keys(FALTA_N).map(k=>`${FALTA_N[k]}: ${f[k]||0}`).join(' · ')}</small></div>`}).join('');
+    const C_=id=>RMPC.get(id)||{},F_=(id,k)=>((C_(id).fotos||{})[k]||[]).length;
     const RCOL=[['data','Data','d',r=>r.data||''],['blk','Bloco','c',r=>r.k==='B4'?'B4':(r.blk||'')],['pf','Pista · faixa','c',r=>val(r,'pista')+' · '+val(r,'faixa')],['ini','Est. inicial','t',r=>val(r,'ini')],['fim','Est. final','t',r=>val(r,'fim')],
-      ['sp','Projeto','c',r=>solProj(r)],['se','Executado','c',r=>solExec(r)],['xp','Ext. projeto (m)','t',r=>r.extProj!=null?fmt(r.extProj,1):'—'],['xe','Ext. executada (m)','t',r=>fmt(extOf(r),1)],['mud','O que mudou','t',r=>rmpTxt(r)],['mot','Motivo','c',r=>notaTxt(r)?'Com motivo':'Sem motivo'],
-      ['ass','Assinado','c',r=>((RMPC.get(r.id)||{}).fotos||{}).assinado&&RMPC.get(r.id).fotos.assinado.length?'✓':'✗'],['pat','Patologia','c',r=>((RMPC.get(r.id)||{}).fotos||{}).patologia&&RMPC.get(r.id).fotos.patologia.length?'✓':'✗'],
-      ['esp','Espessura','c',r=>((RMPC.get(r.id)||{}).fotos||{}).espessura&&RMPC.get(r.id).fotos.espessura.length?'✓':'✗'],['sit','Situação','c',r=>rmpOk(r)?'Completo':preCorte(r)?'Antes do corte':'Pendente']];
+      ['sp','Projeto','c',r=>solProj(r)],['se','Executado','c',r=>solExec(r)],['xp','Ext. projeto (m)','t',r=>r.extProj!=null?fmt(r.extProj,1):'—'],['xe','Ext. executada (m)','t',r=>fmt(extOf(r),1)],['mud','O que mudou','t',r=>rmpTxt(r)||(semProj(r)?'Pano fora do projeto':'')],
+      ['tp','Tipo e patologia','c',r=>(C_(r.id).tipos||[]).length?'Preenchido':'Falta'],['pat','Foto patologia','c',r=>F_(r.id,'patologia')?'✓':'✗'],['esp','Foto espessura','c',r=>F_(r.id,'espessura')?'✓':'✗'],
+      ['arq','Arquivo RMP','c',r=>{const a=C_(r.id).arq;return a?(a.env?(a.numero||'Enviado'):'Rascunho'):'Sem arquivo'}],['ass','Assinaturas','c',r=>F_(r.id,'assinado')?'Papel':rmAssSt(C_(r.id))],['mail','E-mail','c',r=>rmMailSt(C_(r.id))],
+      ['sit','Situação','c',r=>rmpOk(r)?'Completo':preCorte(r)?'Antes do corte':'Pendente']];
     const l0=rmFiltered();const fs=Object.entries(RCF.f).filter(([,v])=>v);
     let l=l0.filter(r=>fs.every(([k,v])=>{const c=RCOL.find(x=>x[0]===k);if(!c)return true;const x=String(c[3](r));return c[2]==='c'?x===v:norm(x).includes(norm(v))}));
     if(RCF.s){const c=RCOL.find(x=>x[0]===RCF.s.k);if(c){const ky=c[0]==='ini'||c[0]==='fim'?r=>(c[0]==='ini'?r.a:r.b)||0:c[3];l=l.slice().sort((a,b)=>{const x=ky(a),y=ky(b);return (typeof x==='number'?x-y:String(x).localeCompare(String(y),'pt',{numeric:true}))*RCF.s.d})}}
     const opt=c=>[...new Set(l0.map(r=>String(c[3](r))))].sort((a,b)=>a.localeCompare(b,'pt',{numeric:true}));
-    const head=`<tr><th></th>${RCOL.map(c=>`<th><button type="button" class="rm-sort" data-rsort="${c[0]}" aria-label="Ordenar por ${c[1]}">${c[1]}${RCF.s&&RCF.s.k===c[0]?(RCF.s.d>0?' ▲':' ▼'):''}</button></th>`).join('')}</tr>
-      <tr class="pd-fr"><th>${fs.length?`<button type="button" class="cm-mini" data-rclr="1" title="Limpar filtros das colunas" aria-label="Limpar filtros das colunas">✕</button>`:''}</th>${RCOL.map(c=>`<th>${c[2]==='c'?`<select data-rcf="${c[0]}" aria-label="Filtrar ${c[1]}"><option value="">Todos</option>${opt(c).map(o=>`<option${RCF.f[c[0]]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input data-rcf="${c[0]}" value="${esc(RCF.f[c[0]]||'')}" placeholder="filtrar" aria-label="Filtrar ${c[1]}">`}</th>`).join('')}</tr>`;
+    const head=`<tr>${RCOL.map(c=>`<th><button type="button" class="rm-sort" data-rsort="${c[0]}" aria-label="Ordenar por ${c[1]}">${c[1]}${RCF.s&&RCF.s.k===c[0]?(RCF.s.d>0?' ▲':' ▼'):''}</button></th>`).join('')}</tr>
+      <tr class="pd-fr">${RCOL.map((c,i)=>`<th>${i===0&&fs.length?`<button type="button" class="cm-mini" data-rclr="1" title="Limpar filtros das colunas" aria-label="Limpar filtros das colunas">✕</button>`:''}${c[2]==='c'?`<select data-rcf="${c[0]}" aria-label="Filtrar ${c[1]}"><option value="">Todos</option>${opt(c).map(o=>`<option${RCF.f[c[0]]===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`:`<input data-rcf="${c[0]}" value="${esc(RCF.f[c[0]]||'')}" placeholder="filtrar" aria-label="Filtrar ${c[1]}">`}</th>`).join('')}</tr>`;
+    const w=canRmp();
+    // um botão por etapa, na coluna da própria etapa
+    const bt=(id,step,has,lab)=>`<button type="button" class="rm-add${has?' ed':''}" data-rmstep="${step}" data-id="${esc(id)}">${has?(w?'Editar':'Ver'):(w?'+ '+lab:'Ver')}</button>`;
+    const fotoCel=(r,k)=>{const n=F_(r.id,k);return `<td>${n?`<span class="rm-y">✓</span> ${n} foto${n>1?'s':''}`:ck(false)}${bt(r.id,k,n,'Foto')}</td>`};
+    const assCel=(r,c)=>{if(F_(r.id,'assinado'))return `<td><span class="rm-y">✓</span> em papel</td>`;const a=rmAss(c);if(!c.arq||!c.arq.env)return '<td><small>gere o arquivo e envie para assinatura</small></td>';
+      const one=(p,t)=>{const x=a[p];if(!x)return `<div>${ck(false)} ${t}</div>`;if(x.status==='assinado')return `<div><span class="rm-y">✓</span> ${t}<small> ${esc(x.assinado_nome||'')}</small></div>`;
+        if(x.status==='devolvido')return `<div><span class="rm-n">↩</span> ${t} <b class="pd-erro">devolveu</b><small> ${esc(x.devolvido_motivo||'')}</small></div>`;
+        const lib=p==='sol'||(a.sol&&a.sol.status==='assinado');return `<div>${ck(false)} ${t}<small> ${esc(x.nome||'')}${lib?'':' · aguarda o solicitante'}</small>${w&&lib?(x.pessoa?` <button type="button" class="cm-mini" data-pslk="${esc(x.pessoa)}" title="Copiar o endereço da página de assinaturas">🔗</button>`:` <button type="button" class="cm-mini" data-rdlk="${esc(x.tok)}" title="Copiar o link de assinatura">🔗</button>`):''}</div>`};
+      return `<td class="rm-asc">${one('sol','Solicitante')}${one('fis','Fiscal')}</td>`};
+    const mailCel=(r,c)=>{const m=c.email||{};if(m.st==='enviado')return `<td><span class="rm-y">✓</span> enviado<small> ${esc(dt(m.em))}</small>${w?`<button type="button" class="rm-add ed" data-rmmail="${esc(r.id)}">Reenviar</button>`:''}</td>`;
+      if(m.st==='erro')return `<td><span class="rm-n">!</span> erro<small> ${esc(m.erro||'')}</small>${w?`<button type="button" class="rm-add" data-rmmail="${esc(r.id)}">Tentar de novo</button>`:''}</td>`;
+      if(m.st==='enviando')return '<td><small>enviando…</small></td>';
+      return `<td>${rmpOk(r)&&w?`<button type="button" class="rm-add" data-rmmail="${esc(r.id)}">Enviar</button>`:'<small>após concluir</small>'}</td>`};
     $('rmList').innerHTML=`<p class="pd-note">${l.length} de ${l0.length} RMP(s)${fs.length?' com os filtros das colunas':''}.</p><table class="pd-t pd-tab rm-t"><thead>${head}</thead><tbody>
-      ${l.slice(0,400).map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};return `<tr id="rm-${esc(r.id)}"><td><button type="button" class="pd-pen ${fl.length?'falta':'ok'}" data-rm="${esc(r.id)}" aria-label="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}" title="${canRmp()?'Registrar motivo e fotos':'Ver o RMP'}"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button></td>
+      ${l.slice(0,400).map(r=>{const fl=rmpFalta(r),c=C_(r.id),A=c.arq;return `<tr id="rm-${esc(r.id)}">
         <td class="n">${brD(r.data)}<small>linha ${r.lin.join(', ')}</small></td><td>${r.k==='B4'?'B4':esc(r.blk||'')}</td><td>${val(r,'pista')} · ${esc(val(r,'faixa'))}</td><td class="n">${val(r,'ini')}</td><td class="n">${val(r,'fim')}</td><td>${esc(solProj(r))}</td><td>${esc(solExec(r))}</td><td class="n">${r.extProj!=null?fmt(r.extProj,1):'—'}</td><td class="n${r.rmp.includes('comprimento')?' rm-xe':''}">${fmt(extOf(r),1)}</td>
-        <td class="rm-mud">${esc(rmpTxt(r))}</td><td>${notaTxt(r)?`<span title="${esc(notaTxt(r))}">${ck(true)} ${esc(((r.notas[0]||{}).motivos||[]).join(', '))}</span>`:ck(false)}</td>
-        <td>${ck((f.assinado||[]).length)}</td><td>${ck((f.patologia||[]).length)}${(c.patologias||[]).length?`<small> ${esc(c.patologias.join(', '))}</small>`:''}</td><td>${ck((f.espessura||[]).length)}</td>
+        <td class="rm-mud">${esc(rmpTxt(r)||(semProj(r)?'Pano novo: o projeto não tem solução nesta faixa':''))}</td>
+        <td>${(c.tipos||[]).length?`<b>${esc(c.tipos.map(t=>RTIPO[t]||t).join(', '))}</b><small>${esc((c.patologias||[]).join(', '))}</small>`:ck(false)}${bt(r.id,'tipo',(c.tipos||[]).length,'Adicionar')}</td>
+        ${fotoCel(r,'patologia')}${fotoCel(r,'espessura')}
+        <td>${A?`<b>${esc(A.numero||'rascunho')}</b>${A.motivacao?'':'<small>falta a motivação</small>'}`:ck(false)}${bt(r.id,'arquivo',!!A,'Arquivo')}${A&&A.env?`<button type="button" class="rm-add ed" data-rmpdf="${esc(r.id)}">PDF</button>`:''}</td>
+        ${assCel(r,c)}${mailCel(r,c)}
         <td>${fl.length&&preCorte(r)?`<span class="rm-sit pc" title="${esc(corteTit())}">Antes do corte</span><small>falta: ${fl.map(x=>FALTA_N[x]).join(', ')}</small>`:fl.length?`<span class="rm-sit pend">Pendente</span><small>falta: ${fl.map(x=>FALTA_N[x]).join(', ')}</small>`:'<span class="rm-sit ok">✓ Completo</span>'}</td></tr>`}).join('')}</tbody></table>${l.length>400?`<p class="pd-note">Mostrando 400 de ${l.length}. O relatório em Excel traz todos.</p>`:''}`;
     try{const h=sessionStorage.getItem('rmFoco');if(h){sessionStorage.removeItem('rmFoco');const el=document.getElementById('rm-'+h);if(el){el.scrollIntoView({block:'center'});el.classList.add('rm-foco')}}}catch(e){}}
   async function rmMedia(id){if(RMEDIA.has(id))return RMEDIA.get(id);try{const m=await window.RmpDB.getMedia(id);if(m)RMEDIA.set(id,m);return m}catch(e){return null}}
@@ -5584,20 +5622,24 @@ const PROD=(function(){
     $('rmPkG').onclick=e=>{const b=e.target.closest('[data-pk]');if(!b)return;const i=+b.dataset.pk;sel.has(i)?sel.delete(i):sel.add(i);b.setAttribute('aria-pressed',sel.has(i));$('rmPkOk').disabled=!sel.size;$('rmPkOk').textContent=sel.size?`Adicionar ${sel.size}`:'Adicionar'};
     $('rmPkC').onclick=close;v.onclick=e=>{if(e.target===v)close()};
     $('rmPkOk').onclick=()=>{const l=all.filter(f=>sel.has(f.id));close();done(l)}}
-  function rmDlg(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};const w=canRmp();const DR=RMDRAFT[id];delete RMDRAFT[id];
-    const D=DR?DR.D:{fotos:{assinado:[...((c.fotos||{}).assinado||[])],patologia:[...((c.fotos||{}).patologia||[])],espessura:[...((c.fotos||{}).espessura||[])]},patologias:[...(c.patologias||[])]};const n0=r.notas[0]||{};
+  // uma etapa do RMP por vez: tipo e patologia, ou uma categoria de foto (cada coluna tem o seu botão)
+  function rmDlg(id,step){if(step==='arquivo')return rmArq(id);const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};const w=canRmp();const DR=null;const TIPO=step==='tipo';
+    const D=DR?DR.D:{fotos:{assinado:[...((c.fotos||{}).assinado||[])],patologia:[...((c.fotos||{}).patologia||[])],espessura:[...((c.fotos||{}).espessura||[])]},patologias:[...(c.patologias||[])],tipos:(c.tipos&&c.tipos.length)?[...c.tipos]:tipoSug(r)};const n0=r.notas[0]||{};const FT=TIPO?[]:RFOTO.filter(f=>f[0]===step);
     let d=$('rmDlg');if(!d){d=document.createElement('div');d.id='rmDlg';d.className='pd-dlg';document.body.appendChild(d)}
-    d.innerHTML=`<div class="pd-dbox rm-box" role="dialog" aria-modal="true" aria-labelledby="rmDT"><h3 id="rmDT">RMP · ${brD(r.data)} · ${val(r,'ini')} → ${val(r,'fim')}</h3>
+    d.innerHTML=`<div class="pd-dbox rm-box" role="dialog" aria-modal="true" aria-labelledby="rmDT"><h3 id="rmDT">${TIPO?'Tipo de RMP e patologia':esc(FT[0][1])} · ${brD(r.data)} · ${val(r,'ini')} → ${val(r,'fim')}</h3>
       <p class="pd-note">${r.k==='B4'?'Bloco 04':esc(r.blk||'')} · ${val(r,'pista')} · ${esc(val(r,'faixa'))} · Projeto ${esc(solProj(r))} → executado ${esc(solExec(r))} · ${esc(eqOf(r))}<br><b>O que mudou:</b> ${esc(rmpTxt(r))}</p>
       ${c.atualizado_em?`<p class="pd-note">Último registro: ${esc(dt(c.atualizado_em))}${c.atualizado_por?' · '+esc(c.atualizado_por):''}</p>`:''}
-      <fieldset class="fld pd-mots" id="rmMot"><legend>Motivo do RMP (um ou mais)</legend>${[...MOTIVOS,...(n0.motivos||[]).filter(m=>!MOTIVOS.includes(m))].map(m=>`<label><input type="checkbox" value="${esc(m)}"${(n0.motivos||[]).includes(m)?' checked':''}${w?'':' disabled'}> ${esc(m)}</label>`).join('')}</fieldset>
-      <div class="fld"><label for="rmObs">Observação</label><textarea id="rmObs" rows="2" maxlength="600"${w?'':' disabled'}>${esc(n0.txt||'')}</textarea></div>
-      ${RFOTO.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="ph-btns"><button type="button" class="ph-btn" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-1.8A1.5 1.5 0 0 1 9.75 3.5h4.5a1.5 1.5 0 0 1 1.25.7L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span>Câmera</span></button><label class="ph-btn" title="Escolher uma foto já salva no aparelho"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.5 1.5 0 0 0-2.1 0L6 19.5"/></svg><span>Galeria</span><input type="file" accept="image/*" data-cat="${k}" hidden multiple></label><button type="button" class="ph-btn" data-app="${k}" title="Buscar fotos já salvas na Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M12 8.6a3.2 3.2 0 0 0-3.2 3.2c0 2.3 3.2 4.6 3.2 4.6s3.2-2.3 3.2-4.6A3.2 3.2 0 0 0 12 8.6z"/><circle cx="12" cy="11.8" r="1"/></svg><span>Fotos do app</span></button></span>`:''}</div>
-        ${k==='patologia'?`<div class="rm-pats">${PATS.map(p=>`<label><input type="checkbox" value="${esc(p)}"${D.patologias.includes(p)?' checked':''}${w?'':' disabled'}> ${esc(p)}</label>`).join('')}</div>`:''}<div class="rm-th" data-th="${k}"></div></div>`).join('')}
+      ${TIPO?`<fieldset class="fld pd-mots" id="rmTp"><legend>Tipo de RMP (um ou mais)</legend>${Object.entries(RTIPO).map(([k,tt])=>`<label><input type="checkbox" value="${k}"${D.tipos.includes(k)?' checked':''}${w?'':' disabled'}> ${tt}</label>`).join('')}</fieldset>
+      <p class="pd-note">Sugestão pela produção executada: <b>${tipoSug(r).map(k=>RTIPO[k]).join(', ')||'—'}</b>.</p>
+      <fieldset class="fld pd-mots" id="rmPt"><legend>Patologia que motivou a modificação (uma ou mais)</legend>${[...PATS,...D.patologias.filter(x=>!PATS.includes(x))].map(x=>`<label><input type="checkbox" value="${esc(x)}"${D.patologias.includes(x)?' checked':''}${w?'':' disabled'}> ${esc(x)}</label>`).join('')}</fieldset>
+      ${w?'<div class="fld"><label for="rmPtO">Outra patologia</label><input id="rmPtO" maxlength="60" placeholder="digite se não estiver na lista"></div>':''}
+      <p class="pd-note">A motivação (justificativa) é escrita no <b>Arquivo do RMP</b>.</p>`:''}
+      ${FT.map(([k,t])=>`<div class="rm-fs"><div class="rm-fh"><b>${t}</b>${w?`<span class="ph-btns"><button type="button" class="ph-btn" data-cam="${k}" title="Tirar com a câmera, com as marcas-d'água da Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h1.8l1.2-1.8A1.5 1.5 0 0 1 9.75 3.5h4.5a1.5 1.5 0 0 1 1.25.7L16.7 6h1.8A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="12.8" r="3.6"/></svg><span>Câmera</span></button><label class="ph-btn" title="Escolher uma foto já salva no aparelho"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="M21 15.5l-4.6-4.6a1.5 1.5 0 0 0-2.1 0L6 19.5"/></svg><span>Galeria</span><input type="file" accept="image/*" data-cat="${k}" hidden multiple></label><button type="button" class="ph-btn" data-app="${k}" title="Buscar fotos já salvas na Foto georreferenciada"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z"/><path d="M12 8.6a3.2 3.2 0 0 0-3.2 3.2c0 2.3 3.2 4.6 3.2 4.6s3.2-2.3 3.2-4.6A3.2 3.2 0 0 0 12 8.6z"/><circle cx="12" cy="11.8" r="1"/></svg><span>Fotos do app</span></button></span>`:''}</div>
+        <div class="rm-th" data-th="${k}"></div></div>`).join('')}
       <p class="pd-note" id="rmDE" aria-live="polite"></p>
       <div class="pd-acts"><button type="button" class="pd-b" id="rmDC">${w?'Cancelar':'Fechar'}</button>${w?'<button type="button" class="pd-b pri" id="rmDS">Salvar</button>':''}</div></div>`;
     d.hidden=false;const close=()=>{d.hidden=true};$('rmDC').onclick=close;
-    async function thumbs(){for(const [k] of RFOTO){const box=d.querySelector(`[data-th="${k}"]`);const ids=D.fotos[k];
+    async function thumbs(){for(const [k] of FT){const box=d.querySelector(`[data-th="${k}"]`);const ids=D.fotos[k];
         box.innerHTML=ids.length?ids.map(i=>`<span class="rm-iw"><button type="button" class="rm-img" data-big="${esc(i)}"><span class="pd-note">carregando…</span></button>${w?`<button type="button" class="rm-x" data-rmx="${esc(i)}" data-rmk="${k}" aria-label="Excluir esta foto" title="Excluir esta foto">×</button>`:''}</span>`).join(''):'<span class="pd-note">Sem foto.</span>';
         for(const i of ids){const m=await rmMedia(i);const el=box.querySelector(`[data-big="${CSS.escape(i)}"]`);if(el)el.innerHTML=m?`<img src="${m.data}" alt="${esc(k)}">`:'<span class="pd-note">indisponível (sem internet?)</span>'}}}
     thumbs();
@@ -5606,8 +5648,6 @@ const PROD=(function(){
         const m={id:newId(),reg:id,cat:k,tipo:'foto',mime:'image/jpeg',data,bytes:Math.round(data.length*0.75),criado_em:Date.now()};
         await window.RmpDB.saveMedia(m);RMEDIA.set(m.id,m);D.fotos[k].push(m.id);$('rmDE').textContent='Foto adicionada. Toque em Salvar.'}catch(x){$('rmDE').textContent='Não foi possível adicionar a foto: '+(x.message||x)}}thumbs()});
     // rascunho do diálogo (motivos, observação, patologias e fotos) enquanto a câmera está aberta
-    const keep=()=>{D.patologias=[...d.querySelectorAll('.rm-pats input:checked')].map(x=>x.value);RMDRAFT[id]={D,mot:[...$('rmMot').querySelectorAll('input:checked')].map(x=>x.value),txt:$('rmObs').value}};
-    if(DR){$('rmMot').querySelectorAll('input').forEach(x=>x.checked=DR.mot.includes(x.value));$('rmObs').value=DR.txt;$('rmDE').textContent=DR.msg||''}
     d.onclick=async e=>{if(e.target===d){close();return}
       const x=e.target.closest('[data-rmx]');if(x){if(!confirm('Excluir esta foto do RMP?'))return;const k=x.dataset.rmk;D.fotos[k]=D.fotos[k].filter(i=>i!==x.dataset.rmx);$('rmDE').textContent='Foto excluída. Toque em Salvar.';thumbs();return}
       const ap=e.target.closest('[data-app]');if(ap){const k=ap.dataset.app;rmPickApp(RFOTO.find(f=>f[0]===k)[1],async list=>{let n=0;
@@ -5621,16 +5661,206 @@ const PROD=(function(){
           catch(x){$('rmDE').textContent='Não foi possível adicionar a foto: '+(x.message||x)}}).catch(()=>{});return}};
     d.addEventListener('click',async e=>{const b=e.target.closest('[data-big]');if(!b)return;const m=await rmMedia(b.dataset.big);if(!m)return;
       let v=$('rmView');if(!v){v=document.createElement('div');v.id='rmView';v.className='pd-dlg rm-view';document.body.appendChild(v)}v.innerHTML=`<img src="${m.data}" alt="Foto do RMP"><button type="button" class="pd-b" id="rmVC">Fechar</button>`;v.hidden=false;v.onclick=()=>v.hidden=true});
-    if(w)$('rmDS').onclick=async()=>{const mot=[...$('rmMot').querySelectorAll('input:checked')].map(x=>x.value),txt=$('rmObs').value.trim();D.patologias=[...d.querySelectorAll('.rm-pats input:checked')].map(x=>x.value);
-      try{$('rmDS').disabled=true;const nm=(n0.motivos||[]).join('|'),ch=mot.join('|')!==nm||txt!==(n0.txt||'');
-        if(ch)await salvaNota(id,{motivos:mot,txt});
-        const r2=resolve().all.find(x=>x.id===id)||r;const fl=[];if(!mot.length)fl.push('motivo');for(const [k] of RFOTO)if(!D.fotos[k].length)fl.push(k);
-        const doc={id,seg:id,k:r.k,data:r.data||'',fotos:D.fotos,patologias:D.patologias,completo:!fl.length,falta:fl};
-        await window.RmpDB.save(doc);RMPC.set(id,Object.assign({},doc,{atualizado_em:Date.now()}));close();RES=null;render();rmRender()}
-      catch(x){$('rmDE').textContent='Não foi possível salvar: '+(x.message||x);$('rmDS').disabled=false}}}
+    if(w)$('rmDS').onclick=async()=>{const E=$('rmDE');try{$('rmDS').disabled=true;
+        if(TIPO){const tp=[...$('rmTp').querySelectorAll('input:checked')].map(x=>x.value),pt=[...$('rmPt').querySelectorAll('input:checked')].map(x=>x.value),o=($('rmPtO')&&$('rmPtO').value.trim())||'';if(o&&!pt.includes(o))pt.push(o);
+          if(!tp.length){E.textContent='Escolha o tipo de RMP.';$('rmDS').disabled=false;return}if(!pt.length){E.textContent='Escolha a patologia que motivou a modificação.';$('rmDS').disabled=false;return}
+          await rmSave(r,{tipos:tp,patologias:pt.slice(0,10)});
+          // a patologia também vira o motivo do segmento na Produção executada
+          try{if((n0.motivos||[]).join('|')!==pt.join('|'))await salvaNota(id,{motivos:pt,txt:n0.txt||''})}catch(x){}}
+        else await rmSave(r,{fotos:Object.assign({},rmDocBase(r,RMPC.get(id)||{}).fotos,{[step]:D.fotos[step]})});
+        close()}catch(x){E.textContent='Não foi possível salvar: '+(x.message||x);$('rmDS').disabled=false}}}
+  /* ----- arquivo do RMP (modelo FO.VIAARAUCARIA.ENG.007), assinaturas, ZIP e e-mail ----- */
+  const CONTR={B4:{c:'VIAR-GDA-470-2026-NEOVIA',o:'RESTAURAÇÃO DE PAVIMENTO BLOCO 4',n:'470',rod:'BR-373 · Bloco 04'},B23:{c:'VIAR-GDA-430-2026-NEOVIA',o:'RESTAURAÇÃO DE PAVIMENTO BLOCOS 2 E 3',n:'430',rod:'BR-277'}};
+  const ctOf=r=>CONTR[r.k==='B4'?'B4':'B23'];
+  const rodBlk=r=>r.k==='B4'?'BR-373 · Bloco 04':'BR-277 · '+(r.blk==='B2'?'Bloco 02':r.blk==='B3'?'Bloco 03':'Blocos 02/03');
+  const n2=(v,d)=>v==null||v===''||!isFinite(+v)?'':(+v).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+  // RDO do dia do segmento: o envio de onde veio o segmento ou, para a planilha, o RDO da mesma data, obra e equipe
+  function rmEnv(r){const L=window.__RDOS||[];let e=null;if(r.origem==='RDO'&&r.rdoInfo)e=L.find(x=>x.id===r.rdoInfo.envio);
+    const ob=x=>(x.obra==='BR-373')===(r.k==='B4');
+    if(!e)e=L.find(x=>x.data===r.data&&ob(x)&&norm(EQ_CURTO(x.equipe||''))===norm(EQ_CURTO(eqOf(r))))||L.find(x=>x.data===r.data&&ob(x));return e||null}
+  function rmAutoDados(r){const e=rmEnv(r),a=e?(ASS[e.id]||{}):{},rel=(e&&e.rel)||{};const pf=x=>x&&pesById(x)?x:'';
+    return {estIni:val(r,'ini'),estFim:val(r,'fim'),pista:val(r,'pista'),faixa:String(val(r,'faixa')).replace(/^Faixa\s*/i,''),comp:Math.round(extOf(r)*100)/100,larg:r.larg||null,esp:r.esp!=null?Math.round(r.esp*1000)/10:null,
+      fiscal:(a.fis&&(a.fis.assinado_nome||a.fis.nome))||rel.fis||'',fiscalP:pf(a.fis&&a.fis.pessoa),sol:(a.eng&&(a.eng.assinado_nome||a.eng.nome))||rel.eng||'',solP:pf(a.eng&&a.eng.pessoa),
+      rdo:e?{id:e.id,numero:rel.numero||'',data:e.data}:null}}
+  function rmDocBase(r,c){const o=Object.assign({},c,{id:r.id,seg:r.id,k:r.k,data:r.data||'',fotos:Object.assign({patologia:[],espessura:[],assinado:[]},c.fotos||{}),patologias:c.patologias||[],tipos:c.tipos||[]});
+    delete o.__pend;delete o.atualizado_em;delete o.atualizado_por;return o}
+  async function rmSave(r,patch){const c=RMPC.get(r.id)||{};const d0=Object.assign(rmDocBase(r,c),patch);const old=RMPC.get(r.id);RMPC.set(r.id,d0);const fl=rmpFalta(r);d0.completo=!fl.length;d0.falta=fl;
+    try{await window.RmpDB.save(d0)}catch(e){if(old)RMPC.set(r.id,old);else RMPC.delete(r.id);throw e}
+    RMPC.set(r.id,Object.assign({},d0,{atualizado_em:Date.now()}));RES=null;render();rmRender();setTimeout(rmAuto,50);return d0}
+  const rmNome=(r,c)=>`${(c.arq&&c.arq.numero)||'RMP-sem-numero'}_${val(r,'ini')}_a_${val(r,'fim')}_${val(r,'pista').slice(0,3)}_${val(r,'faixa')}`.replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,'_');
+  function rmSeq(k){let m=0;for(const c of RMPC.values()){const a=c.arq;if(a&&a.contrato===CONTR[k].c&&+a.seq>m)m=+a.seq}return m+1}
+  // diálogo do arquivo do RMP: dados automáticos do RDO do dia (editáveis), solicitante, fiscal, anexos e motivação
+  function rmArq(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};const w=canRmp();const au=rmAutoDados(r);const A=Object.assign({},au,c.arq||{});
+    const ass=rmAss(c),assin=!!(ass.sol&&ass.sol.status==='assinado');
+    const anx0=`Anexo 1 – Foto(s) da patologia (${((c.fotos||{}).patologia||[]).length}).\nAnexo 2 – Foto(s) da linha mostrando a espessura (${((c.fotos||{}).espessura||[]).length}).`;
+    const pes=(sel,p)=>{const L=pesAt();return `<option value="">${L.length?'— escolha —':'(cadastre em RDO › Responsáveis pelas assinaturas)'}</option>${L.map(x=>`<option value="${esc(x.id)}"${x.id===sel?' selected':''}>${esc(x.nome)}${x.funcao?' · '+esc(x.funcao):''}${x.papel===p?'':' ('+esc(PAPEL_P[x.papel]||x.papel)+')'}</option>`).join('')}`};
+    let d=$('rmDlg');if(!d){d=document.createElement('div');d.id='rmDlg';d.className='pd-dlg';document.body.appendChild(d)}
+    const dis=w?'':' disabled';const inp=(k,lab,v,a='')=>`<div class="fld"><label for="ra_${k}">${lab}</label><input id="ra_${k}" value="${esc(v??'')}"${a}${dis}></div>`;
+    d.innerHTML=`<div class="pd-dbox rm-box" role="dialog" aria-modal="true" aria-labelledby="rmAT"><h3 id="rmAT">Arquivo do RMP · ${esc(A.numero||'novo')}</h3>
+      <p class="pd-note">${esc(rodBlk(r))} · ${brD(r.data)} · ${esc(rmpTxt(r)||'pano fora do projeto')}<br>${au.rdo?`Dados preenchidos pelo <b>RDO nº ${esc(au.rdo.numero||'—')}</b> de ${brD(au.rdo.data)} e pela produção executada (pode corrigir).`:'Nenhum RDO do dia encontrado para este segmento: dados da produção executada; confira o fiscal e o solicitante.'}</p>
+      ${c.arq&&c.arq.env?`<p class="pd-note rm-warn">${assin?'O solicitante já assinou: salvar alterações e enviar de novo gera uma nova versão e as assinaturas recomeçam.':'Já enviado para assinatura: se alterar e enviar de novo, os links anteriores são cancelados.'}</p>`:''}
+      <div class="cm-g2">${inp('estIni','Estaca inicial',A.estIni)}${inp('estFim','Estaca final',A.estFim)}${inp('pista','Pista (sentido)',A.pista)}${inp('faixa','Faixa',A.faixa)}
+        ${inp('comp','Comprimento (m)',A.comp,' inputmode="decimal"')}${inp('larg','Largura (m)',A.larg,' inputmode="decimal"')}${inp('esp','Espessura (cm)',A.esp,' inputmode="decimal"')}</div>
+      <div class="cm-g2"><div class="fld"><label for="ra_solP">Solicitante (engenharia — 1ª assinatura)</label><select id="ra_solP"${dis}>${pes(A.solP,'eng')}</select></div>
+        <div class="fld"><label for="ra_fisP">Fiscal da vistoria (2ª assinatura)</label><select id="ra_fisP"${dis}>${pes(A.fiscalP,'fis')}</select></div></div>
+      ${!A.fiscalP&&A.fiscal?`<p class="pd-note">Fiscal do RDO do dia: <b>${esc(A.fiscal)}</b> (sem cadastro: escolha a pessoa cadastrada para que ela receba o RMP na página de assinaturas).</p>`:''}
+      <div class="fld"><label for="ra_anexos">Anexos (projetos / croquis / memoriais)</label><textarea id="ra_anexos" rows="3" maxlength="900"${dis}>${esc(A.anexos!=null?A.anexos:anx0)}</textarea></div>
+      <div class="fld"><label for="ra_mot">Motivação (justificativa técnica / econômica / normativa) *</label><textarea id="ra_mot" rows="5" maxlength="2500"${dis} placeholder="ex.: Durante a fresagem foi constatada sola/trincas…">${esc(A.motivacao||'')}</textarea></div>
+      <p class="pd-note" id="rmAE" aria-live="polite"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="rmAC">${w?'Cancelar':'Fechar'}</button>${w?'<button type="button" class="pd-b" id="rmAS">Salvar</button><button type="button" class="pd-b pri" id="rmAG">Salvar e enviar para assinatura</button>':''}</div></div>`;
+    d.hidden=false;const close=()=>{d.hidden=true};$('rmAC').onclick=close;d.onclick=e=>{if(e.target===d)close()};if(!w)return;
+    const num=v=>{const x=parseFloat(String(v||'').replace(',','.'));return isFinite(x)?x:null};
+    const read=()=>{const sp=pesById($('ra_solP').value),fp=pesById($('ra_fisP').value);
+      return Object.assign({},c.arq||{},{estIni:$('ra_estIni').value.trim(),estFim:$('ra_estFim').value.trim(),pista:$('ra_pista').value.trim(),faixa:$('ra_faixa').value.trim(),comp:num($('ra_comp').value),larg:num($('ra_larg').value),esp:num($('ra_esp').value),
+        solP:sp?sp.id:'',sol:sp?sp.nome:(c.arq&&c.arq.sol)||au.sol||'',fiscalP:fp?fp.id:'',fiscal:fp?fp.nome:(c.arq&&c.arq.fiscal)||au.fiscal||'',anexos:$('ra_anexos').value.trim(),motivacao:$('ra_mot').value.trim(),rdo:au.rdo,contrato:ctOf(r).c})};
+    $('rmAS').onclick=async()=>{try{$('rmAS').disabled=true;await rmSave(r,{arq:read()});close()}catch(x){$('rmAE').textContent='Não foi possível salvar: '+(x.message||x);$('rmAS').disabled=false}};
+    $('rmAG').onclick=async()=>{const a=read(),E=$('rmAE');const err=[];if(!(c.tipos||[]).length)err.push('o tipo de RMP e a patologia (coluna "Tipo e patologia")');if(!a.motivacao)err.push('a motivação');if(!a.solP)err.push('o solicitante (cadastrado)');if(!a.fiscalP)err.push('o fiscal (cadastrado)');
+      if(err.length){E.textContent='Para enviar para assinatura, falta: '+err.join('; ')+'.';return}
+      if(c.arq&&c.arq.env&&!confirm('Enviar de novo para assinatura? Os links anteriores deste RMP serão cancelados.'))return;
+      try{$('rmAG').disabled=true;E.textContent='Gerando o PDF…';await rmEnviarAss(r,a);E.textContent='';close()}catch(x){E.textContent='Não foi possível enviar: '+(x.message||x);$('rmAG').disabled=false}}}
+  async function rmEnviarAss(r,a){const D=window.RmpDB;if(!D||!D.assCreate)throw new Error('sem conexão com o servidor do app');const c=RMPC.get(r.id)||{},K=r.k==='B4'?'B4':'B23',CT=CONTR[K];
+    const seq=a.seq||rmSeq(K),numero=a.numero||`RMP-${CT.n}-${String(seq).padStart(3,'0')}`,versao=(+a.versao||0)+1,env=`RMP:${r.id}:${versao}`,tk={sol:tokNew(),fis:tokNew()},tp=tokNew();
+    const arq=Object.assign({},a,{numero,seq,contrato:CT.c,versao,env,ass:tk,pdf:tp,enviado_em:Date.now(),enviado_por:userName()});const c2=Object.assign({},c,{arq});
+    let pdf=(await rmpPdf(r,c2,{},{small:true})).output('datauristring');if(pdf.length>990000)pdf=(await rmpPdf(r,c2,{},{semFotos:true})).output('datauristring');
+    const resumo={numero,data:r.data,obra:rodBlk(r),equipe:eqOf(r),trecho:`${a.estIni} a ${a.estFim} · ${a.pista} · ${a.faixa}`};
+    const sp=pesById(a.solP),fp=pesById(a.fiscalP);
+    const docs=[{tok:tk.sol,papel:'sol',nome:sp?sp.nome:a.sol,dep:null,...(sp?{pessoa:sp.id}:{})},{tok:tk.fis,papel:'fis',nome:fp?fp.nome:a.fiscal,dep:tk.sol,...(fp?{pessoa:fp.id}:{})}].map(o=>({...o,tipo:'RMP',envio:env,pdf:tp,resumo}));
+    await D.assCreate(docs,{tok:tp,data:pdf,envio:env});
+    const old=c.arq&&c.arq.ass;if(old&&D.assDel)try{await D.assDel([old.sol,old.fis].filter(Boolean),c.arq.pdf)}catch(x){}
+    await rmSave(r,{arq,email:{}})}
+  async function jpgSmall(data,side,q){const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=data});const sc=Math.min(1,side/Math.max(im.naturalWidth,im.naturalHeight));
+    const cv=document.createElement('canvas');cv.width=Math.round(im.naturalWidth*sc);cv.height=Math.round(im.naturalHeight*sc);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);return {d:cv.toDataURL('image/jpeg',q),w:cv.width,h:cv.height}}
+  // PDF no modelo "Registro de modificação de projeto" (FO.VIAARAUCARIA.ENG.007, rev. 00) + anexos com as fotos
+  async function rmpPdf(r,c,A0,opt={}){const J=await jsPdf();const doc=new J({unit:'mm',format:'a4'});const a=c.arq||{},CT=ctOf(r),A=A0||{};
+    const P=v=>v*0.3627; // medida do modelo (pixels a 70 dpi) → mm
+    const T=(t,x,y,o={})=>{doc.setFont('helvetica',o.b?'bold':o.i?'italic':'normal');doc.setFontSize(o.s||8);doc.setTextColor(o.c==null?20:o.c);doc.text(String(t==null?'':t).replace(/→/g,'->').replace(/[–—]/g,'-'),x,y,{align:o.a||'left',maxWidth:o.w})};
+    const R=(x,y,w,h,fill)=>{if(fill){doc.setFillColor(...fill);doc.rect(x,y,w,h,'FD')}else doc.rect(x,y,w,h)};
+    const LAV=[166,162,188],TEAL=[71,110,140];doc.setDrawColor(30);doc.setLineWidth(0.25);
+    const bar=(y,h,t,f)=>{R(P(27),P(y),P(524),P(h),f);T(t,P(289),P(y)+P(h)*0.7,{s:6.5,b:true,a:'center',c:f===TEAL?255:20})};
+    const fit=(t,x,y,w,hmax,s0)=>{t=String(t).replace(/→/g,'->');let s=s0;for(;s>5;s-=0.5){doc.setFontSize(s);if(doc.splitTextToSize(String(t),w).length*s*0.3528*1.2<=hmax)break}T(t,x,y,{s,w})};
+    // cabeçalho
+    R(P(27),P(30),P(524),P(45));for(const x of [128,393,447])doc.line(P(x),P(30),P(x),P(75));for(const y of [41,52,63])doc.line(P(393),P(y),P(551),P(y));
+    const lg=await logo('logo_via.png',360);if(lg){const h=Math.min(P(36),P(88)*lg.r),w=h/lg.r;doc.addImage(lg.d,'JPEG',P(77)-w/2,P(52.5)-h/2,w,h)}
+    T('REGISTRO DE MODIFICAÇÃO DE PROJETO',P(260),P(55),{s:9,b:true,a:'center'});
+    [['REVISÃO','00'],['DATA',''],['IDENTIFICAÇÃO','FO.VIAARAUCARIA.ENG.007'],['REFERÊNCIA','MNP.VIAARAUCARIA.ENG.204.01']].forEach(([x,y],i)=>{T(x,P(420),P(38.5+i*11),{s:4.4,b:true,a:'center'});T(y,P(499),P(38.5+i*11),{s:4.8,a:'center'})});
+    R(P(27),P(81),P(524),P(27));doc.line(P(27),P(89),P(551),P(89));for(const x of [128,262,385,447])doc.line(P(x),P(81),P(x),P(108));
+    [['Contrato',77],['Contratada',195],['Obra',323],['Data',416],['Nº Registro',499]].forEach(([t,x])=>T(t,P(x),P(87),{s:5,a:'center'}));
+    T(CT.c,P(77),P(100),{s:5,b:true,a:'center'});T('NEOVIA RESTAURAÇÃO',P(195),P(100),{s:5.4,b:true,a:'center'});T(CT.o,P(323),P(96),{s:5,b:true,a:'center',w:P(116)});T(brD(r.data),P(416),P(100),{s:6,b:true,a:'center'});T(a.numero||'RMP-      -',P(499),P(100),{s:6.5,b:true,a:'center'});
+    // descrição resumida (texto do modelo com os dados do RMP)
+    bar(122,11,'DESCRIÇÃO RESUMIDA DA MODIFICAÇÃO DE PROJETO',LAV);R(P(27),P(133),P(524),P(167));
+    const u=v=>v==null||v===''?'__________':String(v);
+    const desc=`Alterações de projeto executivo para compatibilização de serviço de fresagem e recomposição do pavimento entre as estacas ${u(a.estIni)} a ${u(a.estFim)}, pista ${u(a.pista)}, faixa ${u(a.faixa)}, em conformidade com as condições constatadas no local durante vistoria realizada em conjunto com o fiscal ${u(a.fiscal)}, conforme evidências anexas. Comprimento ${u(n2(a.comp,2))} m, largura ${u(n2(a.larg,2))} m e espessura ${u(n2(a.esp,1))} cm.`;
+    fit(desc,P(40),P(152),P(498),P(100),11.5);
+    const tp=(c.tipos||[]).map(t=>RTIPO[t]||t).join(', ');
+    fit(`Tipo de RMP: ${tp||'—'} · Projeto: ${solProj(r)} → Executado: ${solExec(r)}${(c.patologias||[]).length?' · Patologia: '+c.patologias.join(', '):''}`,P(40),P(282),P(498),P(14),7.5);
+    bar(314,11,'ANEXOS (projetos / croquis / memoriais)',LAV);R(P(27),P(325),P(524),P(82));fit(a.anexos||'',P(40),P(340),P(498),P(62),8);
+    bar(420,11,'MOTIVAÇÃO (justificativa técnica / econômica / normativa)',LAV);R(P(27),P(431),P(524),P(81));fit(a.motivacao||'',P(40),P(445),P(498),P(62),8.5);
+    // solicitante (engenharia) e fiscal da vistoria
+    R(P(27),P(527),P(524),P(57));
+    const sig=(x0,lab,s,nome,fun)=>{R(P(x0),P(532),P(144),P(50));T(lab,P(x0+72),P(539),{s:5,a:'center'});
+      if(s&&s.status==='assinado'){if(s.assinatura)try{doc.addImage(s.assinatura,'PNG',P(x0+22),P(540),P(100),P(26))}catch(e){}
+        T(s.assinado_nome||nome,P(x0+72),P(571),{s:5.6,b:true,a:'center',w:P(140)});T(s.assinado_funcao||fun||'',P(x0+72),P(576),{s:4.6,a:'center',w:P(140)});T(new Date(s.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}),P(x0+72),P(580),{s:4,a:'center',c:90})}
+      else{T(nome||'NOME',P(x0+72),P(571),{s:nome?5.4:4.6,a:'center',c:nome?60:20,w:P(140)});T(fun||'CARGO / FUNÇÃO',P(x0+72),P(577),{s:4.4,a:'center',c:fun?90:20,w:P(140)})}};
+    const pf=id=>pesById(id)||{};
+    sig(110,'Solicitante',A.sol,a.sol,(pf(a.solP).funcao)||'');sig(324,'Fiscal (VA) — vistoria em campo',A.fis,a.fiscal,(pf(a.fiscalP).funcao)||'');
+    bar(598,11,'ANÁLISE TÉCNICA',TEAL);R(P(27),P(609),P(524),P(61));
+    const obs=[['sol','Solicitante'],['fis','Fiscal']].map(([p,t])=>A[p]&&A[p].status==='assinado'&&A[p].obs?`${t} (${A[p].assinado_nome}): ${A[p].obs}`:A[p]&&A[p].status==='devolvido'?`DEVOLVIDO por ${t} (${A[p].devolvido_nome}): ${A[p].devolvido_motivo}`:'').filter(Boolean).join(' | ');
+    if(obs)fit('Observações das assinaturas: '+obs,P(40),P(622),P(498),P(44),7);
+    T(`Gerado pelo Localizador de Estacas em ${new Date().toLocaleString('pt-BR')} · ${a.versao?'versão '+a.versao:'rascunho'}`,P(551),P(690),{s:4.5,a:'right',c:120});
+    // página 2 (preenchida pela Via Araucária)
+    doc.addPage();doc.setDrawColor(30);
+    bar(30,12,'ANÁLISE DE VIABILIDADE',TEAL);R(P(27),P(42),P(524),P(79));
+    bar(131,11,'APROVAÇÃO DA MODIFICAÇÃO',TEAL);R(P(27),P(142),P(524),P(58));
+    [['Gestão de Obras (VA)',29],['Qualidade (VA)',159],['Projetos (VA)',291],['Superintendência / Diretoria (VA)',419]].forEach(([t,x])=>{R(P(x),P(148),P(125),P(51));T(t,P(x+62.5),P(155),{s:4.8,a:'center'})});
+    bar(215,12,'IMPLEMENTAÇÃO DA MP (plano de ação, prazos, responsáveis, aplicação)',LAV);R(P(27),P(227),P(524),P(58));R(P(27),P(285),P(524),P(61));R(P(220),P(290),P(134),P(50));T('Qualidade (VA)',P(287),P(297),{s:4.8,a:'center'});
+    // anexos: fotos
+    if(!opt.semFotos){let ax=0;for(const [k,t] of [['patologia','FOTO DA PATOLOGIA'],['espessura','FOTO DA LINHA MOSTRANDO A ESPESSURA'],['assinado','RMP ASSINADO EM PAPEL']]){const ids=(c.fotos||{})[k]||[];if(!ids.length)continue;ax++;
+      for(let i=0;i<ids.length;i++){const m=await rmMedia(ids[i]);if(!m)continue;if(i%2===0){doc.addPage();T(`ANEXO ${ax} – ${t}${ids.length>1?` (${i+1}${i+1<ids.length?'–'+(i+2):''} de ${ids.length})`:''}`,105,14,{s:9,b:true,a:'center'});T(`${a.numero||'RMP'} · ${rodBlk(r)} · ${a.estIni||val(r,'ini')} a ${a.estFim||val(r,'fim')} · ${brD(r.data)}`,105,19,{s:7,a:'center',c:80})}
+        try{const im=opt.small?await jpgSmall(m.data,900,0.55):await jpgSmall(m.data,1600,0.8);const bw=186,bh=125,sc=Math.min(bw/im.w,bh/im.h),w=im.w*sc,h=im.h*sc;doc.addImage(im.d,'JPEG',105-w/2,(i%2===0?24:154)+(bh-h)/2,w,h)}catch(e){}}}}
+    return doc}
+  async function rmPdfDl(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};try{$('rmMsg').textContent='Gerando o PDF…';const d=await rmpPdf(r,c,rmAss(c),{});d.save(rmNome(r,c)+'.pdf');$('rmMsg').textContent=''}catch(x){$('rmMsg').textContent='Não foi possível gerar o PDF: '+(x.message||x)}}
+  const b64Of=d=>String(d||'').split(',')[1]||'';
+  async function rmArquivos(r,c){const nm=rmNome(r,c),out=[];const d=await rmpPdf(r,c,rmAss(c),{});out.push({nome:nm+'.pdf',tipo:'application/pdf',b64:b64Of(d.output('datauristring'))});
+    for(const [k,lab] of [['patologia','foto_patologia'],['espessura','foto_espessura'],['assinado','rmp_assinado_papel']]){let i=0;for(const id of ((c.fotos||{})[k]||[])){const m=await rmMedia(id);if(m)out.push({nome:`${nm}_${lab}_${++i}.jpg`,tipo:'image/jpeg',b64:b64Of(m.data)})}}
+    return out}
+  function rmTxtDados(r,c){const a=c.arq||{},A=rmAss(c);return [`Registro de Modificação de Projeto ${a.numero||'(sem número)'}`,`Contrato: ${ctOf(r).c}`,`Obra: ${rodBlk(r)}`,`Data da execução: ${brD(r.data)}`,`Estacas: ${a.estIni||val(r,'ini')} a ${a.estFim||val(r,'fim')} · ${a.pista||val(r,'pista')} · ${a.faixa||val(r,'faixa')}`,
+    `Tipo: ${(c.tipos||[]).map(t=>RTIPO[t]||t).join(', ')}`,`Patologia: ${(c.patologias||[]).join(', ')}`,`Projeto: ${solProj(r)} → Executado: ${solExec(r)}`,`O que mudou: ${rmpTxt(r)}`,`Comprimento ${n2(a.comp,2)} m · largura ${n2(a.larg,2)} m · espessura ${n2(a.esp,1)} cm`,
+    `Motivação: ${a.motivacao||''}`,`Solicitante: ${A.sol&&A.sol.status==='assinado'?A.sol.assinado_nome+' (assinado em '+dt(A.sol.assinado_em)+')':a.sol||''}`,`Fiscal: ${A.fis&&A.fis.status==='assinado'?A.fis.assinado_nome+' (assinado em '+dt(A.fis.assinado_em)+')':a.fiscal||''}`,`Equipe: ${eqOf(r)}`].join('\r\n')}
+  // exportação em ZIP: semana → dia → RMP (ou dia → RMP), com os arquivos renomeados
+  async function rmZip(){const m=$('rmZmsg'),de=$('rmZde').value,ate=$('rmZate').value,mod=$('rmZmod').value,so=$('rmZok').checked;
+    if(!de||!ate||ate<de){m.textContent='Escolha o período (de / até).';return}
+    const l=rmpList().filter(r=>r.data>=de&&r.data<=ate&&(!so||rmpOk(r))).sort((a,b)=>String(a.data).localeCompare(String(b.data))||(a.kmIni||0)-(b.kmIni||0));
+    if(!l.length){m.textContent=`Nenhum RMP${so?' concluído':''} entre ${brD(de)} e ${brD(ate)}.`;return}
+    try{$('rmZip').disabled=true;await loadS('lib/jszip.min.js',()=>!!window.JSZip);const Z=new window.JSZip(),root=Z.folder(`RMPs_${de}_a_${ate}`);
+      const wk=d=>{const x=new Date(d+'T12:00:00'),dw=(x.getDay()+6)%7,s=new Date(x);s.setDate(x.getDate()-dw);const e=new Date(s);e.setDate(s.getDate()+6);const f=y=>`${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;return `Semana_${f(s)}_a_${f(e)}`};
+      let n=0;for(const r of l){m.textContent=`Montando ${++n} de ${l.length}…`;const c=RMPC.get(r.id)||{};const f=(mod==='semana'?root.folder(wk(r.data)):root).folder(r.data).folder(rmNome(r,c));
+        for(const x of await rmArquivos(r,c))f.file(x.nome,x.b64,{base64:true});f.file(rmNome(r,c)+'_dados.txt',rmTxtDados(r,c))}
+      m.textContent='Compactando…';const blob=await Z.generateAsync({type:'blob'});const u=URL.createObjectURL(blob),el=document.createElement('a');el.href=u;el.download=`RMPs_${de}_a_${ate}.zip`;document.body.appendChild(el);el.click();el.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+      m.textContent=`${l.length} RMP(s) no ZIP (${mod==='semana'?'semana › dia › RMP':'dia › RMP'}).`}
+    catch(x){m.textContent='Não foi possível montar o ZIP: '+(x.message||x)}finally{$('rmZip').disabled=false}}
+  // e-mail pelo script do Gmail do administrador (Google Apps Script); automático quando o RMP fica concluído e assinado
+  async function rmMailLoad(){if(!window.RmpDB||!window.RmpDB.mailCfg)return;RMMAIL=await window.RmpDB.mailCfg();rmMailUi();rmAuto()}
+  async function rmPost(body){const M=RMMAIL;if(!M||!M.url||!(M.para||[]).length)throw new Error('e-mail não configurado (o administrador configura em "E-mail dos RMPs")');
+    const res=await fetch(M.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({chave:M.chave,para:M.para,remetente:'Neovia Restauração – RMP'},body))});
+    const j=await res.json().catch(()=>({}));if(!res.ok||!j.ok)throw new Error(j.erro||('resposta '+res.status+' do script de e-mail'));return j}
+  async function rmMail(r,auto){const c=RMPC.get(r.id)||{},a=c.arq||{},A=rmAss(c);
+    const assunto=`${a.numero||'RMP'} · ${rodBlk(r)} · ${a.estIni||val(r,'ini')} a ${a.estFim||val(r,'fim')} · ${brD(r.data)}`;
+    const li=(k,v)=>`<tr><td style="padding:3px 10px 3px 0;color:#555">${k}</td><td style="padding:3px 0"><b>${esc(v)}</b></td></tr>`;
+    const html=`<p>Prezados,</p><p>Segue o <b>Registro de Modificação de Projeto ${esc(a.numero||'')}</b>, assinado pelo solicitante e pelo fiscal da vistoria, com as evidências anexas.</p><table style="font:14px Arial,sans-serif;border-collapse:collapse">
+      ${li('Contrato',ctOf(r).c)}${li('Obra',rodBlk(r))}${li('Data da execução',brD(r.data))}${li('Estacas',`${a.estIni||val(r,'ini')} a ${a.estFim||val(r,'fim')}`)}${li('Pista / faixa',`${a.pista||val(r,'pista')} / ${a.faixa||val(r,'faixa')}`)}
+      ${li('Tipo',(c.tipos||[]).map(t=>RTIPO[t]||t).join(', '))}${li('Patologia',(c.patologias||[]).join(', '))}${li('Projeto → executado',`${solProj(r)} → ${solExec(r)}`)}
+      ${li('Dimensões',`${n2(a.comp,2)} m × ${n2(a.larg,2)} m × ${n2(a.esp,1)} cm`)}${li('Solicitante',(A.sol&&A.sol.assinado_nome)||a.sol||'')}${li('Fiscal',(A.fis&&A.fis.assinado_nome)||a.fiscal||'')}</table>
+      <p><b>Motivação:</b> ${esc(a.motivacao||'')}</p><p>Anexos: PDF do RMP e fotos (patologia e espessura).</p><p>Neovia Restauração</p>`;
+    const anexos=await rmArquivos(r,c);await rmPost({assunto,html,texto:assunto,anexos});
+    await rmSave(r,{email:{st:'enviado',em:Date.now(),para:(RMMAIL.para||[]).join(', '),por:userName(),auto:!!auto}})}
+  async function rmMailBtn(id){const r=resolve().all.find(x=>x.id===id);if(!r)return;const c=RMPC.get(id)||{};if(c.email&&c.email.st==='enviado'&&!confirm('Este RMP já foi enviado por e-mail. Enviar de novo?'))return;
+    try{$('rmMsg').textContent='Enviando o e-mail…';await rmMail(r,false);$('rmMsg').textContent='E-mail enviado para '+(RMMAIL.para||[]).join(', ')+'.'}catch(x){$('rmMsg').textContent='Não foi possível enviar: '+(x.message||x)}}
+  // envio automático: RMP completo e assinado pelo app (solicitante + fiscal) depois de ligado o automático; um aparelho por vez (reserva no servidor)
+  async function rmAuto(){const M=RMMAIL;if(RMAUTO||!M||!M.auto||!M.url||!(M.para||[]).length||!canRmp()||!window.RmpDB||!window.RmpDB.claimMail)return;
+    const l=rmpList().filter(r=>{const c=RMPC.get(r.id)||{},m=c.email||{},A=rmAss(c);return rmpOk(r)&&rmAssOk(c)&&m.st!=='enviado'&&m.st!=='enviando'&&!(m.st==='erro'&&Date.now()-(m.em||0)<3600000)&&(!M.desde||(A.fis&&A.fis.assinado_em>=M.desde))});
+    if(!l.length)return;RMAUTO=true;try{for(const r of l){let ok=false;try{ok=await window.RmpDB.claimMail(r.id)}catch(e){}if(!ok)continue;
+        try{await rmMail(r,true)}catch(x){try{await rmSave(r,{email:{st:'erro',em:Date.now(),erro:String(x.message||x).slice(0,200)}})}catch(e){}}}}finally{RMAUTO=false}}
+  const RM_GS=`// Localizador de Estacas – envio dos RMPs por e-mail (Google Apps Script, na conta Gmail que vai enviar)
+// 1) script.google.com > Novo projeto > apague o conteúdo e cole este código > Salvar.
+// 2) Configurações do projeto (engrenagem) > Propriedades do script > Adicionar: CHAVE = uma senha longa (a mesma vai no app).
+// 3) Implantar > Nova implantação > tipo "App da Web" > Executar como: Eu > Quem pode acessar: Qualquer pessoa > Implantar > autorize o Gmail.
+// 4) Copie a URL do app da Web (termina em /exec) e cole no app: Controle de RMPs > E-mail dos RMPs, junto com a CHAVE.
+function doPost(e){
+  var out=function(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON)};
+  try{
+    var d=JSON.parse(e.postData.contents);
+    var chave=PropertiesService.getScriptProperties().getProperty('CHAVE');
+    if(!chave||d.chave!==chave)return out({ok:false,erro:'chave inválida'});
+    var para=(d.para||[]).filter(function(x){return /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(x)});
+    if(!para.length)return out({ok:false,erro:'sem destinatário válido'});
+    var anexos=(d.anexos||[]).map(function(a){return Utilities.newBlob(Utilities.base64Decode(a.b64),a.tipo||'application/octet-stream',a.nome)});
+    GmailApp.sendEmail(para.join(','),String(d.assunto||'RMP').slice(0,250),String(d.texto||''),{htmlBody:String(d.html||''),attachments:anexos,name:String(d.remetente||'Neovia Restauração')});
+    return out({ok:true,cota:MailApp.getRemainingDailyQuota()});
+  }catch(err){return out({ok:false,erro:String(err&&err.message||err)})}
+}
+function doGet(){return ContentService.createTextOutput('Envio de RMP ativo.')}`;
+  function rmMailUi(){const b=$('rmMail');if(!b)return;const adm=!!(window.RmpDB&&window.RmpDB.admin),M=RMMAIL||{};
+    const st=M.url&&(M.para||[]).length?`E-mail configurado: destinatário(s) <b>${esc((M.para||[]).join(', '))}</b> · envio automático <b>${M.auto?'ligado':'desligado'}</b>.`:'E-mail ainda não configurado.';
+    if(b.dataset.on==='1'){const p=b.querySelector('.rm-mst');if(p)p.innerHTML=st;return}
+    b.innerHTML=`<p class="pd-note rm-mst">${st}</p>${adm?`<details class="rm-mcf"><summary>Configurar e-mail dos RMPs (administrador)</summary>
+      <div class="cm-g2"><div class="fld"><label for="rmMu">URL do script (termina em /exec)</label><input id="rmMu" value="${esc(M.url||'')}" placeholder="https://script.google.com/macros/s/…/exec"></div>
+        <div class="fld"><label for="rmMk">Chave (a mesma da propriedade CHAVE do script)</label><input id="rmMk" value="${esc(M.chave||'')}" autocomplete="off"></div>
+        <div class="fld"><label for="rmMp">Destinatário(s) — separe por vírgula</label><input id="rmMp" value="${esc((M.para||[]).join(', '))}" inputmode="email"></div></div>
+      <label class="rm-ck"><input type="checkbox" id="rmMa"${M.auto?' checked':''}> Enviar automaticamente cada RMP assim que ficar completo e assinado (solicitante e fiscal)</label>
+      <div class="pd-acts"><button type="button" class="pd-b pri" id="rmMs">Salvar</button><button type="button" class="pd-b" id="rmMt">Enviar e-mail de teste</button><button type="button" class="pd-b" id="rmMg">Copiar o código do script</button><span class="pd-note" id="rmMm" aria-live="polite"></span></div>
+      <p class="pd-note">Como ligar (uma vez, na conta Gmail que vai enviar): 1) <b>script.google.com</b> › Novo projeto › cole o código do script; 2) Configurações do projeto › Propriedades do script › <b>CHAVE</b> = uma senha longa; 3) Implantar › Nova implantação › App da Web › Executar como <b>Eu</b> › Acesso <b>Qualquer pessoa</b>; 4) cole aqui a URL e a chave e envie o teste.</p></details>`:''}`;
+    b.dataset.on='1';if(!adm)return;
+    const rd=()=>({url:$('rmMu').value.trim(),chave:$('rmMk').value.trim(),para:$('rmMp').value.split(/[,;\s]+/).map(x=>x.trim()).filter(x=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x)),auto:$('rmMa').checked});
+    $('rmMs').onclick=async()=>{const o=rd(),mm=$('rmMm');if(o.url&&!/^https:\/\/script\.google(usercontent)?\.com\//.test(o.url)){mm.textContent='A URL deve ser do Google Apps Script (https://script.google.com/…).';return}
+      const M2=RMMAIL||{};o.desde=o.auto?(M2.auto&&M2.desde?M2.desde:Date.now()):null;try{await window.RmpDB.setMailCfg(o);RMMAIL=Object.assign({},o);mm.textContent='Configuração salva.'+(o.auto?' Os RMPs assinados a partir de agora serão enviados automaticamente.':'');rmAuto()}catch(x){mm.textContent='Não foi possível salvar: '+(x.message||x)}};
+    $('rmMt').onclick=async()=>{const o=rd(),mm=$('rmMm');const keep=RMMAIL;RMMAIL=Object.assign({},RMMAIL||{},o);try{mm.textContent='Enviando o teste…';const j=await rmPost({assunto:'Teste – envio de RMP (Localizador de Estacas)',texto:'Teste do envio automático dos RMPs.',html:'<p>Teste do envio automático dos <b>RMPs</b> pelo Localizador de Estacas.</p>',anexos:[]});mm.textContent=`Teste enviado para ${o.para.join(', ')}.${j.cota!=null?' Cota restante hoje: '+j.cota+'.':''}`}
+      catch(x){mm.textContent='O teste falhou: '+(x.message||x)}finally{RMMAIL=keep}};
+    $('rmMg').onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(RM_GS):Promise.reject()).then(()=>{$('rmMm').textContent='Código do script copiado.'},()=>prompt('Copie o código do script:',RM_GS))}}
   function rmRows(l){return l.map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};
-    return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),r.extProj!=null?Math.round(r.extProj*10)/10:'',Math.round(extOf(r)*10)/10,rmpTxt(r),eqOf(r),((r.notas[0]||{}).motivos||[]).join(', '),(r.notas[0]||{}).txt||'',
-      (f.assinado||[]).length?'Sim':'Não',(f.patologia||[]).length?'Sim':'Não',(c.patologias||[]).join(', '),(f.espessura||[]).length?'Sim':'Não',fl.length?(preCorte(r)?'Antes do corte':'Pendente'):'Completo',fl.map(x=>FALTA_N[x]).join(', '),r.lin.join(', '),r.id]})}
+    const a=c.arq||{},A=rmAss(c);const sg=x=>x?(x.status==='assinado'?'Assinado '+dt(x.assinado_em):x.status==='devolvido'?'Devolvido: '+(x.devolvido_motivo||''):'Pendente'):'';
+    return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),r.extProj!=null?Math.round(r.extProj*10)/10:'',Math.round(extOf(r)*10)/10,rmpTxt(r)||(semProj(r)?'Pano fora do projeto':''),eqOf(r),
+      (c.tipos||[]).map(t=>RTIPO[t]||t).join(', '),(c.patologias||[]).join(', '),(f.patologia||[]).length,(f.espessura||[]).length,a.numero||'',a.motivacao||'',sg(A.sol),sg(A.fis),(f.assinado||[]).length?'Sim':'Não',rmMailSt(c),
+      fl.length?(preCorte(r)?'Antes do corte':'Pendente'):'Completo',fl.map(x=>FALTA_N[x]).join(', '),r.lin.join(', '),r.id]})}
   /* ---------- Relatórios: projeto inicial × projeto revisado × executado (reflexo das alterações de projeto / RMP) ----------
      CBUQ do projeto: B4 pelo unifilar (toneladas dos panos; REC/RP = capa de 5 cm); BR-277 pelas faixas da base × largura e espessura do cadastro.
      No trecho executado, o "projeto" de cada segmento = extensão dentro do projeto × largura executada × espessura de projeto × densidade:
@@ -5713,10 +5943,10 @@ const PROD=(function(){
     $('rCmpObra').onchange=e=>{CMP.k=e.target.value;cmpRender()};$('rCmpDe').onchange=e=>{CMP.de=e.target.value;cmpRender()};$('rCmpAte').onchange=e=>{CMP.ate=e.target.value;cmpRender()};$('rCmpXls').onclick=cmpXls}
   on('page',p=>{if(p==='relatorios'){cmpInit();cmpRender()}});on('prod',()=>{if(Router.cur()==='relatorios')cmpRender()});
   async function rmXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const l=rmFiltered();
-      const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','Extensão de projeto (m)','Extensão executada (m)','O que mudou (RMP)','Equipe','Motivo','Observação','RMP assinado','Foto da patologia','Patologias','Foto da espessura','Situação','Faltando','Linhas da planilha','ID do segmento'];
+      const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','Extensão de projeto (m)','Extensão executada (m)','O que mudou (RMP)','Equipe','Tipo de RMP','Patologia (motivação)','Fotos da patologia','Fotos da espessura','Nº RMP','Motivação','Assinatura do solicitante','Assinatura do fiscal','RMP em papel','E-mail','Situação','Faltando','Linhas da planilha','ID do segmento'];
       const filt=`Bloco: ${RMF.blk==='ALL'?'todos':RMF.blk} · Situação: ${{pend:'pendentes',ok:'completos',pre:'antes do corte',all:'todos'}[RMF.sit]}${RMCORTE?' · data de corte: '+brD(RMCORTE):''}${RMF.falta?' · faltando: '+FALTA_N[RMF.falta]:''}${RMF.q?' · busca: '+RMF.q:''}`;
-      const ws=X.utils.aoa_to_sheet([['Controle de RMPs — pendências'],['Filtro',filt],['Emitido em',dt(Date.now())],['Completo','motivo + foto do RMP assinado + foto da patologia + foto da espessura'],[],H,...rmRows(l)]);
-      ws['!cols']=H.map(h=>({wch:/mudou|Motivo|Observação|Faltando/.test(h)?40:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+l.length,c:H.length-1}})};
+      const ws=X.utils.aoa_to_sheet([['Controle de RMPs — pendências'],['Filtro',filt],['Emitido em',dt(Date.now())],['Completo','tipo e patologia + foto da patologia + foto da espessura + arquivo (motivação) + assinaturas do solicitante e do fiscal (ou RMP assinado em papel)'],[],H,...rmRows(l)]);
+      ws['!cols']=H.map(h=>({wch:/mudou|Motivação|Faltando|Assinatura/.test(h)?40:/ID/.test(h)?16:14}));ws['!autofilter']={ref:X.utils.encode_range({s:{r:5,c:0},e:{r:5+l.length,c:H.length-1}})};
       const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'RMPs');X.writeFile(wb,`controle-rmp-${new Date().toISOString().slice(0,10)}.xlsx`);$('rmMsg').textContent=`${l.length} RMP(s) no relatório.`}
     catch(e){$('rmMsg').textContent='Não foi possível gerar o Excel: '+(e.message||e)}}
   function rmResumo(){const l=rmFiltered().filter(r=>rmpPendR(r));const by={};for(const r of l){const b=r.k==='B4'?'Bloco 04':r.blk==='B2'?'Bloco 02':'Bloco 03';(by[b]=by[b]||[]).push(r)}
@@ -5726,13 +5956,23 @@ const PROD=(function(){
   function rmInit(){if(!$('rmRoot'))return;$('rmBlk').value=RMF.blk;$('rmSit').value=RMF.sit;$('rmFalta').value=RMF.falta;$('rmQ').value=RMF.q;
     $('rmBlk').onchange=e=>{RMF.blk=e.target.value;saveRMF();rmRender()};$('rmSit').onchange=e=>{RMF.sit=e.target.value;saveRMF();rmRender()};$('rmFalta').onchange=e=>{RMF.falta=e.target.value;saveRMF();rmRender()};
     let qt;$('rmQ').oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{RMF.q=e.target.value;saveRMF();rmRender()},300)};
-    $('rmList').onclick=e=>{const b=e.target.closest('[data-rm]');if(b)return rmDlg(b.dataset.rm);const so=e.target.closest('[data-rsort]');if(so){const k=so.dataset.rsort;RCF.s=RCF.s&&RCF.s.k===k?(RCF.s.d>0?{k,d:-1}:null):{k,d:1};saveRCF();rmRender();return}
+    $('rmList').onclick=e=>{const st=e.target.closest('[data-rmstep]');if(st)return rmDlg(st.dataset.id,st.dataset.rmstep);const pd=e.target.closest('[data-rmpdf]');if(pd)return rmPdfDl(pd.dataset.rmpdf);const ml=e.target.closest('[data-rmmail]');if(ml)return rmMailBtn(ml.dataset.rmmail);const so=e.target.closest('[data-rsort]');if(so){const k=so.dataset.rsort;RCF.s=RCF.s&&RCF.s.k===k?(RCF.s.d>0?{k,d:-1}:null):{k,d:1};saveRCF();rmRender();return}
       if(e.target.closest('[data-rclr]')){RCF.f={};saveRCF();rmRender()}};
     $('rmList').addEventListener('change',e=>{const t=e.target.closest('[data-rcf]');if(!t||t.tagName!=='SELECT')return;RCF.f[t.dataset.rcf]=t.value;saveRCF();rmRender()});
     let rq;$('rmList').addEventListener('input',e=>{const t=e.target.closest('input[data-rcf]');if(!t)return;clearTimeout(rq);rq=setTimeout(()=>{RCF.f[t.dataset.rcf]=t.value;saveRCF();const k=t.dataset.rcf,pos=t.selectionStart;rmRender();const n=$('rmList').querySelector(`input[data-rcf="${k}"]`);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(x){}}},350)});$('rmXls').onclick=rmXls;
+    {const t=new Date(),f=y=>`${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`,s0=new Date(t);s0.setDate(t.getDate()-((t.getDay()+6)%7));if(!$('rmZde').value)$('rmZde').value=f(s0);if(!$('rmZate').value)$('rmZate').value=f(t)}
+    $('rmZip').onclick=rmZip;$('rmZmail').onclick=async()=>{const de=$('rmZde').value,ate=$('rmZate').value,m=$('rmZmsg');if(!de||!ate||ate<de){m.textContent='Escolha o período (de / até).';return}
+      const l=rmpList().filter(r=>r.data>=de&&r.data<=ate&&rmpOk(r)&&((RMPC.get(r.id)||{}).email||{}).st!=='enviado');if(!l.length){m.textContent='Nenhum RMP concluído e ainda não enviado no período.';return}
+      if(!confirm(`Enviar por e-mail ${l.length} RMP(s) concluído(s) do período (um e-mail por RMP)?`))return;let ok=0,er=[];for(const r of l){m.textContent=`Enviando ${ok+er.length+1} de ${l.length}…`;try{await rmMail(r,false);ok++}catch(x){er.push(x.message||x)}}
+      m.textContent=`${ok} e-mail(s) enviado(s)${er.length?`; ${er.length} com erro (${er[0]})`:''}.`};
+    rmMailLoad();
     $('rmClr').onclick=()=>{Object.assign(RMF,{blk:'ALL',sit:'all',falta:'',q:''});saveRMF();RCF.f={};RCF.s=null;saveRCF();$('rmBlk').value='ALL';$('rmSit').value='all';$('rmFalta').value='';$('rmQ').value='';rmRender()};
     $('rmTxt').onclick=async()=>{const t=rmResumo();try{if(navigator.share&&/Mobi|Android|iPhone/i.test(navigator.userAgent)){await navigator.share({title:'RMPs pendentes',text:t});return}await navigator.clipboard.writeText(t);$('rmMsg').textContent='Resumo copiado. Cole no e-mail ou no WhatsApp.'}catch(e){$('rmMsg').textContent='Não foi possível copiar o resumo.'}}}
-  Router.onInit('rmp',rmInit);on('page',p=>{if(p==='rmp'){rmCorteLoad();rmRender()}});on('prod',()=>rmRender());
+  // assinaturas e cadastro de responsáveis também para quem só usa o Controle de RMPs (sem a página RDO)
+  if(window.RmpDB&&!(window.RdoDB&&window.RdoDB.assSubscribe)&&window.RmpDB.assSubscribe)window.RmpDB.assSubscribe(l=>{if(!l)return;ASSL=l;ASS=assGroup(l);rmRender();rmAuto()});
+  if(window.RmpDB&&!(window.RdoDB&&window.RdoDB.pesSubscribe)&&window.RmpDB.pesSubscribe)window.RmpDB.pesSubscribe(l=>{if(!l)return;PES=l;rmRender()});
+  if(window.RmpDB&&window.RmpDB.mailCfg)setTimeout(()=>{if(!RMMAIL)rmMailLoad().catch(()=>{})},4000);
+  Router.onInit('rmp',rmInit);on('page',p=>{if(p==='rmp'){rmCorteLoad();rmRender()}});on('prod',()=>setTimeout(rmAuto,100));on('prod',()=>rmRender());
   function info(r){const [q,u]=qtOf(r);const pj=x=>x?`${x.code}${x.esp!=null?' · '+fmt(x.esp,x.esp%1?1:0)+' cm':''}`:'—';const c=RMPC.get(r.id)||{},nf=Object.values(c.fotos||{}).reduce((s,a)=>s+(a||[]).length,0);
     return {pista:val(r,'pista'),faixa:val(r,'faixa'),ini:val(r,'ini'),fim:val(r,'fim'),exec:solExec(r),proj:pj(r.proj&&{code:r.proj.code,esp:r.proj.esp}),projAtual:r.proj&&r.projCur&&r.projCur.code!==r.proj.code?pj(r.projCur):'',rev:r.rev||'',
       ext:extOf(r),qt:u==='—'?'—':fmt(q,u==='und'?0:1)+' '+u,eq:eqOf(r),motivo:notaTxt(r),prim:r.prim?`${r.prim.fam}${r.prim.esp?' '+fmt(r.prim.esp*100,1)+' cm':''} em ${brD(r.prim.data)}`:'',
@@ -5753,7 +5993,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='26/11/2026 17:02';
+  const CUR_VER='26/11/2026 17:43';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

@@ -267,6 +267,16 @@ await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(d
     await t('Assinatura RDO: devolver não muda outros dados',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TD),{status:'devolvido',devolvido_nome:'Eng',devolvido_em:3,devolvido_motivo:'Horários errados',papel:'fis'})));
     await t('Assinatura RDO: devolve para correção pelo link',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TD),{status:'devolvido',devolvido_nome:'Eng',devolvido_em:3,devolvido_motivo:'Horários errados'})));
     await t('Assinatura RDO: devolvido não é assinado depois',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TD),SIG('Eng'))))}
+  {const TS='7'.repeat(32),TQ='8'.repeat(32),TPR='6'.repeat(32);const R=(tok,papel,dep)=>({...A(tok,papel,dep),tipo:'RMP',envio:'RMP:B23-1:1',pdf:TPR});
+    await t('RMP: quem só vê não cria link de assinatura',()=>assertFails(setDoc(doc(lp('rdov'),'rdo_assin',TS),R(TS,'sol',null))));
+    await t('RMP: quem registra RMP cria os links (solicitante → fiscal) e o PDF',async()=>{await assertSucceeds(setDoc(doc(lp('rmreg'),'rdo_assin',TS),R(TS,'sol',null)));await assertSucceeds(setDoc(doc(lp('rmreg'),'rdo_assin',TQ),R(TQ,'fis',TS)));
+      await assertSucceeds(setDoc(doc(lp('rmreg'),'rdo_pdf',TPR),{pdf:'data:application/pdf;base64,AAAA',envio:'RMP:B23-1:1',criado_por:'rmreg@x.com',criado_em:1}))});
+    await t('RMP: fiscal não assina antes do solicitante',()=>assertFails(updateDoc(doc(anon,'rdo_assin',TQ),SIG('Fis'))));
+    await t('RMP: solicitante assina pelo link',()=>assertSucceeds(updateDoc(doc(anon,'rdo_assin',TS),SIG('Sol'))));
+    await t('RMP: quem registra RMP cancela os links da versão anterior',async()=>{await assertSucceeds(deleteDoc(doc(lp('rmreg'),'rdo_assin',TQ)));await assertSucceeds(deleteDoc(doc(lp('rmreg'),'rdo_pdf',TPR)))});
+    await t('RMP: quem registra RMP não apaga link de RDO',()=>assertFails(deleteDoc(doc(lp('rmreg'),'rdo_assin',TE))));
+    await t('RMP: e-mail — quem registra RMP não altera a configuração',()=>assertFails(setDoc(doc(lp('rmreg'),'rmp_config','email'),{url:'https://script.google.com/x',chave:'k',para:['a@b.co'],auto:true})));
+    await t('RMP: quem usa o controle lê a configuração do e-mail',()=>assertSucceeds(getDoc(doc(lp('rmreg'),'rmp_config','email'))))}
   await t('Responsáveis: quem valida desativa',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',PID),{ativo:false})));
   await t('Responsáveis: desativado não altera o próprio cadastro',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno C. Lima',funcao:'x1',assinatura:PNG,perfil_em:4})));
   await t('Responsáveis: quem valida exclui',()=>assertSucceeds(deleteDoc(doc(lp('rdoval'),'assinantes',PID))))}

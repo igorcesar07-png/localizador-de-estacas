@@ -151,10 +151,14 @@ service cloud.firestore {
       allow delete: if canDo('rdo', 'edit') && id.matches('^RDO-.*');
     }
     // data de corte do controle de pendências de RMP: leitura para quem vê o controle; só o administrador altera
+    // e-mail dos RMPs (id "email"): endereço do script de envio, chave e destinatários; lê quem usa o controle (o app envia), só o administrador altera
     match /rmp_config/{id} {
       allow read: if rmpRead();
-      allow write: if isAdmin() && request.resource.data.corte is string
-                   && (request.resource.data.corte == '' || request.resource.data.corte.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$'));
+      allow write: if isAdmin() && ((id != 'email' && request.resource.data.corte is string
+                   && (request.resource.data.corte == '' || request.resource.data.corte.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+                   || (id == 'email' && request.resource.data.url is string && request.resource.data.url.size() <= 300
+                       && request.resource.data.chave is string && request.resource.data.chave.size() <= 120
+                       && request.resource.data.para is list && request.resource.data.para.size() <= 10 && request.resource.data.auto is bool));
     }
     match /rmp_controle_midia/{id} {
       allow read: if rmpRead();
@@ -203,9 +207,10 @@ service cloud.firestore {
     // A lista completa só é lida por quem vê o RDO no app.
     match /rdo_assin/{tok} {
       allow get: if true;
-      allow list: if rdoRead();
-      allow create: if canDo('rdo', 'create') && request.resource.data.status == 'pendente' && request.resource.data.tok == tok
-                    && request.resource.data.papel in ['eng', 'enc', 'fis'] && request.resource.data.envio is string && tok.size() >= 24;
+      allow list: if rdoRead() || rmpRead();
+      // RDO (engenheiro, encarregado, fiscal) ou RMP (solicitante e fiscal), por quem envia RDO ou registra RMP
+      allow create: if (canDo('rdo', 'create') || canDo('rmp', 'create')) && request.resource.data.status == 'pendente' && request.resource.data.tok == tok
+                    && request.resource.data.papel in ['eng', 'enc', 'fis', 'sol'] && request.resource.data.envio is string && tok.size() >= 24;
       allow update: if resource.data.status == 'pendente' && request.resource.data.status == 'assinado'
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'assinado_nome', 'assinado_funcao', 'assinado_em', 'assinatura', 'ua', 'obs'])
                     && (request.resource.data.get('obs', '') is string && request.resource.data.get('obs', '').size() <= 600)
@@ -221,17 +226,19 @@ service cloud.firestore {
                     && (resource.data.dep == null || get(/databases/$(database)/documents/rdo_assin/$(resource.data.dep)).data.status == 'assinado');
       // quem valida RDO pode refazer (voltar para pendente) ou apagar junto com o RDO
       allow update, delete: if canDo('rdo', 'edit');
+      // RMP reenviado para assinatura: quem registra RMP cancela (apaga) os links da versão anterior
+      allow delete: if canDo('rmp', 'create') && resource.data.get('tipo', '') == 'RMP';
     }
     // Responsáveis pelas assinaturas: cadastro feito por quem valida RDO; o id (aleatório, ≥ 24 caracteres) é o endereço pessoal
     // da página de assinaturas. A pessoa, pelo próprio endereço, completa nome, função e assinatura padrão.
     // "docs" = tokens dos documentos enviados para ela assinar (RDO, RMP…): quem envia RDO só acrescenta.
     match /assinantes/{id} {
       allow get: if true;
-      allow list: if rdoRead();
+      allow list: if rdoRead() || rmpRead();
       allow create: if canDo('rdo', 'edit') && id.size() >= 24 && request.resource.data.id == id && pesOk(request.resource.data)
                     && request.resource.data.docs.size() == 0 && request.resource.data.ativo == true;
       allow update: if canDo('rdo', 'edit') && request.resource.data.id == id && pesOk(request.resource.data);
-      allow update: if canDo('rdo', 'create') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['docs'])
+      allow update: if (canDo('rdo', 'create') || canDo('rmp', 'create')) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['docs'])
                     && request.resource.data.docs is list && request.resource.data.docs.size() <= 3000 && request.resource.data.docs.hasAll(resource.data.docs);
       // (só pela página pública, que não usa login: usuários do app não mexem no cadastro dos outros)
       allow update: if request.auth == null && resource.data.ativo == true && pesOk(request.resource.data)
@@ -243,9 +250,9 @@ service cloud.firestore {
     match /rdo_pdf/{tok} {
       allow get: if true;
       allow list: if false;
-      allow create: if canDo('rdo', 'create') && request.resource.data.pdf is string && request.resource.data.pdf.size() < 1000000 && tok.size() >= 24;
+      allow create: if (canDo('rdo', 'create') || canDo('rmp', 'create')) && request.resource.data.pdf is string && request.resource.data.pdf.size() < 1000000 && tok.size() >= 24;
       allow update: if false;
-      allow delete: if canDo('rdo', 'edit');
+      allow delete: if canDo('rdo', 'edit') || (canDo('rmp', 'create') && resource.data.envio.matches('^RMP:.*'));
     }
     // Histórico de programações: resumo (lista) e dados completos. Cria em nome próprio; o autor altera a própria;
     // "editar" altera a de qualquer usuário; "excluir" só marca a exclusão. Nada é apagado do servidor.

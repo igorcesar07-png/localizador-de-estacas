@@ -53,4 +53,11 @@ await p.screenshot({path:'/tmp/claude-0/ass_devolvido.png',fullPage:true});
 const TG='9'.repeat(32);put('rdo_assin',TG,{tok:TG,papel:'enc',nome:'Bruno',status:'pendente',dep:TD,envio:'r2',tipo:'RDO',resumo:RS});
 await p.goto(`http://localhost:8772/assinar.html?t=${TG}`);await p.waitForSelector('#sig h2',{timeout:10000});await W(300);ok(/devolveu este documento/.test(await p.textContent('#sig'))&&!(await p.$('#go')),'encarregado vê que o engenheiro devolveu (não assina)');
 await p.goto(`http://localhost:8772/assinar.html?p=${'0'.repeat(32)}`);await W(1500);ok(/não existe/.test(await p.textContent('#as')),'endereço inexistente avisa');
+// RMP: solicitante → fiscal, mesmo fluxo
+const TS='5'.repeat(32),TQ='6'.repeat(32),RR={numero:'RMP-470-001',data:'2026-11-26',obra:'BR-373 · Bloco 04',equipe:'Pav. Johonatan',trecho:'234+100 a 234+160 · Crescente · 1'};
+put('rdo_assin',TS,{tok:TS,papel:'sol',nome:'Ana',status:'pendente',dep:null,envio:'RMP:x:1',tipo:'RMP',resumo:RR});put('rdo_assin',TQ,{tok:TQ,papel:'fis',nome:'Carla',status:'pendente',dep:TS,envio:'RMP:x:1',tipo:'RMP',resumo:RR});
+await p.goto(`http://localhost:8772/assinar.html?t=${TQ}`);await p.waitForSelector('#sig h2',{timeout:10000});await W(300);
+ok(/^RMP-470-001 · 26\/11\/2026$/.test((await p.textContent('h1')).trim())&&/aguarda a assinatura do Solicitante/.test(await p.textContent('#sig'))&&/Solicitante/.test(await p.textContent('.al')),'RMP: fiscal aguarda o solicitante (título sem repetir "RMP")');
+await p.goto(`http://localhost:8772/assinar.html?t=${TS}`);await p.waitForSelector('#go',{timeout:10000});await p.fill('#nm','Ana Maria Souza');await draw();await p.check('#ok');await p.click('#go');await p.waitForSelector('#sig .am.ok',{timeout:10000});
+ok(DB['rdo_assin/'+TS].status==='assinado'&&/fiscal foi liberada/.test(await p.textContent('#sig')),'RMP: solicitante assina e libera o fiscal');
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();
