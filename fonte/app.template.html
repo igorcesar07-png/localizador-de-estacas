@@ -2588,7 +2588,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const estS=v=>{if(v==null||v==='')return null;let t=String(v).trim();if(!/\+/.test(t)){const n=parseFloat(t.replace(',','.'));if(!isFinite(n))return null;const k=Math.floor(n+1e-9);t=k+'+'+String(Math.round((n-k)*1000)).padStart(3,'0')}const r=Data.parseKm(t);return r.err?null:r.s};
     // uma linha de apontamento (planilha ou JSON) → [serial, faixa do app, solução, hodômetro inicial, final, status]
     function recOf(get,txt,fam,st,b4){const serial=String(txt('serial')==null?'':txt('serial')).trim();if(!serial||/^totais?$/i.test(serial))return null;
-      const rod=get('rodovia');if(/373/.test(String(rod==null?'':rod)))return recB4(get,txt,fam,b4,serial);if(fam==='PA')return null;st.lidos++;
+      const rod=get('rodovia');if(/373/.test(String(rod==null?'':rod)))return recB4(get,txt,fam,b4,serial);if(fam==='PA'||fam==='REC'||fam==='RP')return null;st.lidos++;
       if(rod!=null&&rod!==''&&!/277/.test(String(rod))){st.rod++;return null}
       const se=norm(get('sentido')),side=se.startsWith('cres')?'C':se.startsWith('decr')?'D':null,fx=norm(get('faixa'));let code=fam,L=-1;
       if(fam==='DRN'){const t=norm(get('tipo de dreno'));code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':null;L=side==='C'?6:side==='D'?7:-1}
@@ -2597,12 +2597,12 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       let a=kmS(get('km inicial')),b=kmS(get('km final'));if(a==null||b==null){a=estS(txt('estaca inicial'));b=estS(txt('estaca final'))}
       if(a==null||b==null||a===b){st.pos++;return null}
       st.ok++;st.by[code]=(st.by[code]||0)+1;return [serial,L,code,Math.min(a,b),Math.max(a,b),String(get('status')||'')]}
-    const famOf=name=>{const ns=norm(name);return /superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':/preenchimento|acostamento/.test(ns)?'PA':null};
+    const famOf=name=>{const ns=norm(name);return /superficial/.test(ns)?'FS':/estrutural/.test(ns)?'FE':/funcional/.test(ns)?'FF':/dreno/.test(ns)?'DRN':/preenchimento|acostamento/.test(ns)?'PA':/reciclagem/.test(ns)?'REC':/reparo profundo/.test(ns)?'RP':null};
     // BR-373 (Bloco 04): o km do Kartado é a estaca da base B4 (ex.: 205,2 = 205+200), convertida para o hodômetro da base;
     // faixa 2/3 → Faixa 2 / adicional; marginais não entram (não fazem parte do unifilar); solução pela aba (FF, FE, FS, PA = preenchimento de acostamento, dreno)
     function recB4(get,txt,fam,st,serial){st.lidos++;const B=window.__SRC_B4;if(!B){st.sem=(st.sem||0)+1;return null}
       const se=norm(get('sentido')),side=se.startsWith('cres')?'C':se.startsWith('decr')?'D':null,fx=norm(get('faixa'));let code=fam,L=-1;
-      if(fam==='DRN'){const t=norm(get('tipo de dreno'));code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':null;L=side==='C'?6:side==='D'?7:-1}
+      if(fam==='DRN'){const t=norm(get('tipo de dreno'));code=/raso/.test(t)?'DR':/profund/.test(t)?'DP':'DRN';L=side==='C'?6:side==='D'?7:-1}
       else if(!/marginal/.test(fx)){const g=/faixa 1\b/.test(fx)?'F1':/faixa (2|3)/.test(fx)?'F23':/acost/.test(fx)?'AC':null;if(g&&side)L=B.LANES.findIndex(l=>l.grp===g&&l.side===side)}
       if(L<0||!code){st.fx++;st.fxs=(st.fxs||[]).concat(serial+' ('+(get('faixa')||'sem faixa')+')');return null}
       const est=v=>{const n=typeof v==='number'?v:parseFloat(String(v==null?'':v).replace(',','.'));if(!isFinite(n))return null;const k=Math.floor(n+1e-9);const r=B.Data.parseKm(k+'+'+String(Math.round((n-k)*1000)).padStart(3,'0'));return r.err?null:r.s};
@@ -2636,7 +2636,7 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
       return {st,s4,shared}}
     // candidatos: mesmo pano lógico (faixa/lado e sentido), mesma solução e trecho sobreposto ao segmento programado
     const famB4=c=>/^PA/.test(c)?'PA':c;
-    function cands(p,a,b){if(SRCK==='B4'){const B=base&&base.b4;if(!B)return [];const out=[];for(const r of B.recs){if(r[1]!==p.L||r[2]!==famB4(p.code))continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+    function cands(p,a,b){if(SRCK==='B4'){const B=base&&base.b4;if(!B)return [];const out=[];for(const r of B.recs){if(r[1]!==p.L||(r[2]!==famB4(p.code)&&!(r[2]==='DRN'&&(p.code==='DR'||p.code==='DP'))))continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
       if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
     function forRow(r){const c=cands(r.p,r.a,r.b),man=Object.prototype.hasOwnProperty.call(S.serial,r.p.tag)?S.serial[r.p.tag]:null,auto=c.length===1?c[0]:'';
       return {auto,cands:c,man,val:man!=null?man:auto,st:man!=null?'manual':c.length===1?'auto':c.length>1?'multi':'none'}}
