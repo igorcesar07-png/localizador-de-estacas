@@ -669,7 +669,10 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .cm-rmp .cmi{color:#B7791F}.cm-rmp b{flex:1;font-size:13px}.cm-rmpb{flex:none;padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid color-mix(in srgb,#E3A008 55%,var(--line));color:var(--ink);font:700 12px var(--body);text-decoration:none;white-space:nowrap}.cm-rmpb:hover{background:var(--surface-2)}
 @media(max-width:640px){.cm-seg{padding:9px 10px 10px}.cm-ins{gap:6px}.cm-in input{padding-right:24px;font-size:16px}.cm-in em{right:6px}}
 .rd-if{width:100%;height:70vh;min-height:480px;border:1px solid var(--line);border-radius:12px;background:#fff}.pd-erro{color:#B42318;font-weight:600}.pd-map{display:inline-grid;place-items:center;width:24px;height:24px;min-height:0;margin-left:2px;padding:0;vertical-align:middle;border:0;border-radius:6px;background:transparent;color:var(--accent-strong,#1A73E8);cursor:pointer}.pd-map:hover,.pd-map:focus-visible{background:color-mix(in srgb,#1A73E8 14%,var(--surface))}
-.pd-rdx{display:inline-grid;place-items:center;width:24px;height:24px;min-height:0;margin-left:4px;padding:0;vertical-align:middle;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}.pd-rdx:hover,.pd-rdx:focus-visible{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}.rd-xc td{text-decoration:line-through;opacity:.65}.rd-xc td small{text-decoration:none}.pd-org{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#1A56DB;color:#fff;font:700 10.5px var(--body);vertical-align:middle}.pd-org.ok{background:#E3F1E8;color:#1E7A4C}.cm-prog{display:flex;flex-direction:column;background:#EEF4FF;border-left:4px solid #1A56DB;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13px}.cm-prog span{font-size:12px;color:#334}.rd-v{min-height:30px;padding:3px 10px;font-size:12.5px;margin-left:4px}.rel .rel-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.rel .rel-h small{text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
+.pd-rdx{display:inline-grid;place-items:center;width:24px;height:24px;min-height:0;margin-left:4px;padding:0;vertical-align:middle;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}.pd-rdx:hover,.pd-rdx:focus-visible{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}.rd-xc td{text-decoration:line-through;opacity:.65}.rd-xc td small{text-decoration:none}.pd-org{display:inline-block;margin-left:5px;padding:0 5px;border-radius:5px;background:#1A56DB;color:#fff;font:700 10.5px var(--body);vertical-align:middle}.pd-org.ok{background:#E3F1E8;color:#1E7A4C}.cm-prog{display:flex;flex-direction:column;background:#EEF4FF;border-left:4px solid #1A56DB;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13px}.cm-prog span{font-size:12px;color:#334}.rd-v{min-height:30px;padding:3px 10px;font-size:12.5px;margin-left:4px}.cmp-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0 12px}.cmp-kpi>div{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface)}.cmp-kpi span{display:block;font-size:12px;color:var(--muted)}.cmp-kpi b{display:block;font:800 22px var(--body)}.cmp-kpi b.ok{color:#1E7A4C}.cmp-kpi b.warn,.cmp-t .warn{color:#B45309}.cmp-kpi small{color:var(--muted);font-size:12px}
+.cmp-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.cmp-t th{text-align:left}.cmp-t td small{color:var(--muted)}
+@media(max-width:700px){.cmp-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rel .rel-h{margin:14px 0 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}.rel .rel-h small{text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
 .rel-cl{border-collapse:collapse;font-size:11px}.rel-cl th{font-weight:600;color:var(--muted);padding:2px 3px;white-space:nowrap}.rel-cl tbody th{text-align:left;padding-right:8px}.rel-cl td{padding:1px}
 .rel-x{width:26px;height:28px;min-height:0;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);font:800 13px var(--body);cursor:pointer}.rel-x[aria-pressed="true"]{background:color-mix(in srgb,#1A73E8 18%,var(--surface));border-color:#1A73E8}
 .rel-hr input{min-height:36px;width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:8px;background:var(--surface-2);color:var(--ink);font:inherit;padding:0 6px}
@@ -1598,6 +1601,11 @@ table.rq td.ro{white-space:normal;min-width:160px;max-width:280px}
           <div class="ract"><button type="button" class="secondary" id="rClear">Limpar filtros</button></div>
         </div>
       </div>
+      <details class="card" id="rCmp" open><summary><span>Projeto × executado · reflexo das alterações (RMP)</span></summary>
+        <div class="pd-fl"><div class="fld"><label for="rCmpObra">Obra</label><select id="rCmpObra"><option value="B23">BR-277 — Blocos 02 e 03</option><option value="B4">BR-373 — Bloco 04</option></select></div>
+          <div class="fld"><label for="rCmpDe">Execução de</label><input type="date" id="rCmpDe"></div><div class="fld"><label for="rCmpAte">até</label><input type="date" id="rCmpAte"></div>
+          <div class="pd-acts"><button type="button" class="pd-b" id="rCmpXls">Exportar comparativo (Excel)</button></div></div>
+        <div id="rCmpBody"><p class="pd-note">Carregando…</p></div></details>
       <details class="card" id="rExec"><summary><span>Execução · programações e planilha</span><span class="flag" id="rExecSum" style="color:var(--muted)"></span></summary>
         <p class="note">O status de execução de todas as páginas vem de uma base única no servidor: <b>executado</b> = Produção executada (planilha de produção + RDO validado) e <b>programado</b> = Histórico de programações. A planilha de execução e o "concluir programação" desta página guardavam dados só neste aparelho e foram desativados.</p>
         <div class="rexe" hidden>
@@ -2651,6 +2659,9 @@ const __SRC277={Data,R,LANES,SIDE,PANOS,ODO,Loc};
     const famB4=c=>/^PA/.test(c)?'PA':c;
     function cands(p,a,b){if(SRCK==='B4'){const B=base&&base.b4;if(!B)return [];const out=[];for(const r of B.recs){if(r[1]!==p.L||(r[2]!==famB4(p.code)&&!(r[2]==='DRN'&&(p.code==='DR'||p.code==='DP'))))continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
       if(!base)return [];const out=[];for(const r of base.recs){if(r[1]!==p.L||r[2]!==p.code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}return out}
+    // serial do Kartado para um trecho qualquer (usado no RDO): mesma regra da Calculadora; só devolve quando há um único registro compatível
+    window.__serialAt=(k,L,code,a,b)=>{const out=[];if(k==='B4'){const B=base&&base.b4;if(!B)return '';for(const r of B.recs){if(r[1]!==L||(r[2]!==famB4(code)&&!(r[2]==='DRN'&&(code==='DR'||code==='DP'))))continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}}
+      else if(base){for(const r of base.recs){if(r[1]!==L||r[2]!==code)continue;if(Math.min(b,r[4])-Math.max(a,r[3])>0.5&&!out.includes(r[0]))out.push(r[0])}}return out.length===1?out[0]:''};
     function forRow(r){const c=cands(r.p,r.a,r.b),man=Object.prototype.hasOwnProperty.call(S.serial,r.p.tag)?S.serial[r.p.tag]:null,auto=c.length===1?c[0]:'';
       return {auto,cands:c,man,val:man!=null?man:auto,st:man!=null?'manual':c.length===1?'auto':c.length>1?'multi':'none'}}
         // índice usado também no mapa e nos Relatórios (BR-277)
@@ -6208,10 +6219,14 @@ const PROD=(function(){
     try{if(e.ass&&window.RdoDB.assDel)await window.RdoDB.assDel(Object.values(e.ass),e.pdf)}catch(x){}
     await rdoLimpa(rids);RES=null;render();rdRender();rmRender()}
   // estaca do RDO ("236+300") → posição (m) na base da obra; fim pelo comprimento no sentido
+  // serial do Kartado do segmento do RDO: o digitado/da programação; senão, o único apontamento compatível (mesma regra da Calculadora)
+  function serOf(f,job){if(f.serial)return String(f.serial);try{const k=(job||CM.job)==='BR373'?'B4':'B23',src=srcOf(k);if(!src||!window.__serialAt)return '';const A=src.Data.parseKm(String(f.start||''));if(A.err)return '';
+      const side=f.direction==='Decrescente'?'D':'C',grp=f.lane===1?'F1':f.lane===2?'F23':'AC',L=src.LANES.findIndex(l=>l.grp===grp&&l.side===side),a=side==='D'?A.s-(+f.length||0):A.s,b=a+(+f.length||0);
+      let code=f.solucao||'';if(!code){const pj=cmProjAt(k,L,a);code=pj&&pj.code||''}if(!code)return '';return window.__serialAt(k,L,code,a,b)||''}catch(e){return ''}}
   function rdoSegs(d){const out=[],rdo=d.rdo||{};const KEYS=['start','direction','lane','length','width','thickness'];
     for(const f of [...(d.fres||[]),...(d.extras||[]).map(x=>Object.assign({},x,{__extra:1}))]){const o=Object.assign({},f,(rdo[f.id]&&rdo[f.id].over)||{});
       out.push({sid:String(f.id||''),ini:String(o.start||''),side:o.direction==='Decrescente'?'D':'C',lane:o.lane,len:+o.length||0,w:+o.width||0,e:+o.thickness||0,t:(+o.length||0)*(+o.width||0)*(+o.thickness||0)*(+d.density||0),
-        ...(f.tag?{tag:String(f.tag)}:{}),...(f.serial?{ser:String(f.serial).slice(0,40)}:{}),...(f.prog?{prog:{ini:String(f.prog.start||''),len:+f.prog.length||0,w:+f.prog.width||0,e:+f.prog.thickness||0}}:{}),...(f.espProjeto!=null?{ep:+f.espProjeto}:{}),...(f.solucao?{sol:String(f.solucao).slice(0,20)}:{}),
+        ...(f.tag?{tag:String(f.tag)}:{}),...((s0=>s0?{ser:s0.slice(0,40)}:{})(serOf(f,d.job))),...(f.prog?{prog:{ini:String(f.prog.start||''),len:+f.prog.length||0,w:+f.prog.width||0,e:+f.prog.thickness||0}}:{}),...(f.espProjeto!=null?{ep:+f.espProjeto}:{}),...(f.solucao?{sol:String(f.solucao).slice(0,20)}:{}),
         ...(f.rmp?{rmp:{esp:!!f.rmp.esp,ext:+f.rmp.ext||0}}:{}),...(f.motivo?{mot:String(f.motivo).slice(0,80)}:{}),
         obs:(rdo[f.id]&&rdo[f.id].obs)||'',alt:!!(rdo[f.id]&&rdo[f.id].over&&Object.keys(rdo[f.id].over).some(k=>KEYS.includes(k))),extra:!!f.__extra})}
     return out}
@@ -6330,7 +6345,7 @@ const PROD=(function(){
           <div class="cm-hd"><span class="cm-grip" title="Toque e segure o cartão para mudar a posição">${IC.grip}</span><b class="cm-n">${i+1}</b>
             <div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span></div>
             ${lock?'':`<div class="cm-act"><button type="button" data-cm="ed" data-i="${i}" aria-label="Editar o pano ${i+1}" title="Editar">${IC.ed}</button><button type="button" data-cm="cut" data-i="${i}" aria-label="Dividir / RMP" title="Dividir / RMP">${IC.cut}</button><button type="button" class="cm-x" data-cm="del" data-i="${i}" aria-label="Excluir o pano ${i+1}" title="Excluir">${IC.x}</button></div>`}</div>
-          <dl class="cm-kv"><div><dt>Estaca inicial</dt><dd>${esc(f.start)}</dd></div><div><dt>Estaca final</dt><dd>${esc(cmEnd(f))}</dd></div><div><dt>Sentido</dt><dd>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'}</dd></div><div><dt>Faixa</dt><dd>${esc(String(LANE_N[f.lane]||f.lane||'—').replace(/^Faixa\s*/,''))}</dd></div><div><dt>Solução de projeto</dt><dd>${esc(f.solucao||'—')}</dd></div><div><dt>Serial</dt><dd>${esc(f.tag||'—')}</dd></div></dl>
+          <dl class="cm-kv"><div><dt>Estaca inicial</dt><dd>${esc(f.start)}</dd></div><div><dt>Estaca final</dt><dd>${esc(cmEnd(f))}</dd></div><div><dt>Sentido</dt><dd>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'}</dd></div><div><dt>Faixa</dt><dd>${esc(String(LANE_N[f.lane]||f.lane||'—').replace(/^Faixa\s*/,''))}</dd></div><div><dt>Solução de projeto</dt><dd>${esc(f.solucao||'—')}</dd></div><div><dt>Serial Kartado</dt><dd title="${esc(f.tag?'Pano '+f.tag:'')}">${esc(serOf(f)||'—')}</dd></div></dl>
           <div class="cm-ins">${inp('length',f.length,'0.01','Comprimento','m',dfx(P&&P.length,f.length,2))}${inp('width',f.width,'0.01','Largura','m',dfx(P&&P.width,f.width,2))}${inp('thickness',f.thickness!=null?Math.round(f.thickness*1000)/10:null,'0.1','Espessura','cm',dfx(P&&P.thickness*100,f.thickness*100,1))}</div>
           <div class="cm-ft">${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:'',lock?FST[st][0]:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}<span class="cm-ton"><span><small>Segmento</small><b class="cm-mass">${fmt(mas(f),2)} t</b></span><span><small>Acumulado</small><b class="cm-acc">${fmt(acc,2)} t</b></span></span></div>
           ${f.rmp?`<div class="cm-rmp" role="note">${IC.warn}<b>${esc(rmpTx(f))}</b><a class="cm-rmpb" href="#rmp" title="Abrir o Controle de RMPs">Controle de RMPs</a></div>`:''}
@@ -6379,7 +6394,7 @@ const PROD=(function(){
       ${rdo?'':`<div class="fld"><label for="cfLane">Faixa</label><select id="cfLane">${[1,2,3].map(l=>`<option value="${l}"${f.lane===l?' selected':''}>${LANE_N[l]}</option>`).join('')}</select></div>`}
       <div class="fld"><label for="cfW">Largura (m) *</label><input id="cfW" type="number" step="0.01" inputmode="decimal" value="${f.width??''}"></div>
       <div class="fld"><label for="cfE">Espessura (cm) *</label><input id="cfE" type="number" step="0.1" inputmode="decimal" value="${f.thickness!=null?Math.round(f.thickness*1000)/10:''}"></div>
-      ${mode==='pano'?`<div class="fld"><label for="cfEP">Espessura de projeto (cm)</label><input id="cfEP" type="number" step="0.1" value="${f.espProjeto!=null?Math.round(f.espProjeto*1000)/10:''}"></div><div class="fld"><label for="cfSol">Solução (código)</label><input id="cfSol" value="${esc(f.solucao||'')}" maxlength="12"></div>
+      ${mode==='pano'?`<div class="fld"><label for="cfSer">Serial Kartado</label><input id="cfSer" value="${esc(f.serial||'')}" maxlength="40" placeholder="${esc(serOf(f)||'automático pelos apontamentos')}"></div><div class="fld"><label for="cfEP">Espessura de projeto (cm)</label><input id="cfEP" type="number" step="0.1" value="${f.espProjeto!=null?Math.round(f.espProjeto*1000)/10:''}"></div><div class="fld"><label for="cfSol">Solução (código)</label><input id="cfSol" value="${esc(f.solucao||'')}" maxlength="12"></div>
         <label class="cm-sw"><input type="checkbox" id="cfSeq"${f.sequential?' checked':''}> Sequencial (começa onde termina o anterior)</label><button type="button" class="pd-b" id="cfBus">Buscar no projeto</button>`:''}
       ${rdo?`<div class="fld cm-w2"><label for="cfObs">Observação</label><input id="cfObs" value="${esc((CM.rdo[f.id]||{}).obs||'')}" maxlength="300"></div>`:''}</div>
       <p class="pd-note" id="cfPrev"></p><p class="pd-erro" id="cfErr"></p><div class="pd-acts"><button type="button" class="pd-b" id="cfC">Cancelar</button><button type="submit" class="pd-b pri">Salvar</button></div></form>`;
@@ -6389,7 +6404,7 @@ const PROD=(function(){
     const seq=$('cfSeq');if(seq)seq.onchange=()=>{if(seq.checked){const pos=Math.max(1,+$('cfPos').value||1)-1,pr=CM.fres[pos-1]||CM.fres[CM.fres.length-1];if(pr&&pr!==f){$('cfIni').value=cmEnd(pr);$('cfDir').value=pr.direction;$('cfLane').value=pr.lane;prev()}}};
     const bus=$('cfBus');if(bus)bus.onclick=()=>{const x=read();const p=cmProj(x.start,x.direction,x.lane);if(!p){$('cfErr').textContent='Sem solução de projeto nessa estaca e faixa.';return}$('cfSol').value=p.code;if(p.esp!=null)$('cfEP').value=Math.round(p.esp*1000)/10;$('cfErr').textContent=''};
     d.querySelector('form').onsubmit=e=>{e.preventDefault();const x=read();if(!rdo&&!x.start)return $('cfErr').textContent='Estaca inicial inválida.';if(!(x.length>0&&x.width>0&&x.thickness>0))return $('cfErr').textContent='Informe comprimento, largura e espessura.';
-      if(mode==='pano'){x.espProjeto=n($('cfEP').value)!=null?n($('cfEP').value)/100:null;x.solucao=$('cfSol').value.trim();x.sequential=$('cfSeq').checked;x.__pos=Math.max(1,+$('cfPos').value||1)}
+      if(mode==='pano'){x.serial=$('cfSer').value.trim();x.espProjeto=n($('cfEP').value)!=null?n($('cfEP').value)/100:null;x.solucao=$('cfSol').value.trim();x.sequential=$('cfSeq').checked;x.__pos=Math.max(1,+$('cfPos').value||1)}
       if(rdo)x.obs=$('cfObs').value.trim();close();done(x)}}
   function cmMove(i,j){if(j<0||j>=CM.fres.length)return;const [f]=CM.fres.splice(i,1);CM.fres.splice(j,0,f);cmSeqFix();cmSave()}
   function cmSeqFix(){CM.fres.forEach((f,i)=>{if(f.sequential){const p=CM.fres[i-1];if(!p||cmEnd(p)!==f.start)f.sequential=false}})}
@@ -6809,6 +6824,87 @@ const PROD=(function(){
   function rmRows(l){return l.map(r=>{const fl=rmpFalta(r),c=RMPC.get(r.id)||{},f=c.fotos||{};
     return [brD(r.data),blkOf(r),rodOf(r),val(r,'pista'),val(r,'faixa'),val(r,'ini'),val(r,'fim'),solProj(r),solExec(r),r.extProj!=null?Math.round(r.extProj*10)/10:'',Math.round(extOf(r)*10)/10,rmpTxt(r),eqOf(r),((r.notas[0]||{}).motivos||[]).join(', '),(r.notas[0]||{}).txt||'',
       (f.assinado||[]).length?'Sim':'Não',(f.patologia||[]).length?'Sim':'Não',(c.patologias||[]).join(', '),(f.espessura||[]).length?'Sim':'Não',fl.length?(preCorte(r)?'Antes do corte':'Pendente'):'Completo',fl.map(x=>FALTA_N[x]).join(', '),r.lin.join(', '),r.id]})}
+  /* ---------- Relatórios: projeto inicial × projeto revisado × executado (reflexo das alterações de projeto / RMP) ----------
+     CBUQ do projeto: B4 pelo unifilar (toneladas dos panos; REC/RP = capa de 5 cm); BR-277 pelas faixas da base × largura e espessura do cadastro.
+     No trecho executado, o "projeto" de cada segmento = extensão dentro do projeto × largura executada × espessura de projeto × densidade:
+     a diferença isola o efeito da espessura e da extensão alteradas (a largura real não entra como alteração). */
+  const CMP={k:'B23',de:'',ate:''},VJ=new Map();
+  function cadCmp(k){const c=store.get('calc',null)||{},RK=k==='B4'?'B4':'277';const num=v=>{if(v===''||v==null)return null;const n=parseFloat(String(v).replace(',','.'));return isFinite(n)?n:null};
+    return {W:{F1:num((c.w||{}).F1)??3.6,F23:num((c.w||{}).F23)??3.6,AC:num((c.w||{}).AC)??2.5},E:Object.assign({FF:6,FE:10,FS:3,G:3,REC:5,RP:5,ATB45:7},c.esp||{}),dens:num(c.dens)??2.528,num}}
+  // CBUQ (t) de uma revisão do projeto, por km
+  function projCbuq(json,k){const C=cadCmp(k),by=new Map();let tot=0;const add=(km,t)=>{if(!(t>0))return;by.set(km,(by.get(km)||0)+t);tot+=t};
+    const S=json&&json.src;
+    if(S&&Array.isArray(S.panos)&&Array.isArray(S.campos)){const F=S.campos,T=S.textos||[],v=x=>typeof x==='string'&&x[0]==='#'?T[+x.slice(1)]:x;
+      const I=n=>F.indexOf(n)+3,iS=I('sigla'),iK=I('marco_km'),iQ=I('quantidade'),iU=I('unidade'),iA=I('area_m2_ou_secao_m2');
+      for(const r of S.panos){const sg=String(v(r[iS])||''),fm=famPav(sg)||(sg==='ATB45'?'ATB':null);if(!fm)continue;const km=+v(r[iK]);
+        if(fm==='REC'||fm==='RP'){const a=+v(r[iA]);if(a>0)add(km,a*0.05*C.dens)}else if(v(r[iU])==='t')add(km,+v(r[iQ]))}
+      return {by,tot}}
+    const codes=json.codes||[],G=['AC','F23','F1','F1','F23','AC'];
+    for(const row of json.rows||[])for(let L=0;L<6;L++){const ci=row[6][L];if(!ci)continue;const c=codes[ci-1],fm=famPav(c)||(c==='ATB45'?'ATB':null);if(!fm)continue;
+      const e=C.num(C.E[c])??C.num(C.E[fm==='ATB'?'ATB45':fm]);if(!(e>0))continue;add(+row[5],20*C.W[G[L]]*e/100*C.dens)}
+    return {by,tot}}
+  async function verJson(id){if(VJ.has(id))return VJ.get(id);const p=window.VersDB?window.VersDB.get(id):Promise.resolve(null);VJ.set(id,p);return p}
+  const cmpKm=r=>{const t=String(info(r).ini||'').split('+')[0];const n=parseInt(t,10);return isFinite(n)?n:null};
+  function cmpExec(k){const C=cadCmp(k);const R0=resolve()[k].filter(r=>(r.ap||r.cls==='extra')&&(!CMP.de||r.data>=CMP.de)&&(!CMP.ate||r.data<=CMP.ate));const PAV=['FF','FE','FS','GAP'];
+    const s={n:0,len:0,t:0,tP:0,conf:{n:0,len:0,t:0},alt:{n:0,len:0,t:0,tP:0},aum:{n:0,len:0},red:{n:0,len:0},ext:{n:0,len:0,acr:0},tro:{n:0,len:0},mais:{n:0,len:0},
+      extra:{n:0,len:0,t:0},retr:{n:0,len:0,t:0},byKm:new Map()};
+    for(const r of R0){const len=extOf(r),t=tOf(r);if(r.cls==='extra'){s.extra.n++;s.extra.len+=len;s.extra.t+=t;continue}if(r.cls==='retrabalho'){s.retr.n++;s.retr.len+=len;s.retr.t+=t;continue}
+      if(!PAV.includes(r.fam))continue;const km=cmpKm(r);
+      const espP=r.proj&&r.proj.esp!=null&&grpPav(famPav(r.proj.code)||'')===grpPav(r.fam==='GAP'?'FS':r.fam)?r.proj.esp:ESP_PAD[r.fam==='GAP'?'FS':r.fam];
+      const lenP=Math.min(r.extProj!=null?r.extProj:len,len),tP=r.larg>0&&espP>0?lenP*r.larg*espP/100*C.dens:0;
+      s.n++;s.len+=len;s.t+=t;s.tP+=tP;const K=s.byKm.get(km)||s.byKm.set(km,{km,n:0,nAlt:0,len:0,lenAlt:0,t:0,tP:0}).get(km);K.n++;K.len+=len;K.t+=t;K.tP+=tP;
+      if(!r.rmp.length){s.conf.n++;s.conf.len+=len;s.conf.t+=t;continue}
+      s.alt.n++;s.alt.len+=len;s.alt.t+=t;s.alt.tP+=tP;K.nAlt++;K.lenAlt+=len;
+      const has=c=>r.rmp.includes(c);if(has('aumento')){s.aum.n++;s.aum.len+=len}if(has('reducao')){s.red.n++;s.red.len+=len}
+      if(has('comprimento')){s.ext.n++;s.ext.len+=len;s.ext.acr+=r.rmpExt||0}if(has('troca')||has('troca_menor')){s.tro.n++;s.tro.len+=len}
+      if(has('aumento')||has('comprimento')){s.mais.n++;s.mais.len+=len}}
+    return s}
+  async function cmpRender(){const box=$('rCmpBody');if(!box)return;const k=CMP.k,O=k==='B4'?'B4':'277';
+    if(!has(k)){box.innerHTML='<p class="pd-note">Sem produção executada desta obra neste aparelho (importe a planilha na Produção executada).</p>';return}
+    const s=cmpExec(k),pc=(a,b)=>b>0?fmt(a/b*100,1)+'%':'—',km=m=>fmt(m/1000,3)+' km',dT=s.t-s.tP;
+    const cur=k==='B4'?window.PROJECT_DATA_B4:window.PROJECT_DATA,pr=cur?projCbuq(cur,k):null;
+    const vl=(VERS||[]).filter(v=>v.obra===O&&v.corte).sort((a,b)=>String(a.corte).localeCompare(String(b.corte)));const v0=vl[0],vA=vl.find(v=>v.atual)||vl[vl.length-1];
+    let p0=null;try{const j=v0&&!v0.atual?await verJson(v0.id):null;p0=j?projCbuq(j,k):v0&&v0.atual?pr:null}catch(e){p0=null}
+    const rows=[...s.byKm.values()].sort((a,b)=>a.km-b.km);
+    const tr=(t,a,b)=>`<tr><th>${t}</th><td>${a}</td><td>${b}</td></tr>`;
+    box.innerHTML=`<div class="cmp-kpi">
+        <div><span>Segmentos executados (projeto)</span><b>${fmt(s.n,0)}</b><small>${km(s.len)} · ${fmt(s.t,1)} t</small></div>
+        <div><span>Seguiram o projeto</span><b class="ok">${pc(s.conf.len,s.len)}</b><small>${fmt(s.conf.n,0)} seg. · ${km(s.conf.len)}</small></div>
+        <div><span>Alterados (RMP)</span><b class="warn">${pc(s.alt.len,s.len)}</b><small>${fmt(s.alt.n,0)} seg. · ${km(s.alt.len)}</small></div>
+        <div><span>CBUQ a mais que o projeto no trecho</span><b class="${dT>0?'warn':''}">${dT>=0?'+':''}${fmt(dT,1)} t</b><small>${pc(dT,s.tP)} · ${s.len>0?fmt(dT/(s.len/1000),1):'—'} t por km executado</small></div></div>
+      <h3 class="cmp-h">Projeto inicial × revisado × executado (CBUQ)</h3>
+      <table class="cm-t cmp-t"><thead><tr><th></th><th>CBUQ (t)</th><th>Observação</th></tr></thead><tbody>
+        ${tr(`Projeto inicial${v0?` (${esc(v0.rev||v0.arquivo||'')})`:''}`,p0?fmt(p0.tot,1):'—',v0?(p0?'revisão mais antiga cadastrada (Administração › Base)':'revisão não carregada'):'nenhuma revisão cadastrada')}
+        ${tr(`Projeto revisado (atual${vA&&vA.atual?`: ${esc(vA.rev||vA.arquivo||'')}`:''})`,pr?fmt(pr.tot,1):'—',p0&&pr?`${pr.tot-p0.tot>=0?'+':''}${fmt(pr.tot-p0.tot,1)} t (${pc(pr.tot-p0.tot,p0.tot)}) em relação ao inicial`:'base atual do app')}
+        ${tr('Projeto no trecho já executado',fmt(s.tP,1),'extensão dentro do projeto × largura executada × espessura de projeto')}
+        ${tr('Executado (projeto)',fmt(s.t,1),`${dT>=0?'+':''}${fmt(dT,1)} t (${pc(dT,s.tP)}) sobre o projeto do mesmo trecho`)}
+        ${tr('Executado nos segmentos alterados',fmt(s.alt.t,1),`projeto desses segmentos: ${fmt(s.alt.tP,1)} t → ${s.alt.t-s.alt.tP>=0?'+':''}${fmt(s.alt.t-s.alt.tP,1)} t`)}
+        ${tr('Retrabalho',fmt(s.retr.t,1),`${fmt(s.retr.n,0)} seg. · ${km(s.retr.len)}`)}
+        ${tr('Extra-projeto (TRO, ramos, marginais)',fmt(s.extra.t,1),`${fmt(s.extra.n,0)} seg. · ${km(s.extra.len)} (fora do status do projeto)`)}</tbody></table>
+      <h3 class="cmp-h">Alterações de projeto (RMP) no executado</h3>
+      <table class="cm-t cmp-t"><thead><tr><th>Tipo</th><th>Segmentos</th><th>Extensão</th><th>% da extensão executada</th></tr></thead><tbody>
+        ${[['Aumento de espessura',s.aum],['Aumento de extensão (além do projeto)',s.ext],['Aumento de espessura e/ou extensão',s.mais],['Redução de espessura',s.red],['Troca de solução',s.tro],['Total alterado (qualquer RMP)',s.alt],['Seguiram o projeto',s.conf]].map(([t,o])=>`<tr><th>${t}</th><td>${fmt(o.n,0)}</td><td>${km(o.len)}${o===s.ext?` <small>(acréscimo além do projeto: ${fmt(o.acr,0)} m)</small>`:''}</td><td>${pc(o.len,s.len)}</td></tr>`).join('')}</tbody></table>
+      <h3 class="cmp-h">Por km</h3>
+      <div class="tscroll"><table class="cm-t cmp-t"><thead><tr><th>km</th><th>Seg.</th><th>Alterados</th><th>Ext. executada (m)</th><th>Ext. alterada (m)</th><th>% alterada</th><th>CBUQ projeto (t)</th><th>CBUQ executado (t)</th><th>Diferença (t)</th>${pr?'<th>Projeto revisado do km (t)</th>':''}${p0?'<th>Projeto inicial do km (t)</th>':''}</tr></thead><tbody>
+        ${rows.map(o=>`<tr><th>${o.km??'—'}</th><td>${o.n}</td><td>${o.nAlt}</td><td>${fmt(o.len,0)}</td><td>${fmt(o.lenAlt,0)}</td><td>${pc(o.lenAlt,o.len)}</td><td>${fmt(o.tP,1)}</td><td>${fmt(o.t,1)}</td><td class="${o.t-o.tP>0.05?'warn':''}">${o.t-o.tP>=0?'+':''}${fmt(o.t-o.tP,1)}</td>${pr?`<td>${fmt(pr.by.get(o.km)||0,1)}</td>`:''}${p0?`<td>${fmt(p0.by.get(o.km)||0,1)}</td>`:''}</tr>`).join('')}</tbody></table></div>
+      <p class="pd-note">Fonte única: Produção executada (planilha + RDO validado). "Alterado" = segmento de projeto com RMP (espessura, extensão ou solução); extra-projeto e retrabalho ficam fora dos percentuais. CBUQ do projeto da BR-277 usa larguras e espessuras do cadastro da Calculadora; o da BR-373 usa o unifilar.</p>`;
+    window.__CMP=s}
+  async function cmpXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX,s=cmpExec(CMP.k),k=CMP.k;
+      const A=[[`Projeto × executado — ${k==='B4'?'BR-373 Bloco 04':'BR-277 Blocos 02 e 03'}${CMP.de||CMP.ate?` — período ${CMP.de?brD(CMP.de):'início'} a ${CMP.ate?brD(CMP.ate):'hoje'}`:''}`],[],
+        ['Indicador','Segmentos','Extensão (m)','CBUQ (t)','% extensão'],
+        ['Executado (projeto)',s.n,Math.round(s.len),+s.t.toFixed(2),1],['Seguiram o projeto',s.conf.n,Math.round(s.conf.len),+s.conf.t.toFixed(2),s.len?s.conf.len/s.len:0],
+        ['Alterados (RMP)',s.alt.n,Math.round(s.alt.len),+s.alt.t.toFixed(2),s.len?s.alt.len/s.len:0],['Aumento de espessura',s.aum.n,Math.round(s.aum.len),'',s.len?s.aum.len/s.len:0],
+        ['Aumento de extensão',s.ext.n,Math.round(s.ext.len),'',s.len?s.ext.len/s.len:0],['Aumento de espessura e/ou extensão',s.mais.n,Math.round(s.mais.len),'',s.len?s.mais.len/s.len:0],
+        ['Redução de espessura',s.red.n,Math.round(s.red.len),'',s.len?s.red.len/s.len:0],['Troca de solução',s.tro.n,Math.round(s.tro.len),'',s.len?s.tro.len/s.len:0],
+        ['Projeto no trecho executado','','',+s.tP.toFixed(2),''],['Diferença executado − projeto','','',+(s.t-s.tP).toFixed(2),''],['Retrabalho',s.retr.n,Math.round(s.retr.len),+s.retr.t.toFixed(2),''],['Extra-projeto',s.extra.n,Math.round(s.extra.len),+s.extra.t.toFixed(2),''],[],
+        ['km','Segmentos','Alterados','Ext. executada (m)','Ext. alterada (m)','% alterada','CBUQ projeto (t)','CBUQ executado (t)','Diferença (t)'],
+        ...[...s.byKm.values()].sort((a,b)=>a.km-b.km).map(o=>[o.km,o.n,o.nAlt,Math.round(o.len),Math.round(o.lenAlt),o.len?o.lenAlt/o.len:0,+o.tP.toFixed(2),+o.t.toFixed(2),+(o.t-o.tP).toFixed(2)])];
+      const ws=X.utils.aoa_to_sheet(A);ws['!cols']=[{wch:38},{wch:11},{wch:14},{wch:16},{wch:16},{wch:11},{wch:16},{wch:18},{wch:13}];
+      const wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Projeto x executado');X.writeFile(wb,`projeto-x-executado-${k}-${new Date().toISOString().slice(0,10)}.xlsx`)}
+    catch(e){toast('Não foi possível gerar o Excel: '+(e.message||e))}}
+  function cmpInit(){const c=$('rCmp');if(!c||c.__b)return;c.__b=1;const ob=$('rObra');CMP.k=ob&&ob.value==='B4'?'B4':'B23';$('rCmpObra').value=CMP.k;
+    $('rCmpObra').onchange=e=>{CMP.k=e.target.value;cmpRender()};$('rCmpDe').onchange=e=>{CMP.de=e.target.value;cmpRender()};$('rCmpAte').onchange=e=>{CMP.ate=e.target.value;cmpRender()};$('rCmpXls').onclick=cmpXls}
+  on('page',p=>{if(p==='relatorios'){cmpInit();cmpRender()}});on('prod',()=>{if(Router.cur()==='relatorios')cmpRender()});
   async function rmXls(){try{await loadS('lib/xlsx.full.min.js',()=>!!window.XLSX);const X=window.XLSX;const l=rmFiltered();
       const H=['Data','Bloco','Rodovia','Pista','Faixa','Estaca inicial','Estaca final','Solução de projeto','Solução executada','Extensão de projeto (m)','Extensão executada (m)','O que mudou (RMP)','Equipe','Motivo','Observação','RMP assinado','Foto da patologia','Patologias','Foto da espessura','Situação','Faltando','Linhas da planilha','ID do segmento'];
       const filt=`Bloco: ${RMF.blk==='ALL'?'todos':RMF.blk} · Situação: ${{pend:'pendentes',ok:'completos',pre:'antes do corte',all:'todos'}[RMF.sit]}${RMCORTE?' · data de corte: '+brD(RMCORTE):''}${RMF.falta?' · faltando: '+FALTA_N[RMF.falta]:''}${RMF.q?' · busca: '+RMF.q:''}`;

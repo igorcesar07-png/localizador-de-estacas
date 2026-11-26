@@ -158,6 +158,13 @@ ok(/exec/.test(rq4)&&!/ 0% exec/.test(rq4)&&/Extra-projeto/.test(ps4),'Relatóri
 ok(await p.isVisible('#rVisMap')&&(await p.$$('#pRel .vheat td')).length>20,'Relatórios com gestão visual por km (mapa, barras e mapa de calor)');await p.screenshot({path:'/tmp/claude-0/rel_vis.png'});
 const [dx]=await Promise.all([p.waitForEvent('download',{timeout:40000}).catch(()=>null),p.click('#rXls').catch(()=>{})]);ok(!!dx,'Excel do relatório do Bloco 04 gerado');
 await p.selectOption('#rObra','277');await W(800);
+// comparativo projeto inicial x revisado x executado (impacto das RMPs)
+await p.waitForSelector('#rCmpBody .cmp-kpi',{timeout:15000}).catch(()=>{});const c23=(await p.textContent('#rCmpBody').catch(()=>'')).replace(/\s+/g,' ');console.log('comparativo 277:',c23.slice(0,400));
+ok(/seguiram o projeto/i.test(c23)&&/alterad/i.test(c23)&&/por km/.test(c23)&&/Projeto inicial/.test(c23)&&/Projeto revisado/.test(c23),'Relatórios: comparativo projeto inicial x revisado x executado (BR-277)');
+await p.selectOption('#rCmpObra','B4');await W(1500);const c4=(await p.textContent('#rCmpBody')).replace(/\s+/g,' ');console.log('comparativo B4:',c4.slice(0,400));
+ok(/aumento de espessura/i.test(c4)&&/extens/i.test(c4)&&(await p.$$('#rCmpBody table tbody tr')).length>5,'Relatórios: comparativo do Bloco 04 com RMPs por tipo e por km');
+await p.$eval('#rCmp',e=>e.scrollIntoView());await p.screenshot({path:'/tmp/claude-0/rel_cmp.png',fullPage:false});
+{const [dc]=await Promise.all([p.waitForEvent('download',{timeout:40000}).catch(()=>null),p.click('#rCmpXls').catch(()=>{})]);ok(!!dc,'Excel do comparativo gerado')}
 await p.goto(`http://localhost:${PORT}/#analise`);await W(2500);
 await p.selectOption('#aObra','B4').catch(()=>{});await W(1500);
 ok(await p.isVisible('#aStBox'),'Painel do Bloco 04 com filtro de status de execução');
