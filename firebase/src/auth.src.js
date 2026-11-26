@@ -367,6 +367,10 @@ onAuthStateChanged(auth,async user=>{
         pesCreate:p=>track(setDoc(doc(db,'assinantes',p.id),{id:p.id,nome:String(p.nome||'').slice(0,120),funcao:String(p.funcao||'').slice(0,80),papel:p.papel,ativo:true,docs:[],criado_por:user.email,criado_em:Date.now()})),
         pesUpd:(id,o)=>track(updateDoc(doc(db,'assinantes',id),o)),
         pesDel:id=>track(deleteDoc(doc(db,'assinantes',id))),
+        // link de autocadastro (um cadastro por link)
+        convCreate:o=>track(setDoc(doc(db,'assin_convites',o.tok),{tok:o.tok,usado:false,papel:o.papel||'',criado_por:user.email,criado_em:Date.now()})),
+        convSubscribe:cb=>onSnapshot(collection(db,'assin_convites'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),
+        convDel:tok=>track(deleteDoc(doc(db,'assin_convites',tok))),
         assReset:tok=>track(updateDoc(doc(db,'rdo_assin',tok),{status:'pendente',assinado_nome:null,assinado_em:null,assinatura:null,ua:null})),
         assDel:(toks,pdf)=>{const b=writeBatch(db);for(const t of toks)b.delete(doc(db,'rdo_assin',t));if(pdf)b.delete(doc(db,'rdo_pdf',pdf));return track(b.commit())},
         can:isAdm||!!prd.create,val:isAdm||!!prd.edit,admin:isAdm}}

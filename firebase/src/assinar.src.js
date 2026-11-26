@@ -3,7 +3,7 @@
 //  ?t=<tok> link direto de um documento (RDO, RMP…)
 // Ordem do RDO: engenheiro de produção primeiro; encarregado e fiscal só depois dele (também conferido nas regras do servidor).
 import {initializeApp} from 'firebase/app';
-import {getFirestore,doc,getDoc,updateDoc,connectFirestoreEmulator} from 'firebase/firestore/lite';
+import {getFirestore,doc,getDoc,updateDoc,writeBatch,connectFirestoreEmulator} from 'firebase/firestore/lite';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -19,7 +19,7 @@ const titulo=A=>{const R=A.resumo||{},n=String(R.numero||'');return `${n.startsW
 
 const cfg=window.FIREBASE_CONFIG;
 const Q=new URLSearchParams(location.search);
-const tok=(Q.get('t')||'').trim(),pid=(Q.get('p')||'').trim();
+const tok=(Q.get('t')||'').trim(),pid0=(Q.get('p')||'').trim(),cid=(Q.get('c')||'').trim();let pid=pid0;
 const okId=s=>/^[a-f0-9]{24,64}$/.test(s);
 let db=null;
 const get=async(c,id)=>{const s=await getDoc(doc(db,c,id));return s.exists()?s.data():null};
@@ -73,6 +73,34 @@ function perfil(P,primeiro){box.innerHTML=`${HEAD}<h1>${primeiro?'Cadastro para 
     const o={nome:nm,funcao:fn,assinatura:S.drew?S.png():P.assinatura,perfil_em:Date.now()};$('sv').disabled=true;
     try{await updateDoc(doc(db,'assinantes',pid),o);Object.assign(P,o);portal()}
     catch(e){$('sv').disabled=false;em.textContent='Não foi possível salvar: '+(e.code==='permission-denied'?'cadastro desativado ou dados inválidos.':(e.message||e));em.hidden=false}}}
+
+/* ---------- autocadastro pelo link de convite ---------- */
+const PAPEL_SEL=[['eng','Engenheiro de Produção'],['enc','Encarregado'],['fis','Fiscal'],['outro','Outro']];
+async function convite(){msg('Carregando o convite…');
+  let C;try{C=await get('assin_convites',cid)}catch(e){return msg('Não foi possível abrir o convite: '+esc(e.message||e),'bad')}
+  if(!C)return msg('Este link de cadastro não existe ou foi cancelado. Peça um novo à equipe da obra.','bad');
+  if(C.usado)return msg('Este link de cadastro já foi usado. Se o cadastro é seu, use o endereço da sua página de assinaturas; se não, peça um novo link.','bad');
+  box.innerHTML=`${HEAD}<h1>Cadastro para assinaturas</h1>
+  <p class="as-sub">Preencha os seus dados e desenhe a sua assinatura padrão. Depois você recebe o endereço da sua página de assinaturas, onde aparecem os documentos (RDO, RMP…) enviados para você assinar.</p>
+  <section class="ac"><label class="af">Nome completo<input id="nm" maxlength="120" autocomplete="name"></label>
+    <label class="af">Função<input id="fn" maxlength="80" placeholder="ex.: Engenheiro de Produção"></label>
+    <label class="af">Assina como<select id="pp">${PAPEL_SEL.map(([k,t])=>`<option value="${k}"${C.papel===k?' selected':''}>${t}</option>`).join('')}</select></label>
+    <p class="as-sub">Assinatura padrão (dedo ou mouse):</p><div id="pd"></div>
+    <button type="button" class="ab" id="sv">Concluir cadastro</button><p id="em" class="am bad" hidden></p></section>`;
+  const S=pad($('pd'));
+  $('sv').onclick=async()=>{const em=$('em');em.hidden=true;const nm=$('nm').value.trim(),fn=$('fn').value.trim(),pp=$('pp').value;
+    if(nm.length<3||!/\s/.test(nm)){em.textContent='Informe o nome completo (nome e sobrenome).';em.hidden=false;return}
+    if(fn.length<2){em.textContent='Informe a função.';em.hidden=false;return}
+    if(!S.drew){em.textContent='Desenhe a sua assinatura padrão no quadro.';em.hidden=false;return}
+    const a=new Uint8Array(16);crypto.getRandomValues(a);const id=[...a].map(b=>b.toString(16).padStart(2,'0')).join(''),at=Date.now();
+    $('sv').disabled=true;$('sv').textContent='Enviando…';
+    try{const b=writeBatch(db);b.set(doc(db,'assinantes',id),{id,nome:nm,funcao:fn,papel:pp,ativo:true,docs:[],assinatura:S.png(),perfil_em:at,convite:cid,criado_por:'autocadastro',criado_em:at});
+      b.update(doc(db,'assin_convites',cid),{usado:true,usado_por:id,usado_em:at});await b.commit();
+      pid=id;history.replaceState(null,'','?p='+id+(/[?&]emu=1/.test(location.search)?'&emu=1':''));const url=location.href;
+      box.innerHTML=`${HEAD}<h1>Cadastro concluído</h1><p class="am ok">Obrigado, ${esc(nm)}. Este é o endereço da <b>sua página de assinaturas</b> — salve nos favoritos ou guarde a mensagem:</p>
+        <p class="ac" style="word-break:break-all">${esc(url)}</p><p><button type="button" class="ab sec" id="cp">Copiar o endereço</button> <button type="button" class="ab" id="go2">Abrir minhas assinaturas</button></p>`;
+      $('cp').onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{$('cp').textContent='Copiado'},()=>prompt('Copie o endereço:',url))};$('go2').onclick=portal}
+    catch(e){$('sv').disabled=false;$('sv').textContent='Concluir cadastro';em.textContent='Não foi possível cadastrar: '+(e.code==='permission-denied'?'o link já foi usado ou foi cancelado.':(e.message||e));em.hidden=false}}}
 
 /* ---------- documento ---------- */
 async function openDoc(t,P){msg('Carregando o documento…');window.scrollTo(0,0);
@@ -143,7 +171,7 @@ async function loadPdf(id){const v=$('pdfv');if(!id){v.innerHTML='<p class="as-s
 
 // início (no fim do arquivo: as funções acima já estão definidas)
 if(!cfg){msg('Configuração do servidor indisponível.','bad')}
-else if(!okId(tok)&&!okId(pid)){msg('Link de assinatura inválido. Confira o endereço recebido.','bad')}
+else if(!okId(tok)&&!okId(pid)&&!okId(cid)){msg('Link de assinatura inválido. Confira o endereço recebido.','bad')}
 else{const app=initializeApp(cfg);db=getFirestore(app);
   if(/[?&]emu=1/.test(location.search)||cfg.emulator)connectFirestoreEmulator(db,'127.0.0.1',8080);
-  if(okId(pid))portal();else openDoc(tok,null)}
+  if(okId(cid))convite();else if(okId(pid))portal();else openDoc(tok,null)}

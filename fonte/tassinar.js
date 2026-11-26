@@ -60,4 +60,11 @@ await p.goto(`http://localhost:8772/assinar.html?t=${TQ}`);await p.waitForSelect
 ok(/^RMP-470-001 · 26\/11\/2026$/.test((await p.textContent('h1')).trim())&&/aguarda a assinatura do Solicitante/.test(await p.textContent('#sig'))&&/Solicitante/.test(await p.textContent('.al')),'RMP: fiscal aguarda o solicitante (título sem repetir "RMP")');
 await p.goto(`http://localhost:8772/assinar.html?t=${TS}`);await p.waitForSelector('#go',{timeout:10000});await p.fill('#nm','Ana Maria Souza');await draw();await p.check('#ok');await p.click('#go');await p.waitForSelector('#sig .am.ok',{timeout:10000});
 ok(DB['rdo_assin/'+TS].status==='assinado'&&/fiscal foi liberada/.test(await p.textContent('#sig')),'RMP: solicitante assina e libera o fiscal');
+// autocadastro pelo link de convite
+const CV='c'.repeat(31)+'1';put('assin_convites',CV,{tok:CV,usado:false,papel:'fis'});
+await p.goto(`http://localhost:8772/assinar.html?c=${CV}`);await p.waitForSelector('#sv',{timeout:10000});ok(await p.inputValue('#pp')==='fis','link de cadastro abre o formulário (nome, função, assina como)');
+await p.fill('#nm','Diego Fiscal Souza');await p.fill('#fn','Fiscal de campo');await p.selectOption('#pp','fis');await p.click('#sv');await W(200);ok(/assinatura padrão/.test(await p.textContent('#em')),'cadastro exige a assinatura');
+await draw();await p.click('#sv');await p.waitForSelector('#go2',{timeout:10000});
+const NP=Object.entries(DB).find(([k,v])=>k.startsWith('assinantes/')&&v.convite===CV);ok(NP&&NP[1].nome==='Diego Fiscal Souza'&&NP[1].papel==='fis'&&/^data:image\/png/.test(NP[1].assinatura)&&DB['assin_convites/'+CV].usado===true&&new URL(p.url()).searchParams.get('p')===NP[1].id,'autocadastro cria o responsável, consome o link e mostra o endereço pessoal');
+await p.goto(`http://localhost:8772/assinar.html?c=${CV}`);await W(1500);ok(/já foi usado/.test(await p.textContent('#as')),'link de cadastro usado não serve de novo');
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

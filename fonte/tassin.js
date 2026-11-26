@@ -3,10 +3,10 @@ const {chromium}=require('/home/claude/localizador-de-estacas/firebase/node_modu
 const res=[];const ok=(c,n)=>{res.push(!!c);console.log((c?'OK  ':'FALHOU ')+n)};
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium'});const ctx=await b.newContext({viewport:{width:1280,height:900}});
 await ctx.addInitScript(()=>{const rd={},subs=[],as={},asubs=[],ps={},psubs=[];const fire=()=>setTimeout(()=>subs.forEach(cb=>cb(Object.values(rd))),10);const afire=()=>setTimeout(()=>asubs.forEach(cb=>cb(Object.values(as))),10);const pfire=()=>setTimeout(()=>psubs.forEach(cb=>cb(Object.values(ps))),10);
-  window.__AS=as;window.__PS=ps;window.__PFIRE=pfire;
+  window.__AS=as;window.__PS=ps;window.__PFIRE=pfire;window.__CV={};const cvfire=()=>setTimeout(()=>window.__CVS&&window.__CVS(Object.values(window.__CV)),10);
   window.RdoDB={subscribe:cb=>{subs.push(cb);setTimeout(()=>cb(Object.values(rd)),50);return()=>{}},save:async s=>{rd[s.id]=Object.assign({},s,{status:'aguardando',enviado_por:'t@x',enviado_em:Date.now()});fire()},exists:async id=>!!rd[id],
     assSubscribe:cb=>{asubs.push(cb);setTimeout(()=>cb(Object.values(as)),60);return()=>{}},assCreate:async docs=>{for(const o of docs){as[o.tok]=Object.assign({},o,{status:'pendente'});if(o.pessoa){if(!ps[o.pessoa])throw new Error('pessoa inexistente');ps[o.pessoa].docs=[...ps[o.pessoa].docs,o.tok]}}afire();pfire()},
-    pesSubscribe:cb=>{psubs.push(cb);setTimeout(()=>cb(Object.values(ps)),70);return()=>{}},pesCreate:async o=>{ps[o.id]=Object.assign({},o,{ativo:true,docs:[]});pfire()},pesUpd:async(id,o)=>{Object.assign(ps[id],o);pfire()},pesDel:async id=>{delete ps[id];pfire()},
+    pesSubscribe:cb=>{psubs.push(cb);setTimeout(()=>cb(Object.values(ps)),70);return()=>{}},pesCreate:async o=>{ps[o.id]=Object.assign({},o,{ativo:true,docs:[]});pfire()},pesUpd:async(id,o)=>{Object.assign(ps[id],o);pfire()},pesDel:async id=>{delete ps[id];pfire()},convCreate:async o=>{window.__CV[o.tok]=Object.assign({},o,{usado:false,criado_em:Date.now()});cvfire()},convSubscribe:cb=>{window.__CVS=cb;setTimeout(()=>cb(Object.values(window.__CV)),40);return()=>{}},convDel:async t=>{delete window.__CV[t];cvfire()},
     cfg:async()=>({}),setCfg:async()=>{},can:true,val:true,admin:false}});
 const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>{errs.push(e.message);console.log('ERR',e.message,(e.stack||'').split('\n')[1])});p.on('dialog',d=>d.accept());await p.route(/(openstreetmap|arcgisonline)/,r=>r.abort());
 await p.goto('http://localhost:8772/#rdo');await W(1500);await p.evaluate(()=>localStorage.removeItem('br277.massa.dia'));await p.reload();await W(2000);
@@ -39,6 +39,11 @@ await p.evaluate(()=>{const a=Object.values(window.__AS).find(x=>x.papel==='eng'
 await p.evaluate(()=>window.RdoDB.assCreate([]));await W(1200);
 ok(/devolvido/.test(await p.textContent('#rdCentral'))&&/Horário da fresagem errado/.test(await p.textContent('#rdCentral')),'Central mostra a devolução com o motivo');
 ok((await p.$$('#cmRoot .cm-dev')).length===2&&/Horário da fresagem errado/.test(await p.textContent('#cmRoot .cm-dev')),'segmentos voltam para o RDO do apontador com o motivo da devolução');
+// editar cadastro
+{const bid=await p.evaluate(()=>Object.values(window.__PS).find(y=>/Bruno/.test(y.nome)).id);await p.click(`#rdPes [data-psed="${bid}"]`);await W(200);await p.fill('#rpEdN','Bruno Carvalho Lima');await p.fill('#rpEdF','Encarregado de Pavimentação');await p.selectOption('#rpEdP','enc');await p.click('#rpEdS');await W(400);
+  ok(/Bruno Carvalho Lima/.test(await p.textContent('#rdPes'))&&/Encarregado de Pavimentação/.test(await p.textContent('#rdPes')),'editar o cadastro (nome, função e assina como)')}
+// link de cadastro
+await p.click('#rpConv');await W(400);ok(!!(await p.$('#rpCvMsg [data-cvlk]'))&&/Links de cadastro ainda não usados/.test(await p.textContent('#rdPes')),'gera o link para a pessoa se cadastrar');
 // desativar
 await p.click(`#rdPes [data-psoff="${await pid('Carla')}"]`);await W(400);ok(/desativado/.test(await p.textContent('#rdPes'))&&!(await p.$$eval('#cmRoot select[data-relp="fis"] option',a=>a.map(o=>o.textContent))).some(t=>/Carla/.test(t)),'desativado some da escolha no RDO');
 ok(!errs.length,'sem erros JS '+JSON.stringify(errs.slice(0,3)));console.log(`\n${res.filter(Boolean).length}/${res.length}`);await b.close()})();

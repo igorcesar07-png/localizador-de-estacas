@@ -277,6 +277,14 @@ await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(d
     await t('RMP: quem registra RMP não apaga link de RDO',()=>assertFails(deleteDoc(doc(lp('rmreg'),'rdo_assin',TE))));
     await t('RMP: e-mail — quem registra RMP não altera a configuração',()=>assertFails(setDoc(doc(lp('rmreg'),'rmp_config','email'),{url:'https://script.google.com/x',chave:'k',para:['a@b.co'],auto:true})));
     await t('RMP: quem usa o controle lê a configuração do e-mail',()=>assertSucceeds(getDoc(doc(lp('rmreg'),'rmp_config','email'))))}
+  {const CV='c'.repeat(32),NID='n'.repeat(32),N2='m'.repeat(32);
+    const NP=(id,conv)=>({id,nome:'Diego Souza',funcao:'Fiscal',papel:'fis',ativo:true,docs:[],assinatura:PNG,perfil_em:5,convite:conv,criado_por:'autocadastro',criado_em:5});
+    await t('Convite: quem só envia RDO não cria link de cadastro',()=>assertFails(setDoc(doc(lp('rdoc'),'assin_convites',CV),{tok:CV,usado:false,papel:''})));
+    await t('Convite: quem valida RDO cria link de cadastro',()=>assertSucceeds(setDoc(doc(lp('rdoval'),'assin_convites',CV),{tok:CV,usado:false,papel:'fis',criado_por:'rdoval@x.com',criado_em:1})));
+    await t('Convite: sem consumir o link não cria cadastro',()=>assertFails(setDoc(doc(anon,'assinantes',NID),NP(NID,CV))));
+    await t('Convite: a pessoa se cadastra pelo link (cadastro + link usado no mesmo envio)',()=>{const b=writeBatch(anon);b.set(doc(anon,'assinantes',NID),NP(NID,CV));b.update(doc(anon,'assin_convites',CV),{usado:true,usado_por:NID,usado_em:6});return assertSucceeds(b.commit())});
+    await t('Convite: link usado não cadastra outra pessoa',()=>{const b=writeBatch(anon);b.set(doc(anon,'assinantes',N2),NP(N2,CV));b.update(doc(anon,'assin_convites',CV),{usado_por:N2,usado_em:7});return assertFails(b.commit())});
+    await t('Convite: quem valida edita nome, função e papel',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',NID),{nome:'Diego Fiscal Souza',funcao:'Fiscal de campo',papel:'fis'})))}
   await t('Responsáveis: quem valida desativa',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',PID),{ativo:false})));
   await t('Responsáveis: desativado não altera o próprio cadastro',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno C. Lima',funcao:'x1',assinatura:PNG,perfil_em:4})));
   await t('Responsáveis: quem valida exclui',()=>assertSucceeds(deleteDoc(doc(lp('rdoval'),'assinantes',PID))))}

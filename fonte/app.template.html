@@ -674,6 +674,7 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 @media(max-width:700px){.cmp-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .rm-add{display:inline-flex;align-items:center;margin:4px 4px 0 0;padding:3px 9px;border:1px solid var(--line,#D9DED9);border-radius:999px;background:var(--surface,#fff);font:600 12px var(--body,system-ui);cursor:pointer;white-space:nowrap}.rm-add:not(.ed){border-color:#E0A800;background:#FFF6D6}
 .rm-asc div{white-space:nowrap;font-size:12px}.rm-asc small{display:block;white-space:normal;max-width:220px}.rm-warn{background:#FFF6D6;padding:6px 10px;border-radius:8px}.rm-ck{display:flex;gap:8px;align-items:center;font-weight:600;margin:6px 0}.rm-mcf{margin-top:8px}.rm-mcf summary{cursor:pointer;font-weight:600}
+.rdp-cv{margin:10px 0 6px;padding:10px 12px;border:1px dashed var(--line,#D9DED9);border-radius:10px}
 .rdp-sig{display:block;height:26px;max-width:110px;margin-top:3px;background:#fff;border-radius:4px}.rdp-off td{opacity:.55}.rdp-f{align-items:end}
 .cm-dev{margin:6px 0 0;padding:6px 10px;border-radius:8px;background:#FDE8E6;color:#7A1A12;font-size:13px;font-weight:600}
 .rel-auto th,.rel-auto td{color:var(--muted,#5F6A64);font-size:11px;text-align:center}.rel-auto small{font-weight:400}
@@ -6200,6 +6201,7 @@ const PROD=(function(){
   /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
   const RDOPEN=new Set(),RDSEEN=new Set();let RDOS=[];
   if(window.RdoDB){window.RdoDB.subscribe(l=>{if(!l)return;RDRAW=l;rdOnList()});if(window.RdoDB.assSubscribe)window.RdoDB.assSubscribe(l=>{if(!l)return;ASSL=l;ASS=assGroup(l);rdOnList()});
+    if(window.RdoDB.val&&window.RdoDB.convSubscribe)window.RdoDB.convSubscribe(l=>{if(!l)return;CONV=l;pesRender()});
     if(window.RdoDB.pesSubscribe)window.RdoDB.pesSubscribe(l=>{if(!l)return;PES=l;pesRender();cmRenderKeep();try{rmRender()}catch(e){}})}
   function rdOnList(){const l=rdoEff(RDRAW);RDOS=l;window.__RDOS=l;
     // situação dos segmentos enviados (aguardando, validado ou devolvido) volta para o RDO do aparelho
@@ -6583,6 +6585,7 @@ const PROD=(function(){
       T(`Rev16 - Elaborada em 18/09/2026 · gerado pelo Localizador de Estacas${pages>1?` · página ${pg+1}/${pages}`:''}`,290,209,{s:5,a:'right',c:110})}
     return doc}
   const tokNew=()=>{const a=new Uint8Array(16);crypto.getRandomValues(a);return [...a].map(b=>b.toString(16).padStart(2,'0')).join('')};
+  const convUrl=t=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?c='+t;
   const pesUrl=id=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?p='+id;
   const assUrl=t=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?t='+t;
   async function relPrev(){try{const e=relEnvio(null);const d=await rdoPdf(e,{});d.save(`RDO_${e.rel.numero||'previa'}_${e.data}.pdf`)}catch(x){toast('Não foi possível gerar o PDF: '+(x.message||x))}}
@@ -6597,7 +6600,7 @@ const PROD=(function(){
     fres_cam:r.fres_cam===''||r.fres_cam==null?'':+r.fres_cam,dest:(r.dest||[]).filter(d=>String(d.l||'').trim()).map(d=>({l:String(d.l).slice(0,80),c:d.c===''?0:+d.c||0})),
     eng:String(r.eng||'').slice(0,120),fis:String(r.fis||'').slice(0,120),usinado:us,aplicado:apl,sobra:Math.round((us-apl)*100)/100}}
   // ----- central de acompanhamento -----
-  let RDRAW=[],ASS={},ASSL=[],PES=[];
+  let RDRAW=[],ASS={},ASSL=[],PES=[],CONV=[];
   const PAPEL_P={eng:'Engenheiro de Produção',enc:'Encarregado',fis:'Fiscal',outro:'Outro'};
   const pesAt=()=>PES.filter(x=>x.ativo!==false).sort((a,b)=>String(a.nome).localeCompare(String(b.nome),'pt-BR'));
   const pesById=id=>PES.find(x=>x.id===id&&x.ativo!==false)||null;
@@ -6608,22 +6611,44 @@ const PROD=(function(){
     const form=val?`<div class="pd-fl rdp-f"><div class="fld"><label for="rpNome">Nome</label><input id="rpNome" maxlength="120" placeholder="a pessoa confirma o nome completo no 1º acesso"></div>
       <div class="fld"><label for="rpFun">Função</label><input id="rpFun" maxlength="80" placeholder="ex.: Engenheiro de Produção"></div>
       <div class="fld"><label for="rpPap">Assina no RDO como</label><select id="rpPap">${Object.entries(PAPEL_P).map(([k,t])=>`<option value="${k}">${t}</option>`).join('')}</select></div>
-      <div class="fld"><label>&nbsp;</label><button type="button" class="pd-b pri" id="rpAdd">Cadastrar responsável</button></div></div><p class="pd-note" id="rpMsg" aria-live="polite"></p>`:'';
+      <div class="fld"><label>&nbsp;</label><button type="button" class="pd-b pri" id="rpAdd">Cadastrar responsável</button></div></div><p class="pd-note" id="rpMsg" aria-live="polite"></p>
+      ${D.convCreate?`<div class="rdp-cv"><b>Ou envie um link para a pessoa se cadastrar</b> (ela preenche nome completo, função, "assina como" e a assinatura padrão; cada link vale para um cadastro).
+        <div class="pd-acts"><button type="button" class="pd-b" id="rpConv">Gerar link de cadastro</button><span class="pd-note" id="rpCvMsg" aria-live="polite"></span></div><div id="rpCvL"></div></div>`:''}`:'';
     const l=PES.slice().sort((a,b)=>(a.ativo===false)-(b.ativo===false)||String(a.nome).localeCompare(String(b.nome),'pt-BR'));
     // o formulário é montado uma vez (não perde o que está sendo digitado quando o cadastro muda); a lista é refeita
     if(!!$('rpAdd')!==val||!$('rdPesL')){box.innerHTML=form+'<div id="rdPesL"></div>';bindAdd()}
+    if($('rpCvL')){const cv=CONV.filter(c=>!c.usado).sort((a,b)=>(b.criado_em||0)-(a.criado_em||0));
+      $('rpCvL').innerHTML=cv.length?`<p class="pd-note">Links de cadastro ainda não usados: ${cv.map(c=>`<span class="rdc-ln">${new Date(c.criado_em||0).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})} <button type="button" class="pd-b rd-v" data-cvlk="${esc(c.tok)}">Copiar</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Cadastro para assinaturas da obra (RDO, RMP): preencha seus dados e sua assinatura neste link: '+convUrl(c.tok))}">WhatsApp</a><button type="button" class="pd-b rd-v" data-cvdel="${esc(c.tok)}">Cancelar</button></span>`).join(' ')}</p>`:''}
     $('rdPesL').innerHTML=(l.length?`<div class="tscroll"><table class="cm-t rdp"><thead><tr><th>Nome</th><th>Função</th><th>Assina como</th><th>Cadastro da pessoa</th><th>Pendentes</th><th>Página de assinaturas</th>${val?'<th></th>':''}</tr></thead><tbody>${l.map(x=>{const n=pend(x.id),off=x.ativo===false;
       return `<tr${off?' class="rdp-off"':''}><td><b>${esc(x.nome)}</b></td><td>${esc(x.funcao||'—')}</td><td>${esc(PAPEL_P[x.papel]||x.papel)}</td>
         <td>${off?'desativado':x.assinatura&&x.perfil_em?`<span class="rdc-ck ok">✓</span> completo${x.assinatura?`<img class="rdp-sig" src="${esc(x.assinatura)}" alt="assinatura padrão">`:''}`:'<span class="rdc-ck pd">○</span> aguarda a pessoa'}</td>
         <td>${n}</td>
         <td>${off?'—':`<span class="rdc-ln"><button type="button" class="pd-b rd-v" data-pslk="${esc(x.id)}">Copiar endereço</button><a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(`${x.nome}, esta é a sua página de assinaturas da obra (RDO e outros documentos): ${pesUrl(x.id)}`)}">WhatsApp</a></span>`}</td>
-        ${val?`<td><span class="rdc-ln"><button type="button" class="pd-b rd-v" data-psoff="${esc(x.id)}">${off?'Reativar':'Desativar'}</button>${(x.docs||[]).length?'':`<button type="button" class="pd-b rd-v" data-psdel="${esc(x.id)}">Excluir</button>`}</span></td>`:''}</tr>`}).join('')}</tbody></table></div>`
+        ${val?`<td><span class="rdc-ln"><button type="button" class="pd-b rd-v" data-psed="${esc(x.id)}">Editar</button><button type="button" class="pd-b rd-v" data-psoff="${esc(x.id)}">${off?'Reativar':'Desativar'}</button>${(x.docs||[]).length?'':`<button type="button" class="pd-b rd-v" data-psdel="${esc(x.id)}">Excluir</button>`}</span></td>`:''}</tr>`}).join('')}</tbody></table></div>`
       :'<p class="pd-note">Nenhum responsável cadastrado ainda.</p>');
-    function bindAdd(){if($('rpAdd'))$('rpAdd').onclick=async()=>{const nm=$('rpNome').value.trim(),fn=$('rpFun').value.trim(),pp=$('rpPap').value,m=$('rpMsg');
+    function bindAdd(){if($('rpConv'))$('rpConv').onclick=async()=>{const m=$('rpCvMsg'),t=tokNew();try{await D.convCreate({tok:t});const u=convUrl(t);
+        m.innerHTML=`Link criado: <button type="button" class="pd-b rd-v" data-cvlk="${t}">Copiar link</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Cadastro para assinaturas da obra (RDO, RMP): preencha seus dados e sua assinatura neste link: '+u)}">Enviar pelo WhatsApp</a>`}catch(e){m.textContent='Não foi possível criar o link: '+(e.message||e)}};
+      if($('rpAdd'))$('rpAdd').onclick=async()=>{const nm=$('rpNome').value.trim(),fn=$('rpFun').value.trim(),pp=$('rpPap').value,m=$('rpMsg');
       if(nm.length<3){m.textContent='Informe o nome.';return}if(PES.some(x=>x.ativo!==false&&String(x.nome).toLowerCase()===nm.toLowerCase())){m.textContent='Já existe um responsável ativo com este nome.';return}
       const id=tokNew();try{await D.pesCreate({id,nome:nm,funcao:fn||PAPEL_P[pp],papel:pp});m.innerHTML=`${esc(nm)} cadastrado. Envie o endereço da página de assinaturas: <button type="button" class="pd-b rd-v" data-pslk="${id}">Copiar endereço</button>`;$('rpNome').value='';$('rpFun').value=''}catch(e){m.textContent='Não foi possível cadastrar: '+(e.message||e)}}}}
+  // editar o cadastro de um responsável (nome, função e "assina como"); a assinatura padrão é da própria pessoa, pela página dela
+  function pesEdit(x){let d=$('rpEdDlg');if(!d){d=document.createElement('div');d.id='rpEdDlg';d.className='pd-dlg';document.body.appendChild(d)}
+    d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="rpEdT"><h3 id="rpEdT">Editar responsável</h3>
+      <div class="fld"><label for="rpEdN">Nome completo</label><input id="rpEdN" maxlength="120" value="${esc(x.nome||'')}"></div>
+      <div class="fld"><label for="rpEdF">Função</label><input id="rpEdF" maxlength="80" value="${esc(x.funcao||'')}"></div>
+      <div class="fld"><label for="rpEdP">Assina no RDO como</label><select id="rpEdP">${Object.entries(PAPEL_P).map(([k,t])=>`<option value="${k}"${x.papel===k?' selected':''}>${t}</option>`).join('')}</select></div>
+      <p class="pd-note">A assinatura padrão é alterada pela própria pessoa, na página de assinaturas dela. Documentos já assinados não mudam.</p><p class="pd-note" id="rpEdE" aria-live="polite"></p>
+      <div class="pd-acts"><button type="button" class="pd-b" id="rpEdC">Cancelar</button><button type="button" class="pd-b pri" id="rpEdS">Salvar</button></div></div>`;
+    d.hidden=false;const close=()=>{d.hidden=true};$('rpEdC').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    $('rpEdS').onclick=async()=>{const nm=$('rpEdN').value.trim(),fn=$('rpEdF').value.trim(),pp=$('rpEdP').value,E=$('rpEdE');
+      if(nm.length<3){E.textContent='Informe o nome.';return}if(PES.some(y=>y.id!==x.id&&y.ativo!==false&&String(y.nome).toLowerCase()===nm.toLowerCase())){E.textContent='Já existe outro responsável ativo com este nome.';return}
+      try{$('rpEdS').disabled=true;await window.RdoDB.pesUpd(x.id,{nome:nm,funcao:fn,papel:pp});close()}catch(e){E.textContent='Não foi possível salvar: '+(e.message||e);$('rpEdS').disabled=false}}}
   document.addEventListener('click',async e=>{const D=window.RdoDB;let b=e.target.closest('[data-pslk]');if(b){const u=pesUrl(b.dataset.pslk);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Endereço da página de assinaturas copiado.'),()=>prompt('Copie o endereço da página de assinaturas:',u));return}
-    if(!D||!D.val)return;b=e.target.closest('[data-psoff]');if(b){const x=PES.find(y=>y.id===b.dataset.psoff);if(!x)return;const on=x.ativo===false;
+    b=e.target.closest('[data-cvlk]');if(b){const u=convUrl(b.dataset.cvlk);(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('Link de cadastro copiado.'),()=>prompt('Copie o link de cadastro:',u));return}
+    if(!D||!D.val)return;
+    b=e.target.closest('[data-cvdel]');if(b){if(!confirm('Cancelar este link de cadastro? Ele deixa de funcionar.'))return;try{await D.convDel(b.dataset.cvdel)}catch(er){toast('Não foi possível cancelar: '+(er.message||er))}return}
+    b=e.target.closest('[data-psed]');if(b){const x=PES.find(y=>y.id===b.dataset.psed);if(x)pesEdit(x);return}
+    b=e.target.closest('[data-psoff]');if(b){const x=PES.find(y=>y.id===b.dataset.psoff);if(!x)return;const on=x.ativo===false;
       if(!on&&!confirm(`Desativar ${x.nome}? O endereço dele deixa de abrir as assinaturas e ele some da escolha no RDO.`))return;
       try{await D.pesUpd(x.id,{ativo:on})}catch(er){toast('Não foi possível alterar: '+(er.message||er))}return}
     b=e.target.closest('[data-psdel]');if(b){const x=PES.find(y=>y.id===b.dataset.psdel);if(!x||!confirm(`Excluir o cadastro de ${x.nome}? O endereço deixa de existir.`))return;try{await D.pesDel(x.id)}catch(er){toast('Não foi possível excluir: '+(er.message||er))}}});

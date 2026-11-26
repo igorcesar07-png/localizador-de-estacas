@@ -244,7 +244,25 @@ service cloud.firestore {
       allow update: if request.auth == null && resource.data.ativo == true && pesOk(request.resource.data)
                     && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['nome', 'funcao', 'assinatura', 'perfil_em'])
                     && request.resource.data.get('assinatura', '').matches('data:image/png;base64,.+') && request.resource.data.perfil_em is int;
+      // autocadastro pelo link de convite (sem login): a própria pessoa cria o cadastro completo e o convite é consumido no mesmo envio
+      allow create: if request.auth == null && id.size() >= 24 && request.resource.data.id == id && pesOk(request.resource.data)
+                    && request.resource.data.docs.size() == 0 && request.resource.data.ativo == true && request.resource.data.perfil_em is int
+                    && request.resource.data.get('assinatura', '').matches('data:image/png;base64,.+')
+                    && request.resource.data.convite is string
+                    && get(/databases/$(database)/documents/assin_convites/$(request.resource.data.convite)).data.usado == false
+                    && getAfter(/databases/$(database)/documents/assin_convites/$(request.resource.data.convite)).data.usado_por == id;
       allow delete: if canDo('rdo', 'edit');
+    }
+    // Convites de autocadastro dos responsáveis: criados por quem valida RDO; o link (id aleatório) vale para um único cadastro
+    match /assin_convites/{tok} {
+      allow get: if true;
+      allow list: if rdoRead();
+      allow create: if canDo('rdo', 'edit') && tok.size() >= 24 && request.resource.data.usado == false && request.resource.data.tok == tok;
+      allow update: if request.auth == null && resource.data.usado == false && request.resource.data.usado == true
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usado', 'usado_por', 'usado_em'])
+                    && request.resource.data.usado_por is string
+                    && getAfter(/databases/$(database)/documents/assinantes/$(request.resource.data.usado_por)).data.convite == tok;
+      allow update, delete: if canDo('rdo', 'edit');
     }
     // PDF do RDO gerado (para conferência no link de assinatura): lido por token, gravado por quem envia o RDO
     match /rdo_pdf/{tok} {
