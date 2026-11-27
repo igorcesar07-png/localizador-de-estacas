@@ -678,6 +678,8 @@ table.an-t td small{color:var(--muted)}table.an-t tr.an-on td{background:color-m
 .rd-prev-v{overflow:auto;background:#E9ECE9;padding:10px;border-radius:8px}.rd-prev-pg{display:block;width:100%;height:auto;margin:0 auto 10px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
 .rdp-cv{margin:10px 0 6px;padding:10px 12px;border:1px dashed var(--line,#D9DED9);border-radius:10px}
 .rdp-sig{display:block;height:26px;max-width:110px;margin-top:3px;background:#fff;border-radius:4px}.rdp-off td{opacity:.55}.rdp-f{align-items:end}
+.cm-seg.cm-off{opacity:.5;border-style:dashed}.cm-seg.cm-off:hover,.cm-seg.cm-off:focus-within{opacity:.8}
+.cm-fz{margin-left:6px;padding:3px 10px;border-radius:999px;border:1px solid #1E7A4C;background:#E6F4EC;color:#14532D;font:600 12px var(--body,system-ui);cursor:pointer;white-space:nowrap}.cm-fz.off{border-color:#8A8F8B;background:#fff;color:#56605A}
 .cm-dev{margin:6px 0 0;padding:6px 10px;border-radius:8px;background:#FDE8E6;color:#7A1A12;font-size:13px;font-weight:600}
 .rel-auto th,.rel-auto td{color:var(--muted,#5F6A64);font-size:11px;text-align:center}.rel-auto small{font-weight:400}
 .rel input.rel-miss{border-color:#B42318!important;background:#FDE8E6!important}.rdc-ck.dv{color:#B42318}
@@ -6350,7 +6352,8 @@ const PROD=(function(){
     for(const f of CM.fres){if(f.origem||!f.prog||f.prog.length==null)continue;const exc=Math.round(((f.length||0)-f.prog.length)*100)/100;if(exc>0.5)f.rmp=Object.assign(f.rmp||{esp:false},{ext:exc})}
     for(const [id,l] of Object.entries(by)){const o=l[0].origem;const soma=l.reduce((a,f)=>a+f.length,0),exc=Math.round((soma-o.length)*100)/100;if(exc>0.005){const t=o.acr==='inicio'?l[0]:l[l.length-1];t.rmp=Object.assign(t.rmp||{esp:false},{ext:exc})}}}
   const rmpTx=f=>f.rmp?[f.rmp.esp?`RMP de espessura (${fmt(f.thickness*100,1)} × ${fmt(f.espProjeto*100,1)} cm)`:'',f.rmp.ext?`RMP de extensão (+${fmt(f.rmp.ext,2)} m)`:''].filter(Boolean).join(' · '):'';
-  const tot=l=>({n:l.length,ext:l.reduce((a,f)=>a+(f.length||0),0),v:l.reduce((a,f)=>a+vol(f),0),t:l.reduce((a,f)=>a+mas(f),0)});
+  // segmento marcado como "ainda não fresado" fica fora de todas as contas até o apontador marcar como fresado
+  const tot=l0=>{const l=l0.filter(f=>!f.naoFres);return {n:l.length,ext:l.reduce((a,f)=>a+(f.length||0),0),v:l.reduce((a,f)=>a+vol(f),0),t:l.reduce((a,f)=>a+mas(f),0)}};
   function cmAlert(){const u=CM.usinado||0,tol=u*(CM.tolerance||0)/100;let s,lbl;
     if(CMTAB==='fres'){s=u-tot(CM.fres).t;lbl='Fresagem: usinado − fresado'}
     else if(CMTAB==='rdo'){s=u-tot(CM.fres.map(ap)).t;lbl='RDO: usinado − apontado no RDO'}
@@ -6370,17 +6373,17 @@ const PROD=(function(){
     return `${CM.progRef?`<div class="cm-prog"><b>Programação de ${brD(CM.progRef.data)} · ${esc(CM.progRef.equipe)}</b><span>${CM.progRef.n} pano(s) programados · ${fmt(CM.progRef.t,1)} t previstas. Os valores programados ficam como referência; confira e corrija o que foi executado. Exclua (×) o pano que não foi executado.</span></div>`:''}
       <div class="cm-g2"><div class="fld"><label for="cmDens">Densidade do CBUQ (t/m³)</label><input id="cmDens" type="number" step="0.001" inputmode="decimal" value="${CM.density||''}"></div>
       <div class="fld"><label for="cmUsi">Massa total usinada do dia (t)</label><input id="cmUsi" type="number" step="0.01" inputmode="decimal" value="${CM.usinado||''}"></div></div>
-      <div class="cm-kpi"><div><b>${CM.fres.length}</b><span>segmentos executados</span></div><div><b>${fmt(Tx.ext,1)}</b><span>m executados</span></div><div><b>${fmt(Tx.t,2)}</b><span>t executadas</span></div><div><b>${fmt((CM.usinado||0)-Tx.t,2)}</b><span>t usinado − executado</span></div></div>
-      ${CM.fres.length?`<div class="cm-list">${(()=>{let acc=0;return CM.fres.map((f,i)=>{const P=f.prog||null,st=fSt(f),lock=!!f.envio;acc+=mas(f)||0;const al=CM.rdo[f.id]&&CM.rdo[f.id].over&&Object.keys(CM.rdo[f.id].over).length;
+      <div class="cm-kpi"><div><b>${T.n}</b><span>segmentos fresados${CM.fres.length>T.n?` <small>(+${CM.fres.length-T.n} ainda não fresado${CM.fres.length-T.n>1?'s':''})</small>`:''}</span></div><div><b>${fmt(Tx.ext,1)}</b><span>m executados</span></div><div><b>${fmt(Tx.t,2)}</b><span>t executadas</span></div><div><b>${fmt((CM.usinado||0)-Tx.t,2)}</b><span>t usinado − executado</span></div></div>
+      ${CM.fres.length?`<div class="cm-list">${(()=>{let acc=0;return CM.fres.map((f,i)=>{const P=f.prog||null,st=fSt(f),lock=!!f.envio,off=!!f.naoFres&&!lock;if(!off)acc+=mas(f)||0;const al=CM.rdo[f.id]&&CM.rdo[f.id].over&&Object.keys(CM.rdo[f.id].over).length;
         const inp=(k,v,step,lbl,unit,df)=>`<label class="cm-in${st==='prog'?' req':''}"><span>${lbl}</span><span class="cm-iw"><input type="number" step="${step}" inputmode="decimal" data-fi="${i}" data-fk="${k}" value="${v??''}"${lock?' disabled':''}><em>${unit}</em></span>${df||''}</label>`;
-        return `<article class="cm-seg st-${st}" data-i="${i}">
+        return `<article class="cm-seg st-${st}${off?' cm-off':''}" data-i="${i}">
           <div class="cm-hd"><span class="cm-grip" title="Toque e segure o cartão para mudar a posição">${IC.grip}</span><b class="cm-n">${i+1}</b>
-            <div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span></div>
+            <div class="cm-sh"><span class="cm-stc" style="background:${FST[st][1]}">${FST[st][0]}</span>${lock?'':`<button type="button" class="cm-fz${off?' off':''}" data-cm="nfres" data-i="${i}" aria-pressed="${!off}" title="${off?'Ainda não fresado: fora das contas. Toque quando for fresado.':'Fresado: entra nas contas. Toque para tirar da conta (ainda não fresado).'}">${off?'○ Ainda não fresado':'✓ Fresado'}</button>`}</div>
             ${lock?'':`<div class="cm-act"><button type="button" data-cm="ed" data-i="${i}" aria-label="Editar o pano ${i+1}" title="Editar">${IC.ed}</button><button type="button" data-cm="cut" data-i="${i}" aria-label="Dividir / RMP" title="Dividir / RMP">${IC.cut}</button><button type="button" class="cm-x" data-cm="del" data-i="${i}" aria-label="Excluir o pano ${i+1}" title="Excluir">${IC.x}</button></div>`}</div>
           ${f.devolvido&&!f.envio?`<p class="cm-dev" role="status">↩ ${esc(f.devolvido)}</p>`:''}
           <dl class="cm-kv"><div><dt>Estaca inicial</dt><dd>${esc(f.start)}</dd></div><div><dt>Estaca final</dt><dd>${esc(cmEnd(f))}</dd></div><div><dt>Sentido</dt><dd>${f.direction==='Decrescente'?'↓ Decrescente':'↑ Crescente'}</dd></div><div><dt>Faixa</dt><dd>${esc(String(LANE_N[f.lane]||f.lane||'—').replace(/^Faixa\s*/,''))}</dd></div><div><dt>Solução de projeto</dt><dd>${esc(f.solucao||'—')}</dd></div><div><dt>Serial Kartado</dt><dd title="${esc(f.tag?'Pano '+f.tag:'')}">${esc(serOf(f)||'—')}</dd></div></dl>
           <div class="cm-ins">${inp('length',f.length,'0.01','Comprimento','m',dfx(P&&P.length,f.length,2))}${inp('width',f.width,'0.01','Largura','m',dfx(P&&P.width,f.width,2))}${inp('thickness',f.thickness!=null?Math.round(f.thickness*1000)/10:null,'0.1','Espessura','cm',dfx(P&&P.thickness*100,f.thickness*100,1))}</div>
-          <div class="cm-ft">${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:'',lock?FST[st][0]:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}<span class="cm-ton"><span><small>Segmento</small><b class="cm-mass">${fmt(mas(f),2)} t</b></span><span><small>Acumulado</small><b class="cm-acc">${fmt(acc,2)} t</b></span></span></div>
+          <div class="cm-ft">${[f.origem?`parte do pano original ${f.origem.start} (${fmt(f.origem.length,1)} m)`:'',al?'alterado no RDO':'',CM.rdo[f.id]&&CM.rdo[f.id].obs?'obs.: '+CM.rdo[f.id].obs:'',lock?FST[st][0]:''].filter(Boolean).map(t=>`<small class="cm-xx">${esc(t)}</small>`).join('')}<span class="cm-ton"><span><small>Segmento</small><b class="cm-mass">${fmt(mas(f),2)} t</b></span><span><small>Acumulado</small><b class="cm-acc">${off?'fora da conta':fmt(acc,2)+' t'}</b></span></span></div>
           ${f.rmp?`<div class="cm-rmp" role="note">${IC.warn}<b>${esc(rmpTx(f))}</b><a class="cm-rmpb" href="#rmp" title="Abrir o Controle de RMPs">Controle de RMPs</a></div>`:''}
           </article>`}).join('')})()}</div>
       <div class="pd-acts"><button type="button" class="pd-b pri" data-cm="add">+ Adicionar segmento</button><button type="button" class="pd-b" data-cm="ordC">Ordenar ↑ crescente</button><button type="button" class="pd-b" data-cm="ordD">Ordenar ↓ decrescente</button><button type="button" class="pd-b" data-cm="clear">Limpar todos os panos</button>${CMUNDO?'<button type="button" class="pd-b pri" data-cm="undo">Desfazer</button>':''}</div>`
@@ -6607,7 +6610,7 @@ const PROD=(function(){
       for(let n=1;n<=pdf.numPages;n++){const pg=await pdf.getPage(n),vp0=pg.getViewport({scale:1}),w=Math.min(2000,(v.clientWidth||900)*2),vp=pg.getViewport({scale:w/vp0.width});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;c.className='rd-prev-pg';c.setAttribute('aria-label','Página '+n+' do RDO');v.appendChild(c);await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}}
     catch(x){const v=$('rdPrevV');if(v)v.innerHTML=`<p class="pd-erro">Não foi possível gerar a prévia: ${esc(x.message||x)}</p>`}}
   // envio-like do RDO atual do aparelho (para a prévia e para o PDF do envio)
-  function relEnvio(id){const r=REL(),ex=CM.fres.filter(f=>!f.envio),D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))}),segs=rdoSegs(D0);const apl=Math.round(segs.reduce((a,s)=>a+s.t,0)*100)/100;
+  function relEnvio(id){const r=REL(),ex=CM.fres.filter(f=>!f.envio&&!f.naoFres),D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))}),segs=rdoSegs(D0);const apl=Math.round(segs.reduce((a,s)=>a+s.t,0)*100)/100;
     return {id,data:CM.date,obra:CM.job==='BR373'?'BR-373':'BR-277',equipe:CM.equipe,resp:CM.resp,densidade:CM.density,usinado:CM.usinado||0,t:apl,
       segs:segs.map(s=>({...s,len:Math.round(s.len*100)/100,w:Math.round(s.w*100)/100,e:Math.round(s.e*1000)/1000,t:Math.round(s.t*100)/100})),
       rel:relClean(r,apl)}}
@@ -6708,7 +6711,8 @@ const PROD=(function(){
       if(!RL.engP){msg.textContent='Escolha o Engenheiro de Produção (primeira assinatura).';return}}
     RL.numero=projDef(CM.job);
     {const fx=relHorFalta(RL);if(fx.length){msg.innerHTML=`Preencha os horários de início e de término de todas as atividades antes de enviar para assinatura. Faltam: <b>${fx.map(esc).join('; ')}</b>.`;relHorMarca(RL);return}}if(!String(RL.eng||'').trim()){msg.textContent='Informe o Engenheiro de Produção (primeira assinatura).';return}
-    const ex=CM.fres.filter(f=>!f.envio);if(!ex.length){msg.textContent='Nenhum segmento a enviar.';return}
+    const ex=CM.fres.filter(f=>!f.envio&&!f.naoFres),nf=CM.fres.filter(f=>!f.envio&&f.naoFres).length;if(!ex.length){msg.textContent=nf?`Nenhum segmento fresado a enviar (${nf} marcado(s) como ainda não fresado).`:'Nenhum segmento a enviar.';return}
+    if(nf&&!confirm(`${nf} segmento(s) marcado(s) como ainda não fresado(s) não vão neste RDO e continuam aqui para um próximo envio. Continuar?`))return;
     const D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))});const err=rdoCheck(D0);if(err.length){msg.textContent='Não dá para enviar: '+err.join('; ')+'.';return}
     const raw=JSON.stringify(D0);const id='rdo-'+CM.date+'-'+hashStr(raw);if(await window.RdoDB.exists(id)){msg.textContent='Este RDO já foi enviado (sem alterações desde o envio).';return}
     const nr=ex.filter(f=>f.rmp).length;if(!confirm(`Gerar o RDO de ${brD(CM.date)} com ${ex.length} segmento(s) e enviar para assinatura?\n\n1º o Engenheiro de Produção (${RL.eng}) assina pelo link; com a assinatura dele a produção entra na base do app${nr?` (${nr} com RMP viram pendência no Controle de RMPs)`:''}.\n2º liberam os links do Encarregado e da Fiscalização.`))return;
@@ -6753,12 +6757,13 @@ const PROD=(function(){
       else if(a==='savef'){const blob=new Blob([JSON.stringify(CM,null,1)],{type:'application/json'});const u=URL.createObjectURL(blob),l=document.createElement('a');l.href=u;l.download=`apontamento-massa-${CM.job}-${CM.date}.json`;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
       else if(a==='open'){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=async()=>{try{const d=JSON.parse(await inp.files[0].text());const er=rdoCheck(d).filter(x=>!/sem segmentos/.test(x));if(er.length)throw new Error(er.join('; '));if(CM.fres.length&&!confirm('Substituir o apontamento atual pelo arquivo?'))return;cmLoad(d,false)}catch(x){toast('Arquivo inválido: '+(x.message||x))}};inp.click()}
       else if(a==='send')cmSend();
-      else if(a==='camp'){const f=CM.fres[i];f.campo=!f.campo;f.mexeu=true;cmSave()}});
+      else if(a==='camp'){const f=CM.fres[i];f.campo=!f.campo;f.mexeu=true;cmSave()}
+      else if(a==='nfres'){const f=CM.fres[i];if(!f||f.envio)return;f.naoFres=!f.naoFres;cmSave()}});
     // campos de campo em linha: atualiza o segmento sem refazer a tela enquanto o apontador digita
     let CMDIRTY=null;
     root.addEventListener('input',e=>{const t=e.target;if(!t.dataset||t.dataset.fi==null)return;const f=CM.fres[+t.dataset.fi];if(!f)return;const v=n(t.value);if(v==null)return;
       f[t.dataset.fk]=t.dataset.fk==='thickness'?v/100:v;f.mexeu=true;store.set(CMK,CM);const art=t.closest('.cm-seg');const ms=art&&art.querySelector('.cm-mass');if(ms)ms.textContent=fmt(mas(f),2)+' t';
-      let ac=0;root.querySelectorAll('.cm-list .cm-seg').forEach(el=>{const g=CM.fres[+el.dataset.i];ac+=g?mas(g)||0:0;const b=el.querySelector('.cm-acc');if(b)b.textContent=fmt(ac,2)+' t'});CMDIRTY=art});
+      let ac=0;root.querySelectorAll('.cm-list .cm-seg').forEach(el=>{const g=CM.fres[+el.dataset.i];const fo=g&&g.naoFres&&!g.envio;if(!fo)ac+=g?mas(g)||0:0;const b=el.querySelector('.cm-acc');if(b)b.textContent=fo?'fora da conta':fmt(ac,2)+' t'});CMDIRTY=art});
     // tocar e segurar o cartão (~0,4 s) seleciona o segmento; arrastando para cima ou para baixo muda a posição na sequência
     let DG=null,DGskip=0;
     const dgOk=t=>!t.closest('input,select,textarea,button,a,label,.cm-act');
