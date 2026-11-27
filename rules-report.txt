@@ -1,0 +1,168 @@
+Regras do Firestore: 166/166 testes OK
+
+OK  sem login não lê a base
+OK  administrador lê e grava a base
+OK  e-mail do admin sem verificação não grava a base
+OK  usuário ativo com página liberada lê a base
+OK  usuário com perfil liberado lê a base
+OK  usuário com perfil sem páginas não lê a base
+OK  usuário inativo não lê a base
+OK  usuário sem permissões não lê a base
+OK  usuário sem cadastro não lê a base
+OK  usuário comum não grava a base
+OK  B4: usuário com a aba BR-373 B4 lê a base B4
+OK  B4: usuário com a aba B4 lê a base BR-277 (o app precisa dela para abrir)
+OK  B4: usuário só com a aba BR-277 não lê a base B4
+OK  Análise por km: usuário só com o painel lê a base B4
+OK  Análise por km: usuário só com o painel lê a base BR-277
+OK  Marcos: quem tem a página lê os marcos
+OK  Marcos: quem não tem a página não lê
+OK  Marcos: só visualizar não grava
+OK  Marcos: com permissão de criar, grava
+OK  Marcos: tipo desconhecido é recusado
+OK  Marcos: sem permissão de excluir não exclui
+OK  Marcos: quem tem a página lê a base B4
+OK  Horário da equipe: quem emite programação grava
+OK  Horário da equipe: sem a Calculadora não lê
+OK  Horário da equipe: só visualizar a Calculadora não grava
+OK  Lote 04: quem tem Localização estaca lê a base B4
+OK  Lote 04: quem tem Foto georreferenciada lê a base B4
+OK  B4: usuário inativo não lê a base B4
+OK  B4: sem login não lê a base B4
+OK  B4: usuário comum não grava a base B4
+OK  B4: administrador grava a base B4
+OK  outros documentos da coleção base ficam bloqueados
+OK  seriais: usuário ativo lê
+OK  seriais: sem login não lê
+OK  seriais: usuário comum não grava
+OK  seriais: administrador grava
+OK  novo usuário cria o próprio cadastro sem acesso
+OK  novo usuário não se cria ativo
+OK  novo usuário não se dá permissões
+OK  novo usuário não escolhe perfil
+OK  não cria cadastro de outra pessoa
+OK  convidado cria cadastro com o perfil do convite
+OK  convidado não altera o perfil do convite
+OK  usuário não altera o próprio cadastro
+OK  usuário não se reativa
+OK  usuário lê o próprio cadastro
+OK  usuário não lê cadastro de outro
+OK  usuário não lista usuários
+OK  usuário não cria perfis
+OK  usuário não cria convites
+OK  administrador lista e altera usuários
+OK  administrador cria perfis e convites
+OK  e-mail do admin sem verificação não gerencia
+OK  coleções desconhecidas bloqueadas
+OK  Levantamento: quem registra cria o próprio registro
+OK  Levantamento: não cria em nome de outro usuário
+OK  Levantamento: só visualizar não cria
+OK  Levantamento: local possível não aceita ocupação
+OK  Levantamento: existente exige ocupação válida
+OK  Levantamento: quem tem a página lê
+OK  Levantamento: sem a página não lê
+OK  Levantamento: o autor complementa e desfaz o próprio registro
+OK  Levantamento: outro usuário só com "registrar" não altera o registro alheio
+OK  Levantamento: "editar" corrige registro alheio
+OK  Levantamento: "editar" não exclui
+OK  Levantamento: ninguém troca o autor do registro
+OK  Levantamento: "excluir" só marca a exclusão
+OK  Levantamento: o documento nunca é apagado
+OK  Levantamento: foto comprimida do registro é gravada e lida
+OK  Levantamento: só visualizar não grava foto
+OK  Patologias: quem registra cria a própria ocorrência
+OK  Patologias: não cria em nome de outro usuário
+OK  Patologias: só visualizar não cria
+OK  Patologias: faixa inválida não grava
+OK  Patologias: patologia desconhecida não grava
+OK  Patologias: quem tem a página lê
+OK  Patologias: só com a bota-espera não lê
+OK  Patologias: o autor complementa e desfaz
+OK  Patologias: outro usuário só com "registrar" não altera a alheia
+OK  Patologias: "editar" corrige a faixa de ocorrência alheia
+OK  Patologias: "excluir" só marca a exclusão
+OK  Patologias: o documento nunca é apagado
+OK  Patologias: foto da ocorrência é gravada e lida
+OK  Patologias: só com a página lê as estacas do Lote 04
+OK  Histórico: quem tem "salvar" grava resumo e dados juntos
+OK  Histórico: não grava em nome de outro usuário
+OK  Histórico: só visualizar não grava
+OK  Histórico: data em formato errado não grava
+OK  Histórico: quem tem a página lê a lista e os dados
+OK  Histórico: sem a página não lê
+OK  Histórico: o autor atualiza a própria (mesmo registro)
+OK  Histórico: outro usuário só com "salvar" não altera a alheia
+OK  Histórico: "editar" altera a de qualquer usuário, sem trocar o autor
+OK  Histórico: "excluir" só marca a exclusão
+OK  Histórico: sem a permissão de excluir não exclui
+OK  Histórico: nada é apagado do servidor
+OK  Levantamento: quem tem a página lê a base B4 (estacas do Lote 04)
+OK  RMP: quem tem "criar" registra o controle do segmento
+OK  RMP: não grava em nome de outro usuário
+OK  RMP: só "ver" não grava
+OK  RMP: quem vê a Produção executada lê o controle
+OK  RMP: foto é gravada e não pode ser apagada
+OK  RMP: data de corte só o administrador grava
+OK  RMP: quem vê o controle lê a data de corte
+OK  RMP: quem registra RMP grava o motivo (producao_notas), mas não os dados da planilha
+OK  RDO: quem tem "criar" envia o RDO do dia
+OK  RDO: envio não pode ser alterado depois
+OK  RDO: só "ver" não envia, mas lê
+OK  RDO: quem valida muda só a situação
+OK  RDO: validação não altera os segmentos enviados
+OK  RDO: quem só envia não valida
+OK  RDO: quem valida exclui segmento validado (só excl/histórico)
+OK  RDO: exclusão não altera os dados enviados
+OK  RDO: quem só envia não exclui segmento
+OK  RDO: quem só envia não apaga segmento
+OK  RDO: quem valida apaga segmento definitivamente (lista diminui)
+OK  RDO: apagar segmento não muda outros dados do envio
+OK  RDO: quem só envia não exclui o RDO inteiro
+OK  RDO: quem valida exclui o RDO inteiro (envio e arquivo)
+OK  RMP: quem valida RDO só apaga registro de segmento do RDO
+OK  RDO: configuração só o administrador grava
+OK  Assinatura RDO: quem envia o RDO cria os links e o PDF
+OK  Assinatura RDO: só "ver" não cria link
+OK  Assinatura RDO: o link abre sem login (documento e PDF)
+OK  Assinatura RDO: sem login não lista os links
+OK  Assinatura RDO: encarregado não assina antes do engenheiro
+OK  Assinatura RDO: assinatura não muda os outros dados
+OK  Assinatura RDO: engenheiro assina pelo link
+OK  Assinatura RDO: o mesmo link não assina de novo
+OK  Assinatura RDO: depois do engenheiro, o encarregado assina
+OK  Assinatura RDO: PDF não é alterado pelo link
+OK  Responsáveis: quem só envia RDO não cadastra
+OK  Responsáveis: quem valida RDO cadastra
+OK  Responsáveis: o endereço abre sem login
+OK  Responsáveis: sem login não lista o cadastro
+OK  Responsáveis: a pessoa completa nome, função e assinatura padrão
+OK  Responsáveis: a pessoa não mexe na caixa de documentos
+OK  Responsáveis: a pessoa não muda o papel nem reativa
+OK  Responsáveis: quem envia RDO acrescenta o documento na caixa
+OK  Responsáveis: quem envia RDO não tira documentos da caixa
+OK  Responsáveis: quem envia RDO não altera o cadastro
+OK  Responsáveis: RDO ligado à pessoa e assinado com a função
+OK  Assinatura RDO: assina com observação
+OK  Assinatura RDO: devolver exige o motivo
+OK  Assinatura RDO: devolver não muda outros dados
+OK  Assinatura RDO: devolve para correção pelo link
+OK  Assinatura RDO: devolvido não é assinado depois
+OK  RMP: quem só vê não cria link de assinatura
+OK  RMP: quem registra RMP cria os links (solicitante → fiscal) e o PDF
+OK  RMP: fiscal não assina antes do solicitante
+OK  RMP: solicitante assina pelo link
+OK  RMP: quem registra RMP cancela os links da versão anterior
+OK  RMP: quem registra RMP não apaga link de RDO
+OK  RMP: e-mail — quem registra RMP não altera a configuração
+OK  RMP: quem usa o controle lê a configuração do e-mail
+OK  Convite: quem só envia RDO não cria link de cadastro
+OK  Convite: quem valida RDO cria link de cadastro
+OK  Convite: sem consumir o link não cria cadastro
+OK  Convite: a pessoa se cadastra pelo link (cadastro + link usado no mesmo envio)
+OK  Convite: link usado não cadastra outra pessoa
+OK  Convite: quem valida edita nome, função e papel
+OK  Projetos de massa: quem só envia RDO não altera
+OK  Projetos de massa: quem valida RDO altera e quem envia lê
+OK  Responsáveis: quem valida desativa
+OK  Responsáveis: desativado não altera o próprio cadastro
+OK  Responsáveis: quem valida exclui
