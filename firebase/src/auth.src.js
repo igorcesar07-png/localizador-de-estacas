@@ -367,6 +367,9 @@ onAuthStateChanged(auth,async user=>{
         pesCreate:p=>track(setDoc(doc(db,'assinantes',p.id),{id:p.id,nome:String(p.nome||'').slice(0,120),funcao:String(p.funcao||'').slice(0,80),papel:p.papel,ativo:true,docs:[],criado_por:user.email,criado_em:Date.now()})),
         pesUpd:(id,o)=>track(updateDoc(doc(db,'assinantes',id),o)),
         pesDel:id=>track(deleteDoc(doc(db,'assinantes',id))),
+        // projetos de massa e densidades (cadastro comum do RDO)
+        massSubscribe:cb=>onSnapshot(doc(db,'rdo_config','massas'),s=>cb(s.exists()?(s.data().lista||[]):[]),e=>cb(null,e)),
+        setMassas:l=>track(setDoc(doc(db,'rdo_config','massas'),{lista:l.slice(0,30).map(m=>({p:String(m.p||'').slice(0,80),d:m.d>0?+m.d:null})),by:user.email,em:Date.now()})),
         // link de autocadastro (um cadastro por link)
         convCreate:o=>track(setDoc(doc(db,'assin_convites',o.tok),{tok:o.tok,usado:false,papel:o.papel||'',criado_por:user.email,criado_em:Date.now()})),
         convSubscribe:cb=>onSnapshot(collection(db,'assin_convites'),s=>cb(s.docs.map(d=>({...d.data(),id:d.id}))),e=>cb(null,e)),

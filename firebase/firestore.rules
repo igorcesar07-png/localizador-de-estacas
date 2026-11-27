@@ -253,6 +253,11 @@ service cloud.firestore {
                     && getAfter(/databases/$(database)/documents/assin_convites/$(request.resource.data.convite)).data.usado_por == id;
       allow delete: if canDo('rdo', 'edit');
     }
+    // Configuração do RDO: projetos de massa com a densidade de cada um (quem valida RDO altera)
+    match /rdo_config/{id} {
+      allow read: if rdoRead();
+      allow write: if canDo('rdo', 'edit') && id == 'massas' && request.resource.data.lista is list && request.resource.data.lista.size() <= 30;
+    }
     // Convites de autocadastro dos responsáveis: criados por quem valida RDO; o link (id aleatório) vale para um único cadastro
     match /assin_convites/{tok} {
       allow get: if true;

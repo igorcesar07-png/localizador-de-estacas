@@ -4932,6 +4932,7 @@ const PROD=(function(){
   /* ---------- RDO de massa: envio do arquivo do Controle de Massa e conferência com a planilha de produção ---------- */
   const RDOPEN=new Set(),RDSEEN=new Set();let RDOS=[];
   if(window.RdoDB){window.RdoDB.subscribe(l=>{if(!l)return;RDRAW=l;rdOnList()});if(window.RdoDB.assSubscribe)window.RdoDB.assSubscribe(l=>{if(!l)return;ASSL=l;ASS=assGroup(l);rdOnList()});
+    if(window.RdoDB.massSubscribe)window.RdoDB.massSubscribe(l=>{if(!l)return;MASSAS=l;masRender();cmRenderKeep()});
     if(window.RdoDB.val&&window.RdoDB.convSubscribe)window.RdoDB.convSubscribe(l=>{if(!l)return;CONV=l;pesRender()});
     if(window.RdoDB.pesSubscribe)window.RdoDB.pesSubscribe(l=>{if(!l)return;PES=l;pesRender();cmRenderKeep();try{rmRender()}catch(e){}})}
   function rdOnList(){const l=rdoEff(RDRAW);RDOS=l;window.__RDOS=l;
@@ -5204,10 +5205,15 @@ const PROD=(function(){
   const PAPEL={eng:'Engenheiro de Produção',enc:'Encarregado',fis:'Fiscal'};
   // nº do projeto no RDO por obra (o apontador pode alterar)
   const PROJ_JOB={BR277:'VIAR-GDA-430/2026',BR373:'VIAR-GDA-470/2026'},projDef=j=>PROJ_JOB[j]||PROJ_JOB.BR277; // mesmos códigos do contrato usados nos outros relatórios
-  const relNew=()=>({numero:'',encarregado:'',chuva:[],neb:[],hor:{},massa:'',usina:'Nova Serrinha - Balsa Nova/PR',projeto:'',bota:'',obs:'',fres_cam:'',dest:[{l:'',c:''},{l:'',c:''},{l:'',c:''}],eng:'',fis:''});
+  const USINAS=['Usina Neovia Irati','Usina Nova Serrinha'];
+  // projetos de massa com a densidade de cada um: cadastro comum (servidor); sem densidade cadastrada, o apontador informa
+  const MASSAS0=[{p:'Projeto 928 – sem RAP',d:null},{p:'Projeto 929 – com RAP',d:null}];let MASSAS=null;
+  const massas=()=>MASSAS&&MASSAS.length?MASSAS:MASSAS0;
+  const relNew=()=>({numero:'',encarregado:'',chuva:[],neb:[],hor:{},massa:'',usina:'',projeto:'',bota:'',obs:'',fres_cam:'',dest:[{l:'',c:''},{l:'',c:''},{l:'',c:''}],eng:'',fis:''});
   function REL(){if(!CM.rel){const m=store.get('rdoResp',{});CM.rel=Object.assign(relNew(),{eng:m.eng||'',fis:m.fis||'',engP:m.engP||'',fisP:m.fisP||'',usina:m.usina||relNew().usina,projeto:m.projeto||relNew().projeto,massa:m.massa||''})}
     const r=CM.rel;if(!Array.isArray(r.dest)||r.dest.length<3)r.dest=[0,1,2].map(i=>(r.dest||[])[i]||{l:'',c:''});if(!r.hor)r.hor={};if(!Array.isArray(r.chuva))r.chuva=[];if(!Array.isArray(r.neb))r.neb=[];
-    {const D=[...Object.values(PROJ_JOB),'GDA430/2026','470/2026'];if(!r.projeto||r.projeto==='v1.1 - Neovia'||(D.includes(r.projeto)&&r.projeto!==projDef(CM.job)))r.projeto=projDef(CM.job)}
+    // contrato no cabeçalho do RDO = automático pela obra (não há mais nº do RDO digitado); "projeto" é o projeto da massa
+    r.numero=projDef(CM.job);if(/VIAR-GDA|GDA430|^470\/2026$|^v1\.1 - Neovia$/.test(String(r.projeto||'')))r.projeto='';
     if(!r.encarregado&&CM.equipe)r.encarregado=String(CM.equipe).replace(/^Equipe\s+(de\s+)?(Pavimentação|Dreno)\s+/i,'');return r}
   const relNum=()=>{let m=0;for(const e of RDOS){const v=parseInt(e.rel&&e.rel.numero,10);if(v>m)m=v}return m?String(m+1):''};
   const userName=()=>{const A=window.ACL;return (A&&A.user&&(A.user.name||A.user.email))||''};
@@ -5218,7 +5224,7 @@ const PROD=(function(){
     return `<div class="cm-send rel"><h3 class="cm-h">Relatório diário de obra (RDO) · PDF e assinaturas</h3>
       <p class="pd-note">Preencha o que aconteceu no dia e toque em <b>Gerar RDO e enviar para assinatura</b>. O app grava o RDO no banco, gera o PDF no modelo VIAR-GDA e cria o link do <b>Engenheiro de Produção</b>; depois que ele assinar, a produção entra em todas as páginas e liberam os links do <b>Encarregado</b> e da <b>Fiscalização</b>.</p>
       <div class="cm-g2">
-        <div class="fld"><label>Nº do RDO<input data-rel="numero" inputmode="numeric" value="${esc(r.numero||relNum())}" placeholder="ex.: 470"></label></div>
+        <div class="fld"><label>Contrato (automático pela obra)<input value="${esc(projDef(CM.job))}" disabled></label></div>
         <div class="fld"><label for="cmDt">Data</label><input id="cmDt" type="date" value="${esc(CM.date)}"></div>
         <div class="fld"><label for="cmJob">Obra</label><select id="cmJob"><option value="BR277"${CM.job==='BR277'?' selected':''}>BR-277 — Blocos 02 e 03</option><option value="BR373"${CM.job==='BR373'?' selected':''}>BR-373 — Bloco 04</option></select></div>
         <div class="fld"><label for="cmEq">Equipe</label><select id="cmEq"><option value="">Selecione…</option>${EQUIPES.map(e=>`<option${CM.equipe===e?' selected':''}>${e}</option>`).join('')}</select></div>
@@ -5232,18 +5238,18 @@ const PROD=(function(){
       <div class="tscroll"><table class="cm-t rel-hr"><thead><tr><th>Serviço</th><th>Hr. início</th><th>Hr. término</th><th>Obs.</th></tr></thead><tbody>
         ${REL_ATV.map(([k,t])=>{const o=r.hor[k]||{};return `<tr><td>${t}</td><td><input type="time" data-rel="hor.${k}.i" value="${esc(o.i||'')}"></td><td><input type="time" data-rel="hor.${k}.f" value="${esc(o.f||'')}"></td><td><input data-rel="hor.${k}.o" value="${esc(o.o||'')}" maxlength="80"></td></tr>`}).join('')}</tbody></table></div>
       <h4 class="rel-h">Massa e produção</h4>
-      <div class="cm-g2">${inp('massa',r.massa,'Tipo da massa',' list="relMassas" placeholder="ex.: CBUQ Faixa C"')}<datalist id="relMassas"><option>CBUQ Faixa C</option><option>CBUQ Faixa B</option><option>Gap Graded</option><option>SMA</option></datalist>
-        <div class="fld"><label>Densidade da massa (t/m³)<input data-relcm="density" type="number" step="0.001" value="${esc(CM.density??'')}"></label></div>
-        ${inp('usina',r.usina,'Usina')}${inp('projeto',r.projeto,'Projeto')}${inp('bota',r.bota,'Bota-espera')}<div class="fld"><label>Caminhões de fresado<input data-rel="fres_cam" type="number" min="0" step="1" value="${esc(r.fres_cam??'')}"></label></div></div>
+      ${(()=>{const L=massas(),cur=L.find(m=>m.p===r.projeto),dFix=cur&&cur.d>0;const us=USINAS.includes(r.usina)||!r.usina?USINAS:[...USINAS,r.usina];
+        return `<div class="cm-g2"><div class="fld"><label>Projeto da massa<select data-relmassa="1"><option value="">Selecione…</option>${L.map(m=>`<option value="${esc(m.p)}"${m.p===r.projeto?' selected':''}>${esc(m.p)}${m.d>0?' · '+fmt(m.d,3)+' t/m³':''}</option>`).join('')}${r.projeto&&!cur?`<option selected>${esc(r.projeto)}</option>`:''}</select></label></div>
+        <div class="fld"><label>Densidade da massa (t/m³)${dFix?' <small>do projeto</small>':''}<input data-relcm="density" type="number" step="0.001" value="${esc(CM.density??'')}"${dFix?' readonly':''}></label></div>
+        <div class="fld"><label>Usina<select data-rel="usina"><option value="">Selecione…</option>${us.map(u=>`<option${u===r.usina?' selected':''}>${esc(u)}</option>`).join('')}</select></label></div>`})()}
+        ${inp('bota',r.bota,'Bota-espera')}<div class="fld"><label>Caminhões de fresado<input data-rel="fres_cam" type="number" min="0" step="1" value="${esc(r.fres_cam??'')}"></label></div></div>
       <div class="rel-prod"><div class="fld"><label>Usinado (t)<input data-relcm="usinado" type="number" step="0.01" value="${esc(CM.usinado||'')}"></label></div>
         <div><span>Aplicado (segmentos do RDO)</span><b id="relApl">${fmt(apl,2)} t</b></div><div><span>Sobra = usinado − aplicado</span><b id="relSob" class="${us-apl<0?'pd-erro':''}">${fmt(us-apl,2)} t</b></div></div>
-      <h4 class="rel-h">Material fresado</h4>
-      <div class="rel-dest">${r.dest.map((d,i)=>`<div class="fld"><label>Destino ${i+1} do fresado<input data-rel="dest.${i}.l" value="${esc(d.l||'')}" maxlength="80" placeholder="local"></label></div><div class="fld"><label>Caminhões (destino ${i+1})<input data-rel="dest.${i}.c" type="number" min="0" step="1" value="${esc(d.c||'')}"></label></div>`).join('')}</div>
       <h4 class="rel-h">Responsáveis pela assinatura</h4>
       ${pesAt().length?`<div class="cm-g2">${pesSel('eng','Engenheiro de Produção *')}${pesSel('enc','Encarregado')}${pesSel('fis','Fiscal (Via Araucária)')}</div><p class="pd-note">Cada um recebe o RDO na sua página de assinaturas (cadastro em <b>Responsáveis pelas assinaturas</b>, mais abaixo).</p>`
         :`<div class="cm-g2">${inp('eng',r.eng,'Engenheiro de Produção *',' maxlength="120"')}<div class="fld"><label>Encarregado<input value="${esc(r.encarregado||'')}" disabled></label></div>${inp('fis',r.fis,'Fiscal (Via Araucária)',' maxlength="120"')}</div>${window.RdoDB&&window.RdoDB.pesSubscribe?'<p class="pd-note">Cadastre os responsáveis em <b>Responsáveis pelas assinaturas</b> (mais abaixo) para que cada um receba os RDOs na sua página de assinaturas.</p>':''}`}
       <div class="fld"><label>Observações<textarea data-rel="obs" rows="3" maxlength="900">${esc(r.obs||'')}</textarea></label></div>
-      <div class="pd-acts"><button type="button" class="pd-b" data-cm="relprev">Prévia do PDF</button><button type="button" class="pd-b pri" data-cm="send"${canRdo()?'':' disabled'}>Gerar RDO e enviar para assinatura</button><span class="pd-note" id="cmMsg" aria-live="polite"></span></div></div>`}
+      <div class="pd-acts"><button type="button" class="pd-b" data-cm="relprev">Pré-visualizar o RDO</button><button type="button" class="pd-b pri" data-cm="send"${canRdo()?'':' disabled'}>Gerar RDO e enviar para assinatura</button><span class="pd-note" id="cmMsg" aria-live="polite"></span></div></div>`}
   function pesSel(p,lab){const r=REL(),cur=r[p+'P']||'',L=pesAt(),a=L.filter(x=>x.papel===p),o=L.filter(x=>x.papel!==p);
     const opt=x=>`<option value="${esc(x.id)}"${x.id===cur?' selected':''}>${esc(x.nome)}${x.funcao?' · '+esc(x.funcao):''}</option>`;
     return `<div class="fld"><label>${lab}<select data-relp="${p}"><option value="">${p==='eng'?'Selecione…':'— sem assinatura —'}</option>${a.length?`<optgroup label="${esc(PAPEL_P[p])}">${a.map(opt).join('')}</optgroup>`:''}${o.length?`<optgroup label="Outros cadastrados">${o.map(opt).join('')}</optgroup>`:''}</select></label></div>`}
@@ -5268,7 +5274,7 @@ const PROD=(function(){
     const COL=[['Nº',6],['Serial\nKartado',24],['Km inicial',15],['Km final',15],['Cre',6],['Dec',6],['1',5],['2/3',6],['A',5],['1ª',5],['2ª',5],['Extensão (m)',14],['Largura (m)',14],['Espessura (m)',14],['Qtd. (t)',14],['Nº Ticket',14],['Placa',13],['Qtd. (t)',11],['Hr. início',11],['Hr. término',11]];
     for(let pg=0;pg<pages;pg++){if(pg)doc.addPage();doc.setDrawColor(60);doc.setLineWidth(0.2);
       if(lN)doc.addImage(lN.d,'JPEG',7,5,34,34*lN.r);if(lV)doc.addImage(lV.d,'JPEG',12,16,22,22*lV.r);
-      T(`Relatório diário de obra - VIAR-GDA-${r.numero||'___'}/${ano}`,107,6.2,{i:true,s:12,a:'center'});
+      T(`Relatório diário de obra - ${/VIAR-GDA/.test(r.numero||'')?r.numero:projDef(e.obra==='BR-373'?'BR373':'BR277')}`,107,6.2,{i:true,s:12,a:'center'});
       T(`Data: ${dt}`,214,9,{s:8});T(`Encarregado: ${r.encarregado||''}`,247,9,{s:8,w:46});T(`Apontador: ${r.elaborado_por||e.resp||''}`,247,15,{s:8,w:46});
       // dias da semana
       const wd=e.data?new Date(+e.data.slice(0,4),+e.data.slice(5,7)-1,+e.data.slice(8,10)).getDay():-1;
@@ -5304,11 +5310,10 @@ const PROD=(function(){
       {const ob=[String(r.obs||'').trim()];for(const p of ['eng','enc','fis']){const a=A0[p];if(!a)continue;if(a.status==='assinado'&&String(a.obs||'').trim())ob.push(`${PAPEL[p]} (${a.assinado_nome}): ${String(a.obs).trim()}`);if(a.status==='devolvido')ob.push(`DEVOLVIDO PARA CORREÇÃO por ${PAPEL[p]} (${a.devolvido_nome}): ${String(a.devolvido_motivo||'').trim()}`)}
         const txt=ob.filter(Boolean).join(' | ');let sz=6.5;for(const z of [6.5,5.8,5.2,4.6,4]){doc.setFontSize(z);sz=z;if(doc.splitTextToSize(txt,281).length*z*0.3528*1.15<=8)break}T(txt,8,oy+5.6,{s:sz,w:281})}
       // rodapé: usina, massa, produção, fresado, assinaturas
-      const by=oy+15;T(`Usina: ${r.usina||''}`,10,by,{s:7.2});T(`Projeto: ${r.projeto||''}`,10,by+4,{s:7.2});T(`Densidade: ${n2(e.densidade,3)} t/m3`,10,by+8,{s:7.2});
-      T(`Tipo da massa: ${r.massa||''}`,10,by+12,{s:7.2});T(`Bota Espera: ${r.bota||''}`,10,by+16,{s:7.2,w:66});T(`Caminhões de fresado: ${r.fres_cam===''||r.fres_cam==null?'-':r.fres_cam}`,10,by+20,{s:7.2});T(`Elaborado por: ${r.elaborado_por||e.resp||''}`,10,by+24,{s:7.2,b:true,w:70});
+      const by=oy+15;T(`Usina: ${r.usina||''}`,10,by,{s:7.2});T(`Projeto da massa: ${r.projeto||''}`,10,by+4,{s:7.2});T(`Densidade: ${n2(e.densidade,3)} t/m3`,10,by+8,{s:7.2});
+      T(`Bota Espera: ${r.bota||''}`,10,by+12,{s:7.2,w:66});T(`Caminhões de fresado: ${r.fres_cam===''||r.fres_cam==null?'-':r.fres_cam}`,10,by+16,{s:7.2});T(`Elaborado por: ${r.elaborado_por||e.resp||''}`,10,by+20,{s:7.2,b:true,w:70});
       T(`Qtd. usinada: ${n2(us,2)} t`,80,by,{s:7.2});T(`Qtd. aplicada: ${n2(apl,2)} t`,80,by+4,{s:7.2});T(`Qtd. sobra: ${n2(us-apl,2)} t`,80,by+8,{s:7.2,b:true});
-      const dest=(r.dest||[]).filter(d=>d&&String(d.l||'').trim());
-      dest.forEach((d,i)=>T(`Fresado - ${d.l}: ${d.c||0} caminhão(ões)`,80,by+12+i*3.3,{s:6.5,w:62}));
+
       [['eng','Engenheiro de Produção','Neovia Restauração'],['enc','Encarregado de obras','Neovia Restauração'],['fis','Fiscalização','Via Araucária']].forEach(([p,t,em],i)=>{const sx=148+i*48,sy=by+6,a=A0[p];
         if(a&&a.status==='assinado'){if(a.assinatura)try{doc.addImage(a.assinatura,'PNG',sx+4,sy-9,32,10.5)}catch(x){}T(`${a.assinado_nome}${a.assinado_funcao?' ('+a.assinado_funcao+')':''} · ${new Date(a.assinado_em).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}`,sx+20,sy+6.6,{s:4.8,a:'center',w:46})}
         doc.line(sx,sy+1,sx+40,sy+1);T(a&&a.status==='assinado'?a.assinado_nome:(r[p==='enc'?'encarregado':p]||''),sx+20,sy+3.6,{s:5.6,a:'center',w:42});T(t,sx+20,sy+9.3,{s:5.6,a:'center'});T(em,sx+20,sy+11.8,{s:5.6,a:'center'})});
@@ -5319,7 +5324,15 @@ const PROD=(function(){
   const convUrl=t=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?c='+t;
   const pesUrl=id=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?p='+id;
   const assUrl=t=>(/^https?:/.test(location.protocol)&&!/^capacitor|^file/.test(location.protocol)?location.origin:'https://localizador-estacas.web.app')+'/assinar.html?t='+t;
-  async function relPrev(){try{const e=relEnvio(null);const d=await rdoPdf(e,{});d.save(`RDO_${e.rel.numero||'previa'}_${e.data}.pdf`)}catch(x){toast('Não foi possível gerar o PDF: '+(x.message||x))}}
+  // pré-visualização do RDO dentro do app (o apontador confere antes de enviar; baixar é opcional)
+  async function relPrev(){let d=$('rdPrevDlg');if(!d){d=document.createElement('div');d.id='rdPrevDlg';d.className='pd-dlg';document.body.appendChild(d)}
+    d.innerHTML=`<div class="pd-dbox rd-prev" role="dialog" aria-modal="true" aria-labelledby="rdPrevT"><div class="rd-prev-h"><h3 id="rdPrevT">Prévia do RDO</h3><span class="pd-note">é assim que o RDO vai para assinatura</span><button type="button" class="pd-b" id="rdPrevDl">Baixar PDF</button><button type="button" class="pd-b pri" id="rdPrevX">Fechar</button></div><div id="rdPrevV" class="rd-prev-v"><p class="pd-note">Gerando a prévia…</p></div></div>`;
+    d.hidden=false;const close=()=>{d.hidden=true;d.innerHTML=''};$('rdPrevX').onclick=close;d.onclick=e=>{if(e.target===d)close()};
+    try{const e=relEnvio(null),doc=await rdoPdf(e,{});$('rdPrevDl').onclick=()=>doc.save(`RDO_${e.data}_${EQ_CURTO(e.equipe||'').replace(/\W+/g,'_')}_previa.pdf`);
+      const v=$('rdPrevV');await loadS('lib/pdf.min.js',()=>!!window.pdfjsLib);window.pdfjsLib.GlobalWorkerOptions.workerSrc='lib/pdf.worker.min.js';
+      const pdf=await window.pdfjsLib.getDocument({data:new Uint8Array(doc.output('arraybuffer'))}).promise;v.innerHTML='';
+      for(let n=1;n<=pdf.numPages;n++){const pg=await pdf.getPage(n),vp0=pg.getViewport({scale:1}),w=Math.min(2000,(v.clientWidth||900)*2),vp=pg.getViewport({scale:w/vp0.width});const c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;c.className='rd-prev-pg';c.setAttribute('aria-label','Página '+n+' do RDO');v.appendChild(c);await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise}}
+    catch(x){const v=$('rdPrevV');if(v)v.innerHTML=`<p class="pd-erro">Não foi possível gerar a prévia: ${esc(x.message||x)}</p>`}}
   // envio-like do RDO atual do aparelho (para a prévia e para o PDF do envio)
   function relEnvio(id){const r=REL(),ex=CM.fres.filter(f=>!f.envio),D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))}),segs=rdoSegs(D0);const apl=Math.round(segs.reduce((a,s)=>a+s.t,0)*100)/100;
     return {id,data:CM.date,obra:CM.job==='BR373'?'BR-373':'BR-277',equipe:CM.equipe,resp:CM.resp,densidade:CM.density,usinado:CM.usinado||0,t:apl,
@@ -5362,6 +5375,17 @@ const PROD=(function(){
       if($('rpAdd'))$('rpAdd').onclick=async()=>{const nm=$('rpNome').value.trim(),fn=$('rpFun').value.trim(),pp=$('rpPap').value,m=$('rpMsg');
       if(nm.length<3){m.textContent='Informe o nome.';return}if(PES.some(x=>x.ativo!==false&&String(x.nome).toLowerCase()===nm.toLowerCase())){m.textContent='Já existe um responsável ativo com este nome.';return}
       const id=tokNew();try{await D.pesCreate({id,nome:nm,funcao:fn||PAPEL_P[pp],papel:pp});m.innerHTML=`${esc(nm)} cadastrado. Envie o endereço da página de assinaturas: <button type="button" class="pd-b rd-v" data-pslk="${id}">Copiar endereço</button>`;$('rpNome').value='';$('rpFun').value=''}catch(e){m.textContent='Não foi possível cadastrar: '+(e.message||e)}}}}
+  function masRender(){const card=$('rdMasCard'),box=$('rdMas');const D=window.RdoDB;if(!card||!box||!D||!D.setMassas)return;card.hidden=false;const val=!!D.val,L=massas();
+    if(box.contains(document.activeElement))return;
+    box.innerHTML=`<div class="tscroll"><table class="cm-t"><thead><tr><th>Projeto da massa</th><th>Densidade (t/m³)</th>${val?'<th></th>':''}</tr></thead><tbody>${L.map((m,i)=>`<tr><td>${val?`<input data-mas="${i}" data-k="p" value="${esc(m.p)}" maxlength="80">`:esc(m.p)}</td><td>${val?`<input data-mas="${i}" data-k="d" type="number" step="0.001" min="0" value="${m.d>0?m.d:''}" placeholder="informar">`:(m.d>0?fmt(m.d,3):'<span class="pd-erro">sem densidade</span>')}</td>${val?`<td><button type="button" class="pd-b rd-v" data-masdel="${i}">Excluir</button></td>`:''}</tr>`).join('')}</tbody></table></div>
+      ${L.some(m=>!(m.d>0))?'<p class="pd-note pd-erro">Há projeto sem densidade: informe a densidade para que ela entre automática no RDO.</p>':''}
+      ${val?'<div class="pd-acts"><button type="button" class="pd-b" id="rdMasAdd">+ Projeto de massa</button><button type="button" class="pd-b pri" id="rdMasSv">Salvar</button><span class="pd-note" id="rdMasMsg" aria-live="polite"></span></div>':''}`;
+    if(!val)return;const rd=()=>{const o=L.map(m=>({...m}));box.querySelectorAll('[data-mas]').forEach(x=>{const m=o[+x.dataset.mas];if(x.dataset.k==='p')m.p=x.value.trim();else{const v=parseFloat(String(x.value).replace(',','.'));m.d=v>0?v:null}});return o.filter(m=>m.p)};
+    $('rdMasAdd').onclick=()=>{MASSAS=[...rd(),{p:'',d:null}];box.innerHTML='';masRender();const ins=box.querySelectorAll('[data-k="p"]');if(ins.length)ins[ins.length-1].focus()};
+    box.querySelectorAll('[data-masdel]').forEach(b=>b.onclick=()=>{const o=rd();o.splice(+b.dataset.masdel,1);MASSAS=o;masRender()});
+    $('rdMasSv').onclick=async()=>{const o=rd(),m=$('rdMasMsg');if(new Set(o.map(x=>x.p.toLowerCase())).size!==o.length){m.textContent='Há projetos com o mesmo nome.';return}
+      if(o.some(x=>x.d!=null&&(x.d<1.5||x.d>3.2))){m.textContent='Confira a densidade: esperado entre 1,5 e 3,2 t/m³.';return}
+      try{await D.setMassas(o);MASSAS=o;m.textContent='Projetos de massa salvos.';cmRenderKeep()}catch(e){m.textContent='Não foi possível salvar: '+(e.message||e)}}}
   // editar o cadastro de um responsável (nome, função e "assina como"); a assinatura padrão é da própria pessoa, pela página dela
   function pesEdit(x){let d=$('rpEdDlg');if(!d){d=document.createElement('div');d.id='rpEdDlg';d.className='pd-dlg';document.body.appendChild(d)}
     d.innerHTML=`<div class="pd-dbox" role="dialog" aria-modal="true" aria-labelledby="rpEdT"><h3 id="rpEdT">Editar responsável</h3>
@@ -5409,12 +5433,12 @@ const PROD=(function(){
     if(!CM.equipe){msg.textContent='Escolha a equipe.';return}cmRmp();const RL=REL();if(!RL.numero)RL.numero=relNum();
     if(pesAt().length){for(const p of ['eng','enc','fis']){const x=pesById(RL[p+'P']);if(RL[p+'P']&&!x)RL[p+'P']='';if(x)RL[p==='enc'?'encarregado':p]=x.nome}
       if(!RL.engP){msg.textContent='Escolha o Engenheiro de Produção (primeira assinatura).';return}}
-    if(!String(RL.numero||'').trim()){msg.textContent='Informe o Nº do RDO.';return}
+    RL.numero=projDef(CM.job);
     {const fx=relHorFalta(RL);if(fx.length){msg.innerHTML=`Preencha os horários de início e de término de todas as atividades antes de enviar para assinatura. Faltam: <b>${fx.map(esc).join('; ')}</b>.`;relHorMarca(RL);return}}if(!String(RL.eng||'').trim()){msg.textContent='Informe o Engenheiro de Produção (primeira assinatura).';return}
     const ex=CM.fres.filter(f=>!f.envio);if(!ex.length){msg.textContent='Nenhum segmento a enviar.';return}
     const D0=Object.assign({},CM,{fres:ex.map(f=>Object.assign({},f))});const err=rdoCheck(D0);if(err.length){msg.textContent='Não dá para enviar: '+err.join('; ')+'.';return}
     const raw=JSON.stringify(D0);const id='rdo-'+CM.date+'-'+hashStr(raw);if(await window.RdoDB.exists(id)){msg.textContent='Este RDO já foi enviado (sem alterações desde o envio).';return}
-    const nr=ex.filter(f=>f.rmp).length;if(!confirm(`Gerar o RDO nº ${RL.numero} com ${ex.length} segmento(s) e enviar para assinatura?\n\n1º o Engenheiro de Produção (${RL.eng}) assina pelo link; com a assinatura dele a produção entra na base do app${nr?` (${nr} com RMP viram pendência no Controle de RMPs)`:''}.\n2º liberam os links do Encarregado e da Fiscalização.`))return;
+    const nr=ex.filter(f=>f.rmp).length;if(!confirm(`Gerar o RDO de ${brD(CM.date)} com ${ex.length} segmento(s) e enviar para assinatura?\n\n1º o Engenheiro de Produção (${RL.eng}) assina pelo link; com a assinatura dele a produção entra na base do app${nr?` (${nr} com RMP viram pendência no Controle de RMPs)`:''}.\n2º liberam os links do Encarregado e da Fiscalização.`))return;
     const segs=rdoSegs(D0),t=segs.reduce((a,s)=>a+s.t,0);
     const sum={id,data:CM.date,obra:CM.job==='BR373'?'BR-373':'BR-277',equipe:CM.equipe,resp:String(CM.resp||'').slice(0,120),job:CM.job,densidade:CM.density,usinado:CM.usinado||0,origem:'app',
       segs:segs.map(s=>({sid:s.sid,ini:s.ini,side:s.side,lane:s.lane,len:Math.round(s.len*100)/100,w:Math.round(s.w*100)/100,e:Math.round(s.e*1000)/1000,t:Math.round(s.t*100)/100,alt:s.alt,extra:s.extra,...(s.obs?{obs:String(s.obs).slice(0,300)}:{}),
@@ -5428,11 +5452,12 @@ const PROD=(function(){
         .map(o=>{const x=pesById(RL[o.papel+'P']);return {...o,...(x?{pessoa:x.id,nome:x.nome}:{}),tipo:'RDO',envio:id,pdf:tp,resumo}}),{tok:tp,data:pdf,envio:id});
       store.set('rdoResp',{eng:RL.eng,fis:RL.fis,engP:RL.engP||'',fisP:RL.fisP||'',usina:RL.usina,projeto:RL.projeto,massa:RL.massa});
       for(const f of ex)f.envio={id,st:'aguardando'};CM.rel=Object.assign(relNew(),{eng:RL.eng,fis:RL.fis,engP:RL.engP||'',fisP:RL.fisP||'',usina:RL.usina,projeto:RL.projeto,massa:RL.massa});store.set(CMK,CM);cmRender();
-      const pe=pesById(RL.engP),url=pe?pesUrl(pe.id):assUrl(tk.eng);setTimeout(()=>{const m=$('cmMsg');if(!m)return;if(pe){m.innerHTML=`RDO nº ${esc(sum.rel.numero)} de ${brD(CM.date)} gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Já está pendente na página de assinaturas de <b>${esc(pe.nome)}</b> (Engenheiro de Produção)${RL.encP||RL.fisP?'; encarregado e fiscal recebem na página deles quando ele assinar':''}. <button type="button" class="pd-b rd-v" data-pslk="${esc(pe.id)}">Copiar endereço dele</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO '+sum.rel.numero+' de '+brD(CM.date)+' aguardando a sua assinatura: '+url)}">Avisar no WhatsApp</a>. Acompanhe na Central de RDOs.`;return}
-        m.innerHTML=`RDO nº ${esc(sum.rel.numero)} de ${brD(CM.date)} gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Envie o link ao Engenheiro de Produção: <button type="button" class="pd-b rd-v" data-rdlk="${tk.eng}" data-p="eng" data-e="${esc(id)}">Copiar link</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO '+sum.rel.numero+' de '+brD(CM.date)+' – assinatura do Engenheiro de Produção: '+url)}">WhatsApp</a>. Acompanhe na Central de RDOs. Sem internet, sobe quando houver conexão.`},30)}
+      const pe=pesById(RL.engP),url=pe?pesUrl(pe.id):assUrl(tk.eng);setTimeout(()=>{const m=$('cmMsg');if(!m)return;if(pe){m.innerHTML=`RDO de ${brD(CM.date)} (${esc(sum.rel.numero)}) gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Já está pendente na página de assinaturas de <b>${esc(pe.nome)}</b> (Engenheiro de Produção)${RL.encP||RL.fisP?'; encarregado e fiscal recebem na página deles quando ele assinar':''}. <button type="button" class="pd-b rd-v" data-pslk="${esc(pe.id)}">Copiar endereço dele</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO de '+brD(CM.date)+' ('+EQ_CURTO(CM.equipe||'')+')'+' aguardando a sua assinatura: '+url)}">Avisar no WhatsApp</a>. Acompanhe na Central de RDOs.`;return}
+        m.innerHTML=`RDO de ${brD(CM.date)} (${esc(sum.rel.numero)}) gerado: ${segs.length} segmento(s), ${fmt(t,1)} t. Envie o link ao Engenheiro de Produção: <button type="button" class="pd-b rd-v" data-rdlk="${tk.eng}" data-p="eng" data-e="${esc(id)}">Copiar link</button> <a class="pd-b rd-v" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('RDO de '+brD(CM.date)+' ('+EQ_CURTO(CM.equipe||'')+')'+' – assinatura do Engenheiro de Produção: '+url)}">WhatsApp</a>. Acompanhe na Central de RDOs. Sem internet, sobe quando houver conexão.`},30)}
     catch(e){msg.textContent='Não foi possível enviar: '+(e.message||e)}}
   function cmBind(){const root=$('cmRoot');if(!root||root.__b)return;root.__b=1;
-    const relIn=e=>{const t=e.target;if(t.dataset&&t.dataset.relp){const p=t.dataset.relp,x=pesById(t.value),r=REL();r[p+'P']=x?x.id:'';const nk=p==='enc'?'encarregado':p;if(x||p!=='enc')r[nk]=x?x.nome:'';store.set(CMK,CM);return true}
+    const relIn=e=>{const t=e.target;if(t.dataset&&t.dataset.relmassa){const r=REL(),m=massas().find(x=>x.p===t.value);r.projeto=t.value;r.massa=t.value;if(m&&m.d>0){CM.density=m.d;store.set(CMK,CM);try{cmRender()}catch(x){}}else{store.set(CMK,CM);try{cmRender()}catch(x){}}return true}
+      if(t.dataset&&t.dataset.relp){const p=t.dataset.relp,x=pesById(t.value),r=REL();r[p+'P']=x?x.id:'';const nk=p==='enc'?'encarregado':p;if(x||p!=='enc')r[nk]=x?x.nome:'';store.set(CMK,CM);return true}
       if(t.dataset&&t.dataset.rel!=null){relSet(t.dataset.rel,t.value);return true}if(t.dataset&&t.dataset.relcm){const v=t.value===''?0:parseFloat(t.value);CM[t.dataset.relcm]=isFinite(v)?v:0;store.set(CMK,CM);relUpd();return true}return false};
     root.addEventListener('input',e=>{relIn(e)},true);
     root.addEventListener('click',e=>{const b=e.target.closest('[data-clh]');if(!b)return;e.stopPropagation();const r=REL(),k=b.dataset.clh,h=+b.dataset.h,i=r[k].indexOf(h);if(i>=0)r[k].splice(i,1);else r[k].push(h);store.set(CMK,CM);b.setAttribute('aria-pressed',i<0);b.textContent=i<0?'X':'';const au=root.querySelector(`[data-cla="${k}"][data-h="${h}"]`);if(au)au.textContent=i<0?'':'X'},true);
@@ -6017,7 +6042,7 @@ if(ACL&&ACL.admin){const a=document.querySelector('#drawer a[data-page="admin"]'
   const h=location.hash.slice(1);Router.go(Router.pages.includes(h)?h:store.get('page',Router.pages[0]));
   if('serviceWorker' in navigator&&location.protocol==='https:'&&document.documentElement.dataset.pwa==='1')navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{setInterval(()=>r.update().catch(()=>{}),5*60000)}).catch(()=>{});
   // aviso de versão nova: compara a versão publicada com a que está aberta
-  const CUR_VER='26/11/2026 18:28';
+  const CUR_VER='27/11/2026 07:27';
   async function checkVer(){if(location.protocol!=='https:')return;try{const tx=await (await fetch('index.html?v='+Date.now(),{cache:'no-store'})).text();const m=tx.match(/Versão ([0-9/]+ [0-9:]+)/);
     if(m&&m[1].trim()!==CUR_VER.trim()&&!$('updBar')){const b=document.createElement('button');b.id='updBar';b.type='button';b.textContent=`Nova versão disponível (${m[1]}). Toque para atualizar.`;
       b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:5000;min-height:52px;border:0;border-radius:12px;background:#C8101A;color:#fff;font:700 15px var(--body);box-shadow:0 6px 22px rgba(0,0,0,.35);cursor:pointer';

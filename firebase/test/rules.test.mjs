@@ -285,6 +285,8 @@ await t('RDO: configuração só o administrador grava',()=>assertFails(setDoc(d
     await t('Convite: a pessoa se cadastra pelo link (cadastro + link usado no mesmo envio)',()=>{const b=writeBatch(anon);b.set(doc(anon,'assinantes',NID),NP(NID,CV));b.update(doc(anon,'assin_convites',CV),{usado:true,usado_por:NID,usado_em:6});return assertSucceeds(b.commit())});
     await t('Convite: link usado não cadastra outra pessoa',()=>{const b=writeBatch(anon);b.set(doc(anon,'assinantes',N2),NP(N2,CV));b.update(doc(anon,'assin_convites',CV),{usado_por:N2,usado_em:7});return assertFails(b.commit())});
     await t('Convite: quem valida edita nome, função e papel',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',NID),{nome:'Diego Fiscal Souza',funcao:'Fiscal de campo',papel:'fis'})))}
+  await t('Projetos de massa: quem só envia RDO não altera',()=>assertFails(setDoc(doc(lp('rdoc'),'rdo_config','massas'),{lista:[{p:'Projeto 928 – sem RAP',d:2.5}]})));
+  await t('Projetos de massa: quem valida RDO altera e quem envia lê',async()=>{await assertSucceeds(setDoc(doc(lp('rdoval'),'rdo_config','massas'),{lista:[{p:'Projeto 928 – sem RAP',d:null}],by:'rdoval@x.com',em:1}));await assertSucceeds(getDoc(doc(lp('rdoc'),'rdo_config','massas')))});
   await t('Responsáveis: quem valida desativa',()=>assertSucceeds(updateDoc(doc(lp('rdoval'),'assinantes',PID),{ativo:false})));
   await t('Responsáveis: desativado não altera o próprio cadastro',()=>assertFails(updateDoc(doc(anon,'assinantes',PID),{nome:'Bruno C. Lima',funcao:'x1',assinatura:PNG,perfil_em:4})));
   await t('Responsáveis: quem valida exclui',()=>assertSucceeds(deleteDoc(doc(lp('rdoval'),'assinantes',PID))))}

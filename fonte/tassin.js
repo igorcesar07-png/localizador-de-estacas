@@ -24,7 +24,7 @@ await p.click('#cmRoot [data-cm="add"] >> nth=0');await W(200);await p.fill('#cf
 {const t=await p.textContent('#cmRoot');ok((await p.$$('#cmRoot .cm-seg')).length===2&&/234\+1042/.test(t)&&/235\+0[56]2/.test(t),'estaca com mais de 1000 m aceita (234+1042 → final no km 235)')}
 const fillHor=async()=>{for(const el of await p.$$('#cmRoot input[type=time]'))await el.fill('07:00');await W(150)};await fillHor();
 ok(!!(await p.$('#cmRoot select[data-relp="eng"]')),'RDO: responsáveis escolhidos entre os cadastrados');
-await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(200);await p.fill('#cmRoot [data-rel="numero"]','501');
+await p.selectOption('#cmEq','Equipe Pavimentação Johonatan');await p.dispatchEvent('#cmEq','change');await W(200);
 await p.click('#cmRoot [data-cm="send"]');await W(800);ok(/Escolha o Engenheiro/.test(await p.textContent('#cmMsg')),'sem engenheiro escolhido o RDO não é enviado');
 const pid=n=>p.evaluate(n=>Object.values(window.__PS).find(y=>y.nome.startsWith(n)).id,n);
 await p.selectOption('#cmRoot select[data-relp="eng"]',await pid('Ana'));await p.selectOption('#cmRoot select[data-relp="enc"]',await pid('Bruno'));await p.selectOption('#cmRoot select[data-relp="fis"]',await pid('Carla'));await W(200);
